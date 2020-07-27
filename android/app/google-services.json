@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "107639817018",
+    "firebase_url": "https://wowtalent-7361e.firebaseio.com",
+    "project_id": "wowtalent-7361e",
+    "storage_bucket": "wowtalent-7361e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:107639817018:android:d4c0028f8618891c544603",
+        "android_client_info": {
+          "package_name": "com.example.wowtalent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "107639817018-f8g48vmcn61cqruosfd2th4nbakji6ad.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wowtalent",
+            "certificate_hash": "ada42968a32e3f53c10f93abb5d5fd055ea6e2fd"
+          }
+        },
+        {
+          "client_id": "107639817018-jqsgthg1ap09hea58f1ubhtsr6btbp9k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCqEwJHzfd9Af-OEu-vJF5bfN2cyc_CSiE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "107639817018-jqsgthg1ap09hea58f1ubhtsr6btbp9k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
