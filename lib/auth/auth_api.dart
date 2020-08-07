@@ -1,57 +1,110 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/notifier/auth_notifier.dart';
 
-class Auth_State {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+//  Firebase Login
 
-  // Sign in Anon
+logIn(User user, AuthNotifier authNotifier) async {
+  AuthResult authResult = await FirebaseAuth.instance
+      .signInWithEmailAndPassword(email: user.email, password: user.password)
+      .catchError((e) => print(e.code));
 
-  // Future signInAnon() async {
-  //   try {
-  //     AuthResult result = await _auth.signInAnonymously();
-  //     FirebaseUser user = result.user;
-  //     return user;
-  //   } catch (e) {
-  //     print(e.toString());
-  //     return null;
-  //   }
-  // }
+  if (authResult != null) {
+    FirebaseUser firebaseUser = authResult.user;
 
-  // SignIn With Email
-
-  Future signIn(String email, String password) async {
-    try {
-      AuthResult result = await _auth.signInWithEmailAndPassword(
-          email: email, password: password);
-      FirebaseUser user = result.user;
-      return user;
-    } catch (e) {
-      print(e.toString());
-      return null;
+    if (firebaseUser != null) {
+      print("Login: $firebaseUser");
+      authNotifier.setUser(firebaseUser);
     }
   }
+}
 
-  // SignUp With Email
+//Firebase Signup
 
-  Future signUp(String email, String password) async {
-    try {
-      AuthResult result = await _auth.createUserWithEmailAndPassword(
-          email: email, password: password);
-      FirebaseUser user = result.user;
-      return user;
-    } catch (e) {
-      print(e.toString());
-      return null;
+signUp(User user, AuthNotifier authNotifier) async {
+  AuthResult authResult = await FirebaseAuth.instance
+      .createUserWithEmailAndPassword(
+          email: user.email, password: user.password)
+      .catchError((e) => print(e.code));
+
+  if (authResult != null) {
+    UserUpdateInfo updateInfo = UserUpdateInfo();
+    updateInfo.displayName = user.displayName;
+
+    FirebaseUser firebaseUser = authResult.user;
+
+    if (firebaseUser != null) {
+      await firebaseUser.updateProfile(updateInfo);
+      await firebaseUser.reload();
+
+      print("Sign Up $firebaseUser");
+
+      FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
+      authNotifier.setUser(currentUser);
     }
   }
+}
 
-  // Sign Out
+// Firebase SignOut
 
-  Future signOut() async {
-    try {
-      return await _auth.signOut();
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
+signOut(AuthNotifier authNotifier) async {
+  await FirebaseAuth.instance.signOut().catchError((e) => print(e.code));
+  authNotifier.setUser(null);
+}
+
+// Initialize Current User
+
+initializeCurrentUser(AuthNotifier authNotifier) async {
+  FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
+
+  if (firebaseUser != null) {
+    print(firebaseUser);
+    authNotifier.setUser(firebaseUser);
+  }
+}
+
+// Google Sign In
+
+final GoogleSignIn googleSignIn = GoogleSignIn();
+final AuthNotifier authNotifier = AuthNotifier();
+
+googlesignIn(AuthNotifier authNotifier, User user) async {
+  FirebaseUser firebaseuser;
+  GoogleSignInAccount googleUser = await googleSignIn.signIn();
+  GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+  AuthCredential credential = GoogleAuthProvider.getCredential(
+    accessToken: googleAuth.accessToken,
+    idToken: googleAuth.idToken,
+  );
+  firebaseuser =
+      (await FirebaseAuth.instance.signInWithCredential(credential)).user;
+  if (firebaseuser != null) {
+    authNotifier.setUser(firebaseuser);
+    print("signed in " + firebaseuser.displayName);
+
+    return firebaseuser;
+  }
+}
+
+// Facebook Sign In
+
+final FacebookLogin fbLogin = FacebookLogin();
+
+facebookSignIn(
+    FacebookAccessToken token, AuthNotifier authNotifier, User user) async {
+  FirebaseUser firebaseuser;
+  AuthCredential credential =
+      FacebookAuthProvider.getCredential(accessToken: token.token);
+
+  firebaseuser =
+      (await FirebaseAuth.instance.signInWithCredential(credential)).user;
+
+  if (firebaseuser != null) {
+    authNotifier.setUser(firebaseuser);
+    print("signedIn");
+    return user;
   }
 }

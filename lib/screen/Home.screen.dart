@@ -1,23 +1,31 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wowtalent/auth/auth_api.dart';
 
-class Home_Screen extends StatefulWidget {
-  //Home_Screen({Key key}) : super(key: key);
+import 'package:wowtalent/notifier/auth_notifier.dart';
 
-  @override
-  _Home_ScreenState createState() => _Home_ScreenState();
-}
+class HomeScreen extends StatelessWidget {
+  // const Home_Screen({Key key}) : super(key: key);
 
-class _Home_ScreenState extends State<Home_Screen> {
   @override
   Widget build(BuildContext context) {
+    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
+
     return Scaffold(
-        body: SafeArea(
-      child: Container(
-          height: double.infinity,
-          decoration: BoxDecoration(
-              image: DecorationImage(
-                  image: AssetImage('assets/images/sign.png'),
-                  fit: BoxFit.cover))),
-    ));
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+          title: Text(authNotifier.user != null
+              ? authNotifier.user.displayName
+              : "WowTalent"),
+          backgroundColor: Colors.teal,
+          elevation: 0.0,
+          actions: <Widget>[
+            FlatButton.icon(
+              icon: Icon(Icons.person),
+              label: Text('logout'),
+              onPressed: () => signOut(authNotifier),
+            )
+          ]),
+    );
   }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">WowTalent</string>
+    <string name="facebook_app_id">3374974115873915</string>
+    <string name="fb_login_protocol_scheme">fb3374974115873915</string>
+
+</resources>
