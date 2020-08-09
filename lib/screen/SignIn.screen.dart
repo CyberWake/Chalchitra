@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:wowtalent/notifier/auth_notifier.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/screen/Home.screen.dart';
+import 'package:wowtalent/shared/loader.dart';
 
 enum AuthMode { Signup, Login }
 
@@ -20,6 +20,8 @@ class _LoginState extends State<Login> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final TextEditingController _passwordController = new TextEditingController();
   AuthMode _authMode = AuthMode.Login;
+
+  bool loading = false;
 
   User _user = User();
   // String _message = 'Log in/out by pressing the buttons below.';
@@ -45,8 +47,10 @@ class _LoginState extends State<Login> {
 
     if (_authMode == AuthMode.Login) {
       logIn(_user, authNotifier);
+      setState(() => loading = true);
     } else {
       signUp(_user, authNotifier);
+      setState(() => loading = true);
     }
   }
 
@@ -154,126 +158,136 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     print("Building login screen");
 
-    return Scaffold(
-      body: Container(
-        constraints: BoxConstraints.expand(
-          height: MediaQuery.of(context).size.height,
-        ),
-        decoration: BoxDecoration(color: Color(0xff34056D)),
-        child: Form(
-          autovalidate: true,
-          key: _formKey,
-          child: SingleChildScrollView(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(32, 96, 32, 0),
-              child: Column(
-                children: <Widget>[
-                  Text(
-                    "Please Sign In",
-                    textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 36, color: Colors.white),
-                  ),
-                  SizedBox(height: 32),
-                  _authMode == AuthMode.Signup
-                      ? _buildDisplayNameField()
-                      : Container(),
-                  _buildEmailField(),
-                  _buildPasswordField(),
-                  _authMode == AuthMode.Signup
-                      ? _buildConfirmPasswordField()
-                      : Container(),
-                  SizedBox(height: 32),
-                  ButtonTheme(
-                    minWidth: 200,
-                    child: RaisedButton(
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(
-                        'Switch to ${_authMode == AuthMode.Login ? 'Signup' : 'Login'}',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
-                      onPressed: () {
-                        setState(() {
-                          _authMode = _authMode == AuthMode.Login
-                              ? AuthMode.Signup
-                              : AuthMode.Login;
-                        });
-                      },
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  ButtonTheme(
-                    minWidth: 200,
-                    child: RaisedButton(
-                      padding: EdgeInsets.all(10.0),
-                      onPressed: () => _submitForm(),
-                      child: Text(
-                        _authMode == AuthMode.Login ? 'Login' : 'Signup',
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 30,
-                  ),
-                  ButtonTheme(
-                    minWidth: 300,
-                    child: RaisedButton(
-                      onPressed: () async {
-                        AuthNotifier authNotifier =
-                            Provider.of<AuthNotifier>(context, listen: false);
-                        await googlesignIn(authNotifier, _user)
-                            .then((FirebaseUser user) => {
-                                  print(user),
-                                })
-                            .catchError((e) => print(e.code));
-                      },
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(
-                        "Login With Google",
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  ),
-                  ButtonTheme(
-                    minWidth: 300,
-                    child: RaisedButton(
-                      onPressed: () async {
-                        AuthNotifier authNotifier =
-                            Provider.of<AuthNotifier>(context, listen: false);
-                        final FacebookLoginResult result =
-                            await fbLogin.logIn(['email', 'public_profile']);
+    return loading
+        ? Loader()
+        : Scaffold(
+            body: Container(
+              constraints: BoxConstraints.expand(
+                height: MediaQuery.of(context).size.height,
+              ),
+              decoration: BoxDecoration(color: Color(0xff34056D)),
+              child: Form(
+                autovalidate: true,
+                key: _formKey,
+                child: SingleChildScrollView(
+                  child: Padding(
+                    padding: EdgeInsets.fromLTRB(32, 96, 32, 0),
+                    child: Column(
+                      children: <Widget>[
+                        Text(
+                          "Please Sign In",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontSize: 36, color: Colors.white),
+                        ),
+                        SizedBox(height: 32),
+                        _authMode == AuthMode.Signup
+                            ? _buildDisplayNameField()
+                            : Container(),
+                        _buildEmailField(),
+                        _buildPasswordField(),
+                        _authMode == AuthMode.Signup
+                            ? _buildConfirmPasswordField()
+                            : Container(),
+                        SizedBox(height: 32),
+                        ButtonTheme(
+                          minWidth: 200,
+                          child: RaisedButton(
+                            padding: EdgeInsets.all(10.0),
+                            child: Text(
+                              'Switch to ${_authMode == AuthMode.Login ? 'Signup' : 'Login'}',
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _authMode = _authMode == AuthMode.Login
+                                    ? AuthMode.Signup
+                                    : AuthMode.Login;
+                              });
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 16),
+                        ButtonTheme(
+                          minWidth: 200,
+                          child: RaisedButton(
+                            padding: EdgeInsets.all(10.0),
+                            onPressed: () => _submitForm(),
+                            child: Text(
+                              _authMode == AuthMode.Login ? 'Login' : 'Signup',
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 30,
+                        ),
+                        ButtonTheme(
+                          minWidth: 300,
+                          child: RaisedButton(
+                            onPressed: () async {
+                              setState(() => loading = true);
+                              AuthNotifier authNotifier =
+                                  Provider.of<AuthNotifier>(context,
+                                      listen: false);
+                              await googlesignIn(authNotifier, _user)
+                                  .then((FirebaseUser user) => {
+                                        print(user),
+                                      })
+                                  .catchError((e) => print(e.code));
+                            },
+                            padding: EdgeInsets.all(10.0),
+                            child: Text(
+                              "Login With Google",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        ButtonTheme(
+                          minWidth: 300,
+                          child: RaisedButton(
+                            onPressed: () async {
+                              setState(() => loading = true);
+                              AuthNotifier authNotifier =
+                                  Provider.of<AuthNotifier>(context,
+                                      listen: false);
+                              final FacebookLoginResult result = await fbLogin
+                                  .logIn(['email', 'public_profile']);
 
-                        switch (result.status) {
-                          case FacebookLoginStatus.loggedIn:
-                            final firebaseUser = await facebookSignIn(
-                                result.accessToken, authNotifier, _user);
-                            print("Logged In $firebaseUser");
-                            break;
-                          case FacebookLoginStatus.cancelledByUser:
-                            print("Login cancelled by user");
-                            break;
-                          case FacebookLoginStatus.error:
-                            print(
-                                "Something went wrong ${result.errorMessage}");
-                            break;
-                        }
-                      },
-                      padding: EdgeInsets.all(10.0),
-                      child: Text(
-                        "Login With Facebook",
-                        style: TextStyle(fontSize: 20, color: Colors.white),
-                      ),
+                              switch (result.status) {
+                                case FacebookLoginStatus.loggedIn:
+                                  final firebaseUser = await facebookSignIn(
+                                      result.accessToken, authNotifier, _user);
+                                  print("Logged In $firebaseUser");
+                                  break;
+                                case FacebookLoginStatus.cancelledByUser:
+                                  print("Login cancelled by user");
+                                  break;
+                                case FacebookLoginStatus.error:
+                                  print(
+                                      "Something went wrong ${result.errorMessage}");
+                                  break;
+                              }
+                            },
+                            padding: EdgeInsets.all(10.0),
+                            child: Text(
+                              "Login With Facebook",
+                              style:
+                                  TextStyle(fontSize: 20, color: Colors.white),
+                            ),
+                          ),
+                        )
+                      ],
                     ),
-                  )
-                ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ),
-      ),
-    );
+          );
   }
 }
