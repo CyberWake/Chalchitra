@@ -15,7 +15,7 @@ class CategoryStoryItem extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: black,
+            color: white,
             border: Border.all(color: black.withOpacity(0.2))),
         child: Padding(
           padding:

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:wowtalent/theme/colors.dart';
+import 'package:wowtalent/widgets/slider_widget.dart';
 
 class PostItem extends StatelessWidget {
   final String profileImg;
@@ -12,6 +13,7 @@ class PostItem extends StatelessWidget {
   final String likedBy;
   final String viewCount;
   final String dayAgo;
+  final int sliderInitialValue = 0;
   const PostItem({
     Key key,
     this.profileImg,
@@ -106,15 +108,16 @@ class PostItem extends StatelessWidget {
                       width: 20,
                     ),
                     SvgPicture.asset(
-                      "assets/images/message_icon.svg",
+                      "assets/images/share_icon.svg",
                       width: 27,
                     ),
                   ],
                 ),
-                SvgPicture.asset(
-                  "assets/images/save_icon.svg",
-                  width: 27,
-                ),
+                RatingSlider()
+                // SvgPicture.asset(
+                //   "assets/images/save_icon.svg",
+                //   width: 27,
+                // ),
               ],
             ),
           ),

@@ -24,19 +24,22 @@ class _SearchPageState extends State<SearchPage> {
             children: <Widget>[
               SizedBox(
                 width: 15,
+                height: 30,
               ),
               Container(
+                margin: const EdgeInsets.only(top: 15),
                 width: size.width - 30,
                 height: 45,
                 decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(10),
-                    color: textFieldBackground),
-                child: TextField(
+                    color: Colors.grey),
+                child: TextFormField(
                   decoration: InputDecoration(
+                      labelText: "Search......",
                       border: InputBorder.none,
                       prefixIcon: Icon(
                         Icons.search,
-                        color: black.withOpacity(0.3),
+                        color: black,
                       )),
                   style: TextStyle(color: black.withOpacity(0.3)),
                   cursorColor: black.withOpacity(0.3),

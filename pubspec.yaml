@@ -37,6 +37,7 @@ dependencies:
   flutter_spinkit:
   flutter_svg: ^0.18.0
   line_icons:
+    
 
 dev_dependencies:
   flutter_test:

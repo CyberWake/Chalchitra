@@ -27,7 +27,7 @@ class _ProfilPageState extends State<ProfilPage> {
               children: [
                 GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).pushNamed("/home");
                     },
                     child: Icon(Icons.arrow_back_ios)),
                 FlatButton.icon(
@@ -76,11 +76,19 @@ class _ProfilPageState extends State<ProfilPage> {
             ),
           ),
           Text(
-            "London, England",
+            "New Delhi, India",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               color: Colors.grey[400],
             ),
+          ),
+          SizedBox(
+            height: 10,
+          ),
+          RaisedButton(
+            onPressed: null,
+            child: Text('Edit Profile'),
+            color: Colors.black,
           ),
           SizedBox(
             height: 20,

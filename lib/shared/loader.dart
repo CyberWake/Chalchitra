@@ -8,10 +8,10 @@ class Loader extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       child: Container(
-          color: Colors.teal[100],
+          color: Colors.white,
           child: Center(
             child: SpinKitChasingDots(
-              color: Colors.teal,
+              color: Colors.black,
               size: 50.0,
             ),
           )),

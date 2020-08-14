@@ -43,7 +43,7 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
-    return getBody();
+    return getPost();
   }
 
   Widget getBody() {
@@ -133,6 +133,24 @@ class _HomePageState extends State<HomePage> {
           )
         ],
       ),
+    );
+  }
+
+  Widget getPost() {
+    return ListView.builder(
+      itemCount: posts.length,
+      itemBuilder: (context, index) {
+        return PostItem(
+          postImg: posts[index]['postImg'],
+          profileImg: posts[index]['profileImg'],
+          name: posts[index]['name'],
+          caption: posts[index]['caption'],
+          isLoved: posts[index]['isLoved'],
+          viewCount: posts[index]['commentCount'],
+          likedBy: posts[index]['likedBy'],
+          dayAgo: posts[index]['dayAgo'],
+        );
+      },
     );
   }
 }

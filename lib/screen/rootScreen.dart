@@ -4,6 +4,7 @@ import 'package:wowtalent/screen/homescreen.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
 import 'package:wowtalent/screen/searchScreen.dart';
 import 'package:wowtalent/theme/colors.dart';
+import 'dart:math';
 
 class RootApp extends StatefulWidget {
   @override
@@ -53,7 +54,10 @@ class _RootAppState extends State<RootApp> {
             getFooter(Icons.home, 0),
             getFooter(Icons.search, 1),
             getFooter(null, -1),
-            getFooter(Icons.notifications, 3),
+            Transform.rotate(
+              angle: 180 * pi / 100,
+              child: getFooter(Icons.send, 3),
+            ),
             getFooter(Icons.person, 4),
           ],
         ),
@@ -74,7 +78,7 @@ class _RootAppState extends State<RootApp> {
       ),
       Center(
         child: Text(
-          "Activity Page",
+          "Message Page",
           style: TextStyle(
               fontSize: 20, fontWeight: FontWeight.bold, color: black),
         ),
@@ -127,7 +131,7 @@ class _RootAppState extends State<RootApp> {
       return AppBar(
         backgroundColor: appBarColor,
         title: Text(
-          "Activity",
+          "Message",
           style: TextStyle(color: Colors.black),
         ),
       );
@@ -137,23 +141,23 @@ class _RootAppState extends State<RootApp> {
   }
 
   Widget getFooter(IconData icon, int index) {
-    List bottomItems = [
-      pageIndex == 0
-          ? "assets/images/home_active_icon.svg"
-          : "assets/images/home_icon.svg",
-      pageIndex == 1
-          ? "assets/images/search_active_icon.svg"
-          : "assets/images/search_icon.svg",
-      pageIndex == 2
-          ? "assets/images/upload_active_icon.svg"
-          : "assets/images/upload_icon.svg",
-      pageIndex == 3
-          ? "assets/images/love_active_icon.svg"
-          : "assets/images/love_icon.svg",
-      pageIndex == 4
-          ? "assets/images/account_active_icon.svg"
-          : "assets/images/account_icon.svg",
-    ];
+    // List bottomItems = [
+    //   pageIndex == 0
+    //       ? "assets/images/home_active_icon.svg"
+    //       : "assets/images/home_icon.svg",
+    //   pageIndex == 1
+    //       ? "assets/images/search_active_icon.svg"
+    //       : "assets/images/search_icon.svg",
+    //   pageIndex == 2
+    //       ? "assets/images/upload_active_icon.svg"
+    //       : "assets/images/upload_icon.svg",
+    //   pageIndex == 3
+    //       ? "assets/images/love_active_icon.svg"
+    //       : "assets/images/love_icon.svg",
+    //   pageIndex == 4
+    //       ? "assets/images/account_active_icon.svg"
+    //       : "assets/images/account_icon.svg",
+    // ];
 
     return GestureDetector(
       onTap: () {
