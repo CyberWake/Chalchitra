@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:line_icons/line_icons.dart';
-
-import '../theme/colors.dart';
+import 'package:wowtalent/theme/colors.dart';
 
 class PostItem extends StatelessWidget {
   final String profileImg;
