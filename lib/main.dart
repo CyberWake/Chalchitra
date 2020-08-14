@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/screen/Home.screen.dart';
-import 'package:wowtalent/screen/SignIn.screen.dart';
+import 'package:wowtalent/screen/rootScreen.dart';
+import 'package:wowtalent/screen/signInScreen.dart';
 // import 'package:wowtalent/screen/SignUp.screen.dart';
 import 'package:provider/provider.dart';
 
@@ -27,13 +27,13 @@ class MyApp extends StatelessWidget {
       ),
       home: Consumer<AuthNotifier>(
         builder: (context, notifier, child) {
-          return notifier.user != null ? HomeScreen() : Login();
+          return notifier.user != null ? RootApp() : Login();
         },
       ),
       // initialRoute: 'SignIn',
       routes: <String, WidgetBuilder>{
         // '/': (_) => new Login(), // Login Page
-        '/home': (_) => new HomeScreen(), // Home Page
+        '/home': (_) => new RootApp(), // Home Page
         // '/signUp': (_) => new SignUp(), // The SignUp page
         // '/forgotPassword': (_) => new ForgotPwd(), // Forgot Password Page
       },
