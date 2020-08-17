@@ -5,7 +5,10 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="A new Flutter project.">
 
-  <!-- iOS meta tags & icons -->
+  <!-- Add Google App ID for Web -->
+  <meta name="google-signin-client_id" content="CLIENT_ID" />
+
+  <!-- iOS meta tags & icons -->  
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="wowtalent">
@@ -29,5 +32,33 @@
     }
   </script>
   <script src="main.dart.js" type="application/javascript"></script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-app.js"></script>
+
+  <!-- TODO: Add SDKs for Firebase products that you want to use
+      https://firebase.google.com/docs/web/setup#available-libraries -->
+  <script src="https://www.gstatic.com/firebasejs/7.18.0/firebase-analytics.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-auth.js"></script>
+
+  
+  <script src="https://www.gstatic.com/firebasejs/7.14.2/firebase-performance.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    var firebaseConfig = {
+      apiKey: "AIzaSyBCLoXWufdQoHXpyumN8HMP7LjikMQsfCQ",
+      authDomain: "wowtalent-7361e.firebaseapp.com",
+      databaseURL: "https://wowtalent-7361e.firebaseio.com",
+      projectId: "wowtalent-7361e",
+      storageBucket: "wowtalent-7361e.appspot.com",
+      messagingSenderId: "107639817018",
+      appId: "1:107639817018:web:04d33dac14a229f2544603",
+      measurementId: "G-C8S77H4EDJ"
+    };
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    firebase.analytics();
+  </script>
+
 </body>
 </html>
