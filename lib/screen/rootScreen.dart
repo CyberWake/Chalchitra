@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:wowtalent/screen/homescreen.dart';
+import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
 import 'package:wowtalent/screen/searchScreen.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'dart:math';
+import 'package:hexcolor/hexcolor.dart';
 
 class RootApp extends StatefulWidget {
   @override
@@ -34,7 +36,7 @@ class _RootAppState extends State<RootApp> {
               Icons.add,
               color: Colors.white,
             ),
-            backgroundColor: Colors.grey[900],
+            backgroundColor: Hexcolor('#F23041'),
             elevation: 15,
           ),
         ),
@@ -43,7 +45,7 @@ class _RootAppState extends State<RootApp> {
         decoration: BoxDecoration(
             boxShadow: [
               BoxShadow(
-                color: Colors.grey.withOpacity(0.1),
+                color: Hexcolor('#F29F05'),
                 spreadRadius: 1,
               )
             ],
@@ -76,13 +78,7 @@ class _RootAppState extends State<RootApp> {
               fontSize: 20, fontWeight: FontWeight.bold, color: black),
         ),
       ),
-      Center(
-        child: Text(
-          "Message Page",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: black),
-        ),
-      ),
+      Message(),
       ProfilPage()
     ];
     return IndexedStack(
@@ -94,7 +90,7 @@ class _RootAppState extends State<RootApp> {
   Widget getAppBar() {
     if (pageIndex == 0) {
       return AppBar(
-        backgroundColor: appBarColor,
+        backgroundColor: Hexcolor('#F29F05'),
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
@@ -128,13 +124,7 @@ class _RootAppState extends State<RootApp> {
         ),
       );
     } else if (pageIndex == 3) {
-      return AppBar(
-        backgroundColor: appBarColor,
-        title: Text(
-          "Message",
-          style: TextStyle(color: Colors.black),
-        ),
-      );
+      return null;
     } else {
       return null;
     }
@@ -170,7 +160,7 @@ class _RootAppState extends State<RootApp> {
             ? Icon(
                 icon,
                 size: 25,
-                color: index == pageIndex ? Colors.black : Colors.grey[700],
+                color: index == pageIndex ? Hexcolor('#F23041') : Colors.white,
               )
             : Container(),
       ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/notifier/auth_notifier.dart';
@@ -85,10 +86,12 @@ class _ProfilPageState extends State<ProfilPage> {
           SizedBox(
             height: 10,
           ),
-          RaisedButton(
-            onPressed: null,
-            child: Text('Edit Profile'),
-            color: Colors.black,
+          Container(
+            child: RaisedButton(
+              onPressed: null,
+              child: Text('Edit Profile'),
+              color: Hexcolor('#F23041'),
+            ),
           ),
           SizedBox(
             height: 20,
@@ -157,9 +160,9 @@ class _ProfilPageState extends State<ProfilPage> {
         Text(
           value,
           style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+              color: Hexcolor('#F23041')),
         ),
         Text(
           title,

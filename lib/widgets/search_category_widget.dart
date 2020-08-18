@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:wowtalent/theme/colors.dart';
 
 class CategoryStoryItem extends StatelessWidget {
@@ -16,14 +17,16 @@ class CategoryStoryItem extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: white,
-            border: Border.all(color: black.withOpacity(0.2))),
+            border: Border.all(color: Hexcolor('#F23041').withOpacity(0.2))),
         child: Padding(
           padding:
               const EdgeInsets.only(left: 20, right: 25, top: 10, bottom: 10),
           child: Text(
             name,
             style: TextStyle(
-                color: black, fontWeight: FontWeight.w500, fontSize: 15),
+                color: Hexcolor('#F23041'),
+                fontWeight: FontWeight.w500,
+                fontSize: 15),
           ),
         ),
       ),

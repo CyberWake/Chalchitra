@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'package:wowtalent/data/search_json.dart';
 import 'package:wowtalent/widgets/search_category_widget.dart';
@@ -9,6 +10,7 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
+  TextEditingController _searchController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return getBody();
@@ -34,15 +36,16 @@ class _SearchPageState extends State<SearchPage> {
                     borderRadius: BorderRadius.circular(10),
                     color: Colors.grey),
                 child: TextFormField(
+                  controller: _searchController,
                   decoration: InputDecoration(
-                      labelText: "Search......",
+                      hintText: "Search.....",
                       border: InputBorder.none,
                       prefixIcon: Icon(
                         Icons.search,
-                        color: black,
+                        color: Hexcolor('#F23041'),
                       )),
                   style: TextStyle(color: black.withOpacity(0.3)),
-                  cursorColor: black.withOpacity(0.3),
+                  cursorColor: Hexcolor('#F23041').withOpacity(0.3),
                 ),
               ),
               SizedBox(
