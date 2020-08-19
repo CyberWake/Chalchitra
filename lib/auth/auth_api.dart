@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:wowtalent/database/firesotre_api.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/notifier/auth_notifier.dart';
 
@@ -43,6 +44,14 @@ signUp(User user, AuthNotifier authNotifier) async {
 
       FirebaseUser currentUser = await FirebaseAuth.instance.currentUser();
       authNotifier.setUser(currentUser);
+
+      // create a document for the user with the uid(user id)
+
+      await FirestoreDatabase(uid: authNotifier.user.uid).updateWowUser(
+          authNotifier.user.email,
+          authNotifier.user.photoUrl,
+          authNotifier.user.displayName,
+          '', {}, {});
     }
   }
 }
@@ -83,6 +92,15 @@ googlesignIn(AuthNotifier authNotifier, User user) async {
       (await FirebaseAuth.instance.signInWithCredential(credential)).user;
   if (firebaseuser != null) {
     authNotifier.setUser(firebaseuser);
+
+    // create a document for the user with the uid(user id)
+
+    await FirestoreDatabase(uid: authNotifier.user.uid).updateWowUser(
+        authNotifier.user.email,
+        authNotifier.user.photoUrl,
+        authNotifier.user.displayName,
+        '', {}, {});
+
     print("signed in " + firebaseuser.displayName);
 
     return firebaseuser;
@@ -104,6 +122,15 @@ facebookSignIn(
 
   if (firebaseuser != null) {
     authNotifier.setUser(firebaseuser);
+
+    // create a document for the user with the uid(user id)
+
+    await FirestoreDatabase(uid: authNotifier.user.uid).updateWowUser(
+        authNotifier.user.email,
+        authNotifier.user.photoUrl,
+        authNotifier.user.displayName,
+        '', {}, {});
+
     print("signedIn");
     return user;
   }

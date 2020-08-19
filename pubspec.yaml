@@ -38,6 +38,7 @@ dependencies:
   flutter_svg: ^0.18.0
   line_icons:
   hexcolor:
+  cloud_firestore:
     
 
 dev_dependencies:
