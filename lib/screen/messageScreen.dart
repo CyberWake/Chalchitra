@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
+import 'package:wowtalent/screen/messagesChatScreen.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'package:wowtalent/data/user_json.dart';
 
@@ -82,7 +83,10 @@ class _MessageState extends State<Message> {
         Column(
           children: List.generate(userMessages.length, (index) {
             return InkWell(
-              onTap: () {},
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => ChatDetailPage()));
+              },
               child: Padding(
                 padding: const EdgeInsets.only(bottom: 20, left: 10),
                 child: Row(children: <Widget>[

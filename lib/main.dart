@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/rootScreen.dart';
 import 'package:wowtalent/screen/signInScreen.dart';
 // import 'package:wowtalent/screen/SignUp.screen.dart';
@@ -33,7 +34,8 @@ class MyApp extends StatelessWidget {
       // initialRoute: 'SignIn',
       routes: <String, WidgetBuilder>{
         // '/': (_) => new Login(), // Login Page
-        '/home': (_) => new RootApp(), // Home Page
+        '/home': (_) => new RootApp(),
+        'message': (_) => new Message() // Home Page
         // '/signUp': (_) => new SignUp(), // The SignUp page
         // '/forgotPassword': (_) => new ForgotPwd(), // Forgot Password Page
       },
