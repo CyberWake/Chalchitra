@@ -35,7 +35,8 @@ class MyApp extends StatelessWidget {
       routes: <String, WidgetBuilder>{
         // '/': (_) => new Login(), // Login Page
         '/home': (_) => new RootApp(),
-        'message': (_) => new Message() // Home Page
+        'message': (_) => new Message(),
+        '/Login': (_) => new Login() // Home Page
         // '/signUp': (_) => new SignUp(), // The SignUp page
         // '/forgotPassword': (_) => new ForgotPwd(), // Forgot Password Page
       },

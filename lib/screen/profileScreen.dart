@@ -1,14 +1,19 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/notifier/auth_notifier.dart';
+import 'package:wowtalent/screen/editProfileScreen.dart';
 
 class ProfilPage extends StatefulWidget {
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
 
-  // ProfilPage({@required this.url});
+  final String uid;
+
+  ProfilPage({@required this.uid});
+
   @override
   _ProfilPageState createState() => _ProfilPageState();
 }
@@ -17,6 +22,11 @@ class _ProfilPageState extends State<ProfilPage> {
   @override
   Widget build(BuildContext context) {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
+
+    DocumentReference ref = Firestore.instance
+        .collection('WowUsers')
+        .document(authNotifier.user.uid);
+
     return Scaffold(
       body: Column(
         children: [
@@ -59,7 +69,9 @@ class _ProfilPageState extends State<ProfilPage> {
                 ],
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(widget.url),
+                  image: NetworkImage(authNotifier.user.photoUrl != null
+                      ? authNotifier.user.photoUrl
+                      : widget.url),
                 ),
               ),
             ),
@@ -87,12 +99,28 @@ class _ProfilPageState extends State<ProfilPage> {
             height: 10,
           ),
           Container(
-            child: RaisedButton(
-              onPressed: null,
-              child: Text('Edit Profile'),
-              color: Hexcolor('#F23041'),
-            ),
-          ),
+              padding: EdgeInsets.only(top: 5),
+              child: FlatButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => EditProfilePage()));
+                  },
+                  child: Container(
+                    width: 245,
+                    height: 30,
+                    child: Text('Edit Profile',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Hexcolor('#F23041'),
+                            fontSize: 16)),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(color: Hexcolor('#F23041')),
+                        borderRadius: BorderRadius.circular(6.0)),
+                  ))),
           SizedBox(
             height: 20,
           ),

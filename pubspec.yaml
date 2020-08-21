@@ -39,6 +39,7 @@ dependencies:
   line_icons:
   hexcolor:
   cloud_firestore:
+  cached_network_image:
     
 
 dev_dependencies:

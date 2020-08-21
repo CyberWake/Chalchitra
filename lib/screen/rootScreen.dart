@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:wowtalent/notifier/auth_notifier.dart';
 import 'package:wowtalent/screen/homescreen.dart';
 import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
@@ -21,7 +23,7 @@ class _RootAppState extends State<RootApp> {
     return Scaffold(
       appBar: getAppBar(),
       backgroundColor: white,
-      body: getBody(),
+      body: getBody(context),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: Container(
         height: 60,
@@ -67,7 +69,8 @@ class _RootAppState extends State<RootApp> {
     );
   }
 
-  Widget getBody() {
+  Widget getBody(BuildContext context) {
+    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
     List<Widget> pages = [
       HomePage(),
       SearchPage(),
@@ -79,7 +82,9 @@ class _RootAppState extends State<RootApp> {
         ),
       ),
       Message(),
-      ProfilPage()
+      ProfilPage(
+        uid: authNotifier.user.uid,
+      )
     ];
     return IndexedStack(
       index: pageIndex,

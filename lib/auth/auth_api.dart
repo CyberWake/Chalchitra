@@ -1,9 +1,16 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:wowtalent/database/firesotre_api.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/notifier/auth_notifier.dart';
+
+// Variables
+
+final ref = Firestore.instance.collection('WowUsers');
+
+User currentUserModel;
 
 //  Firebase Login
 
@@ -47,11 +54,27 @@ signUp(User user, AuthNotifier authNotifier) async {
 
       // create a document for the user with the uid(user id)
 
-      await FirestoreDatabase(uid: authNotifier.user.uid).updateWowUser(
-          authNotifier.user.email,
-          authNotifier.user.photoUrl,
-          authNotifier.user.displayName,
-          '', {}, {});
+      DocumentSnapshot userRecord =
+          await ref.document(authNotifier.user.uid).get();
+
+      if (userRecord.data == null) {
+        // no user record exists, time to create
+
+        ref.document(authNotifier.user.uid).setData({
+          "id": currentUser.uid,
+          "displayName": currentUser.displayName,
+          "email": currentUser.email,
+          "photoUrl": currentUser.photoUrl,
+          "username": "",
+          "bio": "",
+          "followers": {},
+          "following": {}
+        });
+
+        userRecord = await ref.document(authNotifier.user.uid).get();
+      }
+
+      currentUserModel = User.fromDocument(userRecord);
     }
   }
 }
@@ -95,11 +118,27 @@ googlesignIn(AuthNotifier authNotifier, User user) async {
 
     // create a document for the user with the uid(user id)
 
-    await FirestoreDatabase(uid: authNotifier.user.uid).updateWowUser(
-        authNotifier.user.email,
-        authNotifier.user.photoUrl,
-        authNotifier.user.displayName,
-        '', {}, {});
+    DocumentSnapshot userRecord =
+        await ref.document(authNotifier.user.uid).get();
+
+    if (userRecord.data == null) {
+      // no user record exists, time to create
+
+      ref.document(authNotifier.user.uid).setData({
+        "id": authNotifier.user.uid,
+        "displayName": authNotifier.user.displayName,
+        "email": authNotifier.user.email,
+        "photoUrl": authNotifier.user.photoUrl,
+        "username": "",
+        "bio": "",
+        "followers": {},
+        "following": {}
+      });
+
+      userRecord = await ref.document(authNotifier.user.uid).get();
+    }
+
+    currentUserModel = User.fromDocument(userRecord);
 
     print("signed in " + firebaseuser.displayName);
 
@@ -125,11 +164,27 @@ facebookSignIn(
 
     // create a document for the user with the uid(user id)
 
-    await FirestoreDatabase(uid: authNotifier.user.uid).updateWowUser(
-        authNotifier.user.email,
-        authNotifier.user.photoUrl,
-        authNotifier.user.displayName,
-        '', {}, {});
+    DocumentSnapshot userRecord =
+        await ref.document(authNotifier.user.uid).get();
+
+    if (userRecord.data == null) {
+      // no user record exists, time to create
+
+      ref.document(authNotifier.user.uid).setData({
+        "id": authNotifier.user.uid,
+        "displayName": authNotifier.user.displayName,
+        "email": authNotifier.user.email,
+        "photoUrl": authNotifier.user.photoUrl,
+        "username": "",
+        "bio": "",
+        "followers": {},
+        "following": {}
+      });
+
+      userRecord = await ref.document(authNotifier.user.uid).get();
+    }
+
+    currentUserModel = User.fromDocument(userRecord);
 
     print("signedIn");
     return user;
