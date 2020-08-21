@@ -8,6 +8,8 @@ class User {
   String photoUrl;
   String username;
   String bio;
+  String age;
+  String gender;
   Map followers;
   Map following;
 
@@ -19,6 +21,8 @@ class User {
       this.photoUrl,
       this.bio,
       this.username,
+      this.age,
+      this.gender,
       this.followers,
       this.following});
 
@@ -30,6 +34,8 @@ class User {
         photoUrl: document['photoUrl'],
         bio: document['bio'],
         username: document['username'],
+        age: document['age'],
+        gender: document['gender'],
         followers: document['followers'],
         following: document['following']);
   }

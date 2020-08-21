@@ -105,7 +105,9 @@ class _ProfilPageState extends State<ProfilPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => EditProfilePage()));
+                            builder: (context) => EditProfilePage(
+                                  uid: authNotifier.user.uid,
+                                )));
                   },
                   child: Container(
                     width: 245,
