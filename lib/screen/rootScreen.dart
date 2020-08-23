@@ -6,6 +6,7 @@ import 'package:wowtalent/screen/homescreen.dart';
 import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
 import 'package:wowtalent/screen/searchScreen.dart';
+import 'package:wowtalent/screen/userSearchScreen.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'dart:math';
 import 'package:hexcolor/hexcolor.dart';
@@ -73,7 +74,8 @@ class _RootAppState extends State<RootApp> {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
     List<Widget> pages = [
       HomePage(),
-      SearchPage(),
+      // SearchPage(),
+      SearchUser(),
       Center(
         child: Text(
           "Upload Page",
@@ -82,7 +84,7 @@ class _RootAppState extends State<RootApp> {
         ),
       ),
       Message(),
-      ProfilPage(
+      ProfilePage(
         uid: authNotifier.user.uid,
       )
     ];

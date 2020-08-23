@@ -5,27 +5,175 @@ import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/notifier/auth_notifier.dart';
 import 'package:wowtalent/screen/editProfileScreen.dart';
+import 'package:wowtalent/model/user.dart';
 
-class ProfilPage extends StatefulWidget {
+class ProfilePage extends StatefulWidget {
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
 
   final String uid;
 
-  ProfilPage({@required this.uid});
+  ProfilePage({@required this.uid});
 
   @override
-  _ProfilPageState createState() => _ProfilPageState();
+  _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilPageState extends State<ProfilPage> {
+class _ProfilePageState extends State<ProfilePage> {
+  User user;
+  bool loading = false;
+  String _name;
+  String _url;
+  String _username;
+  String _bio;
+
+  getProfileTopView(BuildContext context) {
+    return new StreamBuilder(
+        stream: Firestore.instance
+            .collection('WowUsers')
+            .document(widget.uid)
+            .snapshots(),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return new Text("Loading");
+          }
+          user = User.fromDocument(snapshot.data);
+          _name = user.displayName;
+          _url = user.photoUrl;
+          _username = user.username;
+          _bio = user.bio;
+          return new Padding(
+            padding: EdgeInsets.all(17),
+            child: Column(
+              children: <Widget>[
+                Hero(
+                  tag: widget.url,
+                  child: Container(
+                    margin: EdgeInsets.only(top: 35),
+                    height: 80,
+                    width: 80,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.2),
+                          spreadRadius: 5,
+                          blurRadius: 20,
+                        )
+                      ],
+                      image: DecorationImage(
+                        fit: BoxFit.cover,
+                        image: NetworkImage(
+                            user.photoUrl != null ? user.photoUrl : widget.url),
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  user.username,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[400],
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Text(
+                    user.displayName != null ? user.displayName : "WowTalent",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                Text(
+                  user.bio,
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[400],
+                  ),
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  // createProfileTopView() {
+  //   return FutureBuilder(
+  //       future: ref.document(widget.uid).get(),
+  //       builder: (context, dataSnapShot) {
+  //         if (!dataSnapShot.hasData) {
+  //           return CircularProgressIndicator();
+  //         }
+  //         user = User.fromDocument(dataSnapShot.data);
+  //         return Padding(
+  //           padding: EdgeInsets.all(17),
+  //           child: Column(children: <Widget>[
+  //             Row(
+  //               children: <Widget>[
+  //                 CircleAvatar(
+  //                   radius: 50,
+  //                   backgroundImage: CachedNetworkImageProvider(user.photoUrl),
+  //                   backgroundColor: Colors.grey,
+  //                 ),
+  //                 Text(
+  //                   user.username,
+  //                   style: TextStyle(
+  //                     fontWeight: FontWeight.bold,
+  //                     color: Colors.grey[400],
+  //                   ),
+  //                 ),
+  //                 Expanded(
+  //                   flex: 1,
+  //                   child: Row(
+  //                     children: <Widget>[
+  //                       Text(
+  //                         user.displayName,
+  //                         style: TextStyle(
+  //                           fontSize: 22,
+  //                           fontWeight: FontWeight.bold,
+  //                         ),
+  //                       )
+  //                     ],
+  //                   ),
+  //                 )
+  //               ],
+  //             )
+  //           ]),
+  //         );
+  //       });
+  // }
+
+  // Calling Cloud Firestore collection
+
+  final ref = Firestore.instance.collection('WowUsers');
+
+  void initState() {
+    super.initState();
+
+    displayUserInformation();
+  }
+
+  displayUserInformation() async {
+    setState(() {
+      loading = true;
+    });
+
+    DocumentSnapshot documentSnapshot = await ref.document(widget.uid).get();
+    user = User.fromDocument(documentSnapshot);
+
+    setState(() {
+      loading = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
-
-    DocumentReference ref = Firestore.instance
-        .collection('WowUsers')
-        .document(authNotifier.user.uid);
 
     return Scaffold(
       body: Column(
@@ -38,7 +186,7 @@ class _ProfilPageState extends State<ProfilPage> {
               children: [
                 GestureDetector(
                     onTap: () {
-                      Navigator.of(context).pushNamed("/home");
+                      Navigator.pop(context);
                     },
                     child: Icon(Icons.arrow_back_ios)),
                 FlatButton.icon(
@@ -52,49 +200,7 @@ class _ProfilPageState extends State<ProfilPage> {
               ],
             ),
           ),
-          Hero(
-            tag: widget.url,
-            child: Container(
-              margin: EdgeInsets.only(top: 35),
-              height: 80,
-              width: 80,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(40),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    spreadRadius: 5,
-                    blurRadius: 20,
-                  )
-                ],
-                image: DecorationImage(
-                  fit: BoxFit.cover,
-                  image: NetworkImage(authNotifier.user.photoUrl != null
-                      ? authNotifier.user.photoUrl
-                      : widget.url),
-                ),
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            authNotifier.user != null
-                ? authNotifier.user.displayName
-                : "WowTalent",
-            style: TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            "New Delhi, India",
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.grey[400],
-            ),
-          ),
+          getProfileTopView(context),
           SizedBox(
             height: 10,
           ),
