@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
@@ -22,10 +23,25 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   User user;
   bool loading = false;
-  String _name;
-  String _url;
+
   String _username;
-  String _bio;
+
+  String currentUserID;
+
+  void initState() {
+    super.initState();
+    getCurrentUserID();
+  }
+
+  getCurrentUserID() async {
+    final FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
+    String uid = firebaseUser.uid;
+    setState(() {
+      currentUserID = uid;
+    });
+
+    print('User ID : $currentUserID');
+  }
 
   getProfileTopView(BuildContext context) {
     return new StreamBuilder(
@@ -38,10 +54,9 @@ class _ProfilePageState extends State<ProfilePage> {
             return new Text("Loading");
           }
           user = User.fromDocument(snapshot.data);
-          _name = user.displayName;
-          _url = user.photoUrl;
+
           _username = user.username;
-          _bio = user.bio;
+
           return new Padding(
             padding: EdgeInsets.all(17),
             child: Column(
@@ -49,7 +64,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Hero(
                   tag: widget.url,
                   child: Container(
-                    margin: EdgeInsets.only(top: 35),
+                    margin: EdgeInsets.only(top: 5),
                     height: 80,
                     width: 80,
                     decoration: BoxDecoration(
@@ -73,7 +88,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   height: 10,
                 ),
                 Text(
-                  user.username,
+                  ' @$_username',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.grey[400],
@@ -102,73 +117,46 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  // createProfileTopView() {
-  //   return FutureBuilder(
-  //       future: ref.document(widget.uid).get(),
-  //       builder: (context, dataSnapShot) {
-  //         if (!dataSnapShot.hasData) {
-  //           return CircularProgressIndicator();
-  //         }
-  //         user = User.fromDocument(dataSnapShot.data);
-  //         return Padding(
-  //           padding: EdgeInsets.all(17),
-  //           child: Column(children: <Widget>[
-  //             Row(
-  //               children: <Widget>[
-  //                 CircleAvatar(
-  //                   radius: 50,
-  //                   backgroundImage: CachedNetworkImageProvider(user.photoUrl),
-  //                   backgroundColor: Colors.grey,
-  //                 ),
-  //                 Text(
-  //                   user.username,
-  //                   style: TextStyle(
-  //                     fontWeight: FontWeight.bold,
-  //                     color: Colors.grey[400],
-  //                   ),
-  //                 ),
-  //                 Expanded(
-  //                   flex: 1,
-  //                   child: Row(
-  //                     children: <Widget>[
-  //                       Text(
-  //                         user.displayName,
-  //                         style: TextStyle(
-  //                           fontSize: 22,
-  //                           fontWeight: FontWeight.bold,
-  //                         ),
-  //                       )
-  //                     ],
-  //                   ),
-  //                 )
-  //               ],
-  //             )
-  //           ]),
-  //         );
-  //       });
-  // }
-
-  // Calling Cloud Firestore collection
-
-  final ref = Firestore.instance.collection('WowUsers');
-
-  void initState() {
-    super.initState();
-
-    displayUserInformation();
+  controlFollowUsers() {
+    print('follow tapped!!');
   }
 
-  displayUserInformation() async {
-    setState(() {
-      loading = true;
-    });
+  createButton() {
+    bool userProfile = currentUserID == widget.uid;
+    if (userProfile) {
+      return createButtonTitleORFunction(
+          title: 'Edit Profile', function: gotoEditProfile);
+    }
+  }
 
-    DocumentSnapshot documentSnapshot = await ref.document(widget.uid).get();
-    user = User.fromDocument(documentSnapshot);
+  gotoEditProfile() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (_) => EditProfilePage(
+                  uid: currentUserID,
+                )));
+  }
 
-    setState(() {
-      loading = false;
-    });
+  Container createButtonTitleORFunction({String title, Function function}) {
+    return Container(
+        padding: EdgeInsets.only(top: 5),
+        child: FlatButton(
+            onPressed: function,
+            child: Container(
+              width: 245,
+              height: 30,
+              child: Text(title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: Hexcolor('#F23041'),
+                      fontSize: 16)),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Hexcolor('#F23041')),
+                  borderRadius: BorderRadius.circular(6.0)),
+            )));
   }
 
   @override
@@ -204,31 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
           SizedBox(
             height: 10,
           ),
-          Container(
-              padding: EdgeInsets.only(top: 5),
-              child: FlatButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditProfilePage(
-                                  uid: authNotifier.user.uid,
-                                )));
-                  },
-                  child: Container(
-                    width: 245,
-                    height: 30,
-                    child: Text('Edit Profile',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Hexcolor('#F23041'),
-                            fontSize: 16)),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: Hexcolor('#F23041')),
-                        borderRadius: BorderRadius.circular(6.0)),
-                  ))),
+          createButton(),
           SizedBox(
             height: 20,
           ),

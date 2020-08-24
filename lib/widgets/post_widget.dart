@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:line_icons/line_icons.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'package:wowtalent/widgets/slider_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class PostItem extends StatelessWidget {
   final String profileImg;
@@ -46,7 +47,7 @@ class PostItem extends StatelessWidget {
                       decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           image: DecorationImage(
-                              image: NetworkImage(profileImg),
+                              image: CachedNetworkImageProvider(profileImg),
                               fit: BoxFit.cover)),
                     ),
                     SizedBox(
