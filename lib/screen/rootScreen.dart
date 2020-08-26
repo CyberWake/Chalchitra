@@ -7,6 +7,7 @@ import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
 import 'package:wowtalent/screen/searchScreen.dart';
 import 'package:wowtalent/screen/userSearchScreen.dart';
+import 'package:wowtalent/screen/videoUploaderScreen.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'dart:math';
 import 'package:hexcolor/hexcolor.dart';
@@ -76,13 +77,7 @@ class _RootAppState extends State<RootApp> {
       HomePage(),
       // SearchPage(),
       SearchUser(),
-      Center(
-        child: Text(
-          "Upload Page",
-          style: TextStyle(
-              fontSize: 20, fontWeight: FontWeight.bold, color: black),
-        ),
-      ),
+      VideoUploader(),
       Message(),
       ProfilePage(
         uid: authNotifier.user.uid,
