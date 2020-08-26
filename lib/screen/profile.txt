@@ -35,7 +35,6 @@ class _ProfilePageState extends State<ProfilePage> {
   int totalPost = 0;
   bool following = false;
   String currentUserImgUrl;
-  String currentUserName;
 
   //Collection for followers
 
@@ -54,234 +53,49 @@ class _ProfilePageState extends State<ProfilePage> {
   void initState() {
     super.initState();
     getCurrentUserID();
-    // getAllFollowers();
-    // getAllFollowing();
+    getAllFollowers();
+    getAllFollowing();
     checkIfAlreadyFollowing();
   }
 
   // Getting Followers
 
-  // getAllFollowers() async {
-  //   QuerySnapshot querySnapshot = await followerRef
-  //       .document(widget.uid)
-  //       .collection('userFollowers')
-  //       .getDocuments();
+  getAllFollowers() async {
+    QuerySnapshot querySnapshot = await followerRef
+        .document(widget.uid)
+        .collection('userFollowers')
+        .getDocuments();
 
-  //   setState(() {
-  //     totalFollowers = querySnapshot.documents.length;
-  //   });
-  // }
-
-  getFollowers() {
-    return new StreamBuilder(
-        stream: followerRef
-            .document(widget.uid)
-            .collection('userFollowers')
-            .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
-            return new SingleChildScrollView(
-                child: Column(
-              children: [
-                Text(
-                  '0',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Hexcolor('#F23041')),
-                ),
-                Text(
-                  'Followers',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                  ),
-                ),
-              ],
-            ));
-          }
-
-          return new SingleChildScrollView(
-              child: Column(
-            children: [
-              Text(
-                snapshot.data.documents.length.toString(),
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Hexcolor('#F23041')),
-              ),
-              Text(
-                'Followers',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ],
-          ));
-        });
+    setState(() {
+      totalFollowers = querySnapshot.documents.length;
+    });
   }
 
   // Getting Following Users
 
-  // getAllFollowing() async {
-  //   QuerySnapshot querySnapshot = await followingRef
-  //       .document(widget.uid)
-  //       .collection('userFollowing')
-  //       .getDocuments();
+  getAllFollowing() async {
+    QuerySnapshot querySnapshot = await followingRef
+        .document(widget.uid)
+        .collection('userFollowing')
+        .getDocuments();
 
-  //   setState(() {
-  //     totalFollowings = querySnapshot.documents.length;
-  //   });
-  // }
-
-  getFollowings() {
-    return new StreamBuilder(
-        stream: followingRef
-            .document(widget.uid)
-            .collection('userFollowing')
-            .snapshots(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
-            return new SingleChildScrollView(
-                child: Column(
-              children: [
-                Text(
-                  '0',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Hexcolor('#F23041')),
-                ),
-                Text(
-                  'Following',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                  ),
-                ),
-              ],
-            ));
-          }
-
-          return new SingleChildScrollView(
-              child: Column(
-            children: [
-              Text(
-                snapshot.data.documents.length.toString(),
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Hexcolor('#F23041')),
-              ),
-              Text(
-                'Following',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ],
-          ));
-        });
+    setState(() {
+      totalFollowings = querySnapshot.documents.length;
+    });
   }
 
   // Checking if already following
 
   checkIfAlreadyFollowing() async {
-    await FirebaseAuth.instance.currentUser().then((currentUser) => {
-          currentUserID = currentUser.uid,
-        });
-    DocumentReference querySnapshot = activityRef
-        .document(widget.uid)
-        .collection('activityItems')
-        .document(currentUserID);
-
-    DocumentSnapshot snap = await querySnapshot.get();
-    setState(() {
-      following = snap.exists;
-    });
-
-    // print('response form checkif $currentUserID.');
-    // print(snap.exists ? 'notexists' : following);
-  }
-
-  //cotrolFollowUsers managae follow users of the current users
-
-  controlFollowUsers() {
-    setState(() {
-      following = true;
-    });
-
-    followerRef
+    DocumentSnapshot documentSnapshot = await followerRef
         .document(widget.uid)
         .collection('userFollowers')
         .document(currentUserID)
-        .setData({
-      "userID": currentUserID,
-      "displayName": currentUserName,
-      "ownerID": widget.uid,
-      "timestamp": DateTime.now()
-    });
+        .get();
 
-    followingRef
-        .document(currentUserID)
-        .collection('userFollowing')
-        .document(widget.uid)
-        .setData({});
-
-    activityRef
-        .document(widget.uid)
-        .collection("activityItems")
-        .document(currentUserID)
-        .setData({
-      "type": "follow",
-      "ownerID": widget.uid,
-      "displayName": currentUserName,
-      "timestamp": DateTime.now(),
-      "userProfileImg": currentUserImgUrl,
-      "userID": currentUserID
-    });
-  }
-
-  // Controlling unfollow users
-
-  controlUnfollowUsers() {
     setState(() {
-      following = false;
+      following = documentSnapshot.exists;
     });
-
-    followerRef
-        .document(widget.uid)
-        .collection("userFollowers")
-        .document(currentUserID)
-        .get()
-        .then((document) => {
-              if (document.exists) {document.reference.delete()}
-            });
-
-    followingRef
-        .document(currentUserID)
-        .collection("userFollowing")
-        .document(widget.uid)
-        .get()
-        .then((document) => {
-              if (document.exists) {document.reference.delete()}
-            });
-
-    activityRef
-        .document(widget.uid)
-        .collection('activityItems')
-        .document(currentUserID)
-        .get()
-        .then((document) => {
-              if (document.exists) {document.reference.delete()}
-            });
   }
 
   // Getting Current User ID
@@ -290,11 +104,9 @@ class _ProfilePageState extends State<ProfilePage> {
     final FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
     String uid = firebaseUser.uid;
     String url = firebaseUser.photoUrl;
-    String displayName = firebaseUser.displayName;
     setState(() {
       currentUserID = uid;
       currentUserImgUrl = url;
-      currentUserName = displayName;
     });
 
     print('User ID : $currentUserID');
@@ -353,24 +165,60 @@ class _ProfilePageState extends State<ProfilePage> {
                     color: Colors.grey[400],
                   ),
                 ),
-                Text(
-                  user.displayName != null ? user.displayName : "WowTalent",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
+                Padding(
+                  padding: const EdgeInsets.only(top: 10, bottom: 10),
+                  child: Text(
+                    user.displayName != null ? user.displayName : "WowTalent",
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
                 Text(
                   user.bio,
                   style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                      fontSize: 16),
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[400],
+                  ),
                 ),
               ],
             ),
           );
         });
+  }
+
+  //cotrolFollowUsers managae follow users of the current users
+
+  controlFollowUsers() {
+    setState(() {
+      following = true;
+    });
+
+    followerRef
+        .document(widget.uid)
+        .collection('userFollowers')
+        .document(currentUserID)
+        .setData({});
+
+    followingRef
+        .document(currentUserID)
+        .collection('userFollowing')
+        .document(widget.uid)
+        .setData({});
+
+    activityRef
+        .document(widget.uid)
+        .collection("activityItems")
+        .document(currentUserID)
+        .setData({
+      "type": "follow",
+      "ownerID": widget.uid,
+      "username": user.id,
+      "timestamp": DateTime.now(),
+      "userProfileImg": currentUserImgUrl,
+      "userID": currentUserID
+    });
   }
 
   // Dynamic button
@@ -387,6 +235,39 @@ class _ProfilePageState extends State<ProfilePage> {
       return createButtonTitleORFunction(
           title: 'Follow', function: controlFollowUsers);
     }
+  }
+
+  controlUnfollowUsers() {
+    setState(() {
+      following = false;
+    });
+
+    followerRef
+        .document(widget.uid)
+        .collection("userFollowers")
+        .document(currentUserID)
+        .get()
+        .then((document) => {
+              if (document.exists) {document.reference.delete()}
+            });
+
+    followingRef
+        .document(currentUserID)
+        .collection("userFollowing")
+        .document(widget.uid)
+        .get()
+        .then((document) => {
+              if (document.exists) {document.reference.delete()}
+            });
+
+    activityRef
+        .document(widget.uid)
+        .collection('feedItems')
+        .document(currentUserID)
+        .get()
+        .then((document) => {
+              if (document.exists) {document.reference.delete()}
+            });
   }
 
   // Go to edit profile page
@@ -413,11 +294,11 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Text(title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: following ? Hexcolor('#F23041') : Colors.white,
+                      color: Hexcolor('#F23041'),
                       fontSize: 16)),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                  color: following ? Colors.white : Hexcolor('#F23041'),
+                  color: Colors.white,
                   border: Border.all(color: Hexcolor('#F23041')),
                   borderRadius: BorderRadius.circular(6.0)),
             )));
@@ -441,16 +322,14 @@ class _ProfilePageState extends State<ProfilePage> {
                       Navigator.pop(context);
                     },
                     child: Icon(Icons.arrow_back_ios)),
-                widget.uid == authNotifier.user.uid
-                    ? FlatButton.icon(
-                        onPressed: () => signOut(authNotifier),
-                        label: Text('LogOut'),
-                        icon: Icon(
-                          Icons.face,
-                          color: Colors.black,
-                        ),
-                      )
-                    : Text(''),
+                FlatButton.icon(
+                  onPressed: () => signOut(authNotifier),
+                  label: Text('LogOut'),
+                  icon: Icon(
+                    Icons.face,
+                    color: Colors.black,
+                  ),
+                )
               ],
             ),
           ),
@@ -466,8 +345,8 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               buildStatColumn(totalPost, "Photos"),
-              getFollowers(),
-              getFollowings()
+              buildStatColumn(totalFollowers, "Followers"),
+              buildStatColumn(totalFollowings, "Following"),
             ],
           ),
           Expanded(

@@ -16,7 +16,7 @@ List posts = [
     "id": 2,
     "name": "whereavygoes",
     "profileImg":
-        "https://instagram.fpnh11-1.fna.fbcdn.net/v/t51.2885-19/s320x320/66267487_1271293943050252_6667827703590158336_n.jpg?_nc_ht=instagram.fpnh11-1.fna.fbcdn.net&_nc_ohc=wFH8Wyze7RMAX9jvdjJ&oh=f7cc38276d8fce5410b3f53bb14595d6&oe=5F4384F7",
+        "https://firebasestorage.googleapis.com/v0/b/wowtalent-7361e.appspot.com/o/dummy%20image%2FDrum%202-min.jpg?alt=media&token=6fad1d3e-ad78-4762-99cd-55d4b15945d6",
     "postImg":
         "https://firebasestorage.googleapis.com/v0/b/wowtalent-7361e.appspot.com/o/dummy%20image%2Fguitar%201-min.jpg?alt=media&token=927b6396-5350-4e8c-b769-06a8caa7cab7",
     "caption":
@@ -43,7 +43,7 @@ List posts = [
     "id": 4,
     "name": "babysweetiepie",
     "profileImg":
-        "https://instagram.fpnh11-1.fna.fbcdn.net/v/t51.2885-19/s320x320/53868419_327116881276842_1562862290330451968_n.jpg?_nc_ht=instagram.fpnh11-1.fna.fbcdn.net&_nc_ohc=uznUqwaKIy0AX8_27ay&oh=1f0a0031c6cde7556509249001a578e2&oe=5F427349",
+        "https://firebasestorage.googleapis.com/v0/b/wowtalent-7361e.appspot.com/o/dummy%20image%2FDrum%202-min.jpg?alt=media&token=6fad1d3e-ad78-4762-99cd-55d4b15945d6",
     "postImg":
         "https://firebasestorage.googleapis.com/v0/b/wowtalent-7361e.appspot.com/o/dummy%20image%2FDrum%202-min.jpg?alt=media&token=6fad1d3e-ad78-4762-99cd-55d4b15945d6",
     "caption":

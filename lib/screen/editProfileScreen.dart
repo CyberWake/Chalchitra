@@ -19,6 +19,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController bioController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController ageController = TextEditingController();
+  final TextEditingController genderController = TextEditingController();
 
   // Global key for snack bar
 
@@ -85,6 +86,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         "displayName": nameController.text,
         "bio": bioController.text,
         "age": ageController.text,
+        "gender": genderController.text
       });
 
       setState(() {
@@ -219,6 +221,35 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
+  //Gender
+
+  Column createGenderField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(top: 15),
+          child: Text(
+            'Gender',
+            style: TextStyle(color: Colors.black),
+          ),
+        ),
+        TextFormField(
+          style: TextStyle(color: Colors.black),
+          controller: genderController,
+          decoration: InputDecoration(
+              hintText: 'Write your gender here...',
+              enabledBorder: UnderlineInputBorder(
+                  borderSide: BorderSide(color: Colors.grey)),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: Colors.black),
+              ),
+              hintStyle: TextStyle(color: Colors.grey)),
+        )
+      ],
+    );
+  }
+
   // Main code
 
   @override
@@ -277,6 +308,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         createProfileNameField(),
                         createBioField(),
                         createAgeField(),
+                        createGenderField()
                         // createGenderField()
                       ]),
                     ),

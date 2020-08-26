@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:hexcolor/hexcolor.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
+import 'package:wowtalent/data/search_json.dart';
+import 'package:wowtalent/widgets/search_category_widget.dart';
 
 class SearchUser extends StatefulWidget {
   SearchUser({Key key}) : super(key: key);
@@ -11,8 +14,7 @@ class SearchUser extends StatefulWidget {
   _SearchUserState createState() => _SearchUserState();
 }
 
-class _SearchUserState extends State<SearchUser>
-    with AutomaticKeepAliveClientMixin<SearchUser> {
+class _SearchUserState extends State<SearchUser> {
   TextEditingController searchtextEditingController = TextEditingController();
   Future<QuerySnapshot> futureSearchResult;
   final ref = Firestore.instance.collection('WowUsers');
@@ -32,26 +34,43 @@ class _SearchUserState extends State<SearchUser>
     });
   }
 
-  Container resultNotFound() {
+  SingleChildScrollView resultNotFound() {
     final Orientation orientation = MediaQuery.of(context).orientation;
-    return Container(
-      child: Center(
-          child: ListView(
-        shrinkWrap: true,
-        children: <Widget>[
-          Icon(
-            Icons.group,
-            color: Colors.grey,
-            size: 200,
+    var size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Column(children: <Widget>[
+        SafeArea(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Padding(
+              padding: const EdgeInsets.only(left: 15, top: 20),
+              child: Row(
+                  children: List.generate(searchCategories.length, (index) {
+                return CategoryStoryItem(
+                  name: searchCategories[index],
+                );
+              })),
+            ),
           ),
-          Text(
-            'Search User',
-            textAlign: TextAlign.center,
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.w500, fontSize: 65),
-          )
-        ],
-      )),
+        ),
+        SizedBox(
+          height: 15,
+        ),
+        Wrap(
+          spacing: 1,
+          runSpacing: 1,
+          children: List.generate(searchImages.length, (index) {
+            return Container(
+              width: (size.width - 3) / 3,
+              height: (size.width - 3) / 3,
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(searchImages[index]),
+                      fit: BoxFit.cover)),
+            );
+          }),
+        )
+      ]),
     );
   }
 
@@ -60,7 +79,7 @@ class _SearchUserState extends State<SearchUser>
         future: futureSearchResult,
         builder: (context, dataSnapshot) {
           if (!dataSnapshot.hasData) {
-            return CircularProgressIndicator();
+            return LinearProgressIndicator();
           }
 
           List<SearchResult> searchUserResult = [];
@@ -74,7 +93,7 @@ class _SearchUserState extends State<SearchUser>
         });
   }
 
-  bool get wantKeepAlive => true;
+  // bool get wantKeepAlive => true;
 
   AppBar searchPageHeader() {
     return AppBar(
@@ -85,21 +104,19 @@ class _SearchUserState extends State<SearchUser>
         decoration: InputDecoration(
             hintText: "Search ...",
             hintStyle: TextStyle(color: Colors.grey),
-            enabledBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.grey)),
-            focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black)),
+            // enabledBorder: UnderlineInputBorder(
+            //     borderSide: BorderSide(color: Colors.grey)),
+            // focusedBorder: UnderlineInputBorder(
+            //     borderSide: BorderSide(color: Colors.black)),
+            border: InputBorder.none,
             filled: true,
             prefixIcon: Icon(
               Icons.search,
-              color: Colors.black,
+              color: Hexcolor('#F23041'),
               size: 38.0,
             ),
             suffixIcon: IconButton(
-                icon: Icon(
-                  Icons.clear,
-                  color: Colors.black,
-                ),
+                icon: Icon(Icons.clear, color: Hexcolor('#F23041')),
                 onPressed: clearText)),
         onFieldSubmitted: submitSearch,
       ),
