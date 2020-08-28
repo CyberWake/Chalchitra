@@ -3,6 +3,13 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'package:wowtalent/data/search_json.dart';
 import 'package:wowtalent/widgets/search_category_widget.dart';
+import './userSearchScreen.dart';
+
+import '../model/video_info.dart';
+import '../video_uploader_widget/player.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:transparent_image/transparent_image.dart';
+import '../database/firebase_provider.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -11,6 +18,19 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   TextEditingController _searchController = new TextEditingController();
+  final thumbWidth = 100;
+  final thumbHeight = 150;
+
+  List<VideoInfo> _videos = <VideoInfo>[];
+
+  void initState() {
+    FirebaseProvider.listenToAllVideos((newVideos) {
+      setState(() {
+        _videos = newVideos;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return getBody();
@@ -28,25 +48,30 @@ class _SearchPageState extends State<SearchPage> {
                 width: 15,
                 height: 30,
               ),
-              Container(
-                margin: const EdgeInsets.only(top: 15),
-                width: size.width - 30,
-                height: 45,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: Colors.grey),
-                child: TextFormField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                      hintText: "Search.....",
-                      border: InputBorder.none,
-                      prefixIcon: Icon(
+              GestureDetector(
+                onTap: () => Navigator.push(
+                    context, MaterialPageRoute(builder: (_) => SearchUser())),
+                child: Container(
+                    margin: const EdgeInsets.only(top: 15),
+                    width: size.width - 30,
+                    height: 45,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(children: <Widget>[
+                      Icon(
                         Icons.search,
                         color: Hexcolor('#F23041'),
-                      )),
-                  style: TextStyle(color: black.withOpacity(0.3)),
-                  cursorColor: Hexcolor('#F23041').withOpacity(0.3),
-                ),
+                        size: 35,
+                      ),
+                      SizedBox(
+                        width: 15,
+                      ),
+                      Text(
+                        'Search...',
+                        style: TextStyle(fontSize: 22),
+                      )
+                    ])),
               ),
               SizedBox(
                 width: 15,
@@ -75,14 +100,31 @@ class _SearchPageState extends State<SearchPage> {
         Wrap(
           spacing: 1,
           runSpacing: 1,
-          children: List.generate(searchImages.length, (index) {
-            return Container(
-              width: (size.width - 3) / 3,
-              height: (size.width - 3) / 3,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(searchImages[index]),
-                      fit: BoxFit.cover)),
+          children: List.generate(_videos.length, (index) {
+            print(_videos.length);
+            final video = _videos[index];
+            print(video);
+            return GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) {
+                      return Player(
+                        video: video,
+                      );
+                    },
+                  ),
+                );
+              },
+              child: Container(
+                width: (size.width - 3) / 3,
+                height: (size.width - 3) / 3,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        image: NetworkImage(video.thumbUrl),
+                        fit: BoxFit.cover)),
+              ),
             );
           }),
         )

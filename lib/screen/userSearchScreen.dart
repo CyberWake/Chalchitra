@@ -7,6 +7,12 @@ import 'package:wowtalent/screen/profileScreen.dart';
 import 'package:wowtalent/data/search_json.dart';
 import 'package:wowtalent/widgets/search_category_widget.dart';
 
+import '../model/video_info.dart';
+import '../video_uploader_widget/player.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:transparent_image/transparent_image.dart';
+import '../database/firebase_provider.dart';
+
 class SearchUser extends StatefulWidget {
   SearchUser({Key key}) : super(key: key);
 
@@ -15,10 +21,23 @@ class SearchUser extends StatefulWidget {
 }
 
 class _SearchUserState extends State<SearchUser> {
+  final thumbWidth = 100;
+  final thumbHeight = 150;
+
+  List<VideoInfo> _videos = <VideoInfo>[];
+
   TextEditingController searchtextEditingController = TextEditingController();
   Future<QuerySnapshot> futureSearchResult;
   final ref = Firestore.instance.collection('WowUsers');
   User user;
+
+  void initState() {
+    FirebaseProvider.listenToAllVideos((newVideos) {
+      setState(() {
+        _videos = newVideos;
+      });
+    });
+  }
 
   clearText() {
     searchtextEditingController.clear();
@@ -34,43 +53,21 @@ class _SearchUserState extends State<SearchUser> {
     });
   }
 
-  SingleChildScrollView resultNotFound() {
+  Container resultNotFound() {
     final Orientation orientation = MediaQuery.of(context).orientation;
     var size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Column(children: <Widget>[
-        SafeArea(
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15, top: 20),
-              child: Row(
-                  children: List.generate(searchCategories.length, (index) {
-                return CategoryStoryItem(
-                  name: searchCategories[index],
-                );
-              })),
-            ),
-          ),
-        ),
-        SizedBox(
-          height: 15,
-        ),
-        Wrap(
-          spacing: 1,
-          runSpacing: 1,
-          children: List.generate(searchImages.length, (index) {
-            return Container(
-              width: (size.width - 3) / 3,
-              height: (size.width - 3) / 3,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: NetworkImage(searchImages[index]),
-                      fit: BoxFit.cover)),
-            );
-          }),
-        )
-      ]),
+    return Container(
+      child: Center(
+        child: ListView(shrinkWrap: true, children: <Widget>[
+          Icon(Icons.group, color: Colors.black, size: 170),
+          Text("Search User",
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  color: Colors.black,
+                  fontWeight: FontWeight.w500,
+                  fontSize: 50))
+        ]),
+      ),
     );
   }
 
@@ -98,6 +95,7 @@ class _SearchUserState extends State<SearchUser> {
   AppBar searchPageHeader() {
     return AppBar(
       backgroundColor: Colors.white,
+      iconTheme: IconThemeData(color: Hexcolor('#F23041')),
       title: TextFormField(
         style: TextStyle(fontSize: 18, color: Colors.black),
         controller: searchtextEditingController,
@@ -110,11 +108,6 @@ class _SearchUserState extends State<SearchUser> {
             //     borderSide: BorderSide(color: Colors.black)),
             border: InputBorder.none,
             filled: true,
-            prefixIcon: Icon(
-              Icons.search,
-              color: Hexcolor('#F23041'),
-              size: 38.0,
-            ),
             suffixIcon: IconButton(
                 icon: Icon(Icons.clear, color: Hexcolor('#F23041')),
                 onPressed: clearText)),

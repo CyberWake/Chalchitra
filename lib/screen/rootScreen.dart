@@ -75,8 +75,8 @@ class _RootAppState extends State<RootApp> {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
     List<Widget> pages = [
       HomePage(),
-      // SearchPage(),
-      SearchUser(),
+      SearchPage(),
+      //SearchUser(),
       VideoUploader(),
       Message(),
       ProfilePage(
