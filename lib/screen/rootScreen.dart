@@ -47,14 +47,15 @@ class _RootAppState extends State<RootApp> {
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
-            boxShadow: [
-              BoxShadow(
-                color: Hexcolor('#F29F05'),
-                spreadRadius: 1,
-              )
-            ],
-            // color: Colors.grey.withOpacity(0.2),
-            borderRadius: BorderRadius.circular(15)),
+          boxShadow: [
+            BoxShadow(
+              color: Hexcolor('#F29F05'),
+              spreadRadius: 1,
+            )
+          ],
+          // color: Colors.grey.withOpacity(0.2),
+          //borderRadius: BorderRadius.circular(15)
+        ),
         child: Row(
           children: [
             getFooter(Icons.home, 0),

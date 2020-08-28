@@ -8,6 +8,12 @@ import 'package:wowtalent/notifier/auth_notifier.dart';
 import 'package:wowtalent/screen/editProfileScreen.dart';
 import 'package:wowtalent/model/user.dart';
 
+import '../model/video_info.dart';
+import '../video_uploader_widget/player.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:transparent_image/transparent_image.dart';
+import '../database/firebase_provider.dart';
+
 class ProfilePage extends StatefulWidget {
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
@@ -49,6 +55,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   final activityRef = Firestore.instance.collection('activity feed');
 
+  //user video posts parameters
+  final thumbWidth = 100;
+  final thumbHeight = 150;
+
+  List<VideoInfo> _videos = <VideoInfo>[];
+
   //Intialize initState cycle
 
   void initState() {
@@ -57,6 +69,11 @@ class _ProfilePageState extends State<ProfilePage> {
     // getAllFollowers();
     // getAllFollowing();
     checkIfAlreadyFollowing();
+    FirebaseProvider.listenToVideos((newVideos) {
+      setState(() {
+        _videos = newVideos;
+      });
+    });
   }
 
   // Getting Followers
@@ -426,6 +443,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
+    var size = MediaQuery.of(context).size;
 
     return Scaffold(
       body: Column(
@@ -470,52 +488,116 @@ class _ProfilePageState extends State<ProfilePage> {
               getFollowings()
             ],
           ),
-          Expanded(
-            child: Container(
-              margin: EdgeInsets.only(left: 8, right: 8, top: 8),
-              decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.15),
-                  borderRadius:
-                      BorderRadius.vertical(top: Radius.circular(25))),
-              child: GridView.count(
-                padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-                crossAxisCount: 2,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
-                childAspectRatio: 5 / 6,
-                children: [
-                  buildPictureCard(
-                      "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-                  buildPictureCard(
-                      "https://images.pexels.com/photos/132037/pexels-photo-132037.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-                  buildPictureCard(
-                      "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-                  buildPictureCard(
-                      "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-                  buildPictureCard(
-                      "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-                  buildPictureCard(
-                      "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-                ],
-              ),
+          Padding(
+            padding: EdgeInsets.only(
+              top: 15,
+            ),
+            child: Wrap(
+              spacing: 1,
+              runSpacing: 1,
+              children: List.generate(_videos.length, (index) {
+                print(_videos.length);
+                final video = _videos[index];
+                print(video);
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: (size.width - 3) / 3,
+                    height: (size.width - 3) / 3,
+                    decoration: BoxDecoration(
+                        image: DecorationImage(
+                            image: NetworkImage(video.thumbUrl),
+                            fit: BoxFit.cover)),
+                  ),
+                );
+              }),
             ),
           )
+          // Expanded(
+          //   child: Container(
+          //     margin: EdgeInsets.only(left: 8, right: 8, top: 8),
+          //     decoration: BoxDecoration(
+          //         color: Colors.grey.withOpacity(0.15),
+          //         borderRadius:
+          //             BorderRadius.vertical(top: Radius.circular(25))),
+          //     // child: GridView.count(
+          //     //   padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
+          //     //   crossAxisCount: 2,
+          //     //   crossAxisSpacing: 5,
+          //     //   mainAxisSpacing: 5,
+          //     //   childAspectRatio: 5 / 6,
+          //     //   children: [
+          //     //     buildPictureCard(),
+          //     //     // buildPictureCard(
+          //     //     //     "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
+          //     //     // buildPictureCard(
+          //     //     //     "https://images.pexels.com/photos/132037/pexels-photo-132037.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
+          //     //     // buildPictureCard(
+          //     //     //     "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
+          //     //     // buildPictureCard(
+          //     //     //     "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
+          //     //     // buildPictureCard(
+          //     //     //     "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
+          //     //     // buildPictureCard(
+          //     //     //     "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
+          //     //   ],
+          //     // ),
+          //   ),
+          // )
         ],
       ),
     );
   }
 
-  Card buildPictureCard(String url) {
-    return Card(
-      elevation: 10,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      child: Container(
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(30),
-            image: DecorationImage(
-              fit: BoxFit.cover,
-              image: NetworkImage(url),
-            )),
+  SingleChildScrollView buildPictureCard() {
+    var size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      //spacing: 1,
+      //runSpacing: 1,
+      child: Column(
+        children: List.generate(_videos.length, (index) {
+          final video = _videos[index];
+          print(video);
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Player(
+                      video: video,
+                    );
+                  },
+                ),
+              );
+            },
+            child: Card(
+              elevation: 10,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30)),
+              child: Container(
+                width: (size.width - 3) / 3,
+                height: (size.width - 3) / 3,
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(30),
+                    image: DecorationImage(
+                        image: NetworkImage(video.thumbUrl),
+                        fit: BoxFit.cover)),
+              ),
+            ),
+          );
+        }),
       ),
     );
   }

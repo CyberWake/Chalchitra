@@ -35,12 +35,31 @@ import 'package:wowtalent/data/post_json.dart';
 // import 'package:wowtalent/theme/colors.dart';
 import 'package:wowtalent/widgets/post_widget.dart';
 
+import '../model/video_info.dart';
+import '../video_uploader_widget/player.dart';
+import 'package:timeago/timeago.dart' as timeago;
+import 'package:transparent_image/transparent_image.dart';
+import '../database/firebase_provider.dart';
+
 class HomePage extends StatefulWidget {
   @override
   _HomePageState createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
+  final thumbWidth = 100;
+  final thumbHeight = 150;
+
+  List<VideoInfo> _videos = <VideoInfo>[];
+
+  void initState() {
+    FirebaseProvider.listenToAllVideos((newVideos) {
+      setState(() {
+        _videos = newVideos;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return getPost();
@@ -117,6 +136,19 @@ class _HomePageState extends State<HomePage> {
           // Divider(
           //   color: black.withOpacity(0.3),
           // ),
+          // Column(
+          //   children: List.generate(_videos.length, (index) {
+          //     return PostItem(
+          //       profileImg: posts[index]['profileImg'],
+          //       name: posts[index]['name'],
+          //       caption: posts[index]['caption'],
+          //       isLoved: posts[index]['isLoved'],
+          //       viewCount: posts[index]['commentCount'],
+          //       likedBy: posts[index]['likedBy'],
+          //       dayAgo: posts[index]['dayAgo'],
+          //     );
+          //   }),
+          // )
           Column(
             children: List.generate(posts.length, (index) {
               return PostItem(
