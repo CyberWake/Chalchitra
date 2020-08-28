@@ -488,42 +488,44 @@ class _ProfilePageState extends State<ProfilePage> {
               getFollowings()
             ],
           ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 15,
-            ),
-            child: Wrap(
-              spacing: 1,
-              runSpacing: 1,
-              children: List.generate(_videos.length, (index) {
-                print(_videos.length);
-                final video = _videos[index];
-                print(video);
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return Player(
-                            video: video,
+          widget.uid == authNotifier.user.uid
+              ? Padding(
+                  padding: EdgeInsets.only(
+                    top: 15,
+                  ),
+                  child: Wrap(
+                    spacing: 1,
+                    runSpacing: 1,
+                    children: List.generate(_videos.length, (index) {
+                      print(_videos.length);
+                      final video = _videos[index];
+                      print(video);
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) {
+                                return Player(
+                                  video: video,
+                                );
+                              },
+                            ),
                           );
                         },
-                      ),
-                    );
-                  },
-                  child: Container(
-                    width: (size.width - 3) / 3,
-                    height: (size.width - 3) / 3,
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(video.thumbUrl),
-                            fit: BoxFit.cover)),
+                        child: Container(
+                          width: (size.width - 3) / 3,
+                          height: (size.width - 3) / 3,
+                          decoration: BoxDecoration(
+                              image: DecorationImage(
+                                  image: NetworkImage(video.thumbUrl),
+                                  fit: BoxFit.cover)),
+                        ),
+                      );
+                    }),
                   ),
-                );
-              }),
-            ),
-          )
+                )
+              : Text("")
           // Expanded(
           //   child: Container(
           //     margin: EdgeInsets.only(left: 8, right: 8, top: 8),
