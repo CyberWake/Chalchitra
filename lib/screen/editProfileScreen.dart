@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/shared/formFormatting.dart';
 
 class EditProfilePage extends StatefulWidget {
   // User id required to open this screen
@@ -31,6 +32,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   User user;
   bool _usernameValid = true;
   bool _nameValid = true;
+  Size _size;
 
   // Calling Cloud Firestore collection
 
@@ -42,6 +44,172 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.initState();
 
     displayUserInformation();
+  }
+
+  // Main code
+
+  @override
+  Widget build(BuildContext context) {
+    _size = MediaQuery.of(context).size;
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      key: _scaffoldGlobalKey,
+      body: Container(
+        color: Colors.cyan,
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(
+                top: _size.height * 0.1
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    offset: Offset(0.0, -10.0), //(x,y)
+                    blurRadius: 10.0,
+                  ),
+                ],
+              ),
+              child: loading
+                  ? LinearProgressIndicator()
+                  : ListView(children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Container(
+                            child: Column(
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Column(children: <Widget>[
+                                Card(
+                                  child: ListTile(
+                                    title: Text("Your Identity"),
+                                    trailing: Icon(Icons.person),
+                                    onTap: () {},
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0)),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                getFieldContainer(
+                                    [
+                                      createProfileNameField(),
+                                      createUsernameField(),
+                                    ]
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                Card(
+                                  child: ListTile(
+                                    title: Text("Your Info"),
+                                    trailing: Icon(Icons.person),
+                                    onTap: () {},
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(10.0)),
+                                ),
+                                SizedBox(
+                                  height: 20,
+                                ),
+                                getFieldContainer(
+                                    [
+                                      createBioField(),
+                                      createAgeField(),
+                                      createGenderField()
+                                    ]
+                                ),
+                                // createGenderField()
+                              ]),
+                            ),
+                            SizedBox(
+                              height: 20,
+                            ),
+                            InkWell(
+                              onTap: updateUserProfile,
+                              child: Container(
+                                height: 50,
+                                margin: EdgeInsets.symmetric(horizontal: 10),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(50),
+                                  color: Colors.cyan,
+                                ),
+                                child: Center(
+                                  child: Text("Update", style: TextStyle(color: Colors
+                                      .white,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.5,
+                                      fontSize: 17),),
+                                ),
+                              ),
+                            ),
+                          ],
+                        )),
+                      )
+                    ]),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                top: _size.height * 0.05,
+                left: _size.width * 0.5 - 50,
+              ),
+              child: CircleAvatar(
+                backgroundImage:
+                NetworkImage("https://via.placeholder.com/150"),
+                radius: 50.0,
+              ),
+            ),
+            InkWell(
+              onTap: (){
+                Navigator.of(context).pop();
+              },
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Colors.cyan.shade800,
+                  borderRadius: BorderRadius.circular(50)
+                ),
+                padding: EdgeInsets.all(2.5),
+                margin: EdgeInsets.only(
+                  top: _size.height * 0.05,
+                  left: _size.width * 0.57,
+                ),
+                child: Icon(
+                  Icons.camera,
+                  color: Colors.white,
+                ),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+  }
+
+
+  getFieldContainer(List<Widget> fields){
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [BoxShadow(
+          color: Color.fromRGBO(51, 204, 255, 0.3),
+          blurRadius: 20,
+          offset: Offset(0, 10),
+        )
+        ],
+      ),
+      child: Column(
+        children: fields,
+      ),
+    );
   }
 
   displayUserInformation() async {
@@ -69,7 +237,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     setState(() {
       usernameController.text.trim().length < 3 ||
-              usernameController.text.isEmpty
+          usernameController.text.isEmpty
           ? _usernameValid = false
           : _usernameValid = true;
 
@@ -105,227 +273,98 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // Creating username field
 
-  Column createUsernameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 15),
-          child: Text(
-            'Username',
-            style: TextStyle(color: Colors.black),
-          ),
+  createUsernameField() {
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.grey[200]))
+      ),
+      child: TextFormField(
+        style: TextStyle(color: Colors.black),
+        controller: usernameController,
+        decoration: authInputFormatting.copyWith(
+            hintText: "UserName",
+            errorText: _usernameValid ? null : 'Username is too sort!'
         ),
-        TextFormField(
-          style: TextStyle(color: Colors.black),
-          controller: usernameController,
-          decoration: InputDecoration(
-              hintText: 'Write your username here...',
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey)),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              hintStyle: TextStyle(color: Colors.grey),
-              errorText: _usernameValid ? null : 'Username is too sort!'),
-        )
-      ],
+      ),
     );
   }
 
   // Creating profilename field
 
-  Column createProfileNameField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 15),
-          child: Text(
-            'Profile name',
-            style: TextStyle(color: Colors.black),
-          ),
+  createProfileNameField() {
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.grey[200]))
+      ),
+      child: TextFormField(
+        style: TextStyle(color: Colors.black),
+        controller: nameController,
+        decoration: authInputFormatting.copyWith(
+            hintText: "Profie Name",
+            errorText: _nameValid ? null : 'Profile name cannot be empty!'
         ),
-        TextFormField(
-          style: TextStyle(color: Colors.black),
-          controller: nameController,
-          decoration: InputDecoration(
-              hintText: 'Write your name here...',
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey)),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              hintStyle: TextStyle(color: Colors.grey),
-              errorText: _nameValid ? null : 'Profile name cannot be empty!'),
-        )
-      ],
+      ),
     );
   }
 
   // Creating bio field
 
-  Column createBioField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 15),
-          child: Text(
-            'Bio',
-            style: TextStyle(color: Colors.black),
-          ),
+  createBioField() {
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.grey[200]))
+      ),
+      child: TextFormField(
+        style: TextStyle(color: Colors.black),
+        controller: bioController,
+        decoration:  authInputFormatting.copyWith(
+            hintText: "Your Bio",
         ),
-        TextFormField(
-          style: TextStyle(color: Colors.black),
-          controller: bioController,
-          decoration: InputDecoration(
-              hintText: 'Write your bio here...',
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey)),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              hintStyle: TextStyle(color: Colors.grey)),
-        )
-      ],
+      ),
     );
   }
 
   // Creating age field
 
-  Column createAgeField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 15),
-          child: Text(
-            'Age',
-            style: TextStyle(color: Colors.black),
-          ),
+  createAgeField() {
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.grey[200]))
+      ),
+      child: TextFormField(
+        style: TextStyle(color: Colors.black),
+        controller: ageController,
+        decoration:  authInputFormatting.copyWith(
+            hintText: "Your Age",
         ),
-        TextFormField(
-          style: TextStyle(color: Colors.black),
-          controller: ageController,
-          decoration: InputDecoration(
-              hintText: 'Write your age here...',
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey)),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              hintStyle: TextStyle(color: Colors.grey)),
-        )
-      ],
+      ),
     );
   }
 
   //Gender
 
-  Column createGenderField() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(top: 15),
-          child: Text(
-            'Gender',
-            style: TextStyle(color: Colors.black),
-          ),
-        ),
-        TextFormField(
-          style: TextStyle(color: Colors.black),
-          controller: genderController,
-          decoration: InputDecoration(
-              hintText: 'Write your gender here...',
-              enabledBorder: UnderlineInputBorder(
-                  borderSide: BorderSide(color: Colors.grey)),
-              focusedBorder: UnderlineInputBorder(
-                borderSide: BorderSide(color: Colors.black),
-              ),
-              hintStyle: TextStyle(color: Colors.grey)),
-        )
-      ],
-    );
-  }
-
-  // Main code
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldGlobalKey,
-      appBar: AppBar(
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.done,
-              color: Colors.black,
-              size: 25,
-            ),
-            onPressed: () => Navigator.pop(context),
-          )
-        ],
+  createGenderField() {
+    return Container(
+      padding: EdgeInsets.all(10.0),
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.grey[200]))
       ),
-      body: loading
-          ? LinearProgressIndicator()
-          : ListView(children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Container(
-                    child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                      child: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage("https://via.placeholder.com/150"),
-                        radius: 50.0,
-                      ),
-                    ),
-                    FlatButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          "Change Photo",
-                          style: const TextStyle(
-                              color: Colors.blue,
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold),
-                        )),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Column(children: <Widget>[
-                        createUsernameField(),
-                        createProfileNameField(),
-                        createBioField(),
-                        createAgeField(),
-                        createGenderField()
-                        // createGenderField()
-                      ]),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 30, left: 50, right: 50),
-                      child: RaisedButton(
-                          child: Text(
-                            'Update',
-                            style:
-                                TextStyle(color: Colors.black45, fontSize: 16),
-                          ),
-                          onPressed: updateUserProfile),
-                    )
-                  ],
-                )),
-              )
-            ]),
+      child: TextFormField(
+        style: TextStyle(color: Colors.black),
+        controller: genderController,
+        decoration:  authInputFormatting.copyWith(
+            hintText: "Your Gender",
+        ),
+      ),
     );
   }
 }
