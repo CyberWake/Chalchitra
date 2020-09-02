@@ -149,6 +149,25 @@ class _VideoUploaderState extends State<VideoUploader> {
     return playlistUrl;
   }
 
+  createAlertDialogue(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Warning"),
+            content: Text("Your video exceed limits, Please re-upload!!!"),
+            actions: [
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
+
   Future<void> _processVideo(File rawVideoFile) async {
     final String rand = '${new Random().nextInt(10000)}';
     final videoName = 'video$rand';
@@ -166,8 +185,16 @@ class _VideoUploaderState extends State<VideoUploader> {
     setState(() {
       _processPhase = 'Generating thumbnail';
       _videoDuration = EncodingProvider.getDuration(info);
+      print(_videoDuration);
       _progress = 0.0;
     });
+
+    if (_videoDuration <= 30000 || _videoDuration >= 360000) {
+      createAlertDialogue(context);
+
+      print("video duration exceed");
+      return null;
+    }
 
     final thumbFilePath = await EncodingProvider.getThumb(
         copyPath, outDirPath, thumbWidth, thumbHeight);
@@ -212,19 +239,20 @@ class _VideoUploaderState extends State<VideoUploader> {
 
   void _takeVideo(context, source) async {
     var videoFile;
-    if (_debugMode) {
-      videoFile = File(
-          '/storage/emulated/0/Android/data/com.learningsomethingnew.fluttervideo.flutter_video_sharing/files/Pictures/ebbafabc-dcbe-433b-93dd-80e7777ee4704451355941378265171.mp4');
-    } else {
-      if (_imagePickerActive) return;
+    // if (_debugMode) {
+    //   videoFile = File(
+    //       '/storage/emulated/0/Android/data/com.learningsomethingnew.fluttervideo.flutter_video_sharing/files/Pictures/ebbafabc-dcbe-433b-93dd-80e7777ee4704451355941378265171.mp4');
+    // } else {
+    if (_imagePickerActive) return;
 
-      _imagePickerActive = true;
-      videoFile = await ImagePicker.pickVideo(source: source);
-      _imagePickerActive = false;
-      Navigator.pop(context);
+    _imagePickerActive = true;
+    videoFile = await ImagePicker.pickVideo(
+        source: source, maxDuration: const Duration(seconds: 300));
+    _imagePickerActive = false;
+    Navigator.pop(context);
 
-      if (videoFile == null) return;
-    }
+    if (videoFile == null) return;
+    //}
     setState(() {
       _processing = true;
     });
@@ -260,7 +288,6 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   void _openVideoPicker(BuildContext context) {
-    print("Open Video Picker function calling");
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {

@@ -2,9 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import '../model/video_info.dart';
 
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:line_icons/line_icons.dart';
+import 'package:wowtalent/theme/colors.dart';
+import 'package:wowtalent/widgets/slider_widget.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 class Player extends StatefulWidget {
   final VideoInfo video;
-
   const Player({Key key, @required this.video}) : super(key: key);
 
   @override
@@ -14,20 +19,59 @@ class Player extends StatefulWidget {
 class _PlayerState extends State<Player> {
   String _error;
 
-
   @override
   Widget build(BuildContext context) {
     print(widget.video.videoUrl);
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: Colors.white,
       body: Stack(
         children: <Widget>[
           _error == null
-              ? NetworkPlayerLifeCycle(
-                  widget.video.videoUrl,
-                  (BuildContext context, VideoPlayerController controller) =>
-                      AspectRatioVideo(controller),
-                )
+              ? NetworkPlayerLifeCycle(widget.video.videoUrl,
+                  (BuildContext context, VideoPlayerController controller) {
+                  return Column(children: [
+                    SizedBox(
+                      height: 60.0,
+                    ),
+                    AspectRatioVideo(controller),
+                    Padding(
+                      padding:
+                          const EdgeInsets.only(left: 15, right: 15, top: 3),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              SvgPicture.asset(
+                                "assets/images/loved_icon.svg",
+                                width: 27,
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              SvgPicture.asset(
+                                "assets/images/comment_icon.svg",
+                                width: 27,
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              SvgPicture.asset(
+                                "assets/images/share_icon.svg",
+                                width: 27,
+                              ),
+                            ],
+                          ),
+                          RatingSlider()
+                          // SvgPicture.asset(
+                          //   "assets/images/save_icon.svg",
+                          //   width: 27,
+                          // ),
+                        ],
+                      ),
+                    ),
+                  ]);
+                })
               : Center(
                   child: Text(_error),
                 ),
