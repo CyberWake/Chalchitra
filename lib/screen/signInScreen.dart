@@ -232,7 +232,7 @@ class _LoginState extends State<Login> {
                                   Provider.of<AuthNotifier>(context,
                                       listen: false);
                               await googlesignIn(authNotifier, _user)
-                                  .then((FirebaseUser user) => {
+                                  .then((user) => {
                                         print(user),
                                       })
                                   .catchError((e) => print(e.code));

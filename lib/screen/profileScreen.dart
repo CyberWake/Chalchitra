@@ -1,5 +1,8 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
@@ -76,6 +79,186 @@ class _ProfilePageState extends State<ProfilePage> {
     });
   }
 
+  @override
+  Widget build(BuildContext context) {
+    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
+    var size = MediaQuery.of(context).size;
+
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      extendBody: true,
+      body: Column(
+        children: [
+          Stack(
+            children: [
+              Column(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: 35),
+                    padding: EdgeInsets.symmetric(horizontal: 15),
+                    color: Colors.white,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        GestureDetector(
+                            onTap: () {
+                              Navigator.pop(context);
+                            },
+                            child: Icon(Icons.arrow_back_ios)),
+                        widget.uid == authNotifier.user.uid
+                            ? IconButton(
+                                onPressed: () => signOut(authNotifier),
+                                icon: Icon(
+                                  Icons.power_settings_new,
+                                  color: Colors.black,
+                                ),
+                              )
+                            : Text(''),
+                      ],
+                    ),
+                  ),
+                  getProfileTopView(context),
+                ],
+              ),
+             Container(
+               decoration: BoxDecoration(
+                 color: Colors.white,
+                 borderRadius: BorderRadius.only(
+                   topRight: Radius.circular(20),
+                   topLeft: Radius.circular(20),
+                 ),
+                 boxShadow: [
+                   BoxShadow(
+                     color: Colors.grey.withOpacity(0.1),
+                     offset: Offset(0.0, -10.0), //(x,y)
+                     blurRadius: 10.0,
+                   ),
+                 ],
+               ),
+               height: size.height * 0.4423,
+               width: size.width,
+               margin: EdgeInsets.only(
+                   top: size.height * 0.48
+               ),
+               padding: EdgeInsets.only(
+                 top: size.height * 0.1,
+                 left: size.width * 0.05,
+                 right: size.width * 0.05
+               ),
+               child: widget.uid == authNotifier.user.uid ? Column(
+                 crossAxisAlignment: CrossAxisAlignment.start,
+                 children: [
+                   Wrap(
+                     spacing: 1,
+                     runSpacing: 1,
+                     children: List.generate(_videos.length, (index) {
+                       print(_videos.length);
+                       final video = _videos[index];
+                       print(video);
+                       Image image = Image.network(video.thumbUrl);
+                       return GestureDetector(
+                         onTap: () {
+                           Navigator.push(
+                             context,
+                             MaterialPageRoute(
+                               builder: (context) {
+                                 return Player(
+                                   video: video,
+                                 );
+                               },
+                             ),
+                           );
+                         },
+                         child: Container(
+                           width: size.width * 0.2,
+                           height: size.height * 0.2,
+                           margin: EdgeInsets.all(5),
+                           decoration: BoxDecoration(
+                               color: Colors.red,
+                               image: DecorationImage(
+                                   image: NetworkImage(video.thumbUrl),
+                                   fit: BoxFit.cover
+                               ),
+                             borderRadius: BorderRadius.circular(10.5),
+                             boxShadow: [
+                               BoxShadow(
+                                 color: Colors.grey.withOpacity(0.2),
+                                 offset: Offset(0.0, 10.0), //(x,y)
+                                 blurRadius: 10.0,
+                               ),
+                             ],
+                           ),
+                         ),
+                       );
+                     }),
+                   ),
+                 ],
+               ) : Text(""),
+             ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: size.height * 0.27
+                    ),
+                    width: size.width * 0.9,
+                    child: Card(
+                      elevation: 20,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10)
+                        ),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 15,
+                            ),
+                            user != null ? Text(
+                              user.bio,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ) : Container(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            createButton(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                buildStatColumn(totalPost, "Photos"),
+                                getFollowers(),
+                                getFollowings()
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
+                        ),
+                      ) ,
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+
   // Getting Followers
 
   // getAllFollowers() async {
@@ -99,46 +282,46 @@ class _ProfilePageState extends State<ProfilePage> {
           if (!snapshot.hasData) {
             return new SingleChildScrollView(
                 child: Column(
-              children: [
-                Text(
-                  '0',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Hexcolor('#F23041')),
-                ),
-                Text(
-                  'Followers',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                  ),
-                ),
-              ],
-            ));
+                  children: [
+                    Text(
+                      '0',
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Hexcolor('#F23041')),
+                    ),
+                    Text(
+                      'Followers',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                  ],
+                ));
           }
 
           return new SingleChildScrollView(
               child: Column(
-            children: [
-              Text(
-                snapshot.data.documents.length.toString(),
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Hexcolor('#F23041')),
-              ),
-              Text(
-                'Followers',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ],
-          ));
+                children: [
+                  Text(
+                    snapshot.data.documents.length.toString(),
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Hexcolor('#F23041')),
+                  ),
+                  Text(
+                    'Followers',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                ],
+              ));
         });
   }
 
@@ -165,46 +348,46 @@ class _ProfilePageState extends State<ProfilePage> {
           if (!snapshot.hasData) {
             return new SingleChildScrollView(
                 child: Column(
-              children: [
-                Text(
-                  '0',
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Hexcolor('#F23041')),
-                ),
-                Text(
-                  'Following',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                  ),
-                ),
-              ],
-            ));
+                  children: [
+                    Text(
+                      '0',
+                      style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Hexcolor('#F23041')),
+                    ),
+                    Text(
+                      'Following',
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[400],
+                      ),
+                    ),
+                  ],
+                ));
           }
 
           return new SingleChildScrollView(
               child: Column(
-            children: [
-              Text(
-                snapshot.data.documents.length.toString(),
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Hexcolor('#F23041')),
-              ),
-              Text(
-                'Following',
-                style: TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[400],
-                ),
-              ),
-            ],
-          ));
+                children: [
+                  Text(
+                    snapshot.data.documents.length.toString(),
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.bold,
+                        color: Hexcolor('#F23041')),
+                  ),
+                  Text(
+                    'Following',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey[400],
+                    ),
+                  ),
+                ],
+              ));
         });
   }
 
@@ -212,8 +395,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   checkIfAlreadyFollowing() async {
     await FirebaseAuth.instance.currentUser().then((currentUser) => {
-          currentUserID = currentUser.uid,
-        });
+      currentUserID = currentUser.uid,
+    });
     DocumentReference querySnapshot = activityRef
         .document(widget.uid)
         .collection('activityItems')
@@ -223,9 +406,6 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() {
       following = snap.exists;
     });
-
-    // print('response form checkif $currentUserID.');
-    // print(snap.exists ? 'notexists' : following);
   }
 
   //cotrolFollowUsers managae follow users of the current users
@@ -279,8 +459,8 @@ class _ProfilePageState extends State<ProfilePage> {
         .document(currentUserID)
         .get()
         .then((document) => {
-              if (document.exists) {document.reference.delete()}
-            });
+      if (document.exists) {document.reference.delete()}
+    });
 
     followingRef
         .document(currentUserID)
@@ -288,8 +468,8 @@ class _ProfilePageState extends State<ProfilePage> {
         .document(widget.uid)
         .get()
         .then((document) => {
-              if (document.exists) {document.reference.delete()}
-            });
+      if (document.exists) {document.reference.delete()}
+    });
 
     activityRef
         .document(widget.uid)
@@ -297,8 +477,8 @@ class _ProfilePageState extends State<ProfilePage> {
         .document(currentUserID)
         .get()
         .then((document) => {
-              if (document.exists) {document.reference.delete()}
-            });
+      if (document.exists) {document.reference.delete()}
+    });
   }
 
   // Getting Current User ID
@@ -333,57 +513,69 @@ class _ProfilePageState extends State<ProfilePage> {
 
           _username = user.username;
 
-          return new Padding(
-            padding: EdgeInsets.all(17),
+          return Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.only(
+                bottomRight: Radius.circular(20),
+                bottomLeft: Radius.circular(20),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.08),
+                  offset: Offset(0.0, 20.0), //(x,y)
+                  blurRadius: 10.0,
+                ),
+              ],
+            ),
+            padding: EdgeInsets.all(20),
             child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Hero(
                   tag: widget.url,
-                  child: Container(
-                    margin: EdgeInsets.only(top: 5),
-                    height: 80,
-                    width: 80,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(40),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.2),
-                          spreadRadius: 5,
-                          blurRadius: 20,
-                        )
-                      ],
-                      image: DecorationImage(
-                        fit: BoxFit.cover,
-                        image: NetworkImage(
-                            user.photoUrl != null ? user.photoUrl : widget.url),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CircleAvatar(
+                        backgroundImage: NetworkImage(
+                            user.photoUrl != null ?
+                            user.photoUrl : widget.url
+                        ),
+                        radius: 40,
                       ),
-                    ),
+                      SizedBox(
+                        width: 20,
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            user.displayName != null ? user.displayName : "WowTalent",
+                            style: TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          SizedBox(height: 5,),
+                          Row(
+                            children: [
+                              Text(
+                                '$_username',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey[400],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ],
                   ),
                 ),
-                SizedBox(
-                  height: 10,
-                ),
-                Text(
-                  ' @$_username',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey[400],
-                  ),
-                ),
-                Text(
-                  user.displayName != null ? user.displayName : "WowTalent",
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  user.bio,
-                  style: TextStyle(
-                      fontWeight: FontWeight.w400,
-                      color: Colors.black,
-                      fontSize: 16),
-                ),
+                SizedBox(height: 50,)
               ],
             ),
           );
@@ -413,8 +605,8 @@ class _ProfilePageState extends State<ProfilePage> {
         context,
         MaterialPageRoute(
             builder: (_) => EditProfilePage(
-                  uid: currentUserID,
-                )));
+              uid: currentUserID,
+            )));
   }
 
   // Dynamic container to create title and performing function
@@ -422,144 +614,26 @@ class _ProfilePageState extends State<ProfilePage> {
   Container createButtonTitleORFunction({String title, Function function}) {
     return Container(
         padding: EdgeInsets.only(top: 5),
-        child: FlatButton(
+        child: RaisedButton(
+            color: Colors.redAccent.withOpacity(.88) ,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(
+                    Radius.circular(15)
+                )
+            ),
             onPressed: function,
             child: Container(
-              width: 245,
+              width: 150,
               height: 30,
               child: Text(title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: following ? Hexcolor('#F23041') : Colors.white,
-                      fontSize: 16)),
+                      fontSize: 16
+                  )
+              ),
               alignment: Alignment.center,
-              decoration: BoxDecoration(
-                  color: following ? Colors.white : Hexcolor('#F23041'),
-                  border: Border.all(color: Hexcolor('#F23041')),
-                  borderRadius: BorderRadius.circular(6.0)),
             )));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
-    var size = MediaQuery.of(context).size;
-
-    return Scaffold(
-      body: Column(
-        children: [
-          Container(
-            margin: EdgeInsets.only(top: 35),
-            padding: EdgeInsets.symmetric(horizontal: 15),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                GestureDetector(
-                    onTap: () {
-                      Navigator.pop(context);
-                    },
-                    child: Icon(Icons.arrow_back_ios)),
-                widget.uid == authNotifier.user.uid
-                    ? FlatButton.icon(
-                        onPressed: () => signOut(authNotifier),
-                        label: Text('LogOut'),
-                        icon: Icon(
-                          Icons.face,
-                          color: Colors.black,
-                        ),
-                      )
-                    : Text(''),
-              ],
-            ),
-          ),
-          getProfileTopView(context),
-          SizedBox(
-            height: 10,
-          ),
-          createButton(),
-          SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              buildStatColumn(totalPost, "Photos"),
-              getFollowers(),
-              getFollowings()
-            ],
-          ),
-          widget.uid == authNotifier.user.uid
-              ? Padding(
-                  padding: EdgeInsets.only(
-                    top: 15,
-                  ),
-                  child: Wrap(
-                    spacing: 1,
-                    runSpacing: 1,
-                    children: List.generate(_videos.length, (index) {
-                      print(_videos.length);
-                      final video = _videos[index];
-                      print(video);
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) {
-                                return Player(
-                                  video: video,
-                                );
-                              },
-                            ),
-                          );
-                        },
-                        child: Container(
-                          width: (size.width - 3) / 3,
-                          height: (size.width - 3) / 3,
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                                  image: NetworkImage(video.thumbUrl),
-                                  fit: BoxFit.cover)),
-                        ),
-                      );
-                    }),
-                  ),
-                )
-              : Text("")
-          // Expanded(
-          //   child: Container(
-          //     margin: EdgeInsets.only(left: 8, right: 8, top: 8),
-          //     decoration: BoxDecoration(
-          //         color: Colors.grey.withOpacity(0.15),
-          //         borderRadius:
-          //             BorderRadius.vertical(top: Radius.circular(25))),
-          //     // child: GridView.count(
-          //     //   padding: EdgeInsets.symmetric(horizontal: 5, vertical: 8),
-          //     //   crossAxisCount: 2,
-          //     //   crossAxisSpacing: 5,
-          //     //   mainAxisSpacing: 5,
-          //     //   childAspectRatio: 5 / 6,
-          //     //   children: [
-          //     //     buildPictureCard(),
-          //     //     // buildPictureCard(
-          //     //     //     "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-          //     //     // buildPictureCard(
-          //     //     //     "https://images.pexels.com/photos/132037/pexels-photo-132037.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-          //     //     // buildPictureCard(
-          //     //     //     "https://images.pexels.com/photos/733475/pexels-photo-733475.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-          //     //     // buildPictureCard(
-          //     //     //     "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-          //     //     // buildPictureCard(
-          //     //     //     "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-          //     //     // buildPictureCard(
-          //     //     //     "https://images.pexels.com/photos/268533/pexels-photo-268533.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260"),
-          //     //   ],
-          //     // ),
-          //   ),
-          // )
-        ],
-      ),
-    );
   }
 
   SingleChildScrollView buildPictureCard() {

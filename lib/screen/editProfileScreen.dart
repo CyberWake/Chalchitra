@@ -31,6 +31,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   User user;
   bool _usernameValid = true;
   bool _nameValid = true;
+  Size _size;
 
   // Calling Cloud Firestore collection
 
@@ -43,6 +44,100 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     displayUserInformation();
   }
+
+  // Main code
+
+  @override
+  Widget build(BuildContext context) {
+    _size = MediaQuery.of(context).size;
+    return Scaffold(
+      extendBodyBehindAppBar: true,
+      key: _scaffoldGlobalKey,
+      body: Container(
+        color: Colors.cyan,
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(
+                top: _size.height * 0.2
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topRight: Radius.circular(20),
+                  topLeft: Radius.circular(20),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    offset: Offset(0.0, -10.0), //(x,y)
+                    blurRadius: 10.0,
+                  ),
+                ],
+              ),
+              child: loading
+                  ? LinearProgressIndicator()
+                  : ListView(children: <Widget>[
+                      Padding(
+                        padding: EdgeInsets.all(20),
+                        child: Container(
+                            child: Column(
+                          children: <Widget>[
+                            FlatButton(
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                                child: Text(
+                                  "Change Photo",
+                                  style: const TextStyle(
+                                      color: Colors.blue,
+                                      fontSize: 20.0,
+                                      fontWeight: FontWeight.bold),
+                                )),
+                            Padding(
+                              padding: EdgeInsets.only(top: 16),
+                              child: Column(children: <Widget>[
+                                createUsernameField(),
+                                createProfileNameField(),
+                                createBioField(),
+                                createAgeField(),
+                                createGenderField()
+                                // createGenderField()
+                              ]),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.only(top: 30, left: 50, right: 50),
+                              child: RaisedButton(
+                                  child: Text(
+                                    'Update',
+                                    style:
+                                        TextStyle(color: Colors.black45, fontSize: 16),
+                                  ),
+                                  onPressed: updateUserProfile),
+                            )
+                          ],
+                        )),
+                      )
+                    ]),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                top: _size.height * 0.15,
+                left: _size.width * 0.5 - 50,
+              ),
+              child: CircleAvatar(
+                backgroundImage:
+                NetworkImage("https://via.placeholder.com/150"),
+                radius: 50.0,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+
 
   displayUserInformation() async {
     setState(() {
@@ -69,7 +164,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     setState(() {
       usernameController.text.trim().length < 3 ||
-              usernameController.text.isEmpty
+          usernameController.text.isEmpty
           ? _usernameValid = false
           : _usernameValid = true;
 
@@ -247,85 +342,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
               hintStyle: TextStyle(color: Colors.grey)),
         )
       ],
-    );
-  }
-
-  // Main code
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      key: _scaffoldGlobalKey,
-      appBar: AppBar(
-        backgroundColor: Colors.white70,
-        iconTheme: IconThemeData(color: Colors.black),
-        title: Text(
-          'Edit Profile',
-          style: TextStyle(color: Colors.black),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: Icon(
-              Icons.done,
-              color: Colors.black,
-              size: 25,
-            ),
-            onPressed: () => Navigator.pop(context),
-          )
-        ],
-      ),
-      body: loading
-          ? LinearProgressIndicator()
-          : ListView(children: <Widget>[
-              Padding(
-                padding: EdgeInsets.all(20),
-                child: Container(
-                    child: Column(
-                  children: <Widget>[
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16.0, bottom: 8.0),
-                      child: CircleAvatar(
-                        backgroundImage:
-                            NetworkImage("https://via.placeholder.com/150"),
-                        radius: 50.0,
-                      ),
-                    ),
-                    FlatButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          "Change Photo",
-                          style: const TextStyle(
-                              color: Colors.blue,
-                              fontSize: 20.0,
-                              fontWeight: FontWeight.bold),
-                        )),
-                    Padding(
-                      padding: EdgeInsets.only(top: 16),
-                      child: Column(children: <Widget>[
-                        createUsernameField(),
-                        createProfileNameField(),
-                        createBioField(),
-                        createAgeField(),
-                        createGenderField()
-                        // createGenderField()
-                      ]),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 30, left: 50, right: 50),
-                      child: RaisedButton(
-                          child: Text(
-                            'Update',
-                            style:
-                                TextStyle(color: Colors.black45, fontSize: 16),
-                          ),
-                          onPressed: updateUserProfile),
-                    )
-                  ],
-                )),
-              )
-            ]),
     );
   }
 }
