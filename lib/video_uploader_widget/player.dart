@@ -29,48 +29,48 @@ class _PlayerState extends State<Player> {
           _error == null
               ? NetworkPlayerLifeCycle(widget.video.videoUrl,
                   (BuildContext context, VideoPlayerController controller) {
-                  return Column(children: [
-                    SizedBox(
-                      height: 60.0,
-                    ),
-                    AspectRatioVideo(controller),
-                    Padding(
-                      padding:
-                          const EdgeInsets.only(left: 15, right: 15, top: 3),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Row(
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        AspectRatioVideo(controller),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              left: 15, right: 15, top: 3),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: <Widget>[
-                              SvgPicture.asset(
-                                "assets/images/loved_icon.svg",
-                                width: 27,
+                              Row(
+                                children: <Widget>[
+                                  SvgPicture.asset(
+                                    "assets/images/loved_icon.svg",
+                                    width: 27,
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/images/comment_icon.svg",
+                                    width: 27,
+                                  ),
+                                  SizedBox(
+                                    width: 20,
+                                  ),
+                                  SvgPicture.asset(
+                                    "assets/images/share_icon.svg",
+                                    width: 27,
+                                  ),
+                                ],
                               ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              SvgPicture.asset(
-                                "assets/images/comment_icon.svg",
-                                width: 27,
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              SvgPicture.asset(
-                                "assets/images/share_icon.svg",
-                                width: 27,
-                              ),
+                              RatingSlider()
+                              // SvgPicture.asset(
+                              //   "assets/images/save_icon.svg",
+                              //   width: 27,
+                              // ),
                             ],
                           ),
-                          RatingSlider()
-                          // SvgPicture.asset(
-                          //   "assets/images/save_icon.svg",
-                          //   width: 27,
-                          // ),
-                        ],
-                      ),
-                    ),
-                  ]);
+                        ),
+                      ]);
                 })
               : Center(
                   child: Text(_error),
