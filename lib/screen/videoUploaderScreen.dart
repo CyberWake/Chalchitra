@@ -37,8 +37,8 @@ class VideoUploader extends StatefulWidget {
 }
 
 class _VideoUploaderState extends State<VideoUploader> {
-  final thumbWidth = 100;
-  final thumbHeight = 150;
+  // final thumbWidth = 100;
+  // final thumbHeight = 150;
   List<VideoInfo> _videos = <VideoInfo>[];
   bool _imagePickerActive = false;
   bool _processing = false;
@@ -181,6 +181,11 @@ class _VideoUploaderState extends State<VideoUploader> {
     File(rawVideoPath).copySync(copyPath);
     final info = await EncodingProvider.getMediaInformation(rawVideoPath);
     final aspectRatio = EncodingProvider.getAspectRatio(info);
+    print("printing Information ==================================>");
+    print(info['streams'][0]['width']);
+    print(info['streams'][0]['height']);
+    final thumbWidth = info['streams'][0]['width'];
+    final thumbHeight = info['streams'][0]['height'];
 
     setState(() {
       _processPhase = 'Generating thumbnail';
