@@ -1,21 +1,15 @@
-import 'dart:async';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
-import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/notifier/auth_notifier.dart';
+import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/screen/editProfileScreen.dart';
-import 'package:wowtalent/model/user.dart';
-
+import '../auth/auth_api.dart';
+import '../database/firebase_provider.dart';
+import '../model/user.dart';
 import '../model/video_info.dart';
 import '../video_uploader_widget/player.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:transparent_image/transparent_image.dart';
-import '../database/firebase_provider.dart';
 
 class ProfilePage extends StatefulWidget {
   final String url =
@@ -30,10 +24,10 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // Fetching user atteributes from the user model
+  // Fetching user attributes from the user model
 
-  User user;
-
+  UserDataModel user;
+  UserInfoStore _userInfoStore = UserInfoStore();
   // Attributes
 
   bool loading = false;
@@ -45,18 +39,6 @@ class _ProfilePageState extends State<ProfilePage> {
   bool following = false;
   String currentUserImgUrl;
   String currentUserName;
-
-  //Collection for followers
-
-  final followerRef = Firestore.instance.collection('followers');
-
-  //Collection for following
-
-  final followingRef = Firestore.instance.collection('following');
-
-  //collection for ActivityFeed
-
-  final activityRef = Firestore.instance.collection('activity feed');
 
   //user video posts parameters
   final thumbWidth = 100;
@@ -72,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
     // getAllFollowers();
     // getAllFollowing();
     checkIfAlreadyFollowing();
-    FirebaseProvider.listenToVideos((newVideos) {
+    UserVideoStore.listenToVideos((newVideos) {
       setState(() {
         _videos = newVideos;
       });
@@ -81,7 +63,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
-    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
     var size = MediaQuery.of(context).size;
 
     return Scaffold(
@@ -105,9 +86,11 @@ class _ProfilePageState extends State<ProfilePage> {
                               Navigator.pop(context);
                             },
                             child: Icon(Icons.arrow_back_ios)),
-                        widget.uid == authNotifier.user.uid
+                        widget.uid == Provider.of<User>(context).uid
                             ? IconButton(
-                                onPressed: () => signOut(authNotifier),
+                                onPressed: () async{
+                                  await UserAuth().signOut();
+                                },
                                 icon: Icon(
                                   Icons.power_settings_new,
                                   color: Colors.black,
@@ -145,7 +128,7 @@ class _ProfilePageState extends State<ProfilePage> {
                  left: size.width * 0.05,
                  right: size.width * 0.05
                ),
-               child: widget.uid == authNotifier.user.uid ? Column(
+               child: widget.uid == Provider.of<User>(context).uid ? Column(
                  crossAxisAlignment: CrossAxisAlignment.start,
                  children: [
                    Wrap(
@@ -259,25 +242,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
 
-  // Getting Followers
-
-  // getAllFollowers() async {
-  //   QuerySnapshot querySnapshot = await followerRef
-  //       .document(widget.uid)
-  //       .collection('userFollowers')
-  //       .getDocuments();
-
-  //   setState(() {
-  //     totalFollowers = querySnapshot.documents.length;
-  //   });
-  // }
-
   getFollowers() {
     return new StreamBuilder(
-        stream: followerRef
-            .document(widget.uid)
-            .collection('userFollowers')
-            .snapshots(),
+        stream: _userInfoStore.getFollowers(
+          uid: widget.uid
+        ),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return new SingleChildScrollView(
@@ -325,25 +294,12 @@ class _ProfilePageState extends State<ProfilePage> {
         });
   }
 
-  // Getting Following Users
-
-  // getAllFollowing() async {
-  //   QuerySnapshot querySnapshot = await followingRef
-  //       .document(widget.uid)
-  //       .collection('userFollowing')
-  //       .getDocuments();
-
-  //   setState(() {
-  //     totalFollowings = querySnapshot.documents.length;
-  //   });
-  // }
 
   getFollowings() {
     return new StreamBuilder(
-        stream: followingRef
-            .document(widget.uid)
-            .collection('userFollowing')
-            .snapshots(),
+        stream: _userInfoStore.getFollowing(
+          uid: widget.uid
+        ),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return new SingleChildScrollView(
@@ -394,122 +350,62 @@ class _ProfilePageState extends State<ProfilePage> {
   // Checking if already following
 
   checkIfAlreadyFollowing() async {
-    await FirebaseAuth.instance.currentUser().then((currentUser) => {
-      currentUserID = currentUser.uid,
-    });
-    DocumentReference querySnapshot = activityRef
-        .document(widget.uid)
-        .collection('activityItems')
-        .document(currentUserID);
-
-    DocumentSnapshot snap = await querySnapshot.get();
+    bool result = await _userInfoStore.checkIfAlreadyFollowing(
+      uid: widget.uid
+    );
     setState(() {
-      following = snap.exists;
+      following = result;
     });
   }
 
-  //cotrolFollowUsers managae follow users of the current users
-
-  controlFollowUsers() {
+  controlFollowUsers() async{
     setState(() {
       following = true;
     });
 
-    followerRef
-        .document(widget.uid)
-        .collection('userFollowers')
-        .document(currentUserID)
-        .setData({
-      "userID": currentUserID,
-      "displayName": currentUserName,
-      "ownerID": widget.uid,
-      "timestamp": DateTime.now()
-    });
+    await _userInfoStore.followUser(
+      uid: widget.uid
+    );
 
-    followingRef
-        .document(currentUserID)
-        .collection('userFollowing')
-        .document(widget.uid)
-        .setData({});
-
-    activityRef
-        .document(widget.uid)
-        .collection("activityItems")
-        .document(currentUserID)
-        .setData({
-      "type": "follow",
-      "ownerID": widget.uid,
-      "displayName": currentUserName,
-      "timestamp": DateTime.now(),
-      "userProfileImg": currentUserImgUrl,
-      "userID": currentUserID
-    });
   }
 
   // Controlling unfollow users
 
-  controlUnfollowUsers() {
+  controlUnfollowUsers() async{
     setState(() {
       following = false;
     });
-
-    followerRef
-        .document(widget.uid)
-        .collection("userFollowers")
-        .document(currentUserID)
-        .get()
-        .then((document) => {
-      if (document.exists) {document.reference.delete()}
-    });
-
-    followingRef
-        .document(currentUserID)
-        .collection("userFollowing")
-        .document(widget.uid)
-        .get()
-        .then((document) => {
-      if (document.exists) {document.reference.delete()}
-    });
-
-    activityRef
-        .document(widget.uid)
-        .collection('activityItems')
-        .document(currentUserID)
-        .get()
-        .then((document) => {
-      if (document.exists) {document.reference.delete()}
-    });
+    await _userInfoStore.unFollowUser(
+        uid: widget.uid
+    );
   }
 
   // Getting Current User ID
 
-  getCurrentUserID() async {
-    final FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
+  getCurrentUserID() {
+    final User firebaseUser = UserAuth().user;
     String uid = firebaseUser.uid;
-    String url = firebaseUser.photoUrl;
+    String url = firebaseUser.photoURL;
     String displayName = firebaseUser.displayName;
     setState(() {
       currentUserID = uid;
       currentUserImgUrl = url;
       currentUserName = displayName;
     });
-
-    print('User ID : $currentUserID');
   }
 
-  // Getting top view of profile like displayName, username, bio , folllowers and following
+  // Getting top view of profile like displayName, username, bio , followers and following
 
   getProfileTopView(BuildContext context) {
     return new StreamBuilder(
-        stream: Firestore.instance
-            .collection('WowUsers')
-            .document(widget.uid)
-            .snapshots(),
+        stream: _userInfoStore.getUserInfo(
+          uid: widget.uid
+        ),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return new Text("Loading");
           }
-          user = User.fromDocument(snapshot.data);
+          user = UserDataModel.fromDocument(snapshot.data);
 
           _username = user.username;
 

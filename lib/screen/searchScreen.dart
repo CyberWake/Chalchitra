@@ -1,15 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:wowtalent/theme/colors.dart';
 import 'package:wowtalent/data/search_json.dart';
+import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/widgets/search_category_widget.dart';
 import './userSearchScreen.dart';
-
 import '../model/video_info.dart';
 import '../video_uploader_widget/player.dart';
-import 'package:timeago/timeago.dart' as timeago;
-import 'package:transparent_image/transparent_image.dart';
-import '../database/firebase_provider.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -24,7 +20,7 @@ class _SearchPageState extends State<SearchPage> {
   List<VideoInfo> _videos = <VideoInfo>[];
 
   void initState() {
-    FirebaseProvider.listenToAllVideos((newVideos) {
+    UserVideoStore.listenToAllVideos((newVideos) {
       setState(() {
         _videos = newVideos;
       });

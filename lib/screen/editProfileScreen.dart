@@ -29,7 +29,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Some Attributes for text field
 
   bool loading = false;
-  User user;
+  UserDataModel user;
   bool _usernameValid = true;
   bool _nameValid = true;
   Size _size;
@@ -218,7 +218,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
 
     DocumentSnapshot documentSnapshot = await ref.document(widget.uid).get();
-    user = User.fromDocument(documentSnapshot);
+    user = UserDataModel.fromDocument(documentSnapshot);
 
     usernameController.text = user.username;
     nameController.text = user.displayName;
