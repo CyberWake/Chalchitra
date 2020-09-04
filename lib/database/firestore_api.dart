@@ -4,7 +4,7 @@ import 'package:wowtalent/notifier/auth_notifier.dart';
 
 //  Required attributes
 
-User currentuserModel;
+UserDataModel currentuserModel;
 
 AuthNotifier authNotifier;
 
@@ -34,6 +34,6 @@ Future<void> createUserRecord() async {
       userRecord = await ref.document(authNotifier.user.uid).get();
     }
 
-    currentuserModel = User.fromDocument(userRecord);
+    currentuserModel = UserDataModel.fromDocument(userRecord);
   }
 }
