@@ -1,71 +1,95 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../auth/auth_api.dart';
 import '../model/video_info.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-class FirebaseProvider {
+class UserVideoStore {
+  static final CollectionReference _feedVideos =
+  FirebaseFirestore.instance.collection('feedVideos');
+
+  static final CollectionReference _allVideos =
+  FirebaseFirestore.instance.collection('videos');
+
+  static final UserAuth _userAuth = UserAuth();
+
+
   static saveVideo(VideoInfo video) async {
-    final FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
-    String uid = firebaseUser.uid;
-    await Firestore.instance
-        .collection('feedVideos')
-        .document(uid)
-        .collection('videos')
-        .document()
-        .setData({
-      'videoUrl': video.videoUrl,
-      'thumbUrl': video.thumbUrl,
-      'coverUrl': video.coverUrl,
-      'aspectRatio': video.aspectRatio,
-      'uploadedAt': video.uploadedAt,
-      'videoName': video.videoName,
-    });
+    try{
+      // Get Current User
+      String uid = _userAuth.user.uid;
 
-    await Firestore.instance.collection('videos').document().setData({
-      'videoUrl': video.videoUrl,
-      'thumbUrl': video.thumbUrl,
-      'coverUrl': video.coverUrl,
-      'aspectRatio': video.aspectRatio,
-      'uploadedAt': video.uploadedAt,
-      'videoName': video.videoName,
-    });
+      // Map of video data to be added ot firestore
+      Map<String, dynamic> videoData = {
+        'videoUrl': video.videoUrl,
+        'thumbUrl': video.thumbUrl,
+        'coverUrl': video.coverUrl,
+        'aspectRatio': video.aspectRatio,
+        'uploadedAt': video.uploadedAt,
+        'videoName': video.videoName,
+      };
+
+
+      await _feedVideos
+          .doc(uid)
+          .collection('videos')
+          .doc()
+          .set(videoData);
+
+      await _allVideos
+          .doc()
+          .set(videoData);
+
+    }catch(e){
+      print(e.toString());
+    }
   }
 
   static listenToVideos(callback) async {
-    final FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
-    String uid = firebaseUser.uid;
-    Firestore.instance
-        .collection('feedVideos')
-        .document(uid)
-        .collection('videos')
-        .snapshots()
-        .listen((qs) {
-      final videos = mapQueryToVideoInfo(qs);
-      callback(videos);
-    });
-
+    try{
+      String uid = _userAuth.user.uid;
+      _feedVideos
+          .doc(uid)
+          .collection('videos')
+          .snapshots()
+          .listen((qs) {
+        final videos = mapQueryToVideoInfo(qs);
+        callback(videos);
+      });
+      return true;
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
   }
 
   static listenToAllVideos(callback) async{
-    Firestore.instance
-        .collection('videos')
-        .snapshots()
-        .listen((qs) {
-      final videos = mapQueryToVideoInfo(qs);
-      callback(videos);
-      print(videos);
+    try{
+      _allVideos
+          .snapshots()
+          .listen((qs) {
+        final videos = mapQueryToVideoInfo(qs);
+        callback(videos);
       });
+      return true;
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
   }
 
   static mapQueryToVideoInfo(QuerySnapshot qs) {
-    return qs.documents.map((DocumentSnapshot ds) {
-      return VideoInfo(
-        videoUrl: ds.data['videoUrl'],
-        thumbUrl: ds.data['thumbUrl'],
-        coverUrl: ds.data['coverUrl'],
-        aspectRatio: ds.data['aspectRatio'],
-        videoName: ds.data['videoName'],
-        uploadedAt: ds.data['uploadedAt'],
-      );
-    }).toList();
+    try{
+      return qs.docs.map((DocumentSnapshot ds) {
+        return VideoInfo(
+          videoUrl: ds.data()['videoUrl'],
+          thumbUrl: ds.data()['thumbUrl'],
+          coverUrl: ds.data()['coverUrl'],
+          aspectRatio: ds.data()['aspectRatio'],
+          videoName: ds.data()['videoName'],
+          uploadedAt: ds.data()['uploadedAt'],
+        );
+      }).toList();
+    }catch(e){
+      print(e.toString());
+    }
   }
 }

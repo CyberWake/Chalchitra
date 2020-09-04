@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:provider/provider.dart';
-import 'package:wowtalent/notifier/auth_notifier.dart';
-import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/auth/auth_api.dart';
+import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/shared/loader.dart';
 
-enum AuthMode { Signup, Login }
+enum AuthMode { SignUp, Login }
 
 class Login extends StatefulWidget {
   @override
@@ -23,15 +20,13 @@ class _LoginState extends State<Login> {
 
   bool loading = false;
 
-  User _user = User();
+  UserDataModel _user = UserDataModel();
   // String _message = 'Log in/out by pressing the buttons below.';
   static final FacebookLogin fbLogin = new FacebookLogin();
+  UserAuth _userAuth = UserAuth();
 
   @override
   void initState() {
-    AuthNotifier authNotifier =
-        Provider.of<AuthNotifier>(context, listen: false);
-    initializeCurrentUser(authNotifier);
     super.initState();
   }
 
@@ -42,14 +37,17 @@ class _LoginState extends State<Login> {
 
     _formKey.currentState.save();
 
-    AuthNotifier authNotifier =
-        Provider.of<AuthNotifier>(context, listen: false);
-
     if (_authMode == AuthMode.Login) {
-      logIn(_user, authNotifier);
+      _userAuth.signInWithEmailAndPassword(
+        email: _user.email,
+        password: _user.password,
+      );
       setState(() => loading = true);
     } else {
-      signUp(_user, authNotifier);
+      _userAuth.registerUserWithEmail(
+        email: _user.email,
+        password: _user.password,
+      );
       setState(() => loading = true);
     }
   }
@@ -180,12 +178,12 @@ class _LoginState extends State<Login> {
                           style: TextStyle(fontSize: 36, color: Colors.white),
                         ),
                         SizedBox(height: 32),
-                        _authMode == AuthMode.Signup
+                        _authMode == AuthMode.SignUp
                             ? _buildDisplayNameField()
                             : Container(),
                         _buildEmailField(),
                         _buildPasswordField(),
-                        _authMode == AuthMode.Signup
+                        _authMode == AuthMode.SignUp
                             ? _buildConfirmPasswordField()
                             : Container(),
                         SizedBox(height: 32),
@@ -201,7 +199,7 @@ class _LoginState extends State<Login> {
                             onPressed: () {
                               setState(() {
                                 _authMode = _authMode == AuthMode.Login
-                                    ? AuthMode.Signup
+                                    ? AuthMode.SignUp
                                     : AuthMode.Login;
                               });
                             },
@@ -228,14 +226,7 @@ class _LoginState extends State<Login> {
                           child: RaisedButton(
                             onPressed: () async {
                               setState(() => loading = true);
-                              AuthNotifier authNotifier =
-                                  Provider.of<AuthNotifier>(context,
-                                      listen: false);
-                              await googlesignIn(authNotifier, _user)
-                                  .then((FirebaseUser user) => {
-                                        print(user),
-                                      })
-                                  .catchError((e) => print(e.code));
+
                             },
                             padding: EdgeInsets.all(10.0),
                             child: Text(
@@ -251,29 +242,7 @@ class _LoginState extends State<Login> {
                         ButtonTheme(
                           minWidth: 300,
                           child: RaisedButton(
-                            onPressed: () async {
-                              setState(() => loading = true);
-                              AuthNotifier authNotifier =
-                                  Provider.of<AuthNotifier>(context,
-                                      listen: false);
-                              final FacebookLoginResult result = await fbLogin
-                                  .logIn(['email', 'public_profile']);
-
-                              switch (result.status) {
-                                case FacebookLoginStatus.loggedIn:
-                                  final firebaseUser = await facebookSignIn(
-                                      result.accessToken, authNotifier, _user);
-                                  print("Logged In $firebaseUser");
-                                  break;
-                                case FacebookLoginStatus.cancelledByUser:
-                                  print("Login cancelled by user");
-                                  break;
-                                case FacebookLoginStatus.error:
-                                  print(
-                                      "Something went wrong ${result.errorMessage}");
-                                  break;
-                              }
-                            },
+                            onPressed: (){},
                             padding: EdgeInsets.all(10.0),
                             child: Text(
                               "Login With Facebook",

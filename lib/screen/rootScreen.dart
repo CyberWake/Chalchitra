@@ -1,12 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
-import 'package:wowtalent/notifier/auth_notifier.dart';
 import 'package:wowtalent/screen/homescreen.dart';
 import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
 import 'package:wowtalent/screen/searchScreen.dart';
-import 'package:wowtalent/screen/userSearchScreen.dart';
 import 'package:wowtalent/screen/videoUploaderScreen.dart';
 import 'package:wowtalent/theme/colors.dart';
 import 'dart:math';
@@ -53,8 +51,6 @@ class _RootAppState extends State<RootApp> {
               spreadRadius: 1,
             )
           ],
-          // color: Colors.grey.withOpacity(0.2),
-          //borderRadius: BorderRadius.circular(15)
         ),
         child: Row(
           children: [
@@ -73,7 +69,6 @@ class _RootAppState extends State<RootApp> {
   }
 
   Widget getBody(BuildContext context) {
-    AuthNotifier authNotifier = Provider.of<AuthNotifier>(context);
     List<Widget> pages = [
       HomePage(),
       SearchPage(),
@@ -81,7 +76,7 @@ class _RootAppState extends State<RootApp> {
       VideoUploader(),
       Message(),
       ProfilePage(
-        uid: authNotifier.user.uid,
+        uid: Provider.of<User>(context).uid,
       )
     ];
     return IndexedStack(
@@ -97,10 +92,6 @@ class _RootAppState extends State<RootApp> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            // SvgPicture.asset(
-            //   "assets/images/camera_icon.svg",
-            //   width: 30,
-            // ),
             Text(
               "WowTalent",
               textAlign: TextAlign.center,
@@ -109,10 +100,6 @@ class _RootAppState extends State<RootApp> {
                 color: Colors.black,
               ),
             ),
-            // SvgPicture.asset(
-            //   "assets/images/message_icon.svg",
-            //   width: 30,
-            // ),
           ],
         ),
       );
@@ -134,24 +121,6 @@ class _RootAppState extends State<RootApp> {
   }
 
   Widget getFooter(IconData icon, int index) {
-    // List bottomItems = [
-    //   pageIndex == 0
-    //       ? "assets/images/home_active_icon.svg"
-    //       : "assets/images/home_icon.svg",
-    //   pageIndex == 1
-    //       ? "assets/images/search_active_icon.svg"
-    //       : "assets/images/search_icon.svg",
-    //   pageIndex == 2
-    //       ? "assets/images/upload_active_icon.svg"
-    //       : "assets/images/upload_icon.svg",
-    //   pageIndex == 3
-    //       ? "assets/images/love_active_icon.svg"
-    //       : "assets/images/love_icon.svg",
-    //   pageIndex == 4
-    //       ? "assets/images/account_active_icon.svg"
-    //       : "assets/images/account_icon.svg",
-    // ];
-
     return GestureDetector(
       onTap: () {
         selectedTab(index);
@@ -168,29 +137,6 @@ class _RootAppState extends State<RootApp> {
             : Container(),
       ),
     );
-
-    // return Container(
-    //   width: double.infinity,
-    //   height: 80,
-    //   decoration: BoxDecoration(color: appFooterColor),
-    //   child: Padding(
-    //     padding:
-    //         const EdgeInsets.only(left: 20, right: 20, bottom: 20, top: 15),
-    //     child: Row(
-    //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-    //       children: List.generate(bottomItems.length, (index) {
-    //         return InkWell(
-    //             onTap: () {
-    //               selectedTab(index);
-    //             },
-    //             child: SvgPicture.asset(
-    //               bottomItems[index],
-    //               width: 27,
-    //             ));
-    //       }),
-    //     ),
-    //   ),
-    // );
   }
 
   selectedTab(index) {

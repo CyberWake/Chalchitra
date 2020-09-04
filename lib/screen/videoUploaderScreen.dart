@@ -6,26 +6,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:transparent_image/transparent_image.dart';
+import 'package:wowtalent/auth/auth_api.dart';
+import 'package:wowtalent/database/firebase_provider.dart';
 import '../video_uploader_widget/encoding_provider.dart';
-import '../database/firebase_provider.dart';
 import 'package:path/path.dart' as p;
 import '../model/video_info.dart';
-import '../video_uploader_widget/player.dart';
-import 'package:timeago/timeago.dart' as timeago;
-
-// class MyApp extends StatelessWidget {
-//   @override
-//   Widget build(BuildContext context) {
-//     return MaterialApp(
-//       title: 'Flutter Video Sharing',
-//       theme: ThemeData(
-//         primarySwatch: Colors.blue,
-//       ),
-//       home: VideoUploader(title: 'Flutter Video Sharing'),
-//     );
-//   }
-// }
 
 class VideoUploader extends StatefulWidget {
   VideoUploader({Key key, this.title}) : super(key: key);
@@ -37,8 +22,6 @@ class VideoUploader extends StatefulWidget {
 }
 
 class _VideoUploaderState extends State<VideoUploader> {
-  final thumbWidth = 100;
-  final thumbHeight = 150;
   List<VideoInfo> _videos = <VideoInfo>[];
   bool _imagePickerActive = false;
   bool _processing = false;
@@ -50,7 +33,7 @@ class _VideoUploaderState extends State<VideoUploader> {
 
   @override
   void initState() {
-    FirebaseProvider.listenToVideos((newVideos) {
+    UserVideoStore.listenToVideos((newVideos) {
       setState(() {
         _videos = newVideos;
       });
@@ -84,7 +67,7 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   Future<String> _uploadFile(filePath, folderName) async {
-    final FirebaseUser firebaseUser = await FirebaseAuth.instance.currentUser();
+    final User firebaseUser = UserAuth().user;
     String uid = firebaseUser.uid;
 
     final file = new File(filePath);
@@ -149,6 +132,25 @@ class _VideoUploaderState extends State<VideoUploader> {
     return playlistUrl;
   }
 
+  createAlertDialogue(BuildContext context) {
+    return showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Warning"),
+            content: Text("Your video exceed limits, Please re-upload!!!"),
+            actions: [
+              FlatButton(
+                child: Text("Ok"),
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+              )
+            ],
+          );
+        });
+  }
+
   Future<void> _processVideo(File rawVideoFile) async {
     final String rand = '${new Random().nextInt(10000)}';
     final videoName = 'video$rand';
@@ -162,12 +164,25 @@ class _VideoUploaderState extends State<VideoUploader> {
     File(rawVideoPath).copySync(copyPath);
     final info = await EncodingProvider.getMediaInformation(rawVideoPath);
     final aspectRatio = EncodingProvider.getAspectRatio(info);
+    print("printing Information ==================================>");
+    print(info['streams'][0]['width']);
+    print(info['streams'][0]['height']);
+    final thumbWidth = info['streams'][0]['width'];
+    final thumbHeight = info['streams'][0]['height'];
 
     setState(() {
       _processPhase = 'Generating thumbnail';
       _videoDuration = EncodingProvider.getDuration(info);
+      print(_videoDuration);
       _progress = 0.0;
     });
+
+    if (_videoDuration <= 30000 || _videoDuration >= 360000) {
+      createAlertDialogue(context);
+
+      print("video duration exceed");
+      return null;
+    }
 
     final thumbFilePath = await EncodingProvider.getThumb(
         copyPath, outDirPath, thumbWidth, thumbHeight);
@@ -201,7 +216,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       _progress = 0.0;
     });
 
-    await FirebaseProvider.saveVideo(videoInfo);
+    await UserVideoStore.saveVideo(videoInfo);
 
     setState(() {
       _processPhase = '';
@@ -212,19 +227,16 @@ class _VideoUploaderState extends State<VideoUploader> {
 
   void _takeVideo(context, source) async {
     var videoFile;
-    if (_debugMode) {
-      videoFile = File(
-          '/storage/emulated/0/Android/data/com.learningsomethingnew.fluttervideo.flutter_video_sharing/files/Pictures/ebbafabc-dcbe-433b-93dd-80e7777ee4704451355941378265171.mp4');
-    } else {
-      if (_imagePickerActive) return;
+    if (_imagePickerActive) return;
 
-      _imagePickerActive = true;
-      videoFile = await ImagePicker.pickVideo(source: source);
-      _imagePickerActive = false;
-      Navigator.pop(context);
+    _imagePickerActive = true;
+    videoFile = await ImagePicker.pickVideo(
+        source: source, maxDuration: const Duration(seconds: 300));
+    _imagePickerActive = false;
+    Navigator.pop(context);
 
-      if (videoFile == null) return;
-    }
+    if (videoFile == null) return;
+    //}
     setState(() {
       _processing = true;
     });
@@ -260,7 +272,6 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   void _openVideoPicker(BuildContext context) {
-    print("Open Video Picker function calling");
     showModalBottomSheet(
         context: context,
         builder: (BuildContext context) {

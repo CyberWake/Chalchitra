@@ -26,13 +26,13 @@ class _SearchUserState extends State<SearchUser> {
 
   List<VideoInfo> _videos = <VideoInfo>[];
 
-  TextEditingController searchtextEditingController = TextEditingController();
+  TextEditingController searchTextEditingController = TextEditingController();
   Future<QuerySnapshot> futureSearchResult;
-  final ref = Firestore.instance.collection('WowUsers');
-  User user;
+  final ref = FirebaseFirestore.instance.collection('WowUsers');
+  UserDataModel user;
 
   void initState() {
-    FirebaseProvider.listenToAllVideos((newVideos) {
+    UserVideoStore.listenToAllVideos((newVideos) {
       setState(() {
         _videos = newVideos;
       });
@@ -40,13 +40,13 @@ class _SearchUserState extends State<SearchUser> {
   }
 
   clearText() {
-    searchtextEditingController.clear();
+    searchTextEditingController.clear();
   }
 
   submitSearch(String userstr) {
     Future<QuerySnapshot> allUsers = ref
         .where("displayName", isGreaterThanOrEqualTo: userstr)
-        .getDocuments();
+        .get();
 
     setState(() {
       futureSearchResult = allUsers;
@@ -81,7 +81,7 @@ class _SearchUserState extends State<SearchUser> {
 
           List<SearchResult> searchUserResult = [];
           dataSnapshot.data.documents.forEach((document) {
-            User eachUser = User.fromDocument(document);
+            UserDataModel eachUser = UserDataModel.fromDocument(document);
             SearchResult searchResult = SearchResult(eachUser);
             searchUserResult.add(searchResult);
           });
@@ -98,14 +98,10 @@ class _SearchUserState extends State<SearchUser> {
       iconTheme: IconThemeData(color: Hexcolor('#F23041')),
       title: TextFormField(
         style: TextStyle(fontSize: 18, color: Colors.black),
-        controller: searchtextEditingController,
+        controller: searchTextEditingController,
         decoration: InputDecoration(
             hintText: "Search ...",
             hintStyle: TextStyle(color: Colors.grey),
-            // enabledBorder: UnderlineInputBorder(
-            //     borderSide: BorderSide(color: Colors.grey)),
-            // focusedBorder: UnderlineInputBorder(
-            //     borderSide: BorderSide(color: Colors.black)),
             border: InputBorder.none,
             filled: true,
             suffixIcon: IconButton(
@@ -126,7 +122,7 @@ class _SearchUserState extends State<SearchUser> {
 }
 
 class SearchResult extends StatelessWidget {
-  final User eachUser;
+  final UserDataModel eachUser;
   SearchResult(this.eachUser);
 
   @override

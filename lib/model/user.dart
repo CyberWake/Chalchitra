@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-class User {
+class UserDataModel {
   String displayName;
   String email;
   String password;
@@ -13,7 +13,7 @@ class User {
   Map followers;
   Map following;
 
-  User(
+  UserDataModel(
       {this.displayName,
       this.email,
       this.password,
@@ -26,17 +26,17 @@ class User {
       this.followers,
       this.following});
 
-  factory User.fromDocument(DocumentSnapshot document) {
-    return User(
-        displayName: document['displayName'],
-        email: document['email'],
-        id: document.documentID,
-        photoUrl: document['photoUrl'],
-        bio: document['bio'],
-        username: document['username'],
-        age: document['age'],
-        gender: document['gender'],
-        followers: document['followers'],
-        following: document['following']);
+  factory UserDataModel.fromDocument(DocumentSnapshot document) {
+    return UserDataModel(
+        displayName: document.data()['displayName'],
+        email: document.data()['email'],
+        id: document.id,
+        photoUrl: document.data()['photoUrl'],
+        bio: document.data()['bio'],
+        username: document.data()['username'],
+        age: document.data()['age'],
+        gender: document.data()['gender'],
+        followers: document.data()['followers'],
+        following: document.data()['following']);
   }
 }
