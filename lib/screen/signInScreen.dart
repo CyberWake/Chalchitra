@@ -226,7 +226,6 @@ class _LoginState extends State<Login> {
                           child: RaisedButton(
                             onPressed: () async {
                               setState(() => loading = true);
-
                             },
                             padding: EdgeInsets.all(10.0),
                             child: Text(

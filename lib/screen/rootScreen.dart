@@ -1,6 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/homescreen.dart';
 import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/profileScreen.dart';
@@ -76,7 +75,7 @@ class _RootAppState extends State<RootApp> {
       VideoUploader(),
       Message(),
       ProfilePage(
-        uid: Provider.of<User>(context).uid,
+        uid: UserAuth().user.uid,
       )
     ];
     return IndexedStack(
