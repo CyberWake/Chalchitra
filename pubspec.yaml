@@ -44,6 +44,7 @@ dependencies:
   flutter_spinkit:
   line_icons:
   hexcolor:
+  curved_navigation_bar: ^0.3.3
 
   # Misc
   flutter_dotenv: ^2.0.3

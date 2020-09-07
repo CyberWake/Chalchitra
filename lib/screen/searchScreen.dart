@@ -19,14 +19,15 @@ class _SearchPageState extends State<SearchPage> {
 
   List<VideoInfo> _videos = <VideoInfo>[];
 
+  @override
   void initState() {
+    super.initState();
     UserVideoStore.listenToAllVideos((newVideos) {
       setState(() {
         _videos = newVideos;
       });
     });
   }
-
   @override
   Widget build(BuildContext context) {
     return getBody();
