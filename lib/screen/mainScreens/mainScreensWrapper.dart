@@ -1,7 +1,7 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
-import 'package:wowtalent/screen/searchScreen.dart';
 
 class MainScreenWrapper extends StatefulWidget {
   @override
@@ -27,7 +27,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
     _iconOne = (_size.height * 0.066) / 50;
     _screens = [
       Home(),
-      SearchPage(),
+      Explore(),
       Container(),
       Container(),
       Container(),

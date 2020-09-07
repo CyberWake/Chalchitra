@@ -17,14 +17,14 @@ class CategoryStoryItem extends StatelessWidget {
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: white,
-            border: Border.all(color: Hexcolor('#F23041').withOpacity(0.2))),
+            border: Border.all(color: Colors.purple.shade400)),
         child: Padding(
           padding:
               const EdgeInsets.only(left: 20, right: 25, top: 10, bottom: 10),
           child: Text(
             name,
             style: TextStyle(
-                color: Hexcolor('#F23041'),
+                color: Colors.purple.shade400,
                 fontWeight: FontWeight.w500,
                 fontSize: 15),
           ),
