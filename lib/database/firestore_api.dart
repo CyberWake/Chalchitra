@@ -12,20 +12,20 @@ class UserInfoStore{
   static final UserAuth _userAuth = UserAuth();
 
   //Creating User Record in FireStore
-  Future<bool> createUserRecord() async {
+  Future<bool> createUserRecord({String username = ""}) async {
     try{
       // create a document for the user with the uid(user id)
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
 
       if (_userAuth.user != null) {
-        if (userRecord.data == null) {
+        if (!userRecord.exists) {
           Map<String, dynamic> userData = {
             "id": _userAuth.user.uid,
             "displayName": _userAuth.user.displayName,
             "email": _userAuth.user.email,
             "photoUrl": _userAuth.user.photoURL,
-            "username": "",
-            "bio": "",
+            "username": username,
+            "bio": "Welcome To My Profile",
             "followers": {},
             "following": {}
           };
@@ -128,7 +128,7 @@ class UserInfoStore{
     });
   }
 
-  Stream getUserInfo({String uid}){
+  Stream<DocumentSnapshot> getUserInfo({String uid}){
     return _users
         .doc(uid)
         .snapshots();

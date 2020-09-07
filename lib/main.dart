@@ -5,7 +5,6 @@ import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/messageScreen.dart';
 import 'package:wowtalent/screen/rootScreen.dart';
-import 'package:wowtalent/screen/signInScreen.dart';
 import 'package:provider/provider.dart';
 
 void main() async{
@@ -25,11 +24,10 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.teal,
         ),
-        home: UserAuth().user != null ? RootApp() : Authentication(),
+        home: Authentication(),
         routes: <String, WidgetBuilder>{
-          '/home': (_) => new RootApp(),
-          'message': (_) => new Message(),
-          '/Login': (_) => new Login()
+          '/home': (_) => RootApp(),
+          'message': (_) => Message(),
         },
       ),
     );

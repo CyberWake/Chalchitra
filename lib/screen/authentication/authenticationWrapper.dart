@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/screen/authentication/loginForm.dart';
+import 'package:wowtalent/screen/authentication/methods/loginForm.dart';
+import 'package:wowtalent/screen/authentication/methods/registerForm.dart';
 
 class Authentication extends StatefulWidget {
   @override
@@ -99,8 +100,14 @@ class _AuthenticationState extends State<Authentication> {
                     topRight: Radius.circular(50)
                 )
               ),
-              child: LoginForm(
-                changeMethod: _changeMethod,
+              child: Center(
+                child: SingleChildScrollView(
+                  child: _isLogin ? LoginForm(
+                    changeMethod: _changeMethod,
+                  ) : RegisterForm(
+                    changeMethod: _changeMethod,
+                  ),
+                ),
               ),
             ),
           ),

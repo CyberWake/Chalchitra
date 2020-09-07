@@ -8,7 +8,7 @@ import '../model/user.dart';
 class UserAuth{
   static final FirebaseAuth _auth = FirebaseAuth.instance;
   static final CollectionReference _usersCollection = FirebaseFirestore.instance.collection('WowUsers');
-  UserDataModel currentUserModel;
+  static UserDataModel currentUserModel;
 
   Stream<User> get account{
     return _auth.authStateChanges();
@@ -20,10 +20,24 @@ class UserAuth{
 
   Future signInWithEmailAndPassword({String email, String password}) async{
     try {
+      UserCredential userCredential =
       await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
+      DocumentSnapshot userRecord =
+      await _usersCollection.doc(userCredential.user.uid).get();
+
+      if(!userRecord.exists){
+        await UserInfoStore().createUserRecord().then((value) async{
+          if(value){
+            userRecord =
+            await _usersCollection.doc(userCredential.user.uid).get();
+            currentUserModel = UserDataModel.fromDocument(userRecord);
+          }
+        });
+      }
+
       return "success";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -37,7 +51,7 @@ class UserAuth{
     }
   }
 
-  Future registerUserWithEmail({String email, String password}) async{
+  Future registerUserWithEmail({String email, String password, String username}) async{
     try {
       UserCredential userCredential =
       await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -47,9 +61,10 @@ class UserAuth{
 
       DocumentSnapshot userRecord =
       await _usersCollection.doc(userCredential.user.uid).get();
-
       if(!userRecord.exists){
-        await UserInfoStore().createUserRecord().then((value) async{
+        await UserInfoStore().createUserRecord(
+          username: username
+        ).then((value) async{
          if(value){
            userRecord =
            await _usersCollection.doc(userCredential.user.uid).get();

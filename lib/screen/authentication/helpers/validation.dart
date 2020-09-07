@@ -31,7 +31,7 @@ String validateRegisterPassword(String password){
       Pattern pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
       RegExp regex = new RegExp(pattern);
       if (!regex.hasMatch(password)){
-        return 'Enter valid password';
+        return 'Password must be alpha-numeric with symbols';
       }
       else{
         return null;

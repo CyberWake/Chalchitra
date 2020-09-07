@@ -1,7 +1,12 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/screen/authentication/formFiledFormatting.dart';
-import 'package:wowtalent/screen/authentication/validation.dart';
+import 'package:provider/provider.dart';
+import 'package:wowtalent/auth/auth_api.dart';
+import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
+import 'package:wowtalent/screen/authentication/helpers/validation.dart';
+import 'package:wowtalent/screen/rootScreen.dart';
 
 class LoginForm extends StatefulWidget {
   final ValueChanged<bool> changeMethod;
@@ -12,7 +17,8 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final _formKey = GlobalKey<FormState>();
-  String _email = "", _password = "";
+  UserDataModel _userDataModel = UserDataModel();
+  UserAuth _userAuth = UserAuth();
   double _widthOne;
   double _heightOne;
   double _fontOne;
@@ -35,12 +41,13 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
+            SizedBox(height: _heightOne * 130,),
             authFormFieldContainer(
               child: TextFormField(
                 keyboardType: TextInputType.emailAddress,
                 validator: validateEmail,
                 onChanged: (val) {
-                  _email = val;
+                  _userDataModel.email = val;
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Email",
@@ -56,9 +63,9 @@ class _LoginFormState extends State<LoginForm> {
             authFormFieldContainer(
               child: TextFormField(
                 obscureText: true,
-                validator: validateEmail,
+                validator: validateLoginPassword,
                 onChanged: (val) {
-                  _password = val;
+                  _userDataModel.password = val;
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Password",
@@ -72,9 +79,33 @@ class _LoginFormState extends State<LoginForm> {
             ),
             SizedBox(height: _heightOne * 15,),
             FlatButton(
-                onPressed: (){
+                onPressed: () async{
                   if(_formKey.currentState.validate()){
-                    
+                    await _userAuth.signInWithEmailAndPassword(
+                      email: _userDataModel.email,
+                      password: _userDataModel.password,
+                    ).then((result){
+                      if(result == null){
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Something went wrong try again')
+                            )
+                        );
+                      }else if(result == "success"){
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => RootApp()
+                            )
+                        );
+                      }else{
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text(result)
+                            )
+                        );
+                      }
+                    });
                   }
                 },
                 shape: RoundedRectangleBorder(
@@ -108,7 +139,13 @@ class _LoginFormState extends State<LoginForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: (){},
+                  onTap: (){Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(
+                              'This feature has not been''implemented yet'
+                          )
+                      )
+                  );},
                   child: Image.asset(
                     "assets/images/fb.png",
                     scale: _fontOne * 9,
@@ -116,7 +153,24 @@ class _LoginFormState extends State<LoginForm> {
                 ),
                 SizedBox(width: _widthOne * 50,),
                 InkWell(
-                  onTap: (){},
+                  onTap: () async{
+                    await _userAuth.signInWithGoogle().then((result){
+                      if(!result){
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Something went wrong try again')
+                            )
+                        );
+                      }else{
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => RootApp()
+                            )
+                        );
+                      }
+                    });
+                  },
                   child: Image.asset(
                     "assets/images/google.png",
                     scale: _fontOne * 9,

@@ -1,9 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
+import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/editProfileScreen.dart';
 import '../auth/auth_api.dart';
 import '../database/firebase_provider.dart';
@@ -90,6 +92,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             ? IconButton(
                                 onPressed: () async{
                                   await UserAuth().signOut();
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => Authentication()
+                                      )
+                                  );
                                 },
                                 icon: Icon(
                                   Icons.power_settings_new,
@@ -397,14 +405,18 @@ class _ProfilePageState extends State<ProfilePage> {
   // Getting top view of profile like displayName, username, bio , followers and following
 
   getProfileTopView(BuildContext context) {
-    return new StreamBuilder(
+    return new StreamBuilder<DocumentSnapshot>(
         stream: _userInfoStore.getUserInfo(
           uid: widget.uid
         ),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
-            return new Text("Loading");
+            return Center(child: Text('Something went wrong'));
           }
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: Text("Loading"));
+          }
+          print(snapshot.data.exists);
           user = UserDataModel.fromDocument(snapshot.data);
 
           _username = user.username;
