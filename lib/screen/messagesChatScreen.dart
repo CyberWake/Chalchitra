@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
-import 'package:wowtalent/data/user_model_json.dart';
 import 'package:wowtalent/data/user_json.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:wowtalent/theme/colors.dart';
 
 class ChatDetailPage extends StatefulWidget {
@@ -11,7 +9,6 @@ class ChatDetailPage extends StatefulWidget {
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
-  TextEditingController _sendMessageController = new TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(

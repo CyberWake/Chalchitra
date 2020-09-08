@@ -1,8 +1,11 @@
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
+import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoUploaderScreen.dart';
 
 class MainScreenWrapper extends StatefulWidget {
   @override
@@ -16,6 +19,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   double _heightOne;
   double _iconOne;
   Size _size;
+  Widget _profilePage = Container();
 
 
   @override
@@ -27,9 +31,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
     _screens = [
       Home(),
       Explore(),
+      VideoUploader(),
       Container(),
-      Container(),
-      Container(),
+      _profilePage,
     ];
     if(_screens == null){
 
@@ -101,6 +105,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           ),
         ],
         onTap: (index) {
+          if(index == 4){
+            _profilePage = ProfilePage(uid: UserAuth().user.uid);
+          }
           setState(() {
             _currentIndex = index;
           });

@@ -8,9 +8,9 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
-import '../video_uploader_widget/encoding_provider.dart';
 import 'package:path/path.dart' as p;
-import '../model/video_info.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/encoding_provider.dart';
+import '../../../model/video_info.dart';
 
 class VideoUploader extends StatefulWidget {
   VideoUploader({Key key, this.title}) : super(key: key);
@@ -22,23 +22,15 @@ class VideoUploader extends StatefulWidget {
 }
 
 class _VideoUploaderState extends State<VideoUploader> {
-  List<VideoInfo> _videos = <VideoInfo>[];
   bool _imagePickerActive = false;
   bool _processing = false;
   bool _canceled = false;
   double _progress = 0.0;
   int _videoDuration = 0;
   String _processPhase = '';
-  final bool _debugMode = false;
 
   @override
   void initState() {
-    UserVideoStore.listenToVideos((newVideos) {
-      setState(() {
-        _videos = newVideos;
-      });
-    });
-
     EncodingProvider.enableStatisticsCallback((int time,
         int size,
         double bitrate,
@@ -52,8 +44,27 @@ class _VideoUploaderState extends State<VideoUploader> {
         _progress = time / _videoDuration;
       });
     });
-
     super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: _processing ? _getProgressBar() : Column(
+        children: [
+          FlatButton(
+              onPressed: () {
+                _openVideoPicker(context);
+              },
+              child: _processing ? CircularProgressIndicator(
+                valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.white
+                ),
+              ) : Text("Upload Video")
+          ),
+        ],
+      ),
+    );
   }
 
   void _onUploadProgress(event) {
@@ -303,33 +314,5 @@ class _VideoUploaderState extends State<VideoUploader> {
             ),
           );
         });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Upload Video"),
-      // ),
-
-      body: Center(
-        child: _processing
-            ? _getProgressBar()
-            : Column(
-                children: [
-                  FlatButton(
-                      onPressed: () {
-                        _openVideoPicker(context);
-                      },
-                      child: _processing
-                          ? CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                  Colors.white),
-                            )
-                          : Text("Upload Video")),
-                ],
-              ),
-      ),
-    );
   }
 }

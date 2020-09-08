@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import '../model/video_info.dart';
-
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:line_icons/line_icons.dart';
-import 'package:wowtalent/theme/colors.dart';
+import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/widgets/slider_widget.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 class Player extends StatefulWidget {
   final VideoInfo video;

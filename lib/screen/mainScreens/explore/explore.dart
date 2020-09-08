@@ -3,7 +3,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/data/search_json.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/model/video_info.dart';
-import 'package:wowtalent/video_uploader_widget/player.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 import 'package:wowtalent/widgets/search_category_widget.dart';
 
 class Explore extends StatefulWidget {
