@@ -22,16 +22,23 @@ class VideoUploader extends StatefulWidget {
 }
 
 class _VideoUploaderState extends State<VideoUploader> {
+  List<VideoInfo> _videos = <VideoInfo>[];
   bool _imagePickerActive = false;
   bool _processing = false;
   bool _canceled = false;
   double _progress = 0.0;
   int _videoDuration = 0;
   String _processPhase = '';
-  Size _size;
+  final bool _debugMode = false;
 
   @override
   void initState() {
+    UserVideoStore.listenToVideos((newVideos) {
+      setState(() {
+        _videos = newVideos;
+      });
+    });
+
     EncodingProvider.enableStatisticsCallback((int time,
         int size,
         double bitrate,
@@ -45,61 +52,8 @@ class _VideoUploaderState extends State<VideoUploader> {
         _progress = time / _videoDuration;
       });
     });
-    super.initState();
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    _size = MediaQuery.of(context).size;
-    return Center(
-      child: _processing ? _getProgressBar() : Container(
-        padding: EdgeInsets.all(50),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(25),
-          boxShadow: [BoxShadow(
-            color: Colors.purple.withOpacity(0.15),
-            blurRadius: 20,
-            offset: Offset(0, 10),
-          )]
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              "Pick your Video",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
-            SizedBox(
-              height: 10.0,
-            ),
-            FlatButton(
-              minWidth: _size.width * 0.5,
-              shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.purple.withOpacity(0.5)),
-                borderRadius: BorderRadius.circular(5)
-              ),
-              child: Text("Use Camera"),
-              onPressed: () {
-                _takeVideo(context, ImageSource.camera);
-              },
-            ),
-            FlatButton(
-              minWidth: _size.width * 0.5,
-              shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.purple.withOpacity(0.5)),
-                  borderRadius: BorderRadius.circular(5)
-              ),
-              child: Text("Use Gallery"),
-              onPressed: () {
-                _takeVideo(context, ImageSource.gallery);
-              },
-            )
-          ],
-        ),
-      ),
-    );
+    super.initState();
   }
 
   void _onUploadProgress(event) {
@@ -189,7 +143,7 @@ class _VideoUploaderState extends State<VideoUploader> {
               FlatButton(
                 child: Text("Ok"),
                 onPressed: () {
-                  Navigator.pop(context);
+                  return;
                 },
               )
             ],
@@ -273,37 +227,24 @@ class _VideoUploaderState extends State<VideoUploader> {
 
   void _takeVideo(context, source) async {
     var videoFile;
-    if (_imagePickerActive){
-      return;
-    }
-    else{
-      _imagePickerActive = true;
-      videoFile = await ImagePicker().getVideo(
-          source: source, maxDuration: const Duration(seconds: 300)).then((value){
-        print("hi");
-      });
-      _imagePickerActive = false;
-    }
+    if (_imagePickerActive) return;
 
-    if (videoFile == null){
-      print("ehl");
-      setState(() {
-        _processing = false;
-      });
-      return;
-    }
-    else{
-      setState(() {
-        _processing = true;
-      });
-    }
+    _imagePickerActive = true;
+    videoFile = await ImagePicker.pickVideo(
+        source: source, maxDuration: const Duration(seconds: 300));
+    _imagePickerActive = false;
+    //Navigator.pop(context);
+
+    if (videoFile == null) return;
+    //}
+    setState(() {
+      _processing = true;
+    });
+
     try {
       await _processVideo(videoFile);
     } catch (e) {
       print('${e.toString()}');
-      setState(() {
-        _processing = false;
-      });
     } finally {
       setState(() {
         _processing = false;
@@ -328,5 +269,108 @@ class _VideoUploaderState extends State<VideoUploader> {
         ],
       ),
     );
+  }
+
+  // void _openVideoPicker(BuildContext context) {
+  //   showModalBottomSheet(
+  //       context: context,
+  //       builder: (BuildContext context) {
+  //         return Container(
+  //           height: 150.0,
+  //           padding: EdgeInsets.all(10.0),
+  //           child: Column(
+  //             children: [
+  //               Text(
+  //                 "Pick your Video",
+  //                 style: TextStyle(fontWeight: FontWeight.bold),
+  //               ),
+  //               SizedBox(
+  //                 height: 10.0,
+  //               ),
+  //               FlatButton(
+  //                 child: Text("Use Camera"),
+  //                 onPressed: () {
+  //                   _takeVideo(context, ImageSource.camera);
+  //                 },
+  //               ),
+  //               FlatButton(
+  //                 child: Text("Use Gallery"),
+  //                 onPressed: () {
+  //                   _takeVideo(context, ImageSource.gallery);
+  //                 },
+  //               )
+  //             ],
+  //           ),
+  //         );
+  //       });
+  // }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        // appBar: AppBar(
+        //   title: Text("Upload Video"),
+        // ),
+
+        body: Center(
+      child: _processing
+          ? _getProgressBar()
+          : Container(
+              padding: EdgeInsets.all(50),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.15),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
+                    )
+                  ]),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Pick your Video",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  FlatButton(
+                      onPressed: () {
+                        _takeVideo(context, ImageSource.camera);
+                      },
+                      // minWidth: _size.width * 0.5,
+                      shape: RoundedRectangleBorder(
+                          side:
+                              BorderSide(color: Colors.purple.withOpacity(0.5)),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: _processing
+                          ? CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            )
+                          : Text("Camera")),
+                  FlatButton(
+                      onPressed: () {
+                        _takeVideo(context, ImageSource.gallery);
+                      },
+                      // minWidth: _size.width * 0.5,
+                      shape: RoundedRectangleBorder(
+                          side:
+                              BorderSide(color: Colors.purple.withOpacity(0.5)),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: _processing
+                          ? CircularProgressIndicator(
+                              valueColor: new AlwaysStoppedAnimation<Color>(
+                                  Colors.white),
+                            )
+                          : Text("Gallery")),
+                ],
+              ),
+            ),
+    ));
   }
 }
