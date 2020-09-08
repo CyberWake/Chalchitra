@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
+import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoUploaderScreen.dart';
@@ -104,13 +105,18 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
             color: Colors.white,
           ),
         ],
-        onTap: (index) {
+        onTap: (index) async{
           if(index == 4){
             _profilePage = ProfilePage(uid: UserAuth().user.uid);
-          }
-          setState(() {
             _currentIndex = index;
-          });
+          }else if(index == 3){
+            await Navigator.push(context, MaterialPageRoute(
+              builder: (context) => Message()
+            ));
+          }else{
+            _currentIndex = index;
+          }
+          setState(() {});
         },
       ),
       body: Container(

@@ -68,27 +68,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             ),
           ],
         ),
-        // actions: <Widget>[
-        //   Icon(
-        //     LineIcons.phone,
-        //     color: primary,
-        //     size: 32,
-        //   ),
-        //   SizedBox(
-        //     width: 15,
-        //   ),
-        //   Icon(
-        //     LineIcons.video_camera,
-        //     color: primary,
-        //     size: 35,
-        //   ),
-        //   SizedBox(
-        //     width: 8,
-        //   ),
-        //   SizedBox(
-        //     width: 15,
-        //   ),
-        // ],
       ),
       body: getBody(),
       bottomSheet: getBottom(),
