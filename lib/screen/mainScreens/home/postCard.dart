@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,6 +31,7 @@ class _PostCardState extends State<PostCard> {
   double _fontOne;
   double _iconOne;
   Size _size;
+  double _sliderValue = Random().nextDouble() * 5;
 
   @override
   Widget build(BuildContext context) {
@@ -184,46 +187,20 @@ class _PostCardState extends State<PostCard> {
                     ],
                   ),
                   SizedBox(width: _widthOne * 40,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.remove_red_eye,
-                        color: Colors.blue,
-                        size: _iconOne * 23,
-                      ),
-                      SizedBox(width: _widthOne * 20,),
-                      Text(
-                        widget.viewCount.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: _fontOne * 14,
-                            color: Colors.grey
-                        ),
-                      ),
-                    ],
-                  ),
-                  Expanded(child: Container()),
-                  InkWell(
-                    child: Container(
-                      padding: EdgeInsets.all(_iconOne * 10),
-                      decoration: BoxDecoration(
-                        color: Colors.black87,
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(15),
-                          bottomLeft: Radius.circular(15),
-                        ),
-                      ),
-                      child: Text(
-                        "View Details",
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: _fontOne * 12,
-                            color: Colors.white
-                        ),
-                      ),
+                  Expanded(
+                    child: Slider(
+                      value: _sliderValue,
+                      min: 0,
+                      max: 5,
+                      onChanged: (val){
+                        setState(() {
+                          _sliderValue = val;
+                        });
+                      },
+                      inactiveColor: Colors.purple[100],
+                      activeColor: Colors.purple[400],
                     ),
-                  )
+                  ),
                 ],
               ),
             )

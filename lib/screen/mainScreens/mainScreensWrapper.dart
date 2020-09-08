@@ -2,6 +2,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
+import 'package:wowtalent/screen/mainScreens/search/search.dart';
 
 class MainScreenWrapper extends StatefulWidget {
   @override
@@ -13,7 +14,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   int _currentIndex = 0;
   double _widthOne;
   double _heightOne;
-  double _fontOne;
   double _iconOne;
   Size _size;
 
@@ -23,7 +23,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
     _heightOne = (_size.height * 0.007) / 5;
-    _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
     _screens = [
       Home(),
@@ -51,10 +50,20 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           ),
         ),
         actions: [
-          Icon(
-            Icons.search,
-            color: Colors.purple.shade400,
-            size: _iconOne * 30,
+          IconButton(
+            icon: Icon(
+              Icons.search,
+              color: Colors.purple.shade400,
+              size: _iconOne * 30,
+            ),
+            onPressed: (){
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => SearchUser()
+                )
+              );
+            },
           ),
           SizedBox(width: _widthOne * 100,)
         ],
@@ -97,7 +106,12 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           });
         },
       ),
-      body: _screens[_currentIndex],
+      body: Container(
+          margin: EdgeInsets.only(
+            bottom: 10
+          ),
+          child: _screens[_currentIndex]
+      ),
     );
   }
 }

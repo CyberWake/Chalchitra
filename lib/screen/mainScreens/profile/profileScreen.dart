@@ -4,14 +4,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:provider/provider.dart';
+import 'package:wowtalent/auth/auth_api.dart';
+import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
+import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
-import 'package:wowtalent/screen/editProfileScreen.dart';
-import '../auth/auth_api.dart';
-import '../database/firebase_provider.dart';
-import '../model/user.dart';
-import '../model/video_info.dart';
-import '../video_uploader_widget/player.dart';
+import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
+import 'package:wowtalent/video_uploader_widget/player.dart';
 
 class ProfilePage extends StatefulWidget {
   final String url =

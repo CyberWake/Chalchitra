@@ -3,8 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
-import 'package:wowtalent/screen/messageScreen.dart';
-import 'package:wowtalent/screen/rootScreen.dart';
 import 'package:provider/provider.dart';
 
 void main() async{
@@ -25,10 +23,6 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.teal,
         ),
         home: Authentication(),
-        routes: <String, WidgetBuilder>{
-          '/home': (_) => RootApp(),
-          'message': (_) => Message(),
-        },
       ),
     );
   }
