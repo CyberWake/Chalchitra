@@ -4,6 +4,7 @@ import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
+import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class RegisterForm extends StatefulWidget {
@@ -21,6 +22,7 @@ class _RegisterFormState extends State<RegisterForm> {
   double _heightOne;
   double _fontOne;
   Size _size;
+  bool _registerForm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,10 @@ class _RegisterFormState extends State<RegisterForm> {
     _widthOne = _size.width * 0.0008;
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
+    return _registerForm ? registerForm() : SocialRegisterUsername();
+  }
+
+  Widget registerForm(){
     return Form(
       key: _formKey,
       child: Padding(
@@ -116,9 +122,9 @@ class _RegisterFormState extends State<RegisterForm> {
                 onPressed: () async{
                   if(_formKey.currentState.validate()){
                     await _userAuth.registerUserWithEmail(
-                      email: _userDataModel.email,
-                      password: _userDataModel.password,
-                      username: _userDataModel.username
+                        email: _userDataModel.email,
+                        password: _userDataModel.password,
+                        username: _userDataModel.username
                     ).then((result){
                       if(result == null){
                         Scaffold.of(context).showSnackBar(
@@ -184,19 +190,23 @@ class _RegisterFormState extends State<RegisterForm> {
                 InkWell(
                   onTap: () async{
                     await _userAuth.signInWithGoogle().then((result){
-                      if(!result){
+                      if(result == false){
                         Scaffold.of(context).showSnackBar(
                             SnackBar(
                                 content: Text('Something went wrong try again')
                             )
                         );
-                      }else{
+                      }else if(result == true){
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>  MainScreenWrapper()
+                                builder: (_) => MainScreenWrapper()
                             )
                         );
+                      }else{
+                        setState(() {
+                          _registerForm = false;
+                        });
                       }
                     });
                   },

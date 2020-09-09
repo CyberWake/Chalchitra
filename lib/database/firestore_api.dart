@@ -11,10 +11,8 @@ class UserInfoStore{
 
   static final UserAuth _userAuth = UserAuth();
 
-  //Creating User Record in FireStore
   Future<bool> createUserRecord({String username = ""}) async {
     try{
-      // create a document for the user with the uid(user id)
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
 
       if (_userAuth.user != null) {
@@ -26,11 +24,7 @@ class UserInfoStore{
             "photoUrl": _userAuth.user.photoURL,
             "username": username,
             "bio": "Welcome To My Profile",
-            "followers": {},
-            "following": {}
           };
-
-          // no user record exists, time to create
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
         }

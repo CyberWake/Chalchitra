@@ -4,6 +4,7 @@ import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
+import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class LoginForm extends StatefulWidget {
@@ -21,6 +22,7 @@ class _LoginFormState extends State<LoginForm> {
   double _heightOne;
   double _fontOne;
   Size _size;
+  bool _loginForm = true;
 
   @override
   Widget build(BuildContext context) {
@@ -28,6 +30,10 @@ class _LoginFormState extends State<LoginForm> {
     _widthOne = _size.width * 0.0008;
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
+    return _loginForm ? loginForm() : SocialRegisterUsername();
+  }
+
+  Widget loginForm(){
     return Form(
       key: _formKey,
       child: Padding(
@@ -105,15 +111,15 @@ class _LoginFormState extends State<LoginForm> {
                   }
                 },
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5.0),
-                  side: BorderSide(
-                    color: Colors.orange.withOpacity(0.75),
-                    width: _widthOne * 5
-                  )
+                    borderRadius: BorderRadius.circular(5.0),
+                    side: BorderSide(
+                        color: Colors.orange.withOpacity(0.75),
+                        width: _widthOne * 5
+                    )
                 ),
                 splashColor: Colors.orange[100],
                 padding: EdgeInsets.symmetric(
-                  horizontal: _size.width * 0.3
+                    horizontal: _size.width * 0.3
                 ),
                 child: Text(
                   "Login",
@@ -126,8 +132,8 @@ class _LoginFormState extends State<LoginForm> {
             Text(
               "Or Login With",
               style: TextStyle(
-                color: Colors.grey,
-                fontSize: _fontOne * 15
+                  color: Colors.grey,
+                  fontSize: _fontOne * 15
               ),
             ),
             SizedBox(height: _heightOne * 10,),
@@ -151,19 +157,23 @@ class _LoginFormState extends State<LoginForm> {
                 InkWell(
                   onTap: () async{
                     await _userAuth.signInWithGoogle().then((result){
-                      if(!result){
+                      if(result == false){
                         Scaffold.of(context).showSnackBar(
                             SnackBar(
                                 content: Text('Something went wrong try again')
                             )
                         );
-                      }else{
+                      }else if(result == true){
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (_) => MainScreenWrapper()
                             )
                         );
+                      }else{
+                        setState(() {
+                          _loginForm = false;
+                        });
                       }
                     });
                   },
