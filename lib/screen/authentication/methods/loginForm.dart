@@ -107,18 +107,18 @@ class _LoginFormState extends State<LoginForm> {
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(5.0),
                   side: BorderSide(
-                    color: Colors.purple.withOpacity(0.75),
+                    color: Colors.orange.withOpacity(0.75),
                     width: _widthOne * 5
                   )
                 ),
-                splashColor: Colors.purple[100],
+                splashColor: Colors.orange[100],
                 padding: EdgeInsets.symmetric(
                   horizontal: _size.width * 0.3
                 ),
                 child: Text(
                   "Login",
                   style: TextStyle(
-                    color: Colors.purple.withOpacity(0.75),
+                    color: Colors.orange.withOpacity(0.75),
                   ),
                 )
             ),

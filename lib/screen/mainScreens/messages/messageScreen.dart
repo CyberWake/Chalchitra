@@ -30,7 +30,7 @@ class _MessageState extends State<Message> {
         child: Container(
           padding: EdgeInsets.only(top: _heightOne * 20),
           height: _size.height,
-          color: Colors.purple,
+          color: Colors.orange,
           child: Column(children: <Widget>[
             Container(
               padding: EdgeInsets.only(

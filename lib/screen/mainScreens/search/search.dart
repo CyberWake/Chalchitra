@@ -29,7 +29,7 @@ class _SearchUserState extends State<SearchUser> {
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border(
-                  bottom: BorderSide(color: Colors.purple.withOpacity(0.5))
+                  bottom: BorderSide(color: Colors.orange.withOpacity(0.5))
                 ),
                 boxShadow: [BoxShadow(
                   offset: Offset(0, 2),
@@ -42,7 +42,7 @@ class _SearchUserState extends State<SearchUser> {
                   IconButton(
                       icon: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.purple.shade400,
+                        color: Colors.orange.shade400,
                       ),
                       onPressed: () => Navigator.pop(context)
                   ),
@@ -59,7 +59,7 @@ class _SearchUserState extends State<SearchUser> {
                           suffixIcon: IconButton(
                               icon: Icon(
                                   Icons.clear,
-                                  color: Colors.purple.shade400
+                                  color: Colors.orange.shade400
                               ),
                               onPressed: () =>
                                   searchTextEditingController.clear(),
@@ -95,7 +95,7 @@ class _SearchUserState extends State<SearchUser> {
         children: [
           Icon(
               Icons.group,
-              color: Colors.purple.shade300,
+              color: Colors.orange.shade300,
               size: 40,
           ),
           SizedBox(width: 20,),
@@ -103,7 +103,7 @@ class _SearchUserState extends State<SearchUser> {
               "Search User",
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.purple.shade300,
+                  color: Colors.orange.shade300,
                   fontWeight: FontWeight.w500,
                   fontSize: 25
               ),
@@ -118,8 +118,8 @@ class _SearchUserState extends State<SearchUser> {
         builder: (context, dataSnapshot) {
           if (!dataSnapshot.hasData) {
             return LinearProgressIndicator(
-              backgroundColor: Colors.purple.shade400,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.purple.shade300),
+              backgroundColor: Colors.orange.shade400,
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.orange.shade300),
             );
           }
           List<SearchResult> searchUserResult = [];

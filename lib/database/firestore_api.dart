@@ -59,73 +59,91 @@ class UserInfoStore{
   }
 
   Future<bool>checkIfAlreadyFollowing({String uid}) async {
-    DocumentSnapshot documentSnapshot =
-    await _activity
-        .doc(uid)
-        .collection('activityItems')
-        .doc(_userAuth.user.uid).get();
-    return documentSnapshot.exists;
+    try{
+      DocumentSnapshot documentSnapshot =
+      await _activity
+          .doc(uid)
+          .collection('activityItems')
+          .doc(_userAuth.user.uid).get();
+      return documentSnapshot.exists;
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
   }
 
-  Future followUser({String uid}) async{
-    _followers
-        .doc(uid)
-        .collection('userFollowers')
-        .doc(_userAuth.user.uid)
-        .set({
-      "userID": _userAuth.user.uid,
-      "displayName": _userAuth.user.displayName,
-      "ownerID": uid,
-      "timestamp": DateTime.now()
-    });
+  Future<bool> followUser({String uid}) async{
+    try{
+      _followers
+          .doc(uid)
+          .collection('userFollowers')
+          .doc(_userAuth.user.uid)
+          .set({
+        "userID": _userAuth.user.uid,
+        "displayName": _userAuth.user.displayName,
+        "ownerID": uid,
+        "timestamp": DateTime.now()
+      });
 
-    _followings
-        .doc(_userAuth.user.uid)
-        .collection('userFollowing')
-        .doc(uid)
-        .set({});
+      _followings
+          .doc(_userAuth.user.uid)
+          .collection('userFollowing')
+          .doc(uid)
+          .set({});
 
-    _activity
-        .doc(uid)
-        .collection("activityItems")
-        .doc(_userAuth.user.uid)
-        .set({
-      "type": "follow",
-      "ownerID": uid,
-      "displayName": _userAuth.user.displayName,
-      "timestamp": DateTime.now(),
-      "userProfileImg": _userAuth.user.photoURL,
-      "userID": _userAuth.user.uid
-    });
+      _activity
+          .doc(uid)
+          .collection("activityItems")
+          .doc(_userAuth.user.uid)
+          .set({
+        "type": "follow",
+        "ownerID": uid,
+        "displayName": _userAuth.user.displayName,
+        "timestamp": DateTime.now(),
+        "userProfileImg": _userAuth.user.photoURL,
+        "userID": _userAuth.user.uid
+      });
+      return true;
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
   }
 
-  Future unFollowUser({String uid}){
-    _followers
-        .doc(uid)
-        .collection("userFollowers")
-        .doc(_userAuth.user.uid)
-        .get()
-        .then((document) => {
-      if (document.exists) {document.reference.delete()}
-    });
+  Future<bool> unFollowUser({String uid}){
+   try{
+     _followers
+         .doc(uid)
+         .collection("userFollowers")
+         .doc(_userAuth.user.uid)
+         .get()
+         .then((document) => {
+       if (document.exists) {document.reference.delete()}
+     });
 
-    _followings
-        .doc(_userAuth.user.uid)
-        .collection("userFollowing")
-        .doc(uid)
-        .get()
-        .then((document) => {
-      if (document.exists) {document.reference.delete()}
-    });
+     _followings
+         .doc(_userAuth.user.uid)
+         .collection("userFollowing")
+         .doc(uid)
+         .get()
+         .then((document) => {
+       if (document.exists) {document.reference.delete()}
+     });
 
-    _activity
-        .doc(uid)
-        .collection('activityItems')
-        .doc(_userAuth.user.uid)
-        .get()
-        .then((document) => {
-      if (document.exists) {document.reference.delete()}
-    });
+     _activity
+         .doc(uid)
+         .collection('activityItems')
+         .doc(_userAuth.user.uid)
+         .get()
+         .then((document) => {
+       if (document.exists) {document.reference.delete()}
+     });
+
+     return Future.value(true);
+   }catch(e){
+     print(e.toString());
+     return Future.value(false);
+   }
   }
 
   Stream<DocumentSnapshot> getUserInfo({String uid}){

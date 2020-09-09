@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'WowTalent',
         theme: ThemeData(
-          primarySwatch: Colors.teal,
+          primarySwatch: Colors.orange,
         ),
         home: Authentication(),
       ),

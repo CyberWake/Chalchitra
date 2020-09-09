@@ -187,6 +187,25 @@ class _PostCardState extends State<PostCard> {
                     ],
                   ),
                   SizedBox(width: _widthOne * 40,),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Icon(
+                        Icons.share,
+                        color: Colors.blueAccent,
+                        size: _iconOne * 23,
+                      ),
+                      SizedBox(width: _widthOne * 20,),
+                      Text(
+                        widget.commentCount.toString(),
+                        style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: _fontOne * 14,
+                            color: Colors.grey
+                        ),
+                      ),
+                    ],
+                  ),
                   Expanded(
                     child: Slider(
                       value: _sliderValue,
@@ -197,12 +216,13 @@ class _PostCardState extends State<PostCard> {
                           _sliderValue = val;
                         });
                       },
-                      inactiveColor: Colors.purple[100],
-                      activeColor: Colors.purple[400],
+                      inactiveColor: Colors.orange[100],
+                      activeColor: Colors.orange[400],
                     ),
                   ),
                 ],
               ),
+
             )
           ],
         ),

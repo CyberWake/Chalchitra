@@ -180,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              buildStatColumn(totalPost, "Photos"),
+                              buildStatColumn(totalPost, "Posts"),
                               getFollowers(),
                               getFollowings()
                             ],
@@ -217,7 +217,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.purple
+                          color: Colors.orange
                       ),
                     ),
                     Text(
@@ -240,7 +240,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple
+                        color: Colors.orange
                     ),
                   ),
                   Text(
@@ -272,7 +272,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.purple
+                          color: Colors.orange
                       ),
                     ),
                     Text(
@@ -295,7 +295,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.purple
+                        color: Colors.orange
                     ),
                   ),
                   Text(
@@ -323,25 +323,24 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   controlFollowUsers() async{
-    setState(() {
-      following = true;
-    });
-
-    await _userInfoStore.followUser(
+    bool result = await _userInfoStore.followUser(
       uid: widget.uid
     );
-
+    setState(() {
+      following = result;
+    });
   }
 
   // Controlling unfollow users
 
   controlUnfollowUsers() async{
-    setState(() {
-      following = false;
-    });
-    await _userInfoStore.unFollowUser(
+    bool result = await _userInfoStore.unFollowUser(
         uid: widget.uid
     );
+
+    setState(() {
+      following = result;
+    });
   }
 
   // Getting Current User ID
@@ -479,20 +478,22 @@ class _ProfilePageState extends State<ProfilePage> {
     return Container(
         padding: EdgeInsets.only(top: 5),
         child: RaisedButton(
-            color: Colors.purple ,
+            color: Colors.orange ,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                     Radius.circular(15)
                 )
             ),
-            onPressed: function,
+            onPressed: () async{
+              await function();
+            },
             child: Container(
               width: 150,
               height: 30,
               child: Text(title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: following ? Colors.purple : Colors.white,
+                      color: following ? Colors.orange : Colors.white,
                       fontSize: 16
                   )
               ),
@@ -550,7 +551,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.purple
+              color: Colors.orange
           ),
         ),
         Text(

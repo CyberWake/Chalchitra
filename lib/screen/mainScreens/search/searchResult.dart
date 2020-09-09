@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
+import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 
 class SearchResult extends StatelessWidget {
   final UserDataModel eachUser;
@@ -19,7 +20,7 @@ class SearchResult extends StatelessWidget {
                   onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => ProfilePage(
+                          builder: (_) => SearchProfile(
                             uid: eachUser.id,
                           ))),
                   child: ListTile(

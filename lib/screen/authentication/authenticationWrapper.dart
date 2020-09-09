@@ -43,9 +43,9 @@ class _AuthenticationState extends State<Authentication> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Colors.purple[300],
-                  Colors.purple[500],
-                  Colors.purple[800],
+                  Colors.orange[300],
+                  Colors.orange[500],
+                  Colors.orange[800],
                 ],
               ),
               borderRadius: BorderRadius.only(

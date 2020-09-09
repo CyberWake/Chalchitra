@@ -3,6 +3,12 @@ import 'package:hexcolor/hexcolor.dart';
 import 'package:wowtalent/data/user_json.dart';
 import 'package:wowtalent/theme/colors.dart';
 
+double _heightOne;
+double _widthOne;
+double _fontOne;
+double _iconOne;
+Size _size;
+
 class ChatDetailPage extends StatefulWidget {
   @override
   _ChatDetailPageState createState() => _ChatDetailPageState();
@@ -11,65 +17,73 @@ class ChatDetailPage extends StatefulWidget {
 class _ChatDetailPageState extends State<ChatDetailPage> {
   @override
   Widget build(BuildContext context) {
+    _size = MediaQuery.of(context).size;
+    _widthOne = _size.width * 0.0008;
+    _heightOne = (_size.height * 0.007) / 5;
+    _fontOne = (_size.height * 0.015) / 11;
+    _iconOne = (_size.height * 0.066) / 50;
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Hexcolor('#F29F05').withOpacity(0.2),
-        elevation: 0,
-        leading: FlatButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            child: Icon(
-              Icons.arrow_back_ios,
-              color: primary,
-            )),
-        title: Row(
-          children: <Widget>[
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: NetworkImage(
-                          "https://images.unsplash.com/photo-1531427186611-ecfd6d936c79?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=800&q=60"),
-                      fit: BoxFit.cover)),
-            ),
-            SizedBox(
-              width: 15,
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  "Tyler Nix",
-                  style: TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold, color: black),
+      body: Container(
+          padding: EdgeInsets.only(top: _heightOne * 20),
+          height: _size.height,
+          color: Colors.orange,
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(
+                  bottom: _heightOne * 20,
+                  top: _heightOne * 20,
                 ),
-                SizedBox(
-                  height: 3,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(width: _widthOne * 50,),
+                    IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    Expanded(child: Container()),
+                    Text(
+                      "Tyler Nix",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _fontOne * 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    Container(
+                      width: 13,
+                      height: 13,
+                      decoration: BoxDecoration(
+                          color: online,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: Colors.white38)),
+                    ),
+                    SizedBox(width: _widthOne * 100,)
+                  ],
                 ),
-                Text(
-                  "Active now",
-                  style: TextStyle(color: black.withOpacity(0.4), fontSize: 14),
-                ),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 15, top: 15),
-              child: Container(
-                width: 13,
-                height: 13,
-                decoration: BoxDecoration(
-                    color: online,
-                    shape: BoxShape.circle,
-                    border: Border.all(color: Colors.white38)),
               ),
-            ),
-          ],
-        ),
+              Expanded(
+                  child: Container(
+                      padding: EdgeInsets.only(top: _heightOne * 20),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(25),
+                            topLeft: Radius.circular(25),
+                          )
+                      ),
+                      child: getBody()
+                  )
+              ),
+            ],
+          )
       ),
-      body: getBody(),
       bottomSheet: getBottom(),
     );
   }
@@ -85,7 +99,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           IconButton(
             icon: Icon(Icons.photo),
             iconSize: 25,
-            color: Hexcolor('#F29F05'),
+            color: Colors.orange,
             onPressed: () {},
           ),
           Expanded(
@@ -99,7 +113,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           IconButton(
             icon: Icon(Icons.send),
             iconSize: 25,
-            color: Hexcolor('#F29F05'),
+            color:  Colors.orange,
             onPressed: () {},
           ),
         ],
@@ -138,14 +152,18 @@ class ChatBubble extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isMe) {
       return Padding(
-        padding: const EdgeInsets.all(1.0),
+        padding: const EdgeInsets.only(
+          bottom: 5
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             Flexible(
               child: Container(
                 decoration: BoxDecoration(
-                    color: primary, borderRadius: getMessageType(messageType)),
+                    color: Colors.orangeAccent,
+                    borderRadius: getMessageType(messageType)
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(13.0),
                   child: Text(
@@ -160,7 +178,9 @@ class ChatBubble extends StatelessWidget {
       );
     } else {
       return Padding(
-        padding: EdgeInsets.all(1.0),
+        padding: const EdgeInsets.only(
+          bottom: 5
+      ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -178,7 +198,7 @@ class ChatBubble extends StatelessWidget {
             Flexible(
               child: Container(
                 decoration: BoxDecoration(
-                    color: Hexcolor('#F29F05'),
+                    color: Colors.orange[50],
                     borderRadius: getMessageType(messageType)),
                 child: Padding(
                   padding: const EdgeInsets.all(13.0),

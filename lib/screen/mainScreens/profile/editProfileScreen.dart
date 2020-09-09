@@ -55,7 +55,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       extendBodyBehindAppBar: true,
       key: _scaffoldGlobalKey,
       body: Container(
-        color: Colors.purple,
+        color: Colors.orange,
         child: Stack(
           children: [
             Container(
@@ -140,7 +140,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
-                                  color: Colors.purple,
+                                  color: Colors.orange,
                                 ),
                                 child: Center(
                                   child: Text("Update", style: TextStyle(color: Colors
@@ -173,7 +173,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.purple.shade800,
+                  color: Colors.orange.shade800,
                   borderRadius: BorderRadius.circular(50)
                 ),
                 padding: EdgeInsets.all(2.5),
@@ -200,7 +200,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [BoxShadow(
-          color: Colors.purple.withOpacity(0.15),
+          color: Colors.orange.withOpacity(0.15),
           blurRadius: 20,
           offset: Offset(0, 10),
         )

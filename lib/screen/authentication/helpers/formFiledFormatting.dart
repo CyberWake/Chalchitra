@@ -10,7 +10,7 @@ authFormFieldFormatting({String hintText, double fontSize}){
     disabledBorder: InputBorder.none,
     hintText: hintText,
     hintStyle: TextStyle(
-        color: Colors.deepPurple.withOpacity(0.5),
+        color: Colors.orange.withOpacity(0.75),
         fontSize: fontSize
     ),
     errorStyle: TextStyle(
@@ -26,7 +26,7 @@ authFormFieldContainer({Widget child, double leftPadding}){
     ),
     decoration: BoxDecoration(
         border: Border.all(
-            color: Colors.purple.withOpacity(0.5)
+            color: Colors.orange.withOpacity(0.75)
         ),
         borderRadius: BorderRadius.circular(15.0)
     ),

@@ -58,7 +58,7 @@ class _VideoUploaderState extends State<VideoUploader> {
           color: Colors.white,
           borderRadius: BorderRadius.circular(25),
           boxShadow: [BoxShadow(
-            color: Colors.purple.withOpacity(0.15),
+            color: Colors.orange.withOpacity(0.15),
             blurRadius: 20,
             offset: Offset(0, 10),
           )]
@@ -77,7 +77,7 @@ class _VideoUploaderState extends State<VideoUploader> {
             FlatButton(
               minWidth: _size.width * 0.5,
               shape: RoundedRectangleBorder(
-                side: BorderSide(color: Colors.purple.withOpacity(0.5)),
+                side: BorderSide(color: Colors.orange.withOpacity(0.5)),
                 borderRadius: BorderRadius.circular(5)
               ),
               child: Text("Use Camera"),
@@ -88,7 +88,7 @@ class _VideoUploaderState extends State<VideoUploader> {
             FlatButton(
               minWidth: _size.width * 0.5,
               shape: RoundedRectangleBorder(
-                  side: BorderSide(color: Colors.purple.withOpacity(0.5)),
+                  side: BorderSide(color: Colors.orange.withOpacity(0.5)),
                   borderRadius: BorderRadius.circular(5)
               ),
               child: Text("Use Gallery"),

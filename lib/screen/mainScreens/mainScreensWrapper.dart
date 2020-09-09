@@ -1,5 +1,9 @@
+import 'dart:math';
+
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
@@ -50,7 +54,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           child: Text(
             "WowTalent",
             style: TextStyle(
-              color: Colors.purple.shade400
+              color: Colors.orange.shade400
             ),
           ),
         ),
@@ -58,7 +62,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           IconButton(
             icon: Icon(
               Icons.search,
-              color: Colors.purple.shade400,
+              color: Colors.orange.shade400,
               size: _iconOne * 30,
             ),
             onPressed: (){
@@ -76,8 +80,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       bottomNavigationBar: CurvedNavigationBar(
         height: _heightOne * 45,
         backgroundColor: Colors.white,
-        color: Colors.purple.shade400,
-        buttonBackgroundColor: Colors.purple.shade400,
+        color: Colors.orange.shade400,
+        buttonBackgroundColor: Colors.orange.shade400,
         items: <Widget>[
           Icon(
             Icons.home,
@@ -94,10 +98,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
             size: 25,
             color: Colors.white,
           ),
-          Icon(
-            Icons.chat,
-            size: 25,
-            color: Colors.white,
+          Transform.rotate(
+            angle: 180 * pi / 100,
+            child: Icon(
+              Icons.send,
+              size: 25,
+              color: Colors.white,
+            ),
           ),
           Icon(
             Icons.account_circle,
@@ -106,8 +113,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           ),
         ],
         onTap: (index) async{
+          print(index);
           if(index == 4){
-            _profilePage = ProfilePage(uid: UserAuth().user.uid);
+            print(index);
+            UserAuth().account.listen((user){
+              if(user != null){
+                _profilePage = ProfilePage(uid: user.uid);
+              }
+            });
             _currentIndex = index;
           }else if(index == 3){
             await Navigator.push(context, MaterialPageRoute(
