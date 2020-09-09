@@ -57,9 +57,9 @@ class UserInfoStore{
   Future<bool>checkIfAlreadyFollowing({String uid}) async {
     try{
       DocumentSnapshot documentSnapshot =
-      await _activity
+      await _followings
           .doc(uid)
-          .collection('activityItems')
+          .collection('usersFollowers')
           .doc(_userAuth.user.uid).get();
       return documentSnapshot.exists;
     }catch(e){
@@ -74,12 +74,7 @@ class UserInfoStore{
           .doc(uid)
           .collection('userFollowers')
           .doc(_userAuth.user.uid)
-          .set({
-        "userID": _userAuth.user.uid,
-        "displayName": _userAuth.user.displayName,
-        "ownerID": uid,
-        "timestamp": DateTime.now()
-      });
+          .set({});
 
       _followings
           .doc(_userAuth.user.uid)
@@ -110,16 +105,18 @@ class UserInfoStore{
    try{
      _followers
          .doc(uid)
-         .collection("userFollowers")
+         .collection("user")
          .doc(_userAuth.user.uid)
          .get()
          .then((document) => {
-       if (document.exists) {document.reference.delete()}
+           if(document.exists){
+            document.reference.delete()
+           }
      });
 
      _followings
          .doc(_userAuth.user.uid)
-         .collection("userFollowing")
+         .collection("user")
          .doc(uid)
          .get()
          .then((document) => {
@@ -128,17 +125,17 @@ class UserInfoStore{
 
      _activity
          .doc(uid)
-         .collection('activityItems')
+         .collection('user')
          .doc(_userAuth.user.uid)
-         .get()
-         .then((document) => {
-       if (document.exists) {document.reference.delete()}
-     });
+        .get()
+        .then((document) => {
+    if (document.exists) {document.reference.delete()}
+    });
 
-     return Future.value(true);
+     return Future.value(false);
    }catch(e){
      print(e.toString());
-     return Future.value(false);
+     return Future.value(true);
    }
   }
 

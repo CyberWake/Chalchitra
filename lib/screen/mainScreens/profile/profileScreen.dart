@@ -22,7 +22,7 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class _ProfilePageState extends State <ProfilePage> {
   // Fetching user attributes from the user model
 
   UserDataModel user;
@@ -83,15 +83,14 @@ class _ProfilePageState extends State<ProfilePage> {
                 ),
                 height: size.height * 0.4423,
                 width: size.width,
-                margin: EdgeInsets.only(
-                    top: size.height * 0.35
-                ),
+                margin: EdgeInsets.only(top: size.height * 0.35),
                 padding: EdgeInsets.only(
                     top: size.height * 0.1,
                     left: size.width * 0.05,
                     right: size.width * 0.05
                 ),
-                child: widget.uid == Provider.of<User>(context).uid ? Column(
+                child: widget.uid == Provider.of<User>(context).uid
+                    ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Wrap(
@@ -101,9 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         final video = _videos[index];
                         return GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
+                            Navigator.push(context, MaterialPageRoute(
                                 builder: (context) {
                                   return Player(
                                     video: video,
@@ -486,6 +483,9 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             onPressed: () async{
               await function();
+              await getFollowers();
+              setState(() {
+              });
             },
             child: Container(
               width: 150,
@@ -493,7 +493,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Text(title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: following ? Colors.orange : Colors.white,
+                      color: Colors.white,
                       fontSize: 16
                   )
               ),
