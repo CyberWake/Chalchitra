@@ -1,6 +1,10 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:hexcolor/hexcolor.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/data/user_json.dart';
+import 'package:wowtalent/database/firestore_api.dart';
+import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/theme/colors.dart';
 
 double _heightOne;
@@ -10,11 +14,37 @@ double _iconOne;
 Size _size;
 
 class ChatDetailPage extends StatefulWidget {
+  final String targetUID;
+  ChatDetailPage({this.targetUID});
   @override
   _ChatDetailPageState createState() => _ChatDetailPageState();
 }
 
 class _ChatDetailPageState extends State<ChatDetailPage> {
+  UserDataModel _userDataModel = UserDataModel();
+  UserInfoStore _userInfoStore = UserInfoStore();
+  bool _loading = true;
+  final TextEditingController controller = new TextEditingController();
+  void setup() async{
+    await _userInfoStore.getUserInfo(
+      uid: widget.targetUID
+    ).first.then((document){
+      _userDataModel = UserDataModel.fromDocument(document);
+    });
+
+
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setup();
+  }
+  String text = "";
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -48,7 +78,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     ),
                     Expanded(child: Container()),
                     Text(
-                      "Tyler Nix",
+                      _loading ?  " " : _userDataModel.username,
                       style: TextStyle(
                         color: Colors.white,
                         fontSize: _fontOne * 25,
@@ -56,13 +86,14 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       ),
                     ),
                     Expanded(child: Container()),
-                    Container(
-                      width: 13,
-                      height: 13,
-                      decoration: BoxDecoration(
-                          color: online,
-                          shape: BoxShape.circle,
-                          border: Border.all(color: Colors.white38)),
+                    CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      radius: _iconOne * 25,
+                      backgroundImage: CachedNetworkImageProvider(
+                        _userDataModel.photoUrl == null ?
+                        'https://via.placeholder.com/150' :
+                            _userDataModel.photoUrl
+                      ),
                     ),
                     SizedBox(width: _widthOne * 100,)
                   ],
@@ -78,59 +109,104 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                             topLeft: Radius.circular(25),
                           )
                       ),
-                      child: getBody()
+                      child: _loading ? Center(
+                        child: SpinKitCircle(
+                          color: Colors.orange,
+                          size: _fontOne * 60,
+                        ),
+                      ): getBody()
                   )
               ),
+              Container(
+                padding: EdgeInsets.zero,
+                margin: EdgeInsets.only(bottom: 0),
+                height: 70,
+                color: Colors.white,
+                child: Row(
+                  children: <Widget>[
+                    IconButton(
+                      icon: Icon(Icons.photo),
+                      iconSize: 25,
+                      color: Colors.orange,
+                      onPressed: () {},
+                    ),
+                    Expanded(
+                      child: TextField(
+                        controller: controller,
+                        onChanged: (val){
+                          text = val;
+                        },
+                        decoration: InputDecoration.collapsed(
+                          hintText: 'Send a message..',
+                        ),
+                        textCapitalization: TextCapitalization.sentences,
+                      ),
+                    ),
+                    IconButton(
+                      icon: Icon(Icons.send),
+                      iconSize: 25,
+                      color:  Colors.orange,
+                      onPressed: () async{
+                        if(text.isEmpty || text.replaceAll(" ", "").length == 0){
+                          return;
+                        }
+
+                        await _userInfoStore.getChats().then((value) async{
+                          if(value != null){
+                            if(value.isEmpty){
+                              await _userInfoStore.addChat(
+                                  targetUID: widget.targetUID
+                              );
+                            }
+                          }
+                        });
+
+                        await _userInfoStore.sendMessage(
+                          targetUID: widget.targetUID,
+                          message: text,
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              )
             ],
           )
       ),
-      bottomSheet: getBottom(),
-    );
-  }
-
-  Widget getBottom() {
-    return Container(
-      padding: EdgeInsets.zero,
-      margin: EdgeInsets.only(bottom: 0),
-      height: 70,
-      color: Colors.white,
-      child: Row(
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.photo),
-            iconSize: 25,
-            color: Colors.orange,
-            onPressed: () {},
-          ),
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration.collapsed(
-                hintText: 'Send a message..',
-              ),
-              textCapitalization: TextCapitalization.sentences,
-            ),
-          ),
-          IconButton(
-            icon: Icon(Icons.send),
-            iconSize: 25,
-            color:  Colors.orange,
-            onPressed: () {},
-          ),
-        ],
-      ),
+      //bottomSheet: getBottom(),
     );
   }
 
   Widget getBody() {
-    return ListView(
-      padding: EdgeInsets.only(right: 20, left: 20, top: 20, bottom: 80),
-      children: List.generate(messages.length, (index) {
-        return ChatBubble(
-            isMe: messages[index]['isMe'],
-            messageType: messages[index]['messageType'],
-            message: messages[index]['message'],
-            profileImg: messages[index]['profileImg']);
-      }),
+    return StreamBuilder(
+      stream: _userInfoStore.getChatDetails(
+        targetUID: widget.targetUID,
+      ),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+              child: SpinKitCircle(
+                color: Colors.orange,
+                size: _fontOne * 60,
+              ),
+          );
+        } else {
+          var listMessage = snapshot.data.documents;
+          return ListView.builder(
+            padding: EdgeInsets.all(10.0),
+            itemBuilder: (context, index) => ChatBubble(
+              isMe: (snapshot.data.documents[index]["reciver"] == widget.targetUID),
+              messageType: 1,
+              message: snapshot.data.documents[index]['message'],
+              profileImg: _userDataModel.photoUrl == null ?
+              'https://via.placeholder.com/150' : _userDataModel.photoUrl
+            ),
+            itemCount: snapshot.data.documents.length,
+            reverse: true,
+            //controller: listScrollController,
+          );
+        }
+      },
     );
   }
 }

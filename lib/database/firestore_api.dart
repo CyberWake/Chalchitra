@@ -8,13 +8,15 @@ class UserInfoStore{
   final _followers = FirebaseFirestore.instance.collection('followers');
   final _followings = FirebaseFirestore.instance.collection('following');
   final _activity = FirebaseFirestore.instance.collection('activity feed');
+  final _chatUIDs = FirebaseFirestore.instance.collection('chatUIDs');
+  final _allChats = FirebaseFirestore.instance.collection('allChats');
+
 
   static final UserAuth _userAuth = UserAuth();
 
   Future<bool> createUserRecord({String username = ""}) async {
     try{
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
-
       if (_userAuth.user != null) {
         if (!userRecord.exists) {
           Map<String, dynamic> userData = {
@@ -144,5 +146,82 @@ class UserInfoStore{
     return _users
         .doc(uid)
         .snapshots();
+  }
+
+  Future getChats() async{
+    try{
+      await _chatUIDs
+          .doc(_userAuth.user.uid)
+          .get()
+          .then((document){
+            if(document.exists){
+              return document.data();
+            }else{
+              return [];
+            }
+      });
+    }catch(e){
+      print("getChats : " + e.toString());
+      return null;
+    }
+  }
+
+  Future addChat({String targetUID}) async{
+    try{
+      String chatID;
+      String currentUID = _userAuth.user.uid;
+      if(currentUID.compareTo(targetUID) == -1){
+        chatID = currentUID + targetUID;
+      }else{
+        chatID = targetUID + currentUID;
+      }
+      await _chatUIDs
+          .doc(chatID)
+          .set({
+        "targetUID" : targetUID
+      });
+    }catch(e){
+      print("getChats : " + e.toString());
+      return null;
+    }
+  }
+
+  Stream getChatDetails({String targetUID}){
+    String chatID;
+    String currentUID = _userAuth.user.uid;
+    if(currentUID.compareTo(targetUID) == -1){
+      chatID = currentUID + targetUID;
+    }else{
+      chatID = targetUID + currentUID;
+    }
+    return _allChats.doc(chatID).collection(chatID)
+        .orderBy("timestamp", descending: true)
+        .limit(50).snapshots();
+  }
+
+  Future sendMessage({String targetUID, String message, String type = "text"}) async{
+    try{
+      String chatID;
+      String currentUID = _userAuth.user.uid;
+      if(currentUID.compareTo(targetUID) == -1){
+        chatID = currentUID + targetUID;
+      }else{
+        chatID = targetUID + currentUID;
+      }
+
+      String timestamp =  DateTime.now().millisecondsSinceEpoch.toString();
+
+      await _allChats
+          .doc(chatID).collection(chatID).doc(timestamp)
+          .set({
+        timestamp : {
+          "reciver" : targetUID,
+          "message" : message,
+          "type" : type
+        },},
+      );
+    }catch(e){
+      return null;
+    }
   }
 }

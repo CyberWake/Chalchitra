@@ -67,9 +67,6 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   Future<String> _uploadFile(filePath, folderName) async {
-    final User firebaseUser = UserAuth().user;
-    String uid = firebaseUser.uid;
-
     final file = new File(filePath);
     final basename = p.basename(filePath);
 
@@ -143,7 +140,7 @@ class _VideoUploaderState extends State<VideoUploader> {
               FlatButton(
                 child: Text("Ok"),
                 onPressed: () {
-                  return;
+                  Navigator.pop(context);
                 },
               )
             ],
@@ -152,6 +149,7 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   Future<void> _processVideo(File rawVideoFile) async {
+    print("processing");
     final String rand = '${new Random().nextInt(10000)}';
     final videoName = 'video$rand';
     final Directory extDir = await getApplicationDocumentsDirectory();
@@ -233,10 +231,8 @@ class _VideoUploaderState extends State<VideoUploader> {
     videoFile = await ImagePicker.pickVideo(
         source: source, maxDuration: const Duration(seconds: 300));
     _imagePickerActive = false;
-    //Navigator.pop(context);
 
     if (videoFile == null) return;
-    //}
     setState(() {
       _processing = true;
     });
@@ -244,7 +240,7 @@ class _VideoUploaderState extends State<VideoUploader> {
     try {
       await _processVideo(videoFile);
     } catch (e) {
-      print('${e.toString()}');
+      print("error" + '${e.toString()}');
     } finally {
       setState(() {
         _processing = false;
@@ -304,7 +300,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                     onPressed: () {
                       _takeVideo(context, ImageSource.camera);
                     },
-                    // minWidth: _size.width * 0.5,
+                    minWidth: MediaQuery.of(context).size.width * 0.5,
                     shape: RoundedRectangleBorder(
                         side:
                         BorderSide(color: Colors.purple.withOpacity(0.5)),
@@ -319,7 +315,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                     onPressed: () {
                       _takeVideo(context, ImageSource.gallery);
                     },
-                    // minWidth: _size.width * 0.5,
+                    minWidth: MediaQuery.of(context).size.width * 0.5,
                     shape: RoundedRectangleBorder(
                         side:
                         BorderSide(color: Colors.purple.withOpacity(0.5)),

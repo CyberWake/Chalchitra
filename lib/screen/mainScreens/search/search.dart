@@ -67,7 +67,7 @@ class _SearchUserState extends State<SearchUser> {
                       ),
                       onFieldSubmitted: (String username) {
                         Future<QuerySnapshot> allUsers = ref
-                            .where("displayName", isGreaterThanOrEqualTo: username)
+                            .where("username", isGreaterThanOrEqualTo: username)
                             .get();
 
                         setState(() {

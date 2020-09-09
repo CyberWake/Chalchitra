@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/data/user_json.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
@@ -17,6 +19,27 @@ class _MessageState extends State<Message> {
   double _fontOne;
   double _iconOne;
   Size _size;
+  UserInfoStore _userInfoStore = UserInfoStore();
+  bool _loading = true;
+  List _chatList = [];
+
+  void setup() async{
+    await _userInfoStore.getChats()
+        .then((chats){
+        _chatList = chats;
+    });
+
+    setState(() {
+      _loading = false;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setup();
+  }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -89,7 +112,28 @@ class _MessageState extends State<Message> {
                     topLeft: Radius.circular(25),
                   )
                 ),
-                child: Column(
+                child: _loading ? Center(
+                  child: SpinKitCircle(
+                    color: Colors.orange,
+                    size: _fontOne * 60,
+                  ),
+                ) : _chatList == null ? Center(
+                  child: Text(
+                    "Some error occured try again",
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontSize: _fontOne * 16,
+                    ),
+                  ),
+                ) : _chatList.isEmpty ? Center(
+                  child: Text(
+                    "No chats found",
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontSize: _fontOne * 16,
+                    ),
+                  ),
+                )  : Column(
                   children: List.generate(userMessages.length, (index) {
                     return InkWell(
                       onTap: () {

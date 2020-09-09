@@ -180,7 +180,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                             children: [
-                              buildStatColumn(totalPost, "Posts"),
+                              buildStatColumn(_videos.length, "Posts"),
                               getFollowers(),
                               getFollowings()
                             ],

@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 
 class SearchProfile extends StatefulWidget {
@@ -49,7 +50,14 @@ class _SearchProfileState extends State<SearchProfile> {
                     Icons.message,
                     color: Colors.orange,
                   ),
-                  onPressed: (){},
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChatDetailPage(
+                        targetUID: widget.uid,
+                      )
+                    )
+                  ),
                 ),
                 SizedBox(width: _widthOne * 50,)
               ],

@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 
 class SearchResult extends StatelessWidget {
@@ -34,7 +33,7 @@ class SearchResult extends StatelessWidget {
                         )
                     ),
                     title: Text(
-                        eachUser.displayName,
+                        eachUser.displayName == null ? eachUser.username : eachUser.displayName,
                         style: TextStyle(
                             color: Colors.black,
                             fontSize: 16,
