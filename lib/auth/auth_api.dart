@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
@@ -72,6 +73,27 @@ class UserAuth{
     }
   }
 
+  Future signInWithFacebook() async {
+    // Trigger the sign-in flow
+    try {
+      final LoginResult result = await FacebookAuth.instance.login();
+      // Create a credential from the access token
+      final FacebookAuthCredential facebookAuthCredential =
+      FacebookAuthProvider.credential(result.accessToken.token);
+      // Once signed in, return the UserCredential
+      UserCredential userCredential =
+      await _auth.signInWithCredential(facebookAuthCredential);
+      DocumentSnapshot userRecord =
+      await _usersCollection.doc(userCredential.user.uid).get();
+      if(!userRecord.exists){
+        return "newUser";
+      }
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
 
   Future signInWithGoogle() async {
     try{

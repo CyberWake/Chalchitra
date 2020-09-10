@@ -20,6 +20,7 @@ dependencies:
   firebase_core: ^0.5.0
   cloud_firestore: ^0.14.0+2
   firebase_storage: ^4.0.0
+  flutter_facebook_auth: ^0.2.3
   google_sign_in: ^4.5.3
 
   # Media
@@ -41,12 +42,12 @@ dependencies:
 
   # Formatting
   characters:
-  flutter_facebook_login:
   flutter_spinkit:
   line_icons:
   hexcolor:
   curved_navigation_bar: ^0.3.3
   flutter_staggered_grid_view: ^0.3.2
+  splashscreen: ^1.2.0
 
   # Misc
   flutter_dotenv: ^2.0.3

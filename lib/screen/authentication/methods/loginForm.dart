@@ -23,6 +23,13 @@ class _LoginFormState extends State<LoginForm> {
   double _fontOne;
   Size _size;
   bool _loginForm = true;
+  String _message = 'Log in/out by pressing the buttons below.';
+
+  void _showMessage(String message) {
+    setState(() {
+      _message = message;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -141,13 +148,28 @@ class _LoginFormState extends State<LoginForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: (){Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(
-                              'This feature has not been''implemented yet'
-                          )
-                      )
-                  );},
+                  onTap: () async {
+                    await _userAuth.signInWithFacebook().then((result){
+                      if(result == false){
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Something went wrong try again')
+                            )
+                        );
+                      }else if(result == true){
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => MainScreenWrapper()
+                            )
+                        );
+                      }else{
+                        setState(() {
+                          _loginForm = false;
+                        });
+                      }
+                    });
+                    },
                   child: Image.asset(
                     "assets/images/fb.png",
                     scale: _fontOne * 9,
