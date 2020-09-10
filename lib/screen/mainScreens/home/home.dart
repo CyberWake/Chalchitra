@@ -1,8 +1,12 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/data/post_json.dart';
+import 'package:wowtalent/data/user_model_json.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
+import 'package:wowtalent/database/firestore_api.dart';
+import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
 
@@ -12,18 +16,16 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
   List<VideoInfo> _videos = <VideoInfo>[];
   double _widthOne;
   double _heightOne;
+  UserInfoStore _userInfoStore = UserInfoStore();
+  List _usersDetails = [];
 
   @override
   void initState() {
     super.initState();
-    UserVideoStore.listenToAllVideos((newVideos) {
-      setState(() {
-        _videos = newVideos;
-      });
-    });
   }
 
   @override
@@ -31,29 +33,69 @@ class _HomeState extends State<Home> {
     Size size = MediaQuery.of(context).size;
     _widthOne = size.width * 0.0008;
     _heightOne = (size.height * 0.007) / 5;
-    return Center(
-      child: ListView.builder(
-        itemCount: _videos.length,
-        itemBuilder: (context, index){
-          return Padding(
-            padding: EdgeInsets.symmetric(
-              horizontal: _widthOne * 50,
-              vertical: _heightOne * 20
-            ),
-            child: PostCard(
-              thumbnail: _videos[index].thumbUrl,
-              profileImg: posts[0]['profileImg'],
-              title: _videos[index].videoName,
-              uploader: posts[0]['name'],
-              isLiked: posts[0]['isLoved'],
-              likeCount: _videos[index].likes,
-              commentCount: _videos[index].comments,
-              uploadTime: formatDateTime(_videos[index].uploadedAt),
-              viewCount: index * Random().nextInt((index + 1) * 100) + 1,
+    return StreamBuilder(
+      stream: UserVideoStore().getVideos(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return Center(
+            child: SpinKitCircle(
+              color: Colors.orange,
+              size: 60,
             ),
           );
-        },
-      )
+        }else{
+          if(snapshot.data.documents.length == 0){
+            return Center(
+              child: Text(
+                "No videos to show",
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 16,
+                ),
+              ),
+            );
+          }else{
+            return Center(
+                child: ListView.builder(
+                  itemCount: snapshot.data.documents.length,
+                  itemBuilder: (context, index){
+                    return FutureBuilder(
+                      future: _userInfoStore.getUserInfo(uid: snapshot.data.documents[index].data()['uploaderUid']),
+                      builder: (context, snap){
+                        if(
+                        snap.connectionState ==
+                            ConnectionState.none || !snap.hasData
+                        ){
+                          return Container();
+                        }
+                        return Padding(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: _widthOne * 50,
+                              vertical: _heightOne * 20
+                          ),
+                          child: PostCard(
+                            thumbnail: snapshot.data.documents[index].data()['thumbUrl'],
+                            profileImg: snap.data.data()['profileUrl'] == null ?
+                            "https://via.placeholder.com/150"
+                                : snap.data.data()['profileUrl'],
+                            title: snapshot.data.documents[index].data()['videoName'],
+                            uploader: snap.data.data()['username'],
+                            isLiked: false,
+                            likeCount: snapshot.data.documents[index].data()['likes'],
+                            commentCount: snapshot.data.documents[index].data()['comments'],
+                            uploadTime: formatDateTime(snapshot.data.documents[index].data()['uploadedAt']),
+                            viewCount: snapshot.data.documents[index].data()['views'],
+                            rating: snapshot.data.documents[index].data()['rating']
+                          ),
+                        );
+                      },
+                    );
+                  },
+                )
+            );
+          }
+        }
+      }
     );
   }
 
@@ -85,5 +127,20 @@ class _HomeState extends State<Home> {
     }
 
     return sentAt;
+  }
+
+  void getUsersDetails() async {
+    for (int i = 0; i < _videos.length; i++) {
+      print( "vid" + _videos[i].uploaderUid.toString());
+      dynamic result = await _userInfoStore.getUserInfo(uid: _videos[i].uploaderUid);
+      print(result.data());
+      if(result != null){
+        _usersDetails.add(UserDataModel.fromDocument(result));
+      }else{
+        _usersDetails.add(null);
+      }
+    }
+
+    setState(() {});
   }
 }

@@ -203,7 +203,7 @@ class UserInfoStore{
           .doc(currentUID)
           .set({
         chatID : targetUID
-      });
+      }, SetOptions(merge: true));
     }catch(e){
       print("getChats : " + e.toString());
       return null;
@@ -223,7 +223,7 @@ class UserInfoStore{
           .doc(targetUID)
           .set({
         chatID : currentUID
-      });
+      }, SetOptions(merge: true));
     }catch(e){
       print("getChats : " + e.toString());
       return null;

@@ -67,6 +67,11 @@ class UserVideoStore {
     }
   }
 
+  Stream getVideos(){
+    return _allVideos
+        .snapshots();
+  }
+
   static listenToAllVideos(callback) async{
     try{
       _allVideos

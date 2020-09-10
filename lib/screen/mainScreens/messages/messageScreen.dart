@@ -265,7 +265,6 @@ class _MessageState extends State<Message> {
                }
               },
               itemCount: snapshot.data.data().length,
-              reverse: true,
               //controller: listScrollController,
             );
           }
@@ -277,7 +276,11 @@ class _MessageState extends State<Message> {
   void getUsersDetails(List uIDs) async {
     for (int i = 0; i < uIDs.length; i++) {
       dynamic result = await _userInfoStore.getUserInfo(uid: uIDs[i]);
-      _usersDetails.add(UserDataModel.fromDocument(result));
+      if(result != null){
+        _usersDetails.add(UserDataModel.fromDocument(result));
+      }else{
+        _usersDetails.add(null);
+      }
     }
 
     setState(() {});

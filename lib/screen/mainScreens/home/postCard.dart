@@ -8,6 +8,7 @@ class PostCard extends StatefulWidget {
   final String title, uploadTime, thumbnail, profileImg, uploader;
   final int commentCount, likeCount, viewCount;
   final bool isLiked;
+  final int rating;
 
   PostCard({
     this.title,
@@ -18,7 +19,8 @@ class PostCard extends StatefulWidget {
     this.profileImg,
     this.isLiked,
     this.uploader,
-    this.viewCount = 0
+    this.viewCount,
+    this.rating,
   });
 
   @override
@@ -31,7 +33,13 @@ class _PostCardState extends State<PostCard> {
   double _fontOne;
   double _iconOne;
   Size _size;
-  double _sliderValue = Random().nextDouble() * 5;
+  double _sliderValue;
+
+  @override
+  void initState() {
+    super.initState();
+    _sliderValue = double.parse(widget.rating.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
