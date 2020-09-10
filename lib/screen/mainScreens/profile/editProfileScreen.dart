@@ -37,7 +37,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _usernameValid = true;
   bool _nameValid = true;
   Size _size;
-  String url = "";
+  String url = " ";
   String fileName = '';
   File file;
 
@@ -170,7 +170,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               child: CircleAvatar(
                 backgroundImage:
-                NetworkImage("https://via.placeholder.com/150"),
+                user.photoUrl==null?NetworkImage("https://via.placeholder.com/150"):NetworkImage(url),
                 radius: 50.0,
               ),
             ),
@@ -243,7 +243,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     DocumentSnapshot documentSnapshot = await ref.document(widget.uid).get();
     user = UserDataModel.fromDocument(documentSnapshot);
-
+    url = user.photoUrl;
     usernameController.text = user.username;
     nameController.text = user.displayName;
     bioController.text = user.bio;
@@ -278,7 +278,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         "displayName": nameController.text,
         "bio": bioController.text,
         "age": ageController.text,
-        "gender": genderController.text
+        "gender": genderController.text,
+        "photoUrl": url,
       });
 
       setState(() {

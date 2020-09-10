@@ -300,7 +300,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                     onPressed: () {
                       _takeVideo(context, ImageSource.camera);
                     },
-                    minWidth: MediaQuery.of(context).size.width * 0.5,
+                    //minWidth: MediaQuery.of(context).size.width * 0.5,
                     shape: RoundedRectangleBorder(
                         side:
                         BorderSide(color: Colors.purple.withOpacity(0.5)),
@@ -315,7 +315,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                     onPressed: () {
                       _takeVideo(context, ImageSource.gallery);
                     },
-                    minWidth: MediaQuery.of(context).size.width * 0.5,
+                    //minWidth: MediaQuery.of(context).size.width * 0.5,
                     shape: RoundedRectangleBorder(
                         side:
                         BorderSide(color: Colors.purple.withOpacity(0.5)),

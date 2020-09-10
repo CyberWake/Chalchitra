@@ -70,19 +70,19 @@ class UserInfoStore{
 
   Future<bool> followUser({String uid}) async{
     try{
-      _followers
+      await _followers
           .doc(uid)
           .collection('userFollowers')
           .doc(_userAuth.user.uid)
           .set({});
 
-      _followings
+      await _followings
           .doc(_userAuth.user.uid)
           .collection('userFollowing')
           .doc(uid)
           .set({});
 
-      _activity
+      await _activity
           .doc(uid)
           .collection("activityItems")
           .doc(_userAuth.user.uid)
@@ -101,35 +101,37 @@ class UserInfoStore{
     }
   }
 
-  Future<bool> unFollowUser({String uid}){
+  Future<bool> unFollowUser({String uid}) async {
    try{
-     _followers
+     await _followers
          .doc(uid)
-         .collection("user")
+         .collection("userFollowers")
          .doc(_userAuth.user.uid)
          .get()
-         .then((document) => {
+         .then((document) async => {
            if(document.exists){
-            document.reference.delete()
+            await document.reference.delete()
            }
      });
 
-     _followings
+     await _followings
          .doc(_userAuth.user.uid)
-         .collection("user")
+         .collection("userFollowing")
          .doc(uid)
          .get()
-         .then((document) => {
-       if (document.exists) {document.reference.delete()}
+         .then((document) async => {
+       if (document.exists) {
+         await document.reference.delete()}
      });
 
-     _activity
+     await _activity
          .doc(uid)
          .collection('user')
          .doc(_userAuth.user.uid)
         .get()
-        .then((document) => {
-    if (document.exists) {document.reference.delete()}
+        .then((document) async => {
+    if (document.exists) {
+      await document.reference.delete()}
     });
 
      return Future.value(false);
