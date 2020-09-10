@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/encoding_provider.dart';
 import '../../../model/video_info.dart';
@@ -177,7 +178,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       _progress = 0.0;
     });
 
-    if (_videoDuration <= 30000 || _videoDuration >= 360000) {
+    if (_videoDuration <= 30 || _videoDuration >= 360000000) {
       createAlertDialogue(context);
 
       print("video duration exceed");
@@ -203,12 +204,17 @@ class _VideoUploaderState extends State<VideoUploader> {
     final videoUrl = await _uploadHLSFiles(encodedFilesDir, videoName);
 
     final videoInfo = VideoInfo(
+      uploaderUid: UserAuth().user.uid,
       videoUrl: videoUrl,
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
       aspectRatio: aspectRatio,
       uploadedAt: DateTime.now().millisecondsSinceEpoch,
       videoName: videoName,
+      likes: 0,
+      views: 0,
+      rating: 0,
+      comments: 0,
     );
 
     setState(() {

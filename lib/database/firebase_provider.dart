@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import '../auth/auth_api.dart';
 import '../model/video_info.dart';
 
@@ -25,6 +26,11 @@ class UserVideoStore {
         'aspectRatio': video.aspectRatio,
         'uploadedAt': video.uploadedAt,
         'videoName': video.videoName,
+        'uploaderUid': video.uploaderUid,
+        'likes': video.likes,
+        'views': video.views,
+        'comments': video.comments,
+        'rating': video.rating,
       };
 
 
