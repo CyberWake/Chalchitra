@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:path/path.dart' as path;
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wowtalent/model/user.dart';
@@ -33,10 +37,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _usernameValid = true;
   bool _nameValid = true;
   Size _size;
+  String url = "";
+  String fileName = '';
+  File file;
 
   // Calling Cloud Firestore collection
 
-  final ref = Firestore.instance.collection('WowUsers');
+  final ref = FirebaseFirestore.instance.collection('WowUsers');
 
   // Recovering pervious state
 
@@ -168,8 +175,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
             InkWell(
-              onTap: (){
-                Navigator.of(context).pop();
+              onTap: () async {
+                file = await FilePicker.getFile(type: FileType.image);
+                fileName = path.basename(file.path);
+                setState(() {
+                  fileName = path.basename(file.path);
+                });
+                StorageReference storageReference = FirebaseStorage
+                    .instance
+                    .ref()
+                    .child("images/$fileName");
+                StorageUploadTask uploadTask =
+                storageReference.putFile(file);
+
+                final StorageTaskSnapshot downloadUrl =
+                (await uploadTask.onComplete);
+                url = (await downloadUrl.ref.getDownloadURL());
+                setState(() async {
+                  url = (await downloadUrl.ref.getDownloadURL());
+                });
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -249,7 +273,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         loading = true;
       });
 
-      ref.document(widget.uid).updateData({
+      ref.doc(widget.uid).update({
         "username": usernameController.text,
         "displayName": nameController.text,
         "bio": bioController.text,
