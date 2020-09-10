@@ -2,13 +2,17 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
+import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 
 class PostCard extends StatefulWidget {
+  final video;
   final String title, uploadTime, thumbnail, profileImg, uploader, id;
   final int commentCount, likeCount, viewCount;
   final int rating;
 
   PostCard({
+    this.video,
     this.id,
     this.title,
     this.commentCount,
@@ -141,18 +145,32 @@ class _PostCardState extends State<PostCard> {
             ),
             SizedBox(height: _heightOne * 15,),
             Expanded(
-              child: Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(15),
-                    bottomLeft: Radius.circular(15),
-                  ),
-                  image: DecorationImage(
-                    fit: BoxFit.cover,
-                    image: NetworkImage(
-                      widget.thumbnail
+              child: InkWell(
+                onTap: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return Player(
+                          video: VideoInfo.fromDocument(widget.video),
+                        );
+                      },
+                    ),
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(15),
+                      bottomLeft: Radius.circular(15),
+                    ),
+                    image: DecorationImage(
+                      fit: BoxFit.cover,
+                      image: NetworkImage(
+                        widget.thumbnail
+                      )
                     )
-                  )
+                  ),
                 ),
               ),
             ),
@@ -173,9 +191,10 @@ class _PostCardState extends State<PostCard> {
                           width: 20,
                         ),
                         onTap: () async{
-                         await _userVideoStore.likeVideo(
+                         _isLiked = await _userVideoStore.likeVideo(
                             videoID: widget.id,
                           );
+                         setState(() {});
                         },
                       ) : InkWell(
                         child: SvgPicture.asset(
@@ -183,9 +202,10 @@ class _PostCardState extends State<PostCard> {
                           width: 20,
                         ),
                         onTap: () async{
-                          await _userVideoStore.dislikeVideo(
+                          _isLiked = !await _userVideoStore.dislikeVideo(
                             videoID: widget.id,
                           );
+                          setState(() {});
                         },
                       ),
                       SizedBox(width: _widthOne * 20,),

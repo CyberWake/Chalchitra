@@ -128,9 +128,7 @@ class UserVideoStore {
           {"likes" : FieldValue.increment(-1)}
       );
       await _videoLikes.doc(_userAuth.user.uid)
-          .collection("likedVideos").doc(videoID).set({
-        "id" : FieldValue.delete()
-      });
+          .collection("likedVideos").doc(videoID).delete();
       return true;
     }catch(e){
       return false;

@@ -1,9 +1,5 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/data/post_json.dart';
-import 'package:wowtalent/data/user_model_json.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
@@ -74,6 +70,7 @@ class _HomeState extends State<Home> {
                               vertical: _heightOne * 20
                           ),
                           child: PostCard(
+                            video: snapshot.data.documents[index],
                             id: snapshot.data.documents[index].id,
                             thumbnail: snapshot.data.documents[index].data()['thumbUrl'],
                             profileImg: snap.data.data()['profileUrl'] == null ?

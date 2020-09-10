@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class VideoInfo {
   String uploaderUid;
   String videoUrl;
@@ -25,4 +27,15 @@ class VideoInfo {
       this.shares,
       this.rating,
       this.comments});
+
+  static fromDocument(QueryDocumentSnapshot ds) {
+    return VideoInfo(
+      videoUrl: ds.data()['videoUrl'],
+      thumbUrl: ds.data()['thumbUrl'],
+      coverUrl: ds.data()['coverUrl'],
+      aspectRatio: ds.data()['aspectRatio'],
+      videoName: ds.data()['videoName'],
+      uploadedAt: ds.data()['uploadedAt'],
+    );
+  }
 }
