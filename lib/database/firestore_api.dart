@@ -139,26 +139,51 @@ class UserInfoStore{
    }
   }
 
-  Stream<DocumentSnapshot> getUserInfo({String uid}){
+  Stream<DocumentSnapshot> getUserInfoStream({String uid}){
     return _users
         .doc(uid)
         .snapshots();
   }
 
-  Future getChats() async{
+  Future getUserInfo({String uid}){
     try{
+      return _users
+          .doc(uid)
+          .get();
+    }catch(e){
+      print("getUserInfo" + e.toString());
+      return null;
+    }
+  }
+
+  Stream getChats(){
+    return _chatUIDs
+        .doc(_userAuth.user.uid).snapshots();
+  }
+
+  Future checkChatExists({String targetUID}) async{
+    try{
+      String chatID;
+      String currentUID = _userAuth.user.uid;
+      if(currentUID.compareTo(targetUID) == -1){
+        chatID = currentUID + targetUID;
+      }else{
+        chatID = targetUID + currentUID;
+      }
+      bool result;
       await _chatUIDs
-          .doc(_userAuth.user.uid)
+          .doc(currentUID)
           .get()
           .then((document){
-            if(document.exists){
-              return document.data();
-            }else{
-              return [];
-            }
+        if(document.exists){
+           result = document.data().keys.contains(chatID);
+        }else{
+          result =  false;
+        }
       });
+      return result;
     }catch(e){
-      print("getChats : " + e.toString());
+      print("checkChats : " + e.toString());
       return null;
     }
   }
@@ -173,9 +198,9 @@ class UserInfoStore{
         chatID = targetUID + currentUID;
       }
       await _chatUIDs
-          .doc(chatID)
+          .doc(currentUID)
           .set({
-        "targetUID" : targetUID
+        chatID : targetUID
       });
     }catch(e){
       print("getChats : " + e.toString());
@@ -196,6 +221,19 @@ class UserInfoStore{
         .limit(50).snapshots();
   }
 
+  Stream getLastMessage({String targetUID}){
+    String chatID;
+    String currentUID = _userAuth.user.uid;
+    if(currentUID.compareTo(targetUID) == -1){
+      chatID = currentUID + targetUID;
+    }else{
+      chatID = targetUID + currentUID;
+    }
+    return _allChats.doc(chatID).collection(chatID)
+        .orderBy("timestamp", descending: true)
+        .limit(1).snapshots();
+  }
+
   Future sendMessage({String targetUID, String message, String type = "text"}) async{
     try{
       String chatID;
@@ -206,17 +244,16 @@ class UserInfoStore{
         chatID = targetUID + currentUID;
       }
 
-      String timestamp =  DateTime.now().millisecondsSinceEpoch.toString();
+      int timestamp =  DateTime.now().millisecondsSinceEpoch;
 
       await _allChats
-          .doc(chatID).collection(chatID).doc(timestamp)
+          .doc(chatID).collection(chatID).doc(timestamp.toString())
           .set({
-        timestamp : {
-          "reciver" : targetUID,
+          "reciever" : targetUID,
           "message" : message,
-          "type" : type
-        },},
-      );
+          "type" : type,
+          "timestamp": timestamp
+      },);
     }catch(e){
       return null;
     }

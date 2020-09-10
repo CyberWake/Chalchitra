@@ -1,10 +1,8 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/data/user_json.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/theme/colors.dart';
 
 double _heightOne;
@@ -25,8 +23,9 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _loading = true;
   final TextEditingController controller = new TextEditingController();
+  bool _checkChatAlreadyAdded = true;
   void setup() async{
-    await _userInfoStore.getUserInfo(
+    await _userInfoStore.getUserInfoStream(
       uid: widget.targetUID
     ).first.then((document){
       _userDataModel = UserDataModel.fromDocument(document);
@@ -151,15 +150,19 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           return;
                         }
 
-                        await _userInfoStore.getChats().then((value) async{
-                          if(value != null){
-                            if(value.isEmpty){
+                        if(_checkChatAlreadyAdded){
+                          await _userInfoStore.checkChatExists(
+                              targetUID: widget.targetUID
+                          ).then((value) async{
+                            print(value);
+                            if(value == false){
                               await _userInfoStore.addChat(
                                   targetUID: widget.targetUID
                               );
                             }
-                          }
-                        });
+                          });
+                          _checkChatAlreadyAdded = false;
+                        }
 
                         await _userInfoStore.sendMessage(
                           targetUID: widget.targetUID,
@@ -173,7 +176,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             ],
           )
       ),
-      //bottomSheet: getBottom(),
     );
   }
 
@@ -191,13 +193,12 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               ),
           );
         } else {
-          var listMessage = snapshot.data.documents;
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => ChatBubble(
-              isMe: (snapshot.data.documents[index]["reciver"] == widget.targetUID),
+              isMe: (snapshot.data.documents[index].data()["receiver"] != widget.targetUID),
               messageType: 1,
-              message: snapshot.data.documents[index]['message'],
+              message: snapshot.data.documents[index].data()['message'],
               profileImg: _userDataModel.photoUrl == null ?
               'https://via.placeholder.com/150' : _userDataModel.photoUrl
             ),

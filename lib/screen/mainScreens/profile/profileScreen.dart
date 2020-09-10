@@ -358,7 +358,7 @@ class _ProfilePageState extends State <ProfilePage> {
 
   getProfileTopView(BuildContext context) {
     return new StreamBuilder<DocumentSnapshot>(
-        stream: _userInfoStore.getUserInfo(
+        stream: _userInfoStore.getUserInfoStream(
           uid: widget.uid
         ),
         builder: (context, snapshot) {
