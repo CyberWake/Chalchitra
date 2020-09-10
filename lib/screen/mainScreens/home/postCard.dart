@@ -1,23 +1,21 @@
-import 'dart:math';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wowtalent/database/firebase_provider.dart';
 
 class PostCard extends StatefulWidget {
-  final String title, uploadTime, thumbnail, profileImg, uploader;
+  final String title, uploadTime, thumbnail, profileImg, uploader, id;
   final int commentCount, likeCount, viewCount;
-  final bool isLiked;
   final int rating;
 
   PostCard({
+    this.id,
     this.title,
     this.commentCount,
     this.likeCount,
     this.uploadTime,
     this.thumbnail,
     this.profileImg,
-    this.isLiked,
     this.uploader,
     this.viewCount,
     this.rating,
@@ -34,11 +32,22 @@ class _PostCardState extends State<PostCard> {
   double _iconOne;
   Size _size;
   double _sliderValue;
+  UserVideoStore _userVideoStore = UserVideoStore();
+  bool _isLiked;
+
+  void setup() async{
+    _isLiked = await _userVideoStore.checkLiked(
+      videoID: widget.id
+    );
+
+    setState(() {});
+  }
 
   @override
   void initState() {
     super.initState();
     _sliderValue = double.parse(widget.rating.toString());
+    setup();
   }
 
   @override
@@ -65,7 +74,7 @@ class _PostCardState extends State<PostCard> {
       ),
       child: Padding(
         padding: EdgeInsets.all(_fontOne * 12.5),
-        child: Column(
+        child: _isLiked == null ? Container() : Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Row(
@@ -158,10 +167,26 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      SvgPicture.asset(
-                        widget.isLiked ? "assets/images/loved_icon.svg" :
-                        "assets/images/love_icon.svg",
-                        width: 20,
+                      !_isLiked ? InkWell(
+                        child: SvgPicture.asset(
+                          "assets/images/love_icon.svg",
+                          width: 20,
+                        ),
+                        onTap: () async{
+                         await _userVideoStore.likeVideo(
+                            videoID: widget.id,
+                          );
+                        },
+                      ) : InkWell(
+                        child: SvgPicture.asset(
+                          "assets/images/loved_icon.svg",
+                          width: 20,
+                        ),
+                        onTap: () async{
+                          await _userVideoStore.dislikeVideo(
+                            videoID: widget.id,
+                          );
+                        },
                       ),
                       SizedBox(width: _widthOne * 20,),
                       Text(

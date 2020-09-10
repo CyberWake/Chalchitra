@@ -74,13 +74,13 @@ class _HomeState extends State<Home> {
                               vertical: _heightOne * 20
                           ),
                           child: PostCard(
+                            id: snapshot.data.documents[index].id,
                             thumbnail: snapshot.data.documents[index].data()['thumbUrl'],
                             profileImg: snap.data.data()['profileUrl'] == null ?
                             "https://via.placeholder.com/150"
                                 : snap.data.data()['profileUrl'],
                             title: snapshot.data.documents[index].data()['videoName'],
                             uploader: snap.data.data()['username'],
-                            isLiked: false,
                             likeCount: snapshot.data.documents[index].data()['likes'],
                             commentCount: snapshot.data.documents[index].data()['comments'],
                             uploadTime: formatDateTime(snapshot.data.documents[index].data()['uploadedAt']),

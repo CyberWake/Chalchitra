@@ -10,6 +10,9 @@ class UserVideoStore {
   static final CollectionReference _allVideos =
   FirebaseFirestore.instance.collection('videos');
 
+  static final CollectionReference _videoLikes =
+  FirebaseFirestore.instance.collection('videoLikes');
+
   static final UserAuth _userAuth = UserAuth();
 
 
@@ -101,6 +104,48 @@ class UserVideoStore {
       }).toList();
     }catch(e){
       print(e.toString());
+    }
+  }
+
+  Future likeVideo({String videoID}) async{
+    try{
+      await _allVideos.doc(videoID).update(
+        {"likes" : FieldValue.increment(1)}
+      );
+      await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").doc(videoID).set({
+        "id" : videoID
+      });
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future dislikeVideo({String videoID}) async{
+    try{
+      await _allVideos.doc(videoID).update(
+          {"likes" : FieldValue.increment(-1)}
+      );
+      await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").doc(videoID).set({
+        "id" : FieldValue.delete()
+      });
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future checkLiked({String videoID}) async{
+    try{
+      QuerySnapshot res = await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").where(
+        "id", isEqualTo: videoID
+      ).get();
+      return res.size == 1;
+    }catch(e){
+      return false;
     }
   }
 }
