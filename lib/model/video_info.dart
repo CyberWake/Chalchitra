@@ -5,6 +5,7 @@ class VideoInfo {
   double aspectRatio;
   int uploadedAt;
   String videoName;
+  int views;
   int likes;
   int shares;
   int rating;
@@ -17,6 +18,7 @@ class VideoInfo {
       this.aspectRatio,
       this.uploadedAt,
       this.videoName,
+      this.views,
       this.likes,
       this.shares,
       this.rating,

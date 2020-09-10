@@ -123,6 +123,17 @@ class _MessageState extends State<Message> {
             ),
           );
         } else {
+          if(snapshot.data.data() == null){
+            return Center(
+              child: Text(
+                "Something went wrong",
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: _fontOne * 16,
+                ),
+              ),
+            );
+          }
           List keys = snapshot.data.data().keys.toList();
           List values = snapshot.data.data().values.toList();
           getUsersDetails(values);

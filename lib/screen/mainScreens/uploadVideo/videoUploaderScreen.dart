@@ -9,6 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:path/path.dart' as p;
+import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/encoding_provider.dart';
 import '../../../model/video_info.dart';
 
@@ -30,7 +31,10 @@ class _VideoUploaderState extends State<VideoUploader> {
   int _videoDuration = 0;
   String _processPhase = '';
   final bool _debugMode = false;
-
+  double _fontOne;
+  double _widthOne;
+  Size _size;
+  String videoName=" ";
   @override
   void initState() {
     UserVideoStore.listenToVideos((newVideos) {
@@ -150,8 +154,6 @@ class _VideoUploaderState extends State<VideoUploader> {
 
   Future<void> _processVideo(File rawVideoFile) async {
     print("processing");
-    final String rand = '${new Random().nextInt(10000)}';
-    final videoName = 'video$rand';
     final Directory extDir = await getApplicationDocumentsDirectory();
     final outDirPath = '${extDir.path}/Videos/$videoName';
     final videosDir = new Directory(outDirPath);
@@ -269,64 +271,91 @@ class _VideoUploaderState extends State<VideoUploader> {
 
   @override
   Widget build(BuildContext context) {
+    _size = MediaQuery.of(context).size;
+    _fontOne = (_size.height * 0.015) / 11;
+    _widthOne = _size.width * 0.0008;
     return Scaffold(
-        body: Center(
-          child: _processing
-              ? _getProgressBar()
-              : Container(
-            padding: EdgeInsets.all(50),
-            decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(25),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.purple.withOpacity(0.15),
-                    blurRadius: 20,
-                    offset: Offset(0, 10),
-                  )
-                ]),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  "Pick your Video",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                FlatButton(
-                    onPressed: () {
-                      _takeVideo(context, ImageSource.camera);
-                    },
-                    //minWidth: MediaQuery.of(context).size.width * 0.5,
-                    shape: RoundedRectangleBorder(
-                        side:
-                        BorderSide(color: Colors.purple.withOpacity(0.5)),
-                        borderRadius: BorderRadius.circular(5)),
-                    child: _processing
-                        ? CircularProgressIndicator(
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.white),
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Center(
+            child: _processing
+                ? _getProgressBar()
+                : Container(
+              padding: EdgeInsets.all(50),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.15),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
                     )
-                        : Text("Camera")),
-                FlatButton(
-                    onPressed: () {
-                      _takeVideo(context, ImageSource.gallery);
-                    },
-                    //minWidth: MediaQuery.of(context).size.width * 0.5,
-                    shape: RoundedRectangleBorder(
-                        side:
-                        BorderSide(color: Colors.purple.withOpacity(0.5)),
-                        borderRadius: BorderRadius.circular(5)),
-                    child: _processing
-                        ? CircularProgressIndicator(
-                      valueColor: new AlwaysStoppedAnimation<Color>(
-                          Colors.white),
-                    )
-                        : Text("Gallery")),
-              ],
+                  ]),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  authFormFieldContainer(
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (val) => val.isEmpty ? "Video Title can't be Empty"
+                          : null,
+                      onChanged: (val) {
+                        videoName = val;
+                      },
+                      decoration: authFormFieldFormatting(
+                          hintText: "Enter Title",
+                          fontSize: _fontOne * 15
+                      ),
+                      style: TextStyle(
+                        fontSize: _fontOne * 15,
+                      ),
+                    ),
+                    leftPadding: _widthOne * 20,
+                  ),
+                  SizedBox(
+                    height: MediaQuery.of(context).size.width/10,
+                  ),
+                  Text(
+                    "Pick your Video",
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(
+                    height: 10.0,
+                  ),
+                  FlatButton(
+                      onPressed: () {
+                        _takeVideo(context, ImageSource.camera);
+                      },
+                      //minWidth: MediaQuery.of(context).size.width * 0.5,
+                      shape: RoundedRectangleBorder(
+                          side:
+                          BorderSide(color: Colors.purple.withOpacity(0.5)),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: _processing
+                          ? CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.white),
+                      )
+                          : Text("Camera")),
+                  FlatButton(
+                      onPressed: () {
+                        _takeVideo(context, ImageSource.gallery);
+                      },
+                      //minWidth: MediaQuery.of(context).size.width * 0.5,
+                      shape: RoundedRectangleBorder(
+                          side:
+                          BorderSide(color: Colors.purple.withOpacity(0.5)),
+                          borderRadius: BorderRadius.circular(5)),
+                      child: _processing
+                          ? CircularProgressIndicator(
+                        valueColor: new AlwaysStoppedAnimation<Color>(
+                            Colors.white),
+                      )
+                          : Text("Gallery")),
+                ],
+              ),
             ),
           ),
         ));
