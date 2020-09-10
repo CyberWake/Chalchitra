@@ -190,7 +190,7 @@ class UserInfoStore{
     }
   }
 
-  Future addChat({String targetUID}) async{
+  Future addChatSender({String targetUID}) async{
     try{
       String chatID;
       String currentUID = _userAuth.user.uid;
@@ -203,6 +203,26 @@ class UserInfoStore{
           .doc(currentUID)
           .set({
         chatID : targetUID
+      });
+    }catch(e){
+      print("getChats : " + e.toString());
+      return null;
+    }
+  }
+
+  Future addChatReceiver({String targetUID}) async{
+    try{
+      String chatID;
+      String currentUID = _userAuth.user.uid;
+      if(currentUID.compareTo(targetUID) == -1){
+        chatID = currentUID + targetUID;
+      }else{
+        chatID = targetUID + currentUID;
+      }
+      await _chatUIDs
+          .doc(targetUID)
+          .set({
+        chatID : currentUID
       });
     }catch(e){
       print("getChats : " + e.toString());

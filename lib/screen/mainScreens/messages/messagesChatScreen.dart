@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/theme/colors.dart';
@@ -156,7 +157,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           ).then((value) async{
                             print(value);
                             if(value == false){
-                              await _userInfoStore.addChat(
+                              await _userInfoStore.addChatSender(
+                                  targetUID: widget.targetUID
+                              );
+                              await _userInfoStore.addChatReceiver(
                                   targetUID: widget.targetUID
                               );
                             }
@@ -168,6 +172,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           targetUID: widget.targetUID,
                           message: text,
                         );
+                        controller.clear();
                       },
                     ),
                   ],
@@ -196,7 +201,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => ChatBubble(
-              isMe: (snapshot.data.documents[index].data()["receiver"] != widget.targetUID),
+              isMe: snapshot.data.documents[index].data()["reciever"] != widget.targetUID,
               messageType: 1,
               message: snapshot.data.documents[index].data()['message'],
               profileImg: _userDataModel.photoUrl == null ?
@@ -227,6 +232,7 @@ class ChatBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print("message" + isMe.toString());
     if (isMe) {
       return Padding(
         padding: const EdgeInsets.only(

@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
     _heightOne = (size.height * 0.007) / 5;
     return Center(
       child: ListView.builder(
-        itemCount: posts.length,
+        itemCount: _videos.length,
         itemBuilder: (context, index){
           return Padding(
             padding: EdgeInsets.symmetric(
@@ -41,19 +41,49 @@ class _HomeState extends State<Home> {
               vertical: _heightOne * 20
             ),
             child: PostCard(
-              thumbnail: posts[index]['postImg'],
-              profileImg: posts[index]['profileImg'],
-              title: posts[index]['caption'],
-              uploader: posts[index]['name'],
-              isLiked: posts[index]['isLoved'],
-              likeCount: int.parse(posts[index]['commentCount']) * 10,
-              commentCount: int.parse(posts[index]['commentCount']),
-              uploadTime: posts[index]['timeAgo'],
+              thumbnail: _videos[index].thumbUrl,
+              profileImg: posts[0]['profileImg'],
+              title: _videos[index].videoName,
+              uploader: posts[0]['name'],
+              isLiked: posts[0]['isLoved'],
+              likeCount: _videos[index].likes,
+              commentCount: _videos[index].comments,
+              uploadTime: formatDateTime(_videos[index].uploadedAt),
               viewCount: index * Random().nextInt((index + 1) * 100) + 1,
             ),
           );
         },
       )
     );
+  }
+
+  String formatDateTime(int millisecondsSinceEpoch){
+    DateTime uploadTimeStamp =
+    DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+    String sentAt = uploadTimeStamp.toString();
+    Duration difference = DateTime.now().difference(DateTime.parse(sentAt));
+
+    if(difference.inDays > 0){
+      if(difference.inDays > 365){
+        sentAt = (difference.inDays / 365).floor().toString() + ' years ago';
+      }
+      if(difference.inDays > 30 && difference.inDays < 365){
+        sentAt = (difference.inDays / 30).floor().toString() + ' months ago';
+      }
+      if(difference.inDays >=1 && difference.inDays < 305){
+        sentAt = difference.inDays.floor().toString() + ' days ago';
+      }
+    }
+    else if(difference.inHours > 0){
+      sentAt = difference.inHours.toString() + ' hours ago';
+    }
+    else if(difference.inMinutes > 0){
+      sentAt = difference.inMinutes.toString() + ' mins ago';
+    }
+    else{
+      sentAt = difference.inSeconds.toString() + ' secs';
+    }
+
+    return sentAt;
   }
 }

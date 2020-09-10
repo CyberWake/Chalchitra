@@ -191,9 +191,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 final StorageTaskSnapshot downloadUrl =
                 (await uploadTask.onComplete);
                 url = (await downloadUrl.ref.getDownloadURL());
-                setState(() async {
-                  url = (await downloadUrl.ref.getDownloadURL());
-                });
+                setState((){});
               },
               child: Container(
                 decoration: BoxDecoration(

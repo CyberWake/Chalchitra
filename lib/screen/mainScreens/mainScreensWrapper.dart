@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
+import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
@@ -59,7 +60,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           ),
         ),
         actions: [
-          IconButton(
+          _currentIndex != 4 ? IconButton(
             icon: Icon(
               Icons.search,
               color: Colors.orange.shade400,
@@ -73,7 +74,31 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                 )
               );
             },
-          ),
+          ) : IconButton(
+            icon: Icon(
+              Icons.power_settings_new,
+              color: Colors.orange.shade400,
+              size: _iconOne * 25,
+            ),
+            onPressed: () async{
+              await UserAuth().signOut().then((value){
+                if(value){
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => Authentication()
+                      )
+                  );
+                }else{
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Something went wrong try again')
+                      )
+                  );
+                }
+              });
+            },
+          ) ,
           SizedBox(width: _widthOne * 100,)
         ],
       ),
