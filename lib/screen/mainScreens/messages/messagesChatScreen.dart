@@ -201,7 +201,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => ChatBubble(
-              isMe: snapshot.data.documents[index].data()["reciever"] != widget.targetUID,
+              isMe: snapshot.data.documents[index].data()["reciever"] == widget.targetUID,
               messageType: 1,
               message: snapshot.data.documents[index].data()['message'],
               profileImg: _userDataModel.photoUrl == null ?

@@ -35,7 +35,8 @@ class _VideoUploaderState extends State<VideoUploader> {
   double _fontOne;
   double _widthOne;
   Size _size;
-  String videoName=" ";
+  String videoName = "";
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     UserVideoStore.listenToVideos((newVideos) {
@@ -298,69 +299,77 @@ class _VideoUploaderState extends State<VideoUploader> {
                       offset: Offset(0, 10),
                     )
                   ]),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  authFormFieldContainer(
-                    child: TextFormField(
-                      keyboardType: TextInputType.emailAddress,
-                      validator: (val) => val.isEmpty ? "Video Title can't be Empty"
-                          : null,
-                      onChanged: (val) {
-                        videoName = val;
-                      },
-                      decoration: authFormFieldFormatting(
-                          hintText: "Enter Title",
-                          fontSize: _fontOne * 15
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    authFormFieldContainer(
+                      child: TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                        ? "Video Title can't be Empty"
+                            : null,
+                        onChanged: (val) {
+                          videoName = val;
+                        },
+                        decoration: authFormFieldFormatting(
+                            hintText: "Enter Title",
+                            fontSize: _fontOne * 15
+                        ),
+                        style: TextStyle(
+                          fontSize: _fontOne * 15,
+                        ),
                       ),
-                      style: TextStyle(
-                        fontSize: _fontOne * 15,
-                      ),
+                      leftPadding: _widthOne * 20,
                     ),
-                    leftPadding: _widthOne * 20,
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.width/10,
-                  ),
-                  Text(
-                    "Pick your Video",
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  FlatButton(
-                      onPressed: () {
-                        _takeVideo(context, ImageSource.camera);
-                      },
-                      //minWidth: MediaQuery.of(context).size.width * 0.5,
-                      shape: RoundedRectangleBorder(
-                          side:
-                          BorderSide(color: Colors.purple.withOpacity(0.5)),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: _processing
-                          ? CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.white),
-                      )
-                          : Text("Camera")),
-                  FlatButton(
-                      onPressed: () {
-                        _takeVideo(context, ImageSource.gallery);
-                      },
-                      //minWidth: MediaQuery.of(context).size.width * 0.5,
-                      shape: RoundedRectangleBorder(
-                          side:
-                          BorderSide(color: Colors.purple.withOpacity(0.5)),
-                          borderRadius: BorderRadius.circular(5)),
-                      child: _processing
-                          ? CircularProgressIndicator(
-                        valueColor: new AlwaysStoppedAnimation<Color>(
-                            Colors.white),
-                      )
-                          : Text("Gallery")),
-                ],
+                    SizedBox(
+                      height: MediaQuery.of(context).size.width/10,
+                    ),
+                    Text(
+                      "Pick your Video",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    FlatButton(
+                        onPressed: () {
+                          if(_formKey.currentState.validate()){
+                            _takeVideo(context, ImageSource.camera);
+                          }
+                        },
+                        //minWidth: MediaQuery.of(context).size.width * 0.5,
+                        shape: RoundedRectangleBorder(
+                            side:
+                            BorderSide(color: Colors.purple.withOpacity(0.5)),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: _processing
+                            ? CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                              Colors.white),
+                        )
+                            : Text("Camera")),
+                    FlatButton(
+                        onPressed: () {
+                          if(_formKey.currentState.validate()){
+                            _takeVideo(context, ImageSource.gallery);
+                          }
+                        },
+                        //minWidth: MediaQuery.of(context).size.width * 0.5,
+                        shape: RoundedRectangleBorder(
+                            side:
+                            BorderSide(color: Colors.purple.withOpacity(0.5)),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: _processing
+                            ? CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                              Colors.white),
+                        )
+                            : Text("Gallery")),
+                  ],
+                ),
               ),
             ),
           ),
