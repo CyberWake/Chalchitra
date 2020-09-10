@@ -1,4 +1,5 @@
 class VideoInfo {
+  String uploaderUid;
   String videoUrl;
   String thumbUrl;
   String coverUrl;
@@ -12,7 +13,8 @@ class VideoInfo {
   int comments;
 
   VideoInfo(
-      {this.videoUrl,
+      {this.uploaderUid,
+        this.videoUrl,
       this.thumbUrl,
       this.coverUrl,
       this.aspectRatio,
