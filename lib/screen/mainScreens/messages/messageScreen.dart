@@ -125,11 +125,7 @@ class _MessageState extends State<Message> {
           if(snapshot.data.data() == null){
             return Center(
               child: Text(
-<<<<<<< HEAD
-                "Something went wrong",
-=======
                 "No chats found",
->>>>>>> afa7b295dcc8b8a19a8a3109683c661597440a54
                 style: TextStyle(
                   color: Colors.orange,
                   fontSize: _fontOne * 16,
