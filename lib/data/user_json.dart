@@ -1,5 +1,3 @@
-import 'package:wowtalent/data/user_model_json.dart';
-
 // users message list
 List userMessages = [
   {

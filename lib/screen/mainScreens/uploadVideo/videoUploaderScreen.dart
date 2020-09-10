@@ -8,9 +8,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
-import '../video_uploader_widget/encoding_provider.dart';
 import 'package:path/path.dart' as p;
-import '../model/video_info.dart';
+import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/encoding_provider.dart';
+import '../../../model/video_info.dart';
 
 class VideoUploader extends StatefulWidget {
   VideoUploader({Key key, this.title}) : super(key: key);
@@ -30,7 +32,11 @@ class _VideoUploaderState extends State<VideoUploader> {
   int _videoDuration = 0;
   String _processPhase = '';
   final bool _debugMode = false;
-
+  double _fontOne;
+  double _widthOne;
+  Size _size;
+  String videoName = "";
+  final _formKey = GlobalKey<FormState>();
   @override
   void initState() {
     UserVideoStore.listenToVideos((newVideos) {
@@ -67,14 +73,11 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   Future<String> _uploadFile(filePath, folderName) async {
-    final User firebaseUser = UserAuth().user;
-    String uid = firebaseUser.uid;
-
     final file = new File(filePath);
     final basename = p.basename(filePath);
 
     final StorageReference ref =
-        FirebaseStorage.instance.ref().child(folderName).child(basename);
+    FirebaseStorage.instance.ref().child(folderName).child(basename);
     StorageUploadTask uploadTask = ref.putFile(file);
     uploadTask.events.listen(_onUploadProgress);
     StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
@@ -99,7 +102,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       updatedLines.add(updatedLine);
     }
     final updatedContents =
-        updatedLines.reduce((value, element) => value + '\n' + element);
+    updatedLines.reduce((value, element) => value + '\n' + element);
 
     file.writeAsStringSync(updatedContents);
   }
@@ -152,8 +155,7 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   Future<void> _processVideo(File rawVideoFile) async {
-    final String rand = '${new Random().nextInt(10000)}';
-    final videoName = 'video$rand';
+    print("processing");
     final Directory extDir = await getApplicationDocumentsDirectory();
     final outDirPath = '${extDir.path}/Videos/$videoName';
     final videosDir = new Directory(outDirPath);
@@ -177,7 +179,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       _progress = 0.0;
     });
 
-    if (_videoDuration <= 30000 || _videoDuration >= 360000) {
+    if (_videoDuration <= 30 || _videoDuration >= 360000000) {
       createAlertDialogue(context);
 
       print("video duration exceed");
@@ -193,7 +195,7 @@ class _VideoUploaderState extends State<VideoUploader> {
     });
 
     final encodedFilesDir =
-        await EncodingProvider.encodeHLS(rawVideoPath, outDirPath);
+    await EncodingProvider.encodeHLS(rawVideoPath, outDirPath);
 
     setState(() {
       _processPhase = 'Uploading thumbnail to firebase storage';
@@ -203,12 +205,17 @@ class _VideoUploaderState extends State<VideoUploader> {
     final videoUrl = await _uploadHLSFiles(encodedFilesDir, videoName);
 
     final videoInfo = VideoInfo(
+      uploaderUid: UserAuth().user.uid,
       videoUrl: videoUrl,
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
       aspectRatio: aspectRatio,
       uploadedAt: DateTime.now().millisecondsSinceEpoch,
       videoName: videoName,
+      likes: 0,
+      views: 0,
+      rating: 0,
+      comments: 0,
     );
 
     setState(() {
@@ -233,10 +240,8 @@ class _VideoUploaderState extends State<VideoUploader> {
     videoFile = await ImagePicker.pickVideo(
         source: source, maxDuration: const Duration(seconds: 300));
     _imagePickerActive = false;
-    Navigator.pop(context);
 
     if (videoFile == null) return;
-    //}
     setState(() {
       _processing = true;
     });
@@ -244,7 +249,7 @@ class _VideoUploaderState extends State<VideoUploader> {
     try {
       await _processVideo(videoFile);
     } catch (e) {
-      print('${e.toString()}');
+      print("error" + '${e.toString()}');
     } finally {
       setState(() {
         _processing = false;
@@ -271,65 +276,103 @@ class _VideoUploaderState extends State<VideoUploader> {
     );
   }
 
-  void _openVideoPicker(BuildContext context) {
-    showModalBottomSheet(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height: 150.0,
-            padding: EdgeInsets.all(10.0),
-            child: Column(
-              children: [
-                Text(
-                  "Pick your Video",
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                ),
-                SizedBox(
-                  height: 10.0,
-                ),
-                FlatButton(
-                  child: Text("Use Camera"),
-                  onPressed: () {
-                    _takeVideo(context, ImageSource.camera);
-                  },
-                ),
-                FlatButton(
-                  child: Text("Use Gallery"),
-                  onPressed: () {
-                    _takeVideo(context, ImageSource.gallery);
-                  },
-                )
-              ],
-            ),
-          );
-        });
-  }
-
   @override
   Widget build(BuildContext context) {
+    _size = MediaQuery.of(context).size;
+    _fontOne = (_size.height * 0.015) / 11;
+    _widthOne = _size.width * 0.0008;
     return Scaffold(
-      // appBar: AppBar(
-      //   title: Text("Upload Video"),
-      // ),
-
-      body: Center(
-        child: _processing
-            ? _getProgressBar()
-            : Column(
-                children: [
-                  FlatButton(
-                      onPressed: () {
-                        _openVideoPicker(context);
-                      },
-                      child: _processing
-                          ? CircularProgressIndicator(
-                              valueColor: new AlwaysStoppedAnimation<Color>(
-                                  Colors.white),
-                            )
-                          : Text("Upload Video")),
-                ],
+        body: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: Center(
+            child: _processing
+                ? _getProgressBar()
+                : Container(
+              padding: EdgeInsets.all(50),
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.15),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
+                    )
+                  ]),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    authFormFieldContainer(
+                      child: TextFormField(
+                        keyboardType: TextInputType.emailAddress,
+                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                        ? "Video Title can't be Empty"
+                            : null,
+                        onChanged: (val) {
+                          videoName = val;
+                        },
+                        decoration: authFormFieldFormatting(
+                            hintText: "Enter Title",
+                            fontSize: _fontOne * 15
+                        ),
+                        style: TextStyle(
+                          fontSize: _fontOne * 15,
+                        ),
+                      ),
+                      leftPadding: _widthOne * 20,
+                    ),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.width/10,
+                    ),
+                    Text(
+                      "Pick your Video",
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    FlatButton(
+                        onPressed: () {
+                          if(_formKey.currentState.validate()){
+                            _takeVideo(context, ImageSource.camera);
+                          }
+                        },
+                        //minWidth: MediaQuery.of(context).size.width * 0.5,
+                        shape: RoundedRectangleBorder(
+                            side:
+                            BorderSide(color: Colors.purple.withOpacity(0.5)),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: _processing
+                            ? CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                              Colors.white),
+                        )
+                            : Text("Camera")),
+                    FlatButton(
+                        onPressed: () {
+                          if(_formKey.currentState.validate()){
+                            _takeVideo(context, ImageSource.gallery);
+                          }
+                        },
+                        //minWidth: MediaQuery.of(context).size.width * 0.5,
+                        shape: RoundedRectangleBorder(
+                            side:
+                            BorderSide(color: Colors.purple.withOpacity(0.5)),
+                            borderRadius: BorderRadius.circular(5)),
+                        child: _processing
+                            ? CircularProgressIndicator(
+                          valueColor: new AlwaysStoppedAnimation<Color>(
+                              Colors.white),
+                        )
+                            : Text("Gallery")),
+                  ],
+                ),
               ),
-      ),
-    );
+            ),
+          ),
+        ));
   }
 }

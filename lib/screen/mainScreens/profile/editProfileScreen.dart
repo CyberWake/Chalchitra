@@ -1,3 +1,7 @@
+import 'dart:io';
+import 'package:path/path.dart' as path;
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:wowtalent/model/user.dart';
@@ -33,10 +37,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool _usernameValid = true;
   bool _nameValid = true;
   Size _size;
+  String url = " ";
+  String fileName = '';
+  File file;
 
   // Calling Cloud Firestore collection
 
-  final ref = Firestore.instance.collection('WowUsers');
+  final ref = FirebaseFirestore.instance.collection('WowUsers');
 
   // Recovering pervious state
 
@@ -55,7 +62,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       extendBodyBehindAppBar: true,
       key: _scaffoldGlobalKey,
       body: Container(
-        color: Colors.cyan,
+        color: Colors.orange,
         child: Stack(
           children: [
             Container(
@@ -140,7 +147,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 margin: EdgeInsets.symmetric(horizontal: 10),
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(50),
-                                  color: Colors.cyan,
+                                  color: Colors.orange,
                                 ),
                                 child: Center(
                                   child: Text("Update", style: TextStyle(color: Colors
@@ -163,17 +170,32 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               child: CircleAvatar(
                 backgroundImage:
-                NetworkImage("https://via.placeholder.com/150"),
+                user.photoUrl==null?NetworkImage("https://via.placeholder.com/150"):NetworkImage(url),
                 radius: 50.0,
               ),
             ),
             InkWell(
-              onTap: (){
-                Navigator.of(context).pop();
+              onTap: () async {
+                file = await FilePicker.getFile(type: FileType.image);
+                fileName = path.basename(file.path);
+                setState(() {
+                  fileName = path.basename(file.path);
+                });
+                StorageReference storageReference = FirebaseStorage
+                    .instance
+                    .ref()
+                    .child("images/$fileName");
+                StorageUploadTask uploadTask =
+                storageReference.putFile(file);
+
+                final StorageTaskSnapshot downloadUrl =
+                (await uploadTask.onComplete);
+                url = (await downloadUrl.ref.getDownloadURL());
+                setState((){});
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.cyan.shade800,
+                  color: Colors.orange.shade800,
                   borderRadius: BorderRadius.circular(50)
                 ),
                 padding: EdgeInsets.all(2.5),
@@ -200,7 +222,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         color: Colors.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [BoxShadow(
-          color: Color.fromRGBO(51, 204, 255, 0.3),
+          color: Colors.orange.withOpacity(0.15),
           blurRadius: 20,
           offset: Offset(0, 10),
         )
@@ -219,7 +241,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     DocumentSnapshot documentSnapshot = await ref.document(widget.uid).get();
     user = UserDataModel.fromDocument(documentSnapshot);
-
+    url = user.photoUrl;
     usernameController.text = user.username;
     nameController.text = user.displayName;
     bioController.text = user.bio;
@@ -249,12 +271,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
         loading = true;
       });
 
-      ref.document(widget.uid).updateData({
+      ref.doc(widget.uid).update({
         "username": usernameController.text,
         "displayName": nameController.text,
         "bio": bioController.text,
         "age": ageController.text,
-        "gender": genderController.text
+        "gender": genderController.text,
+        "photoUrl": url,
       });
 
       setState(() {

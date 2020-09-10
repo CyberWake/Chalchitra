@@ -1,15 +1,8 @@
 List searchCategories = [
-  "Shop",
-  "Decor",
-  "Travel",
-  "Architechture",
-  "Food",
-  "Art",
-  "Style",
-  "TV & Movies",
-  "Music",
-  "DIY",
-  "Comics"
+  "Vocals",
+  "Dance",
+  "Instrumental",
+  "Stand up Comedy",
 ];
 
 List searchImages = [

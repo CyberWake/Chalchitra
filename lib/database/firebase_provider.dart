@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import '../auth/auth_api.dart';
 import '../model/video_info.dart';
 
@@ -8,6 +9,9 @@ class UserVideoStore {
 
   static final CollectionReference _allVideos =
   FirebaseFirestore.instance.collection('videos');
+
+  static final CollectionReference _videoLikes =
+  FirebaseFirestore.instance.collection('videoLikes');
 
   static final UserAuth _userAuth = UserAuth();
 
@@ -25,6 +29,11 @@ class UserVideoStore {
         'aspectRatio': video.aspectRatio,
         'uploadedAt': video.uploadedAt,
         'videoName': video.videoName,
+        'uploaderUid': video.uploaderUid,
+        'likes': video.likes,
+        'views': video.views,
+        'comments': video.comments,
+        'rating': video.rating,
       };
 
 
@@ -61,6 +70,11 @@ class UserVideoStore {
     }
   }
 
+  Stream getVideos(){
+    return _allVideos
+        .snapshots();
+  }
+
   static listenToAllVideos(callback) async{
     try{
       _allVideos
@@ -90,6 +104,46 @@ class UserVideoStore {
       }).toList();
     }catch(e){
       print(e.toString());
+    }
+  }
+
+  Future likeVideo({String videoID}) async{
+    try{
+      await _allVideos.doc(videoID).update(
+        {"likes" : FieldValue.increment(1)}
+      );
+      await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").doc(videoID).set({
+        "id" : videoID
+      });
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future dislikeVideo({String videoID}) async{
+    try{
+      await _allVideos.doc(videoID).update(
+          {"likes" : FieldValue.increment(-1)}
+      );
+      await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").doc(videoID).delete();
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future checkLiked({String videoID}) async{
+    try{
+      QuerySnapshot res = await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").where(
+        "id", isEqualTo: videoID
+      ).get();
+      return res.size == 1;
+    }catch(e){
+      return false;
     }
   }
 }

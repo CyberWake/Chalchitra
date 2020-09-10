@@ -2,9 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/screen/messageScreen.dart';
-import 'package:wowtalent/screen/rootScreen.dart';
-import 'package:wowtalent/screen/signInScreen.dart';
+import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:provider/provider.dart';
 
 void main() async{
@@ -22,14 +20,9 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'WowTalent',
         theme: ThemeData(
-          primarySwatch: Colors.teal,
+          primarySwatch: Colors.orange,
         ),
-        home: UserAuth().user != null ? RootApp() : Login(),
-        routes: <String, WidgetBuilder>{
-          '/home': (_) => new RootApp(),
-          'message': (_) => new Message(),
-          '/Login': (_) => new Login()
-        },
+        home: Authentication(),
       ),
     );
   }
