@@ -4,7 +4,6 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
-import 'package:wowtalent/data/user_json.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 
 class Message extends StatefulWidget {
@@ -123,6 +122,17 @@ class _MessageState extends State<Message> {
             ),
           );
         } else {
+          if(snapshot.data.data() == null){
+            return Center(
+              child: Text(
+                "No chats found",
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: _fontOne * 16,
+                ),
+              ),
+            );
+          }
           List keys = snapshot.data.data().keys.toList();
           List values = snapshot.data.data().values.toList();
           getUsersDetails(values);
