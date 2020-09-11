@@ -50,18 +50,12 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
-        title: /*Padding(
-          padding: EdgeInsets.all(_iconOne * 10),
-          child: Text(
-            "WowTalent",
-            style: TextStyle(
-              color: Colors.orange.shade400
-            ),
+        title: Container(
+          padding: EdgeInsets.symmetric(
+              vertical: 10,
           ),
-        ),*/Container(
-          padding: EdgeInsets.symmetric(vertical: 3),
             height: 55,
-            width: MediaQuery.of(context).size.width/2,
+            width: _size.width / 2.5,
           child: Image.asset('assets/images/appBarLogo1.png',fit: BoxFit.fitHeight,),
         ),
         actions: [
