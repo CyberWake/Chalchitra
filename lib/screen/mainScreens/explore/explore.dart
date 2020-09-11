@@ -29,60 +29,185 @@ class _ExploreState extends State<Explore> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: Padding(
-            padding: const EdgeInsets.only(left: 15),
-            child: Row(
-                children: List.generate(searchCategories.length, (index) {
-                  return CategoryStoryItem(
-                    name: searchCategories[index],
+    Size size = MediaQuery.of(context).size;
+    return SingleChildScrollView(
+      child: Container(
+        height: size.height * 0.9,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Padding(
+                padding: const EdgeInsets.only(left: 15),
+                child: Row(
+                    children: List.generate(searchCategories.length, (index) {
+                      return CategoryStoryItem(
+                        name: searchCategories[index],
+                      );
+                    }),
+                ),
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "TRENDING",
+                style: TextStyle(
+                    color: Colors.orange.shade400,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: List.generate(_videos.length, (index) {
+                  final video = _videos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),
+                      );
+                    },
+                    child: Container(
+                      width: size.width * 0.2,
+                      height: size.height * 0.2,
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        image: DecorationImage(
+                            image: NetworkImage(video.thumbUrl),
+                            fit: BoxFit.cover
+                        ),
+                        borderRadius: BorderRadius.circular(10.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            offset: Offset(0.0, 10.0), //(x,y)
+                            blurRadius: 10.0,
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 }),
+              ),
             ),
-          ),
-        ),
-        SizedBox(
-          height: 15,
-        ),
-        Expanded(
-          child: StaggeredGridView.countBuilder(
-            crossAxisCount: 3,
-            itemCount: _videos.length,
-            itemBuilder: (BuildContext context, int index){
-              dynamic video = _videos[index];
-              return GestureDetector(
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return Player(
-                          video: video,
-                        );
-                      },
+            SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "STAFF PICKS",
+                style: TextStyle(
+                    color: Colors.orange.shade400,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+            ),
+            SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: List.generate(_videos.length, (index) {
+                  final video = _videos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),
+                      );
+                    },
+                    child: Container(
+                      width: size.width * 0.2,
+                      height: size.height * 0.2,
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        image: DecorationImage(
+                            image: NetworkImage(video.thumbUrl),
+                            fit: BoxFit.cover
+                        ),
+                        borderRadius: BorderRadius.circular(10.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            offset: Offset(0.0, 10.0), //(x,y)
+                            blurRadius: 10.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "LATEST VIDEOS",
+                style: TextStyle(
+                    color: Colors.orange.shade400,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+            ),
+            Expanded(
+              child: StaggeredGridView.countBuilder(
+                crossAxisCount: 3,
+                itemCount: _videos.length,
+                itemBuilder: (BuildContext context, int index){
+                  dynamic video = _videos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return Player(
+                              video: video,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: NetworkImage(video.thumbUrl),
+                              fit: BoxFit.cover
+                          )
+                      ),
                     ),
                   );
                 },
-                child: Container(
-                  decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: NetworkImage(video.thumbUrl),
-                          fit: BoxFit.cover
-                      )
-                  ),
-                ),
-              );
-            },
-            staggeredTileBuilder: (int index) =>
-                StaggeredTile.count(1, _videos[index].aspectRatio),
-            mainAxisSpacing: 5.0,
-            crossAxisSpacing: 5.0,
-          ),
-        )
-      ],
+                staggeredTileBuilder: (int index) =>
+                    StaggeredTile.count(1, _videos[index].aspectRatio),
+                mainAxisSpacing: 5.0,
+                crossAxisSpacing: 5.0,
+              ),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

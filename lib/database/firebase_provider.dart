@@ -77,13 +77,13 @@ class UserVideoStore {
   }
 
   Stream getVideos(){
-    return _allVideos
+    return _allVideos.orderBy("uploadedAt", descending: true)
         .snapshots();
   }
 
   static listenToAllVideos(callback) async{
     try{
-      _allVideos
+      _allVideos.orderBy("uploadedAt", descending: true)
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);

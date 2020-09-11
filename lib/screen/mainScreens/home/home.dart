@@ -76,9 +76,9 @@ class _HomeState extends State<Home> {
                             video: snapshot.data.documents[index],
                             id: snapshot.data.documents[index].id,
                             thumbnail: snapshot.data.documents[index].data()['thumbUrl'],
-                            profileImg: snap.data.data()['profileUrl'] == null ?
+                            profileImg: snap.data.data()['photoUrl'] == null ?
                             "https://via.placeholder.com/150"
-                                : snap.data.data()['profileUrl'],
+                                : snap.data.data()['photoUrl'],
                             title: snapshot.data.documents[index].data()['videoName'],
                             uploader: snap.data.data()['username'],
                             likeCount: snapshot.data.documents[index].data()['likes'],
