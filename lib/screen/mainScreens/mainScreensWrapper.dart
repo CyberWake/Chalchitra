@@ -50,7 +50,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: Colors.transparent,
-        title: Padding(
+        title: /*Padding(
           padding: EdgeInsets.all(_iconOne * 10),
           child: Text(
             "WowTalent",
@@ -58,6 +58,11 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
               color: Colors.orange.shade400
             ),
           ),
+        ),*/Container(
+          padding: EdgeInsets.symmetric(vertical: 3),
+            height: 55,
+            width: MediaQuery.of(context).size.width/2,
+          child: Image.asset('assets/images/appBarLogo1.png',fit: BoxFit.fitHeight,),
         ),
         actions: [
           _currentIndex != 4 ? IconButton(

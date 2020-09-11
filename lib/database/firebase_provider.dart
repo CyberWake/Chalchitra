@@ -160,7 +160,7 @@ class UserVideoStore {
           "videoID", isEqualTo: videoID
       ).get();
       if(res.size==0){
-        return 0;
+        return 0.0;
       }
       else{
         return res.docs[0].data()['rating'];
