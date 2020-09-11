@@ -32,7 +32,7 @@ class _ExploreState extends State<Explore> {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
-        height: size.height * 0.9,
+        height: size.height * 1.45,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -173,9 +173,9 @@ class _ExploreState extends State<Explore> {
             Expanded(
               child: StaggeredGridView.countBuilder(
                 crossAxisCount: 3,
-                itemCount: _videos.length,
+                itemCount: _videos.length * 5,
                 itemBuilder: (BuildContext context, int index){
-                  dynamic video = _videos[index];
+                  dynamic video = _videos[0];
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -200,7 +200,7 @@ class _ExploreState extends State<Explore> {
                   );
                 },
                 staggeredTileBuilder: (int index) =>
-                    StaggeredTile.count(1, _videos[index].aspectRatio),
+                    StaggeredTile.count(1, _videos[0].aspectRatio),
                 mainAxisSpacing: 5.0,
                 crossAxisSpacing: 5.0,
               ),
