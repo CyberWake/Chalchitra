@@ -1,6 +1,9 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
@@ -40,7 +43,61 @@ class _PostCardState extends State<PostCard> {
   UserVideoStore _userVideoStore = UserVideoStore();
   bool _isLiked;
 
+  void _button(Offset offset) async{
+    double left = offset.dx;
+    double top = offset.dy;
+    await showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(left, top, 0, 0),
+        items:[
+          PopupMenuItem(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Share'),
+                    IconButton(
+                        icon: Icon(Icons.share,size: 18,color: Colors.blueAccent),
+                        onPressed: null
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Download'),
+                    IconButton(
+                        icon: Icon(Icons.arrow_downward,size: 20,color: Colors.green),
+                        onPressed: null
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Forward'),
+                    Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(math.pi),
+                      child: IconButton(
+                          icon: Icon(Icons.reply,size: 20,color: Colors.orangeAccent,),
+                          onPressed: null
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          )
+        ]
+    );
+  }
+
   void setup() async{
+    _sliderValue = await
+    _userVideoStore.checkRated(videoID:widget.id);
     _isLiked = await _userVideoStore.checkLiked(
       videoID: widget.id
     );
@@ -51,7 +108,6 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
     super.initState();
-    _sliderValue = double.parse(widget.rating.toString());
     setup();
   }
 
@@ -84,6 +140,7 @@ class _PostCardState extends State<PostCard> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
+
     return Container(
       height: _size.height * 0.4,
       width: _size.width * 0.9,
@@ -149,12 +206,14 @@ class _PostCardState extends State<PostCard> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    IconButton(
-                      icon: Icon(Icons.more_horiz,
-                          color: Colors.grey,
-                          size: _iconOne * 20),
-                      onPressed: (){
-                        showPopUp(context);
+                    GestureDetector(
+                      child: Icon(
+                        Icons.more_horiz,
+                        color: Colors.grey,
+                        size: _iconOne * 20
+                      ),
+                      onTapDown: (TapDownDetails details) {
+                        _button(details.globalPosition);
                       },
                     ),
                     Text(
@@ -277,32 +336,24 @@ class _PostCardState extends State<PostCard> {
                       ),
                     ],
                   ),
-                  SizedBox(width: _widthOne * 40,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.share,
-                        color: Colors.blueAccent,
-                        size: _iconOne * 23,
-                      ),
-                      SizedBox(width: _widthOne * 20,),
-                      Text(
-                        widget.commentCount.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: _fontOne * 14,
-                            color: Colors.grey
-                        ),
-                      ),
-                    ],
-                  ),
+                  SizedBox(width: _widthOne * 50,),
                   Expanded(
                     child: Slider(
                       value: _sliderValue,
                       min: 0,
                       max: 5,
-                      onChanged: (val){
+                      onChangeEnd: (val) async {
+                        _sliderValue = val;
+                        bool success =
+                            await _userVideoStore.rateVideo(videoID:widget.id,rating: _sliderValue);
+                        if(success){
+                          print('done rating');
+                        }
+                        else{
+                          print('failure');
+                        }
+                        },
+                      onChanged: (val) {
                         setState(() {
                           _sliderValue = val;
                         });

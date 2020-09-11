@@ -24,19 +24,19 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.orange,
         ),
         home: SplashScreen(
-            seconds: 3,
+            seconds: 8,
             navigateAfterSeconds: Authentication(),
-            title: new Text('Welcome To the World of Talent',
-              style: new TextStyle(
+            /*title: Text('Welcome To the World of Talent',
+              style: TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 20.0
-              ),),
-            image: new Image.network('https://i.imgur.com/TyCSG9A.png'),
+              ),),*/
+            image: Image.asset('assets/images/splash.png'),
             backgroundColor: Colors.white,
-            styleTextUnderTheLoader: new TextStyle(),
+            styleTextUnderTheLoader: TextStyle(),
             photoSize: 100.0,
             onClick: ()=>print("Wow Talent"),
-            loaderColor: Colors.red
+            loaderColor: Colors.orange,
         )
       ),
     );

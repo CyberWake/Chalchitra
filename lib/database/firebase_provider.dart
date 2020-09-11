@@ -16,6 +16,9 @@ class UserVideoStore {
   static final CollectionReference _videoComments =
   FirebaseFirestore.instance.collection('videoComments');
 
+  static final CollectionReference _videoRating =
+  FirebaseFirestore.instance.collection('ratings');
+
   static final UserAuth _userAuth = UserAuth();
 
 
@@ -138,6 +141,38 @@ class UserVideoStore {
     }
   }
 
+  Future rateVideo({String videoID,double rating}) async{
+    try{
+      await _videoRating
+          .doc(_userAuth.user.uid)
+          .collection(videoID)
+          .doc(videoID)
+          .set({
+        'videoID': videoID,
+        'rating': rating});
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future checkRated({String videoID}) async{
+    try{
+      QuerySnapshot res = await _videoRating.doc(_userAuth.user.uid)
+          .collection(videoID).where(
+          "videoID", isEqualTo: videoID
+      ).get();
+      if(res.size==0){
+        return 0.0;
+      }
+      else{
+        return res.docs[0].data()['rating'];
+      }
+    }catch(e){
+      return false;
+    }
+  }
+
   Future checkLiked({String videoID}) async{
     try{
       QuerySnapshot res = await _videoLikes.doc(_userAuth.user.uid)
@@ -153,16 +188,19 @@ class UserVideoStore {
   Future addVideoComments({String videoID, String comment}) async{
     try{
       int timestamp =  DateTime.now().millisecondsSinceEpoch;
-
+      await _allVideos.doc(videoID).update({
+          "comments" : FieldValue.increment(1)
+        });
       await _videoComments
           .doc(videoID).collection(videoID).doc(timestamp.toString())
           .set({
-        "uid" : _userAuth.user.uid,
+        "userUID" : _userAuth.user.uid,
         "comment" : comment,
         "timestamp": timestamp
       },);
+      return true;
     }catch(e){
-      return null;
+      return false;
     }
   }
 

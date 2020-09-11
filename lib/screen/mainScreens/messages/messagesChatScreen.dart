@@ -208,7 +208,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             ),
             itemCount: snapshot.data.documents.length,
             reverse: true,
-            //controller: listScrollController,
           );
         }
       },
