@@ -72,12 +72,12 @@ class _VideoUploaderState extends State<VideoUploader> {
     }
   }
 
-  Future<String> _uploadFile(filePath, folderName) async {
+  Future<String> _uploadFile(filePath, folderName, timestamp) async {
     final file = new File(filePath);
     final basename = p.basename(filePath);
 
     final StorageReference ref =
-    FirebaseStorage.instance.ref().child(folderName).child(basename);
+    FirebaseStorage.instance.ref().child(folderName).child(timestamp + basename);
     StorageUploadTask uploadTask = ref.putFile(file);
     uploadTask.events.listen(_onUploadProgress);
     StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
@@ -107,7 +107,7 @@ class _VideoUploaderState extends State<VideoUploader> {
     file.writeAsStringSync(updatedContents);
   }
 
-  Future<String> _uploadHLSFiles(dirPath, videoName) async {
+  Future<String> _uploadHLSFiles(dirPath, videoName, timestamp) async {
     final videosDir = Directory(dirPath);
 
     var playlistUrl = '';
@@ -124,7 +124,7 @@ class _VideoUploaderState extends State<VideoUploader> {
         _progress = 0.0;
       });
 
-      final downloadUrl = await _uploadFile(file.path, videoName);
+      final downloadUrl = await _uploadFile(file.path, "videos/${videoName + timestamp}", "");
 
       if (fileName == 'master.m3u8') {
         playlistUrl = downloadUrl;
@@ -201,8 +201,9 @@ class _VideoUploaderState extends State<VideoUploader> {
       _processPhase = 'Uploading thumbnail to firebase storage';
       _progress = 0.0;
     });
-    final thumbUrl = await _uploadFile(thumbFilePath, 'thumbnail');
-    final videoUrl = await _uploadHLSFiles(encodedFilesDir, videoName);
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    final thumbUrl = await _uploadFile(thumbFilePath, 'thumbnail', timestamp.toString());
+    final videoUrl = await _uploadHLSFiles(encodedFilesDir, videoName, timestamp.toString());
 
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
@@ -210,7 +211,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
       aspectRatio: aspectRatio,
-      uploadedAt: DateTime.now().millisecondsSinceEpoch,
+      uploadedAt: timestamp,
       videoName: videoName,
       likes: 0,
       views: 0,

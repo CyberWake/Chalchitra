@@ -102,7 +102,9 @@ class _PostCardState extends State<PostCard> {
       videoID: widget.id
     );
 
-    setState(() {});
+    if(this.mounted){
+      setState(() {});
+    }
   }
 
   @override
@@ -250,7 +252,7 @@ class _PostCardState extends State<PostCard> {
                       bottomLeft: Radius.circular(15),
                     ),
                     image: DecorationImage(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitWidth,
                       image: NetworkImage(
                         widget.thumbnail
                       )
