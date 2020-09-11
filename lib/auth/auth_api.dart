@@ -74,13 +74,10 @@ class UserAuth{
   }
 
   Future signInWithFacebook() async {
-    // Trigger the sign-in flow
     try {
       final LoginResult result = await FacebookAuth.instance.login();
-      // Create a credential from the access token
       final FacebookAuthCredential facebookAuthCredential =
       FacebookAuthProvider.credential(result.accessToken.token);
-      // Once signed in, return the UserCredential
       UserCredential userCredential =
       await _auth.signInWithCredential(facebookAuthCredential);
       DocumentSnapshot userRecord =

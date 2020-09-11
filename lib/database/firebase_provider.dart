@@ -13,6 +13,9 @@ class UserVideoStore {
   static final CollectionReference _videoLikes =
   FirebaseFirestore.instance.collection('videoLikes');
 
+  static final CollectionReference _videoComments =
+  FirebaseFirestore.instance.collection('videoComments');
+
   static final CollectionReference _videoRating =
   FirebaseFirestore.instance.collection('ratings');
 
@@ -74,13 +77,13 @@ class UserVideoStore {
   }
 
   Stream getVideos(){
-    return _allVideos
+    return _allVideos.orderBy("uploadedAt", descending: true)
         .snapshots();
   }
 
   static listenToAllVideos(callback) async{
     try{
-      _allVideos
+      _allVideos.orderBy("uploadedAt", descending: true)
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);
@@ -180,5 +183,30 @@ class UserVideoStore {
     }catch(e){
       return false;
     }
+  }
+
+  Future addVideoComments({String videoID, String comment}) async{
+    try{
+      int timestamp =  DateTime.now().millisecondsSinceEpoch;
+      await _allVideos.doc(videoID).update({
+          "comments" : FieldValue.increment(1)
+        });
+      await _videoComments
+          .doc(videoID).collection(videoID).doc(timestamp.toString())
+          .set({
+        "userUID" : _userAuth.user.uid,
+        "comment" : comment,
+        "timestamp": timestamp
+      },);
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Stream getVideoComments({String videoID}) {
+    return _videoComments.doc(videoID).collection(videoID)
+        .orderBy("timestamp", descending: true)
+        .limit(50).snapshots();
   }
 }
