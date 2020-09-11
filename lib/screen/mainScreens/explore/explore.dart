@@ -175,7 +175,7 @@ class _ExploreState extends State<Explore> {
                 crossAxisCount: 3,
                 itemCount: _videos.length * 5,
                 itemBuilder: (BuildContext context, int index){
-                  dynamic video = _videos[0];
+                  dynamic video = _videos[index];
                   return GestureDetector(
                     onTap: () {
                       Navigator.push(
@@ -200,7 +200,7 @@ class _ExploreState extends State<Explore> {
                   );
                 },
                 staggeredTileBuilder: (int index) =>
-                    StaggeredTile.count(1, _videos[0].aspectRatio),
+                    StaggeredTile.count(1, _videos[index].aspectRatio),
                 mainAxisSpacing: 5.0,
                 crossAxisSpacing: 5.0,
               ),
