@@ -13,6 +13,9 @@ class UserVideoStore {
   static final CollectionReference _videoLikes =
   FirebaseFirestore.instance.collection('videoLikes');
 
+  static final CollectionReference _videoRating =
+  FirebaseFirestore.instance.collection('ratings');
+
   static final UserAuth _userAuth = UserAuth();
 
 
@@ -130,6 +133,38 @@ class UserVideoStore {
       await _videoLikes.doc(_userAuth.user.uid)
           .collection("likedVideos").doc(videoID).delete();
       return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future rateVideo({String videoID,double rating}) async{
+    try{
+      await _videoRating
+          .doc(_userAuth.user.uid)
+          .collection(videoID)
+          .doc(videoID)
+          .set({
+        'videoID': videoID,
+        'rating': rating});
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
+  Future checkRated({String videoID}) async{
+    try{
+      QuerySnapshot res = await _videoRating.doc(_userAuth.user.uid)
+          .collection(videoID).where(
+          "videoID", isEqualTo: videoID
+      ).get();
+      if(res.size==0){
+        return 0;
+      }
+      else{
+        return res.docs[0].data()['rating'];
+      }
     }catch(e){
       return false;
     }
