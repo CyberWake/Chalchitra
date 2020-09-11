@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 
 class PostCard extends StatefulWidget {
@@ -54,6 +55,28 @@ class _PostCardState extends State<PostCard> {
     setup();
   }
 
+  void choiceAction(String choice){
+    if(choice == Constants.Settings){
+      print('Settings');
+    }else if(choice == Constants.Subscribe){
+      print('Subscribe');
+    }else if(choice == Constants.SignOut){
+      print('SignOut');
+    }
+  }
+  showPopUp(BuildContext context){
+    return PopupMenuButton<String>(
+      onSelected: choiceAction,
+      itemBuilder: (BuildContext context){
+        return Constants.choices.map((String choice){
+          return PopupMenuItem<String>(
+            value: choice,
+            child: Text(choice),
+          );
+        }).toList();
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -126,10 +149,13 @@ class _PostCardState extends State<PostCard> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.more_horiz,
-                      color: Colors.grey,
-                      size: _iconOne * 20
+                    IconButton(
+                      icon: Icon(Icons.more_horiz,
+                          color: Colors.grey,
+                          size: _iconOne * 20),
+                      onPressed: (){
+                        showPopUp(context);
+                      },
                     ),
                     Text(
                       widget.uploadTime,
@@ -223,10 +249,22 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.comment,
-                        color: Colors.yellow[900],
-                        size: _iconOne * 23,
+                      IconButton(
+                        onPressed: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CommentsScreen(
+                                videoId: widget.id,
+                              )
+                            )
+                          );
+                        },
+                        icon: Icon(
+                          Icons.comment,
+                          color: Colors.yellow[900],
+                          size: _iconOne * 23,
+                        ),
                       ),
                       SizedBox(width: _widthOne * 20,),
                       Text(
@@ -282,4 +320,16 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
+}
+
+class Constants{
+  static const String Subscribe = 'Subscribe';
+  static const String Settings = 'Settings';
+  static const String SignOut = 'Sign out';
+
+  static const List<String> choices = <String>[
+    Subscribe,
+    Settings,
+    SignOut
+  ];
 }

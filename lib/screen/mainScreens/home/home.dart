@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:popup_menu/popup_menu.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
@@ -18,6 +19,8 @@ class _HomeState extends State<Home> {
   double _heightOne;
   UserInfoStore _userInfoStore = UserInfoStore();
   List _usersDetails = [];
+  PopupMenu menu;
+  GlobalKey btnKey = GlobalKey();
 
   @override
   void initState() {
