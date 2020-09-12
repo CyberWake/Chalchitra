@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "107639817018-rh8td4gsm5bbm9ch633nsugo2e2155gn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wowtalent",
+            "certificate_hash": "5eb4f62f1ac28cb96c0d85ff4dd5c663697c3312"
+          }
+        },
+        {
+          "client_id": "107639817018-rjq3k3eeb1l5fvobstee9c48rimdivrh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wowtalent",
+            "certificate_hash": "adc8c09dcfb58960eda7924affde6ddbd8aff6f6"
+          }
+        },
+        {
           "client_id": "107639817018-f8g48vmcn61cqruosfd2th4nbakji6ad.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -23,7 +39,7 @@
           }
         },
         {
-          "client_id": "107639817018-jqsgthg1ap09hea58f1ubhtsr6btbp9k.apps.googleusercontent.com",
+          "client_id": "107639817018-fhc02kr191t8fvgietlej763322053nr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
@@ -36,7 +52,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "107639817018-jqsgthg1ap09hea58f1ubhtsr6btbp9k.apps.googleusercontent.com",
+              "client_id": "107639817018-fhc02kr191t8fvgietlej763322053nr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

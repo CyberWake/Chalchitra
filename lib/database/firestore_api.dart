@@ -57,9 +57,9 @@ class UserInfoStore{
   Future<bool>checkIfAlreadyFollowing({String uid}) async {
     try{
       DocumentSnapshot documentSnapshot =
-      await _followings
+      await _followers
           .doc(uid)
-          .collection('usersFollowers')
+          .collection('userFollowers')
           .doc(_userAuth.user.uid).get();
       return documentSnapshot.exists;
     }catch(e){
