@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:math';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/encoding_provider.dart';
 import '../../../model/video_info.dart';
@@ -31,7 +28,6 @@ class _VideoUploaderState extends State<VideoUploader> {
   double _progress = 0.0;
   int _videoDuration = 0;
   String _processPhase = '';
-  final bool _debugMode = false;
   double _fontOne;
   double _widthOne;
   Size _size;
@@ -136,13 +132,13 @@ class _VideoUploaderState extends State<VideoUploader> {
     return playlistUrl;
   }
 
-  createAlertDialogue(BuildContext context) {
+  createAlertDialogue(BuildContext context, String message) {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: Text("Warning"),
-            content: Text("Your video exceed limits, Please re-upload!!!"),
+            content: Text(message),
             actions: [
               FlatButton(
                 child: Text("Ok"),
@@ -180,9 +176,14 @@ class _VideoUploaderState extends State<VideoUploader> {
       _progress = 0.0;
     });
 
-    if (_videoDuration <= 30 || _videoDuration >= 360000000) {
-      createAlertDialogue(context);
+    if (_videoDuration < 90000) {
+      createAlertDialogue(context, "Video Can't be less than 90 seconds");
+      print("video duration exceed");
+      return null;
+    }
 
+    if ( _videoDuration > 300000) {
+      createAlertDialogue(context, "Video Can't be more than 300 seconds");
       print("video duration exceed");
       return null;
     }

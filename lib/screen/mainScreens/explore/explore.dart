@@ -173,7 +173,7 @@ class _ExploreState extends State<Explore> {
             Expanded(
               child: StaggeredGridView.countBuilder(
                 crossAxisCount: 3,
-                itemCount: _videos.length * 5,
+                itemCount: _videos.length,
                 itemBuilder: (BuildContext context, int index){
                   dynamic video = _videos[index];
                   return GestureDetector(
