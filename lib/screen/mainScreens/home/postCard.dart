@@ -1,8 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 
 class PostCard extends StatefulWidget {
@@ -39,21 +41,98 @@ class _PostCardState extends State<PostCard> {
   UserVideoStore _userVideoStore = UserVideoStore();
   bool _isLiked;
 
+  void _button(Offset offset) async{
+    double left = offset.dx;
+    double top = offset.dy;
+    await showMenu(
+        context: context,
+        position: RelativeRect.fromLTRB(left, top, 0, 0),
+        items:[
+          PopupMenuItem(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Share'),
+                    IconButton(
+                        icon: Icon(Icons.share,size: 18,color: Colors.blueAccent),
+                        onPressed: null
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Download'),
+                    IconButton(
+                        icon: Icon(Icons.arrow_downward,size: 20,color: Colors.green),
+                        onPressed: null
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text('Forward'),
+                    Transform(
+                      alignment: Alignment.center,
+                      transform: Matrix4.rotationY(math.pi),
+                      child: IconButton(
+                          icon: Icon(Icons.reply,size: 20,color: Colors.orangeAccent,),
+                          onPressed: null
+                      ),
+                    )
+                  ],
+                ),
+              ],
+            ),
+          )
+        ]
+    );
+  }
+
   void setup() async{
+    _sliderValue = await
+    _userVideoStore.checkRated(videoID:widget.id);
     _isLiked = await _userVideoStore.checkLiked(
       videoID: widget.id
     );
 
-    setState(() {});
+    if(this.mounted){
+      setState(() {});
+    }
   }
 
   @override
   void initState() {
     super.initState();
-    _sliderValue = double.parse(widget.rating.toString());
     setup();
   }
 
+  void choiceAction(String choice){
+    if(choice == Constants.Settings){
+      print('Settings');
+    }else if(choice == Constants.Subscribe){
+      print('Subscribe');
+    }else if(choice == Constants.SignOut){
+      print('SignOut');
+    }
+  }
+  showPopUp(BuildContext context){
+    return PopupMenuButton<String>(
+      onSelected: choiceAction,
+      itemBuilder: (BuildContext context){
+        return Constants.choices.map((String choice){
+          return PopupMenuItem<String>(
+            value: choice,
+            child: Text(choice),
+          );
+        }).toList();
+      },
+    );
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -61,6 +140,7 @@ class _PostCardState extends State<PostCard> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
+
     return Container(
       height: _size.height * 0.4,
       width: _size.width * 0.9,
@@ -126,10 +206,15 @@ class _PostCardState extends State<PostCard> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.more_horiz,
-                      color: Colors.grey,
-                      size: _iconOne * 20
+                    GestureDetector(
+                      child: Icon(
+                        Icons.more_horiz,
+                        color: Colors.grey,
+                        size: _iconOne * 20
+                      ),
+                      onTapDown: (TapDownDetails details) {
+                        _button(details.globalPosition);
+                      },
                     ),
                     Text(
                       widget.uploadTime,
@@ -165,7 +250,7 @@ class _PostCardState extends State<PostCard> {
                       bottomLeft: Radius.circular(15),
                     ),
                     image: DecorationImage(
-                      fit: BoxFit.cover,
+                      fit: BoxFit.fitWidth,
                       image: NetworkImage(
                         widget.thumbnail
                       )
@@ -223,10 +308,22 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Icon(
-                        Icons.comment,
-                        color: Colors.yellow[900],
-                        size: _iconOne * 23,
+                      IconButton(
+                        onPressed: (){
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CommentsScreen(
+                                videoId: widget.id,
+                              )
+                            )
+                          );
+                        },
+                        icon: Icon(
+                          Icons.comment,
+                          color: Colors.yellow[900],
+                          size: _iconOne * 23,
+                        ),
                       ),
                       SizedBox(width: _widthOne * 20,),
                       Text(
@@ -239,32 +336,24 @@ class _PostCardState extends State<PostCard> {
                       ),
                     ],
                   ),
-                  SizedBox(width: _widthOne * 40,),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.share,
-                        color: Colors.blueAccent,
-                        size: _iconOne * 23,
-                      ),
-                      SizedBox(width: _widthOne * 20,),
-                      Text(
-                        widget.commentCount.toString(),
-                        style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: _fontOne * 14,
-                            color: Colors.grey
-                        ),
-                      ),
-                    ],
-                  ),
+                  SizedBox(width: _widthOne * 50,),
                   Expanded(
                     child: Slider(
                       value: _sliderValue,
                       min: 0,
                       max: 5,
-                      onChanged: (val){
+                      onChangeEnd: (val) async {
+                        _sliderValue = val;
+                        bool success =
+                            await _userVideoStore.rateVideo(videoID:widget.id,rating: _sliderValue);
+                        if(success){
+                          print('done rating');
+                        }
+                        else{
+                          print('failure');
+                        }
+                        },
+                      onChanged: (val) {
                         setState(() {
                           _sliderValue = val;
                         });
@@ -275,11 +364,22 @@ class _PostCardState extends State<PostCard> {
                   ),
                 ],
               ),
-
             )
           ],
         ),
       ),
     );
   }
+}
+
+class Constants{
+  static const String Subscribe = 'Subscribe';
+  static const String Settings = 'Settings';
+  static const String SignOut = 'Sign out';
+
+  static const List<String> choices = <String>[
+    Subscribe,
+    Settings,
+    SignOut
+  ];
 }

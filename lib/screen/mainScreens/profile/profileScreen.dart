@@ -90,50 +90,52 @@ class _ProfilePageState extends State <ProfilePage> {
                     right: size.width * 0.05
                 ),
                 child: widget.uid == Provider.of<User>(context).uid
-                    ? Column(
+                    ? SingleChildScrollView(
+                      child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Wrap(
-                      spacing: 1,
-                      runSpacing: 1,
-                      children: List.generate(_videos.length, (index) {
-                        final video = _videos[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(context, MaterialPageRoute(
-                                builder: (context) {
-                                  return Player(
-                                    video: video,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: size.width * 0.2,
-                            height: size.height * 0.2,
-                            margin: EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: Colors.red,
-                              image: DecorationImage(
-                                  image: NetworkImage(video.thumbUrl),
-                                  fit: BoxFit.cover
-                              ),
-                              borderRadius: BorderRadius.circular(10.5),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.grey.withOpacity(0.2),
-                                  offset: Offset(0.0, 10.0), //(x,y)
-                                  blurRadius: 10.0,
+                      Wrap(
+                        spacing: 1,
+                        runSpacing: 1,
+                        children: List.generate(_videos.length, (index) {
+                          final video = _videos[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(context, MaterialPageRoute(
+                                  builder: (context) {
+                                    return Player(
+                                      video: video,
+                                    );
+                                  },
                                 ),
-                              ],
+                              );
+                            },
+                            child: Container(
+                              width: size.width * 0.2,
+                              height: size.height * 0.2,
+                              margin: EdgeInsets.all(5),
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                image: DecorationImage(
+                                    image: NetworkImage(video.thumbUrl),
+                                    fit: BoxFit.cover
+                                ),
+                                borderRadius: BorderRadius.circular(10.5),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.grey.withOpacity(0.2),
+                                    offset: Offset(0.0, 10.0), //(x,y)
+                                    blurRadius: 10.0,
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                    ),
+                          );
+                        }),
+                      ),
                   ],
-                ) : Text(""),
+                ),
+                    ) : Text(""),
               ),
             ),
             Row(
@@ -253,7 +255,6 @@ class _ProfilePageState extends State <ProfilePage> {
         });
   }
 
-
   getFollowings() {
     return new StreamBuilder(
         stream: _userInfoStore.getFollowing(
@@ -308,8 +309,6 @@ class _ProfilePageState extends State <ProfilePage> {
         });
   }
 
-  // Checking if already following
-
   checkIfAlreadyFollowing() async {
     bool result = await _userInfoStore.checkIfAlreadyFollowing(
       uid: widget.uid
@@ -328,9 +327,7 @@ class _ProfilePageState extends State <ProfilePage> {
     });
   }
 
-  // Controlling unfollow users
-
-  controlUnfollowUsers() async{
+   controlUnfollowUsers() async{
     bool result = await _userInfoStore.unFollowUser(
         uid: widget.uid
     );
@@ -339,8 +336,6 @@ class _ProfilePageState extends State <ProfilePage> {
       following = result;
     });
   }
-
-  // Getting Current User ID
 
   getCurrentUserID() {
     final User firebaseUser = UserAuth().user;
@@ -353,8 +348,6 @@ class _ProfilePageState extends State <ProfilePage> {
       currentUserName = displayName;
     });
   }
-
-  // Getting top view of profile like displayName, username, bio , followers and following
 
   getProfileTopView(BuildContext context) {
     return new StreamBuilder<DocumentSnapshot>(
@@ -442,8 +435,6 @@ class _ProfilePageState extends State <ProfilePage> {
         });
   }
 
-  // Dynamic button
-
   createButton() {
     bool userProfile = currentUserID == widget.uid;
     if (userProfile) {
@@ -458,8 +449,6 @@ class _ProfilePageState extends State <ProfilePage> {
     }
   }
 
-  // Go to edit profile page
-
   gotoEditProfile() {
     Navigator.push(
         context,
@@ -468,8 +457,6 @@ class _ProfilePageState extends State <ProfilePage> {
               uid: currentUserID,
             )));
   }
-
-  // Dynamic container to create title and performing function
 
   Container createButtonTitleORFunction({String title, Function function}) {
     return Container(

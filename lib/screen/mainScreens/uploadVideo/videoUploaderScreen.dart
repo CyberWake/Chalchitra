@@ -1,6 +1,4 @@
 import 'dart:io';
-import 'dart:math';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +7,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:path/path.dart' as p;
-import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/encoding_provider.dart';
 import '../../../model/video_info.dart';
@@ -31,12 +28,12 @@ class _VideoUploaderState extends State<VideoUploader> {
   double _progress = 0.0;
   int _videoDuration = 0;
   String _processPhase = '';
-  final bool _debugMode = false;
   double _fontOne;
   double _widthOne;
   Size _size;
   String videoName = "";
   final _formKey = GlobalKey<FormState>();
+  UserAuth _userAuth = UserAuth();
   @override
   void initState() {
     UserVideoStore.listenToVideos((newVideos) {
@@ -72,12 +69,12 @@ class _VideoUploaderState extends State<VideoUploader> {
     }
   }
 
-  Future<String> _uploadFile(filePath, folderName) async {
+  Future<String> _uploadFile(filePath, folderName, timestamp) async {
     final file = new File(filePath);
     final basename = p.basename(filePath);
 
     final StorageReference ref =
-    FirebaseStorage.instance.ref().child(folderName).child(basename);
+    FirebaseStorage.instance.ref().child(folderName).child(timestamp + basename);
     StorageUploadTask uploadTask = ref.putFile(file);
     uploadTask.events.listen(_onUploadProgress);
     StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
@@ -107,7 +104,7 @@ class _VideoUploaderState extends State<VideoUploader> {
     file.writeAsStringSync(updatedContents);
   }
 
-  Future<String> _uploadHLSFiles(dirPath, videoName) async {
+  Future<String> _uploadHLSFiles(dirPath, videoName, timestamp) async {
     final videosDir = Directory(dirPath);
 
     var playlistUrl = '';
@@ -117,14 +114,14 @@ class _VideoUploaderState extends State<VideoUploader> {
     for (FileSystemEntity file in files) {
       final fileName = p.basename(file.path);
       final fileExtension = getFileExtension(fileName);
-      if (fileExtension == 'm3u8') _updatePlaylistUrls(file, videoName);
+      if (fileExtension == 'm3u8') _updatePlaylistUrls(file, videoName + timestamp);
 
       setState(() {
         _processPhase = 'Uploading video file $i out of ${files.length}';
         _progress = 0.0;
       });
 
-      final downloadUrl = await _uploadFile(file.path, videoName);
+      final downloadUrl = await _uploadFile(file.path, videoName + timestamp, "");
 
       if (fileName == 'master.m3u8') {
         playlistUrl = downloadUrl;
@@ -135,13 +132,13 @@ class _VideoUploaderState extends State<VideoUploader> {
     return playlistUrl;
   }
 
-  createAlertDialogue(BuildContext context) {
+  createAlertDialogue(BuildContext context, String message) {
     return showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
             title: Text("Warning"),
-            content: Text("Your video exceed limits, Please re-upload!!!"),
+            content: Text(message),
             actions: [
               FlatButton(
                 child: Text("Ok"),
@@ -179,9 +176,14 @@ class _VideoUploaderState extends State<VideoUploader> {
       _progress = 0.0;
     });
 
-    if (_videoDuration <= 30 || _videoDuration >= 360000000) {
-      createAlertDialogue(context);
+    if (_videoDuration < 90000) {
+      createAlertDialogue(context, "Video Can't be less than 90 seconds");
+      print("video duration exceed");
+      return null;
+    }
 
+    if ( _videoDuration > 300000) {
+      createAlertDialogue(context, "Video Can't be more than 300 seconds");
       print("video duration exceed");
       return null;
     }
@@ -201,8 +203,9 @@ class _VideoUploaderState extends State<VideoUploader> {
       _processPhase = 'Uploading thumbnail to firebase storage';
       _progress = 0.0;
     });
-    final thumbUrl = await _uploadFile(thumbFilePath, 'thumbnail');
-    final videoUrl = await _uploadHLSFiles(encodedFilesDir, videoName);
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    final thumbUrl = await _uploadFile(thumbFilePath, 'thumbnail/' + _userAuth.user.uid, timestamp.toString());
+    final videoUrl = await _uploadHLSFiles(encodedFilesDir, videoName, timestamp.toString());
 
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
@@ -210,7 +213,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
       aspectRatio: aspectRatio,
-      uploadedAt: DateTime.now().millisecondsSinceEpoch,
+      uploadedAt: timestamp,
       videoName: videoName,
       likes: 0,
       views: 0,
