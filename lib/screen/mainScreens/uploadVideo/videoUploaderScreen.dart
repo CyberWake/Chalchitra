@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:path/path.dart' as p;
@@ -151,7 +152,24 @@ class _VideoUploaderState extends State<VideoUploader> {
         });
   }
 
-  Future<void> _processVideo(File rawVideoFile) async {
+  Future<void> _processVideo(String rawVideoFilePath) async {
+    print("processing");
+    MediaInfo mediaInfo = await VideoCompress.compressVideo(
+      rawVideoFilePath,
+      quality: VideoQuality.DefaultQuality,
+      deleteOrigin: false, // It's false by default
+    );
+    final thumbnailFile = await VideoCompress.getFileThumbnail(
+        rawVideoFilePath,
+        quality: 50, // default(100)
+        position: -1 // default(-1)
+    );
+    final info = await VideoCompress.getMediaInfo(rawVideoFilePath);
+    print(mediaInfo);
+    print(thumbnailFile);
+    print(info);
+  }
+  /*Future<void> _processVideo(File rawVideoFile) async {
     print("processing");
     final Directory extDir = await getApplicationDocumentsDirectory();
     final outDirPath = '${extDir.path}/Videos/$videoName';
@@ -233,9 +251,32 @@ class _VideoUploaderState extends State<VideoUploader> {
       _progress = 0.0;
       _processing = false;
     });
-  }
-
+  }*/
   void _takeVideo(context, source) async {
+    var videoFile;
+    if (_imagePickerActive) return;
+
+    _imagePickerActive = true;
+    videoFile = await ImagePicker.pickVideo(
+        source: source, maxDuration: const Duration(seconds: 300));
+    _imagePickerActive = false;
+
+    if (videoFile == null) return;
+    setState(() {
+      _processing = true;
+    });
+
+    try {
+      await _processVideo(source);
+    } catch (e) {
+      print("error" + '${e.toString()}');
+    } finally {
+      setState(() {
+        _processing = false;
+      });
+    }
+  }
+  /*void _takeVideo(context, source) async {
     var videoFile;
     if (_imagePickerActive) return;
 
@@ -258,8 +299,7 @@ class _VideoUploaderState extends State<VideoUploader> {
         _processing = false;
       });
     }
-  }
-
+  }*/
   _getProgressBar() {
     return Container(
       padding: EdgeInsets.all(30.0),

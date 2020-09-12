@@ -35,6 +35,7 @@ dependencies:
   # File System
   filesize: ^1.0.4
   path_provider: ^1.1.0
+  video_compress: ^2.0.0
 
   # Utilities
   provider: ^4.3.1
