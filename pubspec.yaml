@@ -49,7 +49,6 @@ dependencies:
   curved_navigation_bar: ^0.3.3
   flutter_staggered_grid_view: ^0.3.2
   popup_menu: ^1.0.5
-  splashscreen: ^1.2.0
 
   # Misc
   flutter_dotenv: ^2.0.3

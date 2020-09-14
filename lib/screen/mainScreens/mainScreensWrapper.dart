@@ -1,9 +1,8 @@
 import 'dart:math';
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
@@ -13,7 +12,10 @@ import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoUploaderScreen.dart';
 
+// ignore: must_be_immutable
 class MainScreenWrapper extends StatefulWidget {
+  int index;
+  MainScreenWrapper({@required this.index});
   @override
   _MainScreenWrapperState createState() => _MainScreenWrapperState();
 }
@@ -26,8 +28,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   double _iconOne;
   Size _size;
   Widget _profilePage = Container();
+  UserAuth _userAuth = UserAuth();
 
-
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _currentIndex = widget.index;
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -102,8 +110,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
+        index: _currentIndex,
         height: _heightOne * 45,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         color: Colors.orange.shade400,
         buttonBackgroundColor: Colors.orange.shade400,
         items: <Widget>[
@@ -137,6 +146,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           ),
         ],
         onTap: (index) async{
+          if(_userAuth.user == null){
+            Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>Authentication()));
+          }
           print(index);
           if(index == 4){
             print(index);

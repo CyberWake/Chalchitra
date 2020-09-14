@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
-import 'package:wowtalent/introScreen2.dart';
+import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class OnBoardScreen1 extends StatefulWidget {
   @override
@@ -12,6 +12,7 @@ class OnBoardScreen1 extends StatefulWidget {
 
 class _OnBoardScreen1State extends State<OnBoardScreen1> {
   VideoPlayerController _controller;
+  String text = "It's your time to Shine.";
   bool _visible = false;
   @override
   void initState() {
@@ -62,7 +63,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
           margin: const EdgeInsets.only(left: 30.0, right: 30.0, top: 40.0),
           alignment: Alignment.center,
           child: Text(
-            "It's your time to Shine.",
+            text,
             textAlign: TextAlign.center,
             style: TextStyle(color: Colors.white, fontSize: 28,fontWeight: FontWeight.bold),
           ),
@@ -82,8 +83,34 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
               style: TextStyle(fontSize: 20,color: Colors.black),
             ),
             onPressed: () {
-              Navigator.of(context)
-                  .pushReplacement(CupertinoPageRoute(builder: (_) => OnBoardScreen2()));
+              if(text == "It's your time to Shine."){
+                text = "90 seconds to fame.";
+                _controller = VideoPlayerController.asset("assets/videos/video2.mp4");
+                _controller.initialize().then((_) {
+                  _controller.setLooping(true);
+                  Timer(Duration(milliseconds: 100), () {
+                    setState(() {
+                      _controller.play();
+                      _visible = true;
+                    });
+                  });
+                });
+              }else if(text == "90 seconds to fame."){
+                text = "Rehearse. Record. Rise.";
+                _controller = VideoPlayerController.asset("assets/videos/video3.mp4");
+                _controller.initialize().then((_) {
+                  _controller.setLooping(true);
+                  Timer(Duration(milliseconds: 100), () {
+                    setState(() {
+                      _controller.play();
+                      _visible = true;
+                    });
+                  });
+                });
+              }else if(text == "Rehearse. Record. Rise."){
+                Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context) => MainScreenWrapper(index: 1,)));
+              }
+
             },
           ),
         ),
