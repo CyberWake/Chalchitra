@@ -34,7 +34,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
 
   void setup() async{
     prefs = await SharedPreferences.getInstance();
-    prefs.setBool("onBoarded",true);
+    if(!prefs.containsKey('onBoarded')){
+      prefs.setBool("onBoarded", true);
+    }
   }
 
   @override

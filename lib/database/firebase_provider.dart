@@ -81,8 +81,11 @@ class UserVideoStore {
         .snapshots();
   }
 
-  Stream getFollowingVideos(){
-    return _allVideos.orderBy("uploadedAt", descending: true)
+  Stream getFollowingVideos({List followings}){
+    return _allVideos
+        .where('uploaderUid', arrayContainsAny: followings)
+        .orderBy("uploadedAt", descending: true)
+        .limit(100)
         .snapshots();
   }
 
