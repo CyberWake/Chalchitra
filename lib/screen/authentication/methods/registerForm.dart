@@ -136,7 +136,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>  MainScreenWrapper()
+                                builder: (_) =>  MainScreenWrapper(index: 0,)
                             )
                         );
                       }else{
@@ -200,7 +200,7 @@ class _RegisterFormState extends State<RegisterForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper()
+                                builder: (_) => MainScreenWrapper(index: 0,)
                             )
                         );
                       }else{

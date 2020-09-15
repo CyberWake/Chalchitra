@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:wowtalent/data/search_json.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
@@ -12,10 +11,17 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
+
   final thumbWidth = 100;
   final thumbHeight = 150;
 
   List<VideoInfo> _videos = <VideoInfo>[];
+  List searchCategories = [
+    "Vocals",
+    "Dance",
+    "Instrumental",
+    "Stand up Comedy",
+  ];
 
   @override
   void initState() {
@@ -41,11 +47,11 @@ class _ExploreState extends State<Explore> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 15),
                 child: Row(
-                    children: List.generate(searchCategories.length, (index) {
-                      return CategoryStoryItem(
-                        name: searchCategories[index],
-                      );
-                    }),
+                  children: List.generate(searchCategories.length, (index) {
+                    return CategoryStoryItem(
+                      name: searchCategories[index],
+                    );
+                  }),
                 ),
               ),
             ),
@@ -70,14 +76,13 @@ class _ExploreState extends State<Explore> {
                   final video = _videos[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
+                     Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return Player(
                             video: video,
                           );
                         },
-                      ),
-                      );
+                      ),);
                     },
                     child: Container(
                       width: size.width * 0.2,
@@ -124,14 +129,13 @@ class _ExploreState extends State<Explore> {
                   final video = _videos[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
+                     Navigator.push(context, MaterialPageRoute(
                         builder: (context) {
                           return Player(
                             video: video,
                           );
                         },
-                      ),
-                      );
+                      ),);
                     },
                     child: Container(
                       width: size.width * 0.2,
@@ -178,16 +182,13 @@ class _ExploreState extends State<Explore> {
                   dynamic video = _videos[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) {
-                            return Player(
-                              video: video,
-                            );
-                          },
-                        ),
-                      );
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),);
                     },
                     child: Container(
                       decoration: BoxDecoration(

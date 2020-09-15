@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
@@ -77,7 +76,7 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>  MainScreenWrapper()
+                                builder: (_) =>  MainScreenWrapper(index: 0,)
                             )
                         );
                       }

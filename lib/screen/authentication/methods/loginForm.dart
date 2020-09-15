@@ -104,7 +104,7 @@ class _LoginFormState extends State<LoginForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper()
+                                builder: (_) => MainScreenWrapper(index: 0,)
                             )
                         );
                       }else{

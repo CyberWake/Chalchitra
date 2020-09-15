@@ -177,7 +177,7 @@ class UserVideoStore {
     try{
       QuerySnapshot res = await _videoLikes.doc(_userAuth.user.uid)
           .collection("likedVideos").where(
-        "id", isEqualTo: videoID
+          "id", isEqualTo: videoID
       ).get();
       return res.size == 1;
     }catch(e){

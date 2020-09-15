@@ -3,12 +3,11 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:path/path.dart' as p;
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/encoding_provider.dart';
 import '../../../model/video_info.dart';
 
 class VideoUploader extends StatefulWidget {
@@ -34,30 +33,9 @@ class _VideoUploaderState extends State<VideoUploader> {
   String videoName = "";
   final _formKey = GlobalKey<FormState>();
   UserAuth _userAuth = UserAuth();
-  @override
-  void initState() {
-    UserVideoStore.listenToVideos((newVideos) {
-      setState(() {
-        _videos = newVideos;
-      });
-    });
-
-    EncodingProvider.enableStatisticsCallback((int time,
-        int size,
-        double bitrate,
-        double speed,
-        int videoFrameNumber,
-        double videoQuality,
-        double videoFps) {
-      if (_canceled) return;
-
-      setState(() {
-        _progress = time / _videoDuration;
-      });
-    });
-
-    super.initState();
-  }
+  String mediaInfoPath=' ';
+  String thumbnailInfoPath=' ';
+  String infoPath=' ';
 
   void _onUploadProgress(event) {
     if (event.type == StorageTaskEventType.progress) {
@@ -69,7 +47,7 @@ class _VideoUploaderState extends State<VideoUploader> {
     }
   }
 
-  Future<String> _uploadFile(filePath, folderName, timestamp) async {
+  Future<String> _uploadVideo(filePath, folderName, timestamp) async {
     final file = new File(filePath);
     final basename = p.basename(filePath);
 
@@ -82,131 +60,41 @@ class _VideoUploaderState extends State<VideoUploader> {
     return videoUrl;
   }
 
-  String getFileExtension(String fileName) {
-    final exploded = fileName.split('.');
-    return exploded[exploded.length - 1];
+  Future<String> _uploadThumbnail(filePath, folderName, timestamp) async {
+    final file = new File(filePath);
+    final basename = p.basename(filePath);
+
+    final StorageReference ref =
+    FirebaseStorage.instance.ref().child(folderName).child(timestamp + basename);
+    StorageUploadTask uploadTask = ref.putFile(file);
+    uploadTask.events.listen(_onUploadProgress);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    String videoUrl = await taskSnapshot.ref.getDownloadURL();
+    return videoUrl;
   }
 
-  void _updatePlaylistUrls(File file, String videoName) {
-    final lines = file.readAsLinesSync();
-    var updatedLines = List<String>();
-
-    for (final String line in lines) {
-      var updatedLine = line;
-      if (line.contains('.ts') || line.contains('.m3u8')) {
-        updatedLine = '$videoName%2F$line?alt=media';
-      }
-      updatedLines.add(updatedLine);
-    }
-    final updatedContents =
-    updatedLines.reduce((value, element) => value + '\n' + element);
-
-    file.writeAsStringSync(updatedContents);
-  }
-
-  Future<String> _uploadHLSFiles(dirPath, videoName, timestamp) async {
-    final videosDir = Directory(dirPath);
-
-    var playlistUrl = '';
-
-    final files = videosDir.listSync();
-    int i = 1;
-    for (FileSystemEntity file in files) {
-      final fileName = p.basename(file.path);
-      final fileExtension = getFileExtension(fileName);
-      if (fileExtension == 'm3u8') _updatePlaylistUrls(file, videoName + timestamp);
-
-      setState(() {
-        _processPhase = 'Uploading video file $i out of ${files.length}';
-        _progress = 0.0;
-      });
-
-      final downloadUrl = await _uploadFile(file.path, videoName + timestamp, "");
-
-      if (fileName == 'master.m3u8') {
-        playlistUrl = downloadUrl;
-      }
-      i++;
-    }
-
-    return playlistUrl;
-  }
-
-  createAlertDialogue(BuildContext context, String message) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text("Warning"),
-            content: Text(message),
-            actions: [
-              FlatButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-              )
-            ],
-          );
-        });
-  }
-
-  Future<void> _processVideo(File rawVideoFile) async {
+  Future<void> _processVideo(PickedFile rawVideoFile) async {
     print("processing");
-    final Directory extDir = await getApplicationDocumentsDirectory();
-    final outDirPath = '${extDir.path}/Videos/$videoName';
-    final videosDir = new Directory(outDirPath);
-    videosDir.createSync(recursive: true);
+    print(rawVideoFile.path);
+    MediaInfo mediaInfo = await VideoCompress.compressVideo(
+      rawVideoFile.path,
+      quality: VideoQuality.MediumQuality,
+      deleteOrigin: false, // It's false by default
+    );
 
-    final rawVideoPath = rawVideoFile.path;
-    final copyPath = '$outDirPath/copy.mp4';
-    File(rawVideoPath).copySync(copyPath);
-    final info = await EncodingProvider.getMediaInformation(rawVideoPath);
-    final aspectRatio = EncodingProvider.getAspectRatio(info);
-    print("printing Information ==================================>");
-    print(info['streams'][0]['width']);
-    print(info['streams'][0]['height']);
-    final thumbWidth = info['streams'][0]['width'];
-    final thumbHeight = info['streams'][0]['height'];
-
+    final thumbnailFile = await VideoCompress.getFileThumbnail(
+        rawVideoFile.path,
+        quality: 100, // default(100)
+        position: -1 // default(-1)
+    );
+    final aspectRatio = mediaInfo.height/mediaInfo.width;
+    mediaInfoPath = mediaInfo.path;
+    thumbnailInfoPath = thumbnailFile.path;
     setState(() {
-      _processPhase = 'Generating thumbnail';
-      _videoDuration = EncodingProvider.getDuration(info);
-      print(_videoDuration);
-      _progress = 0.0;
-    });
-
-    if (_videoDuration < 90000) {
-      createAlertDialogue(context, "Video Can't be less than 90 seconds");
-      print("video duration exceed");
-      return null;
-    }
-
-    if ( _videoDuration > 300000) {
-      createAlertDialogue(context, "Video Can't be more than 300 seconds");
-      print("video duration exceed");
-      return null;
-    }
-
-    final thumbFilePath = await EncodingProvider.getThumb(
-        copyPath, outDirPath, thumbWidth, thumbHeight);
-
-    setState(() {
-      _processPhase = 'Encoding video';
-      _progress = 0.0;
-    });
-
-    final encodedFilesDir =
-    await EncodingProvider.encodeHLS(rawVideoPath, outDirPath);
-
-    setState(() {
-      _processPhase = 'Uploading thumbnail to firebase storage';
-      _progress = 0.0;
     });
     int timestamp = DateTime.now().millisecondsSinceEpoch;
-    final thumbUrl = await _uploadFile(thumbFilePath, 'thumbnail/' + _userAuth.user.uid, timestamp.toString());
-    final videoUrl = await _uploadHLSFiles(encodedFilesDir, videoName, timestamp.toString());
-
+    final thumbUrl = await _uploadThumbnail(thumbnailFile.path, 'thumbnail/' + _userAuth.user.uid, timestamp.toString());
+    final videoUrl = await _uploadVideo(mediaInfo.path, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
       videoUrl: videoUrl,
@@ -220,35 +108,31 @@ class _VideoUploaderState extends State<VideoUploader> {
       rating: 0,
       comments: 0,
     );
-
     setState(() {
       _processPhase = 'Saving video metadata to cloud firestore';
       _progress = 0.0;
     });
-
     await UserVideoStore.saveVideo(videoInfo);
-
     setState(() {
       _processPhase = '';
       _progress = 0.0;
       _processing = false;
     });
+    await VideoCompress.deleteAllCache();
   }
+
+
 
   void _takeVideo(context, source) async {
     var videoFile;
     if (_imagePickerActive) return;
 
     _imagePickerActive = true;
-    videoFile = await ImagePicker.pickVideo(
+    videoFile = await ImagePicker().getVideo(
         source: source, maxDuration: const Duration(seconds: 300));
     _imagePickerActive = false;
 
     if (videoFile == null) return;
-    setState(() {
-      _processing = true;
-    });
-
     try {
       await _processVideo(videoFile);
     } catch (e) {
@@ -258,25 +142,6 @@ class _VideoUploaderState extends State<VideoUploader> {
         _processing = false;
       });
     }
-  }
-
-  _getProgressBar() {
-    return Container(
-      padding: EdgeInsets.all(30.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Container(
-            margin: EdgeInsets.only(bottom: 30.0),
-            child: Text(_processPhase),
-          ),
-          LinearProgressIndicator(
-            value: _progress,
-          ),
-        ],
-      ),
-    );
   }
 
   @override
@@ -289,7 +154,7 @@ class _VideoUploaderState extends State<VideoUploader> {
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Center(
             child: _processing
-                ? _getProgressBar()
+                ? Container()
                 : Container(
               padding: EdgeInsets.all(50),
               decoration: BoxDecoration(
@@ -336,6 +201,18 @@ class _VideoUploaderState extends State<VideoUploader> {
                     ),
                     SizedBox(
                       height: 10.0,
+                    ),
+                    Container(
+                      color: Colors.blue,
+                      child: FittedBox(child: Text(mediaInfoPath,style: TextStyle(fontSize: 20),)),
+                    ),
+                    Container(
+                      color: Colors.blue,
+                      child: FittedBox(child: Text(thumbnailInfoPath,style: TextStyle(fontSize: 20),)),
+                    ),
+                    Container(
+                      color: Colors.blue,
+                      child: FittedBox(child: Text(infoPath,style: TextStyle(fontSize: 20),)),
                     ),
                     FlatButton(
                         onPressed: () {
