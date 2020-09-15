@@ -81,6 +81,11 @@ class UserVideoStore {
         .snapshots();
   }
 
+  Stream getFollowingVideos(){
+    return _allVideos.orderBy("uploadedAt", descending: true)
+        .snapshots();
+  }
+
   static listenToAllVideos(callback) async{
     try{
       _allVideos.orderBy("uploadedAt", descending: true)

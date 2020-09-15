@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
@@ -29,12 +30,18 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   Size _size;
   Widget _profilePage = Container();
   UserAuth _userAuth = UserAuth();
+  SharedPreferences prefs;
+
+  void setup() async{
+    prefs = await SharedPreferences.getInstance();
+    prefs.setBool("onBoarded",true);
+  }
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _currentIndex = widget.index;
+    setup();
   }
   @override
   Widget build(BuildContext context) {
@@ -49,9 +56,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       Container(),
       _profilePage,
     ];
-    if(_screens == null){
-
-    }
 
     return Scaffold(
       backgroundColor: Colors.white,

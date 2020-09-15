@@ -69,7 +69,12 @@ class _PlayerState extends State<Player> {
                     child: Row(
                       children: [
                         CircleAvatar(
-                          backgroundImage: NetworkImage('https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260'),
+                          backgroundImage: NetworkImage(
+                              'https://images.pexels.com/photos/'
+                                  '994605/pexels-photo-994605.jpeg?'
+                                  'auto=compress&cs='
+                                  'tinysrgb&dpr=2&h=200&w=1260'
+                          ),
                           radius: 13,
                         ),
                         Text('  USERNAME \u2022',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
@@ -100,21 +105,6 @@ class _PlayerState extends State<Player> {
                       ],
                     ),
                   ),
-                  /*FloatingActionButton(
-                    backgroundColor: Colors.grey,
-                    elevation: 0.0,
-                    onPressed: () {
-                      setState(() {
-                        _controller.value.isPlaying
-                            ? _controller.pause()
-                            : _controller.play();
-                      });
-                    },
-                    child: Icon(
-                      _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
-                      color: Colors.white,
-                    ),
-                  ),*/
                   Container(
                     color: Colors.black12.withOpacity(0.4),
                     child: Row(
@@ -126,7 +116,9 @@ class _PlayerState extends State<Player> {
                           children: [
                             InkWell(
                                 child: SvgPicture.asset(
-                                  _isLiked?"assets/images/loved_icon.svg":"assets/images/love_icon.svg",
+                                  _isLiked ?
+                                  "assets/images/loved_icon.svg":
+                                  "assets/images/love_icon.svg",
                                   color: Colors.white,
                                   width: 20,
                                 ),

@@ -136,7 +136,9 @@ class _RegisterFormState extends State<RegisterForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) =>  MainScreenWrapper(index: 0,)
+                                builder: (_) =>  MainScreenWrapper(
+                                  index: 0,
+                                )
                             )
                         );
                       }else{
@@ -180,7 +182,30 @@ class _RegisterFormState extends State<RegisterForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: (){},
+                  onTap: () async {
+                    await _userAuth.signInWithFacebook().then((result){
+                      if(result == false){
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Something went wrong try again')
+                            )
+                        );
+                      }else if(result == true){
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )
+                            )
+                        );
+                      }else{
+                        setState(() {
+                          _registerForm = false;
+                        });
+                      }
+                    });
+                  },
                   child: Image.asset(
                     "assets/images/fb.png",
                     scale: _fontOne * 9,
@@ -200,7 +225,9 @@ class _RegisterFormState extends State<RegisterForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper(index: 0,)
+                                builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )
                             )
                         );
                       }else{
