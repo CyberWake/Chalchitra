@@ -13,20 +13,24 @@ class VideoInfo {
   int shares;
   int rating;
   int comments;
+  String videoId;
 
   VideoInfo(
-      {this.uploaderUid,
+      {
+        this.uploaderUid,
         this.videoUrl,
-      this.thumbUrl,
-      this.coverUrl,
-      this.aspectRatio,
-      this.uploadedAt,
-      this.videoName,
-      this.views,
-      this.likes,
-      this.shares,
-      this.rating,
-      this.comments});
+        this.thumbUrl,
+        this.coverUrl,
+        this.aspectRatio,
+        this.uploadedAt,
+        this.videoName,
+        this.views,
+        this.likes,
+        this.shares,
+        this.rating,
+        this.comments,
+        this.videoId,
+      });
 
   static fromDocument(QueryDocumentSnapshot ds) {
     return VideoInfo(

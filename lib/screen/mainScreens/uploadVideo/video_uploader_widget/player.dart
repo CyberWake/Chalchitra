@@ -1,15 +1,22 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
+import 'package:wowtalent/database/firestore_api.dart';
+import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 
 class Player extends StatefulWidget {
   final VideoInfo video;
-  Player({Key key, @required this.video}) : super(key: key);
+  Player({
+    Key key,
+    @required this.video,
+  }) : super(key: key);
   @override
   _PlayerState createState() => _PlayerState();
 }
@@ -26,6 +33,41 @@ class _PlayerState extends State<Player> {
   int likeCount = 0;
   int commentCount = 0;
   bool _isLiked = false;
+  UserDataModel _userDataModel = UserDataModel();
+  UserInfoStore _userInfoStore = UserInfoStore();
+  bool _boolFutureCalled = false;
+  bool _following = false;
+
+  Future<bool> setup() async{
+   if(!_boolFutureCalled){
+     try{
+       if(_userAuth.user != null){
+         _following = await _userInfoStore.checkIfAlreadyFollowing(
+             uid: widget.video.uploaderUid
+         );
+       }
+       likeCount = widget.video.likes;
+       _sliderValue = await
+       _userVideoStore.checkRated(
+           videoID : widget.video.videoId
+       );
+       _isLiked = await _userVideoStore.checkLiked(
+           videoID: widget.video.videoId
+       );
+       DocumentSnapshot user = await _userInfoStore.getUserInfo(
+           uid: widget.video.uploaderUid
+       );
+       _userDataModel = UserDataModel.fromDocument(user);
+       _boolFutureCalled = true;
+       return true;
+     }catch(e){
+       print(e.toString());
+       return false;
+     }
+   }else{
+     return true;
+   }
+  }
 
   @override
   void initState() {
@@ -58,72 +100,50 @@ class _PlayerState extends State<Player> {
                   ),
                 ],
               ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.75,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 20),
-                    child: Row(
+              FutureBuilder(
+                future: setup(),
+                builder: (context, snapshot) {
+                  if(snapshot.data == null || snapshot.data == false){
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        CircleAvatar(
-                          backgroundImage: NetworkImage(
-                              'https://images.pexels.com/photos/'
-                                  '994605/pexels-photo-994605.jpeg?'
-                                  'auto=compress&cs='
-                                  'tinysrgb&dpr=2&h=200&w=1260'
-                          ),
-                          radius: 13,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.75,
                         ),
-                        Text('  USERNAME \u2022',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
-                        GestureDetector(
-                          onTap:(){
-                            if(_userAuth.user == null){
-                              Navigator.pushReplacement(context,
-                                MaterialPageRoute(
-                                  builder: (context) {
-                                    return Authentication();
-                                  },
-                                ),
-                              );
-                            }
-                          },
-                          child: Text(' Follow',style: TextStyle(color: Colors.white),),
+                        SizedBox(
+                          height: 20,
                         )
                       ],
-                    ),
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(left: 23,top: 5),
-                    child: Row(
+                    );
+                  }else{
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        Icon(Icons.equalizer,color: Colors.white,),
-                        Text('  TITLE \u2022',style: TextStyle(fontWeight: FontWeight.bold,color: Colors.white),),
-                        Text(' Category',style: TextStyle(color: Colors.white),)
-                      ],
-                    ),
-                  ),
-                  Container(
-                    color: Colors.black12.withOpacity(0.4),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            InkWell(
-                                child: SvgPicture.asset(
-                                  _isLiked ?
-                                  "assets/images/loved_icon.svg":
-                                  "assets/images/love_icon.svg",
-                                  color: Colors.white,
-                                  width: 20,
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * 0.75,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 20),
+                          child: Row(
+                            children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                   _userDataModel.photoUrl == null ?
+                                   "https://via.placeholder.com/150" :
+                                       _userDataModel.photoUrl
                                 ),
-                                onTap: () async {
+                                radius: 13,
+                              ),
+                              Text(
+                                '  ${_userDataModel.username} \u2022',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                              GestureDetector(
+                                onTap:() async{
                                   if(_userAuth.user == null){
                                     Navigator.pushReplacement(context,
                                       MaterialPageRoute(
@@ -132,108 +152,191 @@ class _PlayerState extends State<Player> {
                                         },
                                       ),
                                     );
+                                  }else{
+                                    _following = await _userInfoStore.followUser(
+                                      uid: widget.video.uploaderUid
+                                    );
+                                    setState(() {});
                                   }
-                                  setState(() {
-                                    _isLiked = _isLiked == true ? false:true;
-                                    likeCount = _isLiked?likeCount+1:likeCount-1;
-                                  });
-                                }
-                            ),
-                            SizedBox(width: _widthOne * 20,),
-                            Text(
-                              likeCount.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: _fontOne * 14,
-                                  color: Colors.white
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(width: _widthOne * 30,),
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            IconButton(
-                              onPressed: (){
-                                if(_userAuth.user == null){
-                                  Navigator.pushReplacement(context,
-                                    MaterialPageRoute(
-                                      builder: (context) {
-                                        return Authentication();
-                                      },
-                                    ),
-                                  );
-                                }
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => CommentsScreen(
-                                          videoId: widget.video.uploaderUid,
-                                        )
-                                    )
-                                );
-                              },
-                              icon: Icon(
-                                Icons.comment,
-                                color: Colors.white,
-                                size: _iconOne * 23,
-                              ),
-                            ),
-                            SizedBox(width: _widthOne * 20,),
-                            Text(
-                              commentCount.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: _fontOne * 14,
-                                  color: Colors.white
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(width: _widthOne * 30,),
-                        SizedBox(
-                          width: _widthOne * 650,
-                          child: Slider(
-                            value: _sliderValue,
-                            min: 0,
-                            max: 5,
-                            onChangeEnd: (val){
-                              _sliderValue = val;
-                            },
-                            onChanged: (val) async {
-                              if(_userAuth.user == null){
-                                Navigator.pushReplacement(context,
-                                  MaterialPageRoute(
-                                    builder: (context) {
-                                      return Authentication();
-                                    },
+                                },
+                                child: Text(
+                                  !_following ?' Follow' : " Following",
+                                  style: TextStyle(
+                                      color: Colors.white
                                   ),
-                                );
-                              }
-                              bool success =
-                                  await _userVideoStore.rateVideo(videoID:widget.video.uploaderUid,rating: _sliderValue);
-                              if(success){
-                                print('done rating');
-                              }
-                              else{
-                                print('failure');
-                              }
-                              setState(() {
-                                _sliderValue = val;
-                              });
-                            },
-                            inactiveColor: Colors.white,
-                            activeColor: Colors.grey,
+                                ),
+                              )
+                            ],
                           ),
                         ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 23,top: 5),
+                          child: Row(
+                            children: [
+                              Icon(Icons.equalizer,color: Colors.white,),
+                              Text(
+                                '  ${widget.video.videoName} \u2022',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              Text(
+                                ' Category',
+                                style:
+                                TextStyle(
+                                    color: Colors.white
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                        Container(
+                          color: Colors.black12.withOpacity(0.4),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  InkWell(
+                                      child: SvgPicture.asset(
+                                        _isLiked ?
+                                        "assets/images/loved_icon.svg":
+                                        "assets/images/love_icon.svg",
+                                        color: Colors.white,
+                                        width: 20,
+                                      ),
+                                      onTap: () async {
+                                        if(_userAuth.user == null){
+                                          Navigator.pushReplacement(context,
+                                            MaterialPageRoute(
+                                              builder: (context) {
+                                                return Authentication();
+                                              },
+                                            ),
+                                          );
+                                        }else{
+                                          if(!_isLiked){
+                                            _isLiked = await _userVideoStore.likeVideo(
+                                              videoID: widget.video.videoId,
+                                            );
+                                            likeCount++;
+
+                                          }else{
+                                            _isLiked = !await _userVideoStore.dislikeVideo(
+                                              videoID: widget.video.videoId,
+                                            );
+                                            likeCount--;
+                                          }
+                                          setState(() {});
+                                        }
+                                      }
+                                  ),
+                                  SizedBox(width: _widthOne * 20,),
+                                  Text(
+                                    likeCount.toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: _fontOne * 14,
+                                        color: Colors.white
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(width: _widthOne * 30,),
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  IconButton(
+                                    onPressed: (){
+                                      if(_userAuth.user == null){
+                                        Navigator.pushReplacement(context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return Authentication();
+                                            },
+                                          ),
+                                        );
+                                      }
+                                      print( widget.video.uploaderUid);
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => CommentsScreen(
+                                                videoId: widget.video.videoId,
+                                              )
+                                          )
+                                      );
+                                    },
+                                    icon: Icon(
+                                      Icons.comment,
+                                      color: Colors.white,
+                                      size: _iconOne * 23,
+                                    ),
+                                  ),
+                                  SizedBox(width: _widthOne * 20,),
+                                  Text(
+                                    widget.video.comments.toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: _fontOne * 14,
+                                        color: Colors.white
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              SizedBox(width: _widthOne * 30,),
+                              SizedBox(
+                                width: _widthOne * 650,
+                                child: Slider(
+                                  value: _sliderValue,
+                                  min: 0,
+                                  max: 5,
+                                  onChangeEnd: (val) async{
+                                    if(_userAuth.user == null){
+                                      Navigator.pushReplacement(context,
+                                        MaterialPageRoute(
+                                          builder: (context) {
+                                            return Authentication();
+                                          },
+                                        ),
+                                      );
+                                    }
+                                    else{
+                                      bool success = await _userVideoStore
+                                          .rateVideo(
+                                          videoID:widget.video.videoId,
+                                          rating: _sliderValue
+                                      );
+                                      if(!success){
+                                        setState(() {
+                                          _sliderValue = 0;
+                                        });
+                                      }
+                                    }
+                                  },
+                                  onChanged: (val) async {
+                                   setState(() {
+                                     _sliderValue = val;
+                                   });
+                                  },
+                                  inactiveColor: Colors.white,
+                                  activeColor: Colors.grey,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        )
                       ],
-                    ),
-                  ),
-                  SizedBox(
-                    height: 20,
-                  )
-                ],
+                    );
+                  }
+                }
               ),
             ]
       ),

@@ -27,9 +27,11 @@ class _ExploreState extends State<Explore> {
   void initState() {
     super.initState();
     UserVideoStore.listenToAllVideos((newVideos) {
-      setState(() {
-        _videos = newVideos;
-      });
+      if(this.mounted){
+        setState(() {
+          _videos = newVideos;
+        });
+      }
     });
   }
 
@@ -201,7 +203,7 @@ class _ExploreState extends State<Explore> {
                   );
                 },
                 staggeredTileBuilder: (int index) =>
-                    StaggeredTile.count(1, _videos[index].aspectRatio),
+                    StaggeredTile.count(1, 1/_videos[index].aspectRatio),
                 mainAxisSpacing: 5.0,
                 crossAxisSpacing: 5.0,
               ),

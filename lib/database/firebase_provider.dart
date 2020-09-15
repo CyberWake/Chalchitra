@@ -81,8 +81,14 @@ class UserVideoStore {
         .snapshots();
   }
 
-  Stream getFollowingVideos(){
-    return _allVideos.orderBy("uploadedAt", descending: true)
+  Stream getFollowingVideos({List<DocumentSnapshot> followings}){
+    return _allVideos
+        .where('uploaderUid',
+        whereIn: List.generate(followings.length, (index){
+          return followings[index].id;
+        }))
+        .orderBy("uploadedAt", descending: true)
+        .limit(100)
         .snapshots();
   }
 
@@ -111,6 +117,10 @@ class UserVideoStore {
           aspectRatio: ds.data()['aspectRatio'],
           videoName: ds.data()['videoName'],
           uploadedAt: ds.data()['uploadedAt'],
+          uploaderUid: ds.data()['uploaderUid'],
+          likes: ds.data()['likes'],
+          comments: ds.data()['comments'],
+          videoId: ds.id
         );
       }).toList();
     }catch(e){

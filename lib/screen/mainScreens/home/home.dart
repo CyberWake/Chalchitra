@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popup_menu/popup_menu.dart';
+import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
@@ -21,6 +22,7 @@ class _HomeState extends State<Home> {
   List _usersDetails = [];
   PopupMenu menu;
   GlobalKey btnKey = GlobalKey();
+  UserAuth _userAuth = UserAuth();
 
   @override
   void initState() {
@@ -33,9 +35,11 @@ class _HomeState extends State<Home> {
     _widthOne = size.width * 0.0008;
     _heightOne = (size.height * 0.007) / 5;
     return StreamBuilder(
-      stream: UserVideoStore().getVideos(),
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) {
+      stream: _userInfoStore.getFollowing(
+        uid: _userAuth.user.uid
+      ),
+      builder: (context, data){
+        if (!data.hasData) {
           return Center(
             child: SpinKitCircle(
               color: Colors.orange,
@@ -43,10 +47,10 @@ class _HomeState extends State<Home> {
             ),
           );
         }else{
-          if(snapshot.data.documents.length == 0){
+          if(data.data.documents.length == 0){
             return Center(
               child: Text(
-                "No videos to show",
+                "Start following creators to see videos",
                 style: TextStyle(
                   color: Colors.orange,
                   fontSize: 16,
@@ -54,44 +58,72 @@ class _HomeState extends State<Home> {
               ),
             );
           }else{
-            return Center(
-                child: ListView.builder(
-                  itemCount: snapshot.data.documents.length,
-                  itemBuilder: (context, index){
-                    return FutureBuilder(
-                      future: _userInfoStore.getUserInfo(uid: snapshot.data.documents[index].data()['uploaderUid']),
-                      builder: (context, snap){
-                        if(
-                        snap.connectionState ==
-                            ConnectionState.none || !snap.hasData
-                        ){
-                          return Container();
-                        }
-                        return Padding(
-                          padding: EdgeInsets.symmetric(
-                              horizontal: _widthOne * 50,
-                              vertical: _heightOne * 20
-                          ),
-                          child: PostCard(
-                            video: snapshot.data.documents[index],
-                            id: snapshot.data.documents[index].id,
-                            thumbnail: snapshot.data.documents[index].data()['thumbUrl'],
-                            profileImg: snap.data.data()['photoUrl'] == null ?
-                            "https://via.placeholder.com/150"
-                                : snap.data.data()['photoUrl'],
-                            title: snapshot.data.documents[index].data()['videoName'],
-                            uploader: snap.data.data()['username'],
-                            likeCount: snapshot.data.documents[index].data()['likes'],
-                            commentCount: snapshot.data.documents[index].data()['comments'],
-                            uploadTime: formatDateTime(snapshot.data.documents[index].data()['uploadedAt']),
-                            viewCount: snapshot.data.documents[index].data()['views'],
-                            rating: snapshot.data.documents[index].data()['rating']
-                          ),
-                        );
-                      },
+            return StreamBuilder(
+                stream: UserVideoStore().getFollowingVideos(
+                  followings: data.data.documents
+                ),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(
+                      child: SpinKitCircle(
+                        color: Colors.orange,
+                        size: 60,
+                      ),
                     );
-                  },
-                )
+                  }else{
+                    if(snapshot.data.documents.length == 0){
+                      return Center(
+                        child: Text(
+                          "No videos to show",
+                          style: TextStyle(
+                            color: Colors.orange,
+                            fontSize: 16,
+                          ),
+                        ),
+                      );
+                    }else{
+                      return Center(
+                          child: ListView.builder(
+                            itemCount: snapshot.data.documents.length,
+                            itemBuilder: (context, index){
+                              return FutureBuilder(
+                                future: _userInfoStore.getUserInfo(uid: snapshot.data.documents[index].data()['uploaderUid']),
+                                builder: (context, snap){
+                                  if(
+                                  snap.connectionState ==
+                                      ConnectionState.none || !snap.hasData
+                                  ){
+                                    return Container();
+                                  }
+                                  return Padding(
+                                    padding: EdgeInsets.symmetric(
+                                        horizontal: _widthOne * 50,
+                                        vertical: _heightOne * 20
+                                    ),
+                                    child: PostCard(
+                                        video: snapshot.data.documents[index],
+                                        id: snapshot.data.documents[index].id,
+                                        thumbnail: snapshot.data.documents[index].data()['thumbUrl'],
+                                        profileImg: snap.data.data()['photoUrl'] == null ?
+                                        "https://via.placeholder.com/150"
+                                            : snap.data.data()['photoUrl'],
+                                        title: snapshot.data.documents[index].data()['videoName'],
+                                        uploader: snap.data.data()['username'],
+                                        likeCount: snapshot.data.documents[index].data()['likes'],
+                                        commentCount: snapshot.data.documents[index].data()['comments'],
+                                        uploadTime: formatDateTime(snapshot.data.documents[index].data()['uploadedAt']),
+                                        viewCount: snapshot.data.documents[index].data()['views'],
+                                        rating: snapshot.data.documents[index].data()['rating']
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          )
+                      );
+                    }
+                  }
+                }
             );
           }
         }
