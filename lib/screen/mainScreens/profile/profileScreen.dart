@@ -30,6 +30,7 @@ class _ProfilePageState extends State <ProfilePage> {
   // Attributes
 
   bool loading = false;
+  String profileUid;
   String _username;
   String currentUserID;
   int totalFollowers = 0;
@@ -44,17 +45,18 @@ class _ProfilePageState extends State <ProfilePage> {
   final thumbHeight = 150;
 
   List<VideoInfo> _videos = <VideoInfo>[];
-
+  List<VideoInfo> newVideos = <VideoInfo>[];
   @override
   void initState() {
     super.initState();
     getCurrentUserID();
     checkIfAlreadyFollowing();
-    UserVideoStore.listenToVideos((newVideos) {
+    profileUid = widget.uid;
+    UserVideoStore.listenToVideos((newVideos){
       setState(() {
         _videos = newVideos;
       });
-    });
+    }, widget.uid);
   }
 
   @override
@@ -404,11 +406,13 @@ class _ProfilePageState extends State <ProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            user.displayName != null ? user.displayName : "WowTalent",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                          FittedBox(
+                            child: Text(
+                              user.displayName != null ? user.displayName : "WowTalent",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           SizedBox(height: 5,),

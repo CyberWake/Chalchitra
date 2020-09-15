@@ -59,12 +59,11 @@ class UserVideoStore {
     }
   }
 
-  static listenToVideos(callback) async {
+  static listenToVideos(callback,uid) async {
     try{
-      String uid = _userAuth.user.uid;
-      _feedVideos
-          .doc(uid)
-          .collection('videos')
+      _allVideos
+          .where('uploaderUid',isEqualTo: uid)
+          .orderBy('uploadedAt')
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);
