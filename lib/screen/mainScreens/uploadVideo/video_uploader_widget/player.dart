@@ -34,6 +34,7 @@ class _PlayerState extends State<Player> {
       ..initialize().then((_) {
         setState(() {});
       });
+    _controller.play();
   }
 
   @override

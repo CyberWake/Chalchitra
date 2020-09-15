@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/auth_api.dart';
@@ -16,6 +17,7 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
+  final ref = FirebaseFirestore.instance.collection('WowUsers');
   UserDataModel _userDataModel = UserDataModel();
   UserAuth _userAuth = UserAuth();
   double _widthOne;
@@ -46,10 +48,30 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(height: _heightOne * 40,),
             authFormFieldContainer(
               child: TextFormField(
+                keyboardType: TextInputType.name,
+                validator: (val) => val.isEmpty ? "Name Can't be Empty"
+                    : null,
+                onChanged: (val) {
+                  _userDataModel.displayName = val;
+                },
+                decoration: authFormFieldFormatting(
+                    hintText: "Enter your Name",
+                    fontSize: _fontOne * 15
+                ),
+                style: TextStyle(
+                  fontSize: _fontOne * 15,
+                ),
+              ),
+              leftPadding: _widthOne * 20,
+            ),
+            SizedBox(height: _heightOne * 10,),
+            authFormFieldContainer(
+              child: TextFormField(
                 keyboardType: TextInputType.emailAddress,
                 validator: (val) => val.isEmpty ? "Username Can't be Empty"
                     : null,
                 onChanged: (val) {
+
                   _userDataModel.username = val;
                 },
                 decoration: authFormFieldFormatting(
@@ -121,34 +143,46 @@ class _RegisterFormState extends State<RegisterForm> {
             FlatButton(
                 onPressed: () async{
                   if(_formKey.currentState.validate()){
-                    await _userAuth.registerUserWithEmail(
-                        email: _userDataModel.email,
-                        password: _userDataModel.password,
-                        username: _userDataModel.username
-                    ).then((result){
-                      if(result == null){
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Something went wrong try again')
-                            )
-                        );
-                      }else if(result == "success"){
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>  MainScreenWrapper(
-                                  index: 0,
-                                )
-                            )
-                        );
-                      }else{
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(result)
-                            )
-                        );
-                      }
-                    });
+                    QuerySnapshot read = await ref
+                        .where("username", isEqualTo: _userDataModel.username)
+                        .get();
+                    if(read.size != 0){
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Username already exists')
+                          )
+                      );
+                    }
+                    else{
+                      await _userAuth.registerUserWithEmail(
+                          email: _userDataModel.email,
+                          password: _userDataModel.password,
+                          username: _userDataModel.username
+                      ).then((result){
+                        if(result == null){
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Something went wrong try again')
+                              )
+                          );
+                        }else if(result == "success"){
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) =>  MainScreenWrapper(
+                                    index: 0,
+                                  )
+                              )
+                          );
+                        }else{
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(result)
+                              )
+                          );
+                        }
+                      });
+                    }
                   }
                 },
                 shape: RoundedRectangleBorder(
