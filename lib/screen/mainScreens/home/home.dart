@@ -60,7 +60,7 @@ class _HomeState extends State<Home> {
           }else{
             return StreamBuilder(
                 stream: UserVideoStore().getFollowingVideos(
-
+                  followings: data.data.documents
                 ),
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
