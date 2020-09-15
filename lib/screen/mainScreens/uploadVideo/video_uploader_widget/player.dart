@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
@@ -160,7 +159,7 @@ class _PlayerState extends State<Player> {
                                   }
                                 },
                                 child: Text(
-                                  !_following ?' Follow' : " Following",
+                                  _userAuth.user.uid == widget.video.uploaderUid?' ':!_following ?' Follow' : " Following",
                                   style: TextStyle(
                                       color: Colors.white
                                   ),
@@ -183,7 +182,7 @@ class _PlayerState extends State<Player> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
-                                ' Category',
+                                widget.video.category?? "Category",
                                 style:
                                 TextStyle(
                                     color: Colors.white

@@ -45,25 +45,6 @@ class _RegisterFormState extends State<RegisterForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            SizedBox(height: _heightOne * 40,),
-            authFormFieldContainer(
-              child: TextFormField(
-                keyboardType: TextInputType.name,
-                validator: (val) => val.isEmpty ? "Name Can't be Empty"
-                    : null,
-                onChanged: (val) {
-                  _userDataModel.displayName = val;
-                },
-                decoration: authFormFieldFormatting(
-                    hintText: "Enter your Name",
-                    fontSize: _fontOne * 15
-                ),
-                style: TextStyle(
-                  fontSize: _fontOne * 15,
-                ),
-              ),
-              leftPadding: _widthOne * 20,
-            ),
             SizedBox(height: _heightOne * 10,),
             authFormFieldContainer(
               child: TextFormField(
@@ -157,7 +138,7 @@ class _RegisterFormState extends State<RegisterForm> {
                       await _userAuth.registerUserWithEmail(
                           email: _userDataModel.email,
                           password: _userDataModel.password,
-                          username: _userDataModel.username
+                          username: _userDataModel.username,
                       ).then((result){
                         if(result == null){
                           Scaffold.of(context).showSnackBar(
