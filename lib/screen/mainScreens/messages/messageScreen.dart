@@ -38,46 +38,30 @@ class _MessageState extends State<Message> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.only(top: _heightOne * 20),
           height: _size.height,
           color: Colors.orange,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-          padding: EdgeInsets.only(
-            bottom: _heightOne * 20,
-            top: _heightOne * 20,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: _widthOne * 50,
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              Expanded(child: Container()),
-              Text(
-                "Messages",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: _fontOne * 25,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Spacer(),
+                  Text(
+                    "Messages",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: _fontOne * 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Spacer(),
+                ],
               ),
               SizedBox(
-                width: _widthOne * 100,
-              )
-            ],
-          ),
-        ),
+                height: 5,
+              ),
               Container(
                 width: _size.width * 0.8,
                 height: _heightOne * 42.5,
