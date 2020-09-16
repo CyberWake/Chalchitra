@@ -28,6 +28,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   double _heightOne;
   double _iconOne;
   Size _size;
+  bool _isMessagePage = false;
   Widget _profilePage = Container();
   UserAuth _userAuth = UserAuth();
   SharedPreferences prefs;
@@ -55,7 +56,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       Home(),
       Explore(),
       VideoUploader(),
-      Container(),
+      Message(),
       _profilePage,
     ];
 
@@ -63,7 +64,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: _isMessagePage ? Colors.orange:Colors.transparent,
         title: Container(
           padding: EdgeInsets.symmetric(
               vertical: 10,
@@ -76,7 +77,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           _currentIndex != 4 ? IconButton(
             icon: Icon(
               Icons.search,
-              color: Colors.orange.shade400,
+              color: _isMessagePage? Colors.black: Colors.orange.shade400,
               size: _iconOne * 30,
             ),
             onPressed: (){
@@ -165,11 +166,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
             });
             _currentIndex = index;
           }else if(index == 3){
-            await Navigator.push(context, MaterialPageRoute(
-              builder: (context) => Message()
-            ));
+            _isMessagePage = true;
+            _currentIndex = index;
+            setState(() {
+            });
           }else{
             _currentIndex = index;
+            _isMessagePage = false;
           }
           setState(() {});
         },

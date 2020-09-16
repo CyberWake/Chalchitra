@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as path;
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -23,20 +24,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController bioController = TextEditingController();
   final TextEditingController usernameController = TextEditingController();
-  final TextEditingController ageController = TextEditingController();
-  final TextEditingController genderController = TextEditingController();
+  final TextEditingController countryController = TextEditingController();
 
   // Global key for snack bar
 
   final _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
 
   // Some Attributes for text field
-
+  DateTime pickedDate;
   bool loading = false;
   UserDataModel user;
   bool _usernameValid = true;
   bool _nameValid = true;
+  int _selectedGender;
   Size _size;
+  String gender;
+  String _dob;
   String url = " ";
   String fileName = '';
   File file;
@@ -49,7 +52,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   void initState() {
     super.initState();
-
     displayUserInformation();
   }
 
@@ -130,8 +132,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 getFieldContainer(
                                     [
                                       createBioField(),
+                                      createGenderField(),
                                       createAgeField(),
-                                      createGenderField()
+                                      createCountryField(),
                                     ]
                                 ),
                                 // createGenderField()
@@ -184,14 +187,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 StorageReference storageReference = FirebaseStorage
                     .instance
                     .ref()
-                    .child("images/$fileName");
+                    .child("images/"+user.id);
                 StorageUploadTask uploadTask =
                 storageReference.putFile(file);
 
                 final StorageTaskSnapshot downloadUrl =
                 (await uploadTask.onComplete);
                 url = (await downloadUrl.ref.getDownloadURL());
-                setState((){});
+                await ref.doc(widget.uid).update({"photoUrl": url,});
+                setState((){
+                });
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -239,14 +244,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
       loading = true;
     });
 
-    DocumentSnapshot documentSnapshot = await ref.document(widget.uid).get();
+    DocumentSnapshot documentSnapshot = await ref.doc(widget.uid).get();
     user = UserDataModel.fromDocument(documentSnapshot);
     url = user.photoUrl;
     usernameController.text = user.username;
     nameController.text = user.displayName;
     bioController.text = user.bio;
-    ageController.text = user.age;
-
+    countryController.text = user.country;
+    _dob = user.dob;
+    gender = user.gender;
+    switch(gender){
+      case "Male": _selectedGender = 0;break;
+      case "FeMale": _selectedGender = 1;break;
+      case "Others": _selectedGender = 2;break;
+    }
     setState(() {
       loading = false;
     });
@@ -275,8 +286,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         "username": usernameController.text,
         "displayName": nameController.text,
         "bio": bioController.text,
-        "age": ageController.text,
-        "gender": genderController.text,
+        "dob": _dob,
+        "gender": gender,
+        "country": countryController.text,
         "photoUrl": url,
       });
 
@@ -327,7 +339,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         style: TextStyle(color: Colors.black),
         controller: nameController,
         decoration: authInputFormatting.copyWith(
-            hintText: "Profie Name",
+            hintText: "Profile Name",
             errorText: _nameValid ? null : 'Profile name cannot be empty!'
         ),
       ),
@@ -352,29 +364,47 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900, 1),
+        lastDate: DateTime.now());
+    if (picked != null)
+      setState(() {
+        pickedDate = picked;
+        _dob = pickedDate.day.toString()+"-"+pickedDate.month.toString()+"-"+pickedDate.year.toString();
+      });
+  }
 
   // Creating age field
 
   createAgeField() {
     return Container(
-      padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
+        padding: EdgeInsets.symmetric(vertical:10.0, horizontal: 20),
+        height: MediaQuery.of(context).size.width * 0.2,
+        decoration: BoxDecoration(
           border: Border(
-              bottom: BorderSide(color: Colors.grey[200]))
-      ),
-      child: TextFormField(
-        style: TextStyle(color: Colors.black),
-        controller: ageController,
-        decoration:  authInputFormatting.copyWith(
-            hintText: "Your Age",
+              bottom: BorderSide(color: Colors.grey[200])
+          ),
         ),
-      ),
+          child: InkWell(
+            onTap:() => _selectDate(context),
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Text('Date of Birth',style: TextStyle(fontSize: 16),),
+                Text(_dob == null?"Please Provide your Date of Birth":_dob),
+              ],
+            ),
+          )
     );
   }
 
   //Gender
 
-  createGenderField() {
+  createCountryField() {
     return Container(
       padding: EdgeInsets.all(10.0),
       decoration: BoxDecoration(
@@ -383,10 +413,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
       child: TextFormField(
         style: TextStyle(color: Colors.black),
-        controller: genderController,
+        controller: countryController,
         decoration:  authInputFormatting.copyWith(
-            hintText: "Your Gender",
+            hintText: "Country",
         ),
+      ),
+    );
+  }
+  createGenderField() {
+    return Container(
+      padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
+      width: double.maxFinite,
+      decoration: BoxDecoration(
+          border: Border(
+              bottom: BorderSide(color: Colors.grey[200]))
+      ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton(
+            value: _selectedGender,
+            items: [
+              DropdownMenuItem(
+                child: Text("Male"),
+                value: 0,
+              ),
+              DropdownMenuItem(
+                child: Text("Female"),
+                value: 1,
+              ),
+              DropdownMenuItem(
+                  child: Text("Others"),
+                  value: 2
+              ),
+            ],
+            onChanged: (value) {
+              _selectedGender = value;
+              switch(_selectedGender){
+                case 0: gender = "Male";break;
+                case 1: gender = "Female";break;
+                case 2: gender = "Others";break;
+              }
+              setState(() {
+
+              });
+            }),
       ),
     );
   }

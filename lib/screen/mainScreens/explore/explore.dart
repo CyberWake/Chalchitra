@@ -18,9 +18,12 @@ class _ExploreState extends State<Explore> {
   List<VideoInfo> _videos = <VideoInfo>[];
   List searchCategories = [
     "Vocals",
-    "Dance",
+    "Precussions",
+    "Performing Arts",
     "Instrumental",
+    "Videography",
     "Stand up Comedy",
+    "DIY",
   ];
 
   @override
@@ -91,10 +94,10 @@ class _ExploreState extends State<Explore> {
                       height: size.height * 0.2,
                       margin: EdgeInsets.all(5),
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: Colors.black,
                         image: DecorationImage(
                             image: NetworkImage(video.thumbUrl),
-                            fit: BoxFit.cover
+                            fit: BoxFit.fitWidth
                         ),
                         borderRadius: BorderRadius.circular(10.5),
                         boxShadow: [
@@ -144,10 +147,10 @@ class _ExploreState extends State<Explore> {
                       height: size.height * 0.2,
                       margin: EdgeInsets.all(5),
                       decoration: BoxDecoration(
-                        color: Colors.red,
+                        color: Colors.black,
                         image: DecorationImage(
                             image: NetworkImage(video.thumbUrl),
-                            fit: BoxFit.cover
+                            fit: BoxFit.fitWidth
                         ),
                         borderRadius: BorderRadius.circular(10.5),
                         boxShadow: [

@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
@@ -33,6 +32,7 @@ class _PlayerState extends State<Player> {
   int likeCount = 0;
   int commentCount = 0;
   bool _isLiked = false;
+  bool playing;
   UserDataModel _userDataModel = UserDataModel();
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _boolFutureCalled = false;
@@ -76,7 +76,9 @@ class _PlayerState extends State<Player> {
       ..initialize().then((_) {
         setState(() {});
       });
+    setup();
     _controller.play();
+    playing = true;
   }
 
   @override
@@ -96,28 +98,26 @@ class _PlayerState extends State<Player> {
                 children: [
                   AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
-                    child: VideoPlayer(_controller),
+                    child: InkWell(
+                      onTap: (){
+                        if(playing){
+                          print('paused');
+                          playing = false;
+                          _controller.pause();
+                        }else{
+                          print("played");
+                          playing = true;
+                          _controller.play();
+                        }
+                      },
+                      child: VideoPlayer(_controller)
+                    ),
                   ),
                 ],
               ),
-              FutureBuilder(
-                future: setup(),
-                builder: (context, snapshot) {
-                  if(snapshot.data == null || snapshot.data == false){
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                          height: MediaQuery.of(context).size.height * 0.75,
-                        ),
-                        SizedBox(
-                          height: 20,
-                        )
-                      ],
-                    );
-                  }else{
-                    return Column(
+              Builder(
+                builder: (context) {
+                  return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
@@ -160,7 +160,7 @@ class _PlayerState extends State<Player> {
                                   }
                                 },
                                 child: Text(
-                                  !_following ?' Follow' : " Following",
+                                  _userAuth.user.uid == widget.video.uploaderUid?' ':!_following ?' Follow' : " Following",
                                   style: TextStyle(
                                       color: Colors.white
                                   ),
@@ -183,7 +183,7 @@ class _PlayerState extends State<Player> {
                                 overflow: TextOverflow.ellipsis,
                               ),
                               Text(
-                                ' Category',
+                                widget.video.category?? "Category",
                                 style:
                                 TextStyle(
                                     color: Colors.white
@@ -237,7 +237,7 @@ class _PlayerState extends State<Player> {
                                   ),
                                   SizedBox(width: _widthOne * 20,),
                                   Text(
-                                    likeCount.toString(),
+                                    likeCount.toString() == "null"? "0" : likeCount.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: _fontOne * 14,
@@ -279,7 +279,7 @@ class _PlayerState extends State<Player> {
                                   ),
                                   SizedBox(width: _widthOne * 20,),
                                   Text(
-                                    widget.video.comments.toString(),
+                                    widget.video.comments.toString() == "null"? "0":widget.video.comments.toString(),
                                     style: TextStyle(
                                         fontWeight: FontWeight.w500,
                                         fontSize: _fontOne * 14,
@@ -336,7 +336,6 @@ class _PlayerState extends State<Player> {
                       ],
                     );
                   }
-                }
               ),
             ]
       ),

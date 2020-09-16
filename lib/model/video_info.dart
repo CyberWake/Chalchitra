@@ -8,6 +8,8 @@ class VideoInfo {
   double aspectRatio;
   int uploadedAt;
   String videoName;
+  String videoHashtag;
+  String category;
   int views;
   int likes;
   int shares;
@@ -24,6 +26,8 @@ class VideoInfo {
         this.aspectRatio,
         this.uploadedAt,
         this.videoName,
+        this.videoHashtag,
+        this.category,
         this.views,
         this.likes,
         this.shares,
@@ -37,9 +41,14 @@ class VideoInfo {
       videoUrl: ds.data()['videoUrl'],
       thumbUrl: ds.data()['thumbUrl'],
       coverUrl: ds.data()['coverUrl'],
+      rating: ds.data()['rating'],
+      likes: ds.data()['likes'],
+      comments: ds.data()['comments'],
       aspectRatio: ds.data()['aspectRatio'],
+      videoHashtag: ds.data()['videoHashtag'],
       videoName: ds.data()['videoName'],
       uploadedAt: ds.data()['uploadedAt'],
+      category: ds.data()['category'],
     );
   }
 }

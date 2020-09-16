@@ -21,17 +21,25 @@ class VideoUploader extends StatefulWidget {
 
 class _VideoUploaderState extends State<VideoUploader> {
   List<VideoInfo> _videos = <VideoInfo>[];
+  MediaInfo mediaInfo;
   bool _imagePickerActive = false;
-  bool _processing = false;
-  bool _canceled = false;
-  double _progress = 0.0;
-  int _videoDuration = 0;
+  bool _processingVideo = false;
+  bool _uploadingVideo = false;
+  bool _processed = false;
+  bool _processingCameraVideo = false;
+  bool _processingGalleryVideo = false;
+  double _uploadProgress = 0.0;
   String _processPhase = '';
   double _fontOne;
   double _widthOne;
   Size _size;
   String videoName = "";
+  String videoHashtag = "";
+  String category = "Vocals";
+  int _selectedCategory = 0;
   final _formKey = GlobalKey<FormState>();
+  File thumbnailFile;
+  double aspectRatio;
   UserAuth _userAuth = UserAuth();
   String mediaInfoPath=' ';
   String thumbnailInfoPath=' ';
@@ -42,7 +50,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       final double progress =
           event.snapshot.bytesTransferred / event.snapshot.totalByteCount;
       setState(() {
-        _progress = progress;
+        _uploadProgress = progress;
       });
     }
   }
@@ -50,7 +58,6 @@ class _VideoUploaderState extends State<VideoUploader> {
   Future<String> _uploadVideo(filePath, folderName, timestamp) async {
     final file = new File(filePath);
     final basename = p.basename(filePath);
-
     final StorageReference ref =
     FirebaseStorage.instance.ref().child(folderName).child(timestamp + basename);
     StorageUploadTask uploadTask = ref.putFile(file);
@@ -76,25 +83,46 @@ class _VideoUploaderState extends State<VideoUploader> {
   Future<void> _processVideo(PickedFile rawVideoFile) async {
     print("processing");
     print(rawVideoFile.path);
-    MediaInfo mediaInfo = await VideoCompress.compressVideo(
+    setState(() {
+      _processPhase = 'Compressing video';
+      _uploadProgress = 0.0;
+    });
+    mediaInfo = await VideoCompress.compressVideo(
       rawVideoFile.path,
       quality: VideoQuality.MediumQuality,
       deleteOrigin: false, // It's false by default
     );
-
-    final thumbnailFile = await VideoCompress.getFileThumbnail(
+    setState(() {
+      _processPhase = 'Getting thumbnail';
+      _uploadProgress = 0.0;
+    });
+    thumbnailFile = await VideoCompress.getFileThumbnail(
         rawVideoFile.path,
         quality: 100, // default(100)
         position: -1 // default(-1)
     );
-    final aspectRatio = mediaInfo.height/mediaInfo.width;
+    aspectRatio = mediaInfo.height/mediaInfo.width;
     mediaInfoPath = mediaInfo.path;
     thumbnailInfoPath = thumbnailFile.path;
+    _processingCameraVideo = false;
+    _processingGalleryVideo = false;
     setState(() {
     });
+  }
+
+  uploadToServer() async {
+    _uploadingVideo = true;
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     final thumbUrl = await _uploadThumbnail(thumbnailFile.path, 'thumbnail/' + _userAuth.user.uid, timestamp.toString());
+    setState(() {
+      _processPhase = 'Saving video thumbnail to server';
+      _uploadProgress = 0.0;
+    });
     final videoUrl = await _uploadVideo(mediaInfo.path, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
+    setState(() {
+      _processPhase = 'Saving video file to servers';
+      _uploadProgress = 0.0;
+    });
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
       videoUrl: videoUrl,
@@ -103,30 +131,26 @@ class _VideoUploaderState extends State<VideoUploader> {
       aspectRatio: aspectRatio,
       uploadedAt: timestamp,
       videoName: videoName,
+      videoHashtag: videoHashtag,
+      category: category,
       likes: 0,
       views: 0,
       rating: 0,
       comments: 0,
     );
-    setState(() {
-      _processPhase = 'Saving video metadata to cloud firestore';
-      _progress = 0.0;
-    });
+
     await UserVideoStore.saveVideo(videoInfo);
     setState(() {
       _processPhase = '';
-      _progress = 0.0;
-      _processing = false;
+      _uploadProgress = 0.0;
+      _uploadingVideo = false;
     });
     await VideoCompress.deleteAllCache();
   }
 
-
-
   void _takeVideo(context, source) async {
     var videoFile;
     if (_imagePickerActive) return;
-
     _imagePickerActive = true;
     videoFile = await ImagePicker().getVideo(
         source: source, maxDuration: const Duration(seconds: 300));
@@ -134,14 +158,41 @@ class _VideoUploaderState extends State<VideoUploader> {
 
     if (videoFile == null) return;
     try {
+      setState(() {
+        _processingVideo = true;
+      });
       await _processVideo(videoFile);
     } catch (e) {
       print("error" + '${e.toString()}');
     } finally {
       setState(() {
-        _processing = false;
+        _processingVideo = false;
+        _processed = true;
       });
     }
+    Scaffold.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Encoding Completed')
+        )
+    );
+  }
+  _getProgressBar() {
+    return Container(
+      padding: EdgeInsets.all(30.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            margin: EdgeInsets.only(bottom: 30.0),
+            child: Text(_processPhase),
+          ),
+          LinearProgressIndicator(
+            value: _uploadProgress,
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -153,105 +204,247 @@ class _VideoUploaderState extends State<VideoUploader> {
         body: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: Center(
-            child: _processing
-                ? Container()
-                : Container(
+            child: _uploadingVideo
+                ? _getProgressBar()
+                : SingleChildScrollView(
+                  child: Container(
               padding: EdgeInsets.all(50),
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.purple.withOpacity(0.15),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
-                    )
-                  ]),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.purple.withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: Offset(0, 10),
+                      )
+                    ]),
               child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    authFormFieldContainer(
-                      child: TextFormField(
-                        keyboardType: TextInputType.emailAddress,
-                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
-                        ? "Video Title can't be Empty"
-                            : null,
-                        onChanged: (val) {
-                          videoName = val;
-                        },
-                        decoration: authFormFieldFormatting(
-                            hintText: "Enter Title",
-                            fontSize: _fontOne * 15
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      authFormFieldContainer(
+                        child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                          ? "Video Title can't be Empty"
+                              : null,
+                          onChanged: (val) {
+                            videoName = val;
+                          },
+                          decoration: authFormFieldFormatting(
+                              hintText: "Enter Title",
+                              fontSize: _fontOne * 15
+                          ),
+                          style: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
                         ),
-                        style: TextStyle(
-                          fontSize: _fontOne * 15,
+                        leftPadding: _widthOne * 20,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width * 0.05,
+                      ),
+                      authFormFieldContainer(
+                        child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                              ? "Video Hashtag can't be Empty"
+                              : null,
+                          onChanged: (val) {
+                            videoHashtag = val;
+                          },
+                          decoration: InputDecoration(
+                            prefix: Text('#'),
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            hintText: "Enter a hashtag",
+                            hintStyle: TextStyle(
+                                color: Colors.orange.withOpacity(0.75),
+                                fontSize: _fontOne * 15,
+                            ),
+                            errorStyle: TextStyle(
+                                fontSize: _fontOne * 15,
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
+                        ),
+                        leftPadding: _widthOne * 20,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width * 0.05,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: _widthOne * 20,
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.orange.withOpacity(0.75)
+                            ),
+                            borderRadius: BorderRadius.circular(15.0)
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                              value: _selectedCategory,
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text("Vocals"),
+                                  value: 0,
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Percussions"),
+                                  value: 1,
+                                ),
+                                DropdownMenuItem(
+                                    child: Text("Performing Arts"),
+                                    value: 2
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Instrumental"),
+                                  value: 3,
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Videography"),
+                                  value: 4,
+                                ),
+                                DropdownMenuItem(
+                                    child: Text("Standup Comedy"),
+                                    value: 5
+                                ),
+                                DropdownMenuItem(
+                                    child: Text("DIY"),
+                                    value: 6
+                                ),
+                              ],
+                              onChanged: (value) {
+                                _selectedCategory = value;
+                                switch(value){
+                                  case 0: category = "Vocals";break;
+                                  case 1: category = "Percussions";break;
+                                  case 2: category = "Performing Arts";break;
+                                  case 3: category = "Instrumental";break;
+                                  case 4: category = "Videography";break;
+                                  case 5: category = "Standup Comedy";break;
+                                  case 6: category = "DIY";break;
+                                }
+                                setState(() {
+                                });
+                              }),
                         ),
                       ),
-                      leftPadding: _widthOne * 20,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width/10,
-                    ),
-                    Text(
-                      "Pick your Video",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Container(
-                      color: Colors.blue,
-                      child: FittedBox(child: Text(mediaInfoPath,style: TextStyle(fontSize: 20),)),
-                    ),
-                    Container(
-                      color: Colors.blue,
-                      child: FittedBox(child: Text(thumbnailInfoPath,style: TextStyle(fontSize: 20),)),
-                    ),
-                    Container(
-                      color: Colors.blue,
-                      child: FittedBox(child: Text(infoPath,style: TextStyle(fontSize: 20),)),
-                    ),
-                    FlatButton(
-                        onPressed: () {
-                          if(_formKey.currentState.validate()){
-                            _takeVideo(context, ImageSource.camera);
-                          }
-                        },
-                        //minWidth: MediaQuery.of(context).size.width * 0.5,
-                        shape: RoundedRectangleBorder(
-                            side:
-                            BorderSide(color: Colors.purple.withOpacity(0.5)),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: _processing
-                            ? CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                              Colors.white),
-                        )
-                            : Text("Camera")),
-                    FlatButton(
-                        onPressed: () {
-                          if(_formKey.currentState.validate()){
-                            _takeVideo(context, ImageSource.gallery);
-                          }
-                        },
-                        //minWidth: MediaQuery.of(context).size.width * 0.5,
-                        shape: RoundedRectangleBorder(
-                            side:
-                            BorderSide(color: Colors.purple.withOpacity(0.5)),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: _processing
-                            ? CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                              Colors.white),
-                        )
-                            : Text("Gallery")),
-                  ],
-                ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width/10,
+                      ),
+                      Text(
+                        "Pick your Video",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FlatButton(
+                              onPressed: () {
+                                _processingCameraVideo = true;
+                                setState(() {
+                                });
+                                _takeVideo(context, ImageSource.camera);
+                              },
+                              //minWidth: MediaQuery.of(context).size.width * 0.5,
+                              shape: RoundedRectangleBorder(
+                                  side:
+                                  BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: _processingCameraVideo
+                                  ? SizedBox(
+                                      height: 25,
+                                      width: 25,
+                                      child: CircularProgressIndicator(
+                                      valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.orange.withOpacity(0.5)
+                                      ),
+                                    ),
+                                  )
+                                  : Text("Camera")
+                          ),
+                          FlatButton(
+                              onPressed: () {
+                                _processingGalleryVideo = true;
+                                setState(() {
+
+                                });
+                                _takeVideo(context, ImageSource.gallery);
+                              },
+                              //minWidth: MediaQuery.of(context).size.width * 0.5,
+                              shape: RoundedRectangleBorder(
+                                  side:
+                                  BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: _processingGalleryVideo
+                                  ? SizedBox(
+                                      height: 25,
+                                      width: 25,
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                            Colors.orange.withOpacity(0.5)
+                                        ),
+                                      ),
+                                    )
+                                  : Text("Gallery")
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      FlatButton(
+                          onPressed: (){
+                            if(_formKey.currentState.validate()){
+                              if(_processingVideo && (_processingGalleryVideo || _processingCameraVideo)){
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Wait for the video to encode')
+                                    )
+                                );
+                              }
+                              else if(_processed) {
+                                uploadToServer();
+                              }
+                              else{
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Please select a video to upload')
+                                    )
+                                );
+                              }
+                            }
+                            },
+                          shape: RoundedRectangleBorder(
+                              side:
+                              BorderSide(color: Colors.purple.withOpacity(0.5)),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: _uploadingVideo
+                              ? CircularProgressIndicator(
+                            valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.purple),
+                          )
+                              : Text("Upload")),
+                    ],
+                  ),
               ),
             ),
+                ),
           ),
         ));
   }
