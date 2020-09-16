@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -121,6 +120,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     SizedBox(width: _widthOne * 25,),
                     Expanded(
                       child: TextField(
+                        controller: controller,
                         onChanged: (val){
                           _comment = val;
                         },
@@ -142,7 +142,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
                           videoID: widget.videoId,
                           comment: _comment,
                         );
-                        controller.clear();
+                        setState(() {
+                          controller.clear();
+                        });
                       },
                     ),
                   ],

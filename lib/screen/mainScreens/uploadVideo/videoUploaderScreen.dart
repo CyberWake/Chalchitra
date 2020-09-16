@@ -34,6 +34,7 @@ class _VideoUploaderState extends State<VideoUploader> {
   double _widthOne;
   Size _size;
   String videoName = "";
+  String videoHashtag = "";
   String category = "Vocals";
   int _selectedCategory = 0;
   final _formKey = GlobalKey<FormState>();
@@ -130,6 +131,7 @@ class _VideoUploaderState extends State<VideoUploader> {
       aspectRatio: aspectRatio,
       uploadedAt: timestamp,
       videoName: videoName,
+      videoHashtag: videoHashtag,
       category: category,
       likes: 0,
       views: 0,
@@ -204,209 +206,245 @@ class _VideoUploaderState extends State<VideoUploader> {
           child: Center(
             child: _uploadingVideo
                 ? _getProgressBar()
-                : Container(
+                : SingleChildScrollView(
+                  child: Container(
               padding: EdgeInsets.all(50),
               decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.purple.withOpacity(0.15),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
-                    )
-                  ]),
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.purple.withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: Offset(0, 10),
+                      )
+                    ]),
               child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    authFormFieldContainer(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
-                        ? "Video Title can't be Empty"
-                            : null,
-                        onChanged: (val) {
-                          videoName = val;
-                        },
-                        decoration: authFormFieldFormatting(
-                            hintText: "Enter Title",
-                            fontSize: _fontOne * 15
-                        ),
-                        style: TextStyle(
-                          fontSize: _fontOne * 15,
-                        ),
-                      ),
-                      leftPadding: _widthOne * 20,
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    Container(
-                      padding: EdgeInsets.only(
-                          left: _widthOne * 20,
-                      ),
-                      width: MediaQuery.of(context).size.width * 0.7,
-                      decoration: BoxDecoration(
-                          border: Border.all(
-                              color: Colors.orange.withOpacity(0.75)
+                  key: _formKey,
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      authFormFieldContainer(
+                        child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                          ? "Video Title can't be Empty"
+                              : null,
+                          onChanged: (val) {
+                            videoName = val;
+                          },
+                          decoration: authFormFieldFormatting(
+                              hintText: "Enter Title",
+                              fontSize: _fontOne * 15
                           ),
-                          borderRadius: BorderRadius.circular(15.0)
-                      ),
-                      child: DropdownButtonHideUnderline(
-                        child: DropdownButton(
-                            value: _selectedCategory,
-                            items: [
-                              DropdownMenuItem(
-                                child: Text("Vocals"),
-                                value: 0,
-                              ),
-                              DropdownMenuItem(
-                                child: Text("Percussions"),
-                                value: 1,
-                              ),
-                              DropdownMenuItem(
-                                  child: Text("Performing Arts"),
-                                  value: 2
-                              ),
-                              DropdownMenuItem(
-                                child: Text("Instrumental"),
-                                value: 3,
-                              ),
-                              DropdownMenuItem(
-                                child: Text("Videography"),
-                                value: 4,
-                              ),
-                              DropdownMenuItem(
-                                  child: Text("Standup Comedy"),
-                                  value: 5
-                              ),
-                              DropdownMenuItem(
-                                  child: Text("DIY"),
-                                  value: 6
-                              ),
-                            ],
-                            onChanged: (value) {
-                              _selectedCategory = value;
-                              switch(value){
-                                case 0: category = "Vocals";break;
-                                case 1: category = "Percussions";break;
-                                case 2: category = "Performing Arts";break;
-                                case 3: category = "Instrumental";break;
-                                case 4: category = "Videography";break;
-                                case 5: category = "Standup Comedy";break;
-                                case 6: category = "DIY";break;
-                              }
-                              setState(() {
-                              });
-                            }),
-                      ),
-                    ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width/10,
-                    ),
-                    Text(
-                      "Pick your Video",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        FlatButton(
-                            onPressed: () {
-                              _processingCameraVideo = true;
-                              setState(() {
-                              });
-                              _takeVideo(context, ImageSource.camera);
-                            },
-                            //minWidth: MediaQuery.of(context).size.width * 0.5,
-                            shape: RoundedRectangleBorder(
-                                side:
-                                BorderSide(color: Colors.orange.withOpacity(0.5)),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: _processingCameraVideo
-                                ? SizedBox(
-                                    height: 25,
-                                    width: 25,
-                                    child: CircularProgressIndicator(
-                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                      Colors.orange.withOpacity(0.5)
-                                    ),
-                                  ),
-                                )
-                                : Text("Camera")
+                          style: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
                         ),
-                        FlatButton(
-                            onPressed: () {
-                              _processingGalleryVideo = true;
-                              setState(() {
-
-                              });
-                              _takeVideo(context, ImageSource.gallery);
-                            },
-                            //minWidth: MediaQuery.of(context).size.width * 0.5,
-                            shape: RoundedRectangleBorder(
-                                side:
-                                BorderSide(color: Colors.orange.withOpacity(0.5)),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: _processingGalleryVideo
-                                ? SizedBox(
-                                    height: 25,
-                                    width: 25,
-                                    child: CircularProgressIndicator(
+                        leftPadding: _widthOne * 20,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width * 0.05,
+                      ),
+                      authFormFieldContainer(
+                        child: TextFormField(
+                          keyboardType: TextInputType.text,
+                          validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                              ? "Video Hashtag can't be Empty"
+                              : null,
+                          onChanged: (val) {
+                            videoHashtag = val;
+                          },
+                          decoration: InputDecoration(
+                            prefix: Text('#'),
+                            border: InputBorder.none,
+                            focusedBorder: InputBorder.none,
+                            enabledBorder: InputBorder.none,
+                            errorBorder: InputBorder.none,
+                            disabledBorder: InputBorder.none,
+                            hintText: "Enter a hashtag",
+                            hintStyle: TextStyle(
+                                color: Colors.orange.withOpacity(0.75),
+                                fontSize: _fontOne * 15,
+                            ),
+                            errorStyle: TextStyle(
+                                fontSize: _fontOne * 15,
+                            ),
+                          ),
+                          style: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
+                        ),
+                        leftPadding: _widthOne * 20,
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width * 0.05,
+                      ),
+                      Container(
+                        padding: EdgeInsets.only(
+                            left: _widthOne * 20,
+                        ),
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        decoration: BoxDecoration(
+                            border: Border.all(
+                                color: Colors.orange.withOpacity(0.75)
+                            ),
+                            borderRadius: BorderRadius.circular(15.0)
+                        ),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton(
+                              value: _selectedCategory,
+                              items: [
+                                DropdownMenuItem(
+                                  child: Text("Vocals"),
+                                  value: 0,
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Percussions"),
+                                  value: 1,
+                                ),
+                                DropdownMenuItem(
+                                    child: Text("Performing Arts"),
+                                    value: 2
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Instrumental"),
+                                  value: 3,
+                                ),
+                                DropdownMenuItem(
+                                  child: Text("Videography"),
+                                  value: 4,
+                                ),
+                                DropdownMenuItem(
+                                    child: Text("Standup Comedy"),
+                                    value: 5
+                                ),
+                                DropdownMenuItem(
+                                    child: Text("DIY"),
+                                    value: 6
+                                ),
+                              ],
+                              onChanged: (value) {
+                                _selectedCategory = value;
+                                switch(value){
+                                  case 0: category = "Vocals";break;
+                                  case 1: category = "Percussions";break;
+                                  case 2: category = "Performing Arts";break;
+                                  case 3: category = "Instrumental";break;
+                                  case 4: category = "Videography";break;
+                                  case 5: category = "Standup Comedy";break;
+                                  case 6: category = "DIY";break;
+                                }
+                                setState(() {
+                                });
+                              }),
+                        ),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.width/10,
+                      ),
+                      Text(
+                        "Pick your Video",
+                        style: TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          FlatButton(
+                              onPressed: () {
+                                _processingCameraVideo = true;
+                                setState(() {
+                                });
+                                _takeVideo(context, ImageSource.camera);
+                              },
+                              //minWidth: MediaQuery.of(context).size.width * 0.5,
+                              shape: RoundedRectangleBorder(
+                                  side:
+                                  BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: _processingCameraVideo
+                                  ? SizedBox(
+                                      height: 25,
+                                      width: 25,
+                                      child: CircularProgressIndicator(
                                       valueColor: AlwaysStoppedAnimation<Color>(
-                                          Colors.orange.withOpacity(0.5)
+                                        Colors.orange.withOpacity(0.5)
                                       ),
                                     ),
                                   )
-                                : Text("Gallery")
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    FlatButton(
-                        onPressed: (){
-                          if(_formKey.currentState.validate()){
-                            if(_processingVideo && (_processingGalleryVideo || _processingCameraVideo)){
-                              Scaffold.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('Wait for the video to encode')
-                                  )
-                              );
+                                  : Text("Camera")
+                          ),
+                          FlatButton(
+                              onPressed: () {
+                                _processingGalleryVideo = true;
+                                setState(() {
+
+                                });
+                                _takeVideo(context, ImageSource.gallery);
+                              },
+                              //minWidth: MediaQuery.of(context).size.width * 0.5,
+                              shape: RoundedRectangleBorder(
+                                  side:
+                                  BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                  borderRadius: BorderRadius.circular(5)),
+                              child: _processingGalleryVideo
+                                  ? SizedBox(
+                                      height: 25,
+                                      width: 25,
+                                      child: CircularProgressIndicator(
+                                        valueColor: AlwaysStoppedAnimation<Color>(
+                                            Colors.orange.withOpacity(0.5)
+                                        ),
+                                      ),
+                                    )
+                                  : Text("Gallery")
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      FlatButton(
+                          onPressed: (){
+                            if(_formKey.currentState.validate()){
+                              if(_processingVideo && (_processingGalleryVideo || _processingCameraVideo)){
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Wait for the video to encode')
+                                    )
+                                );
+                              }
+                              else if(_processed) {
+                                uploadToServer();
+                              }
+                              else{
+                                Scaffold.of(context).showSnackBar(
+                                    SnackBar(
+                                        content: Text('Please select a video to upload')
+                                    )
+                                );
+                              }
                             }
-                            else if(_processed) {
-                              uploadToServer();
-                            }
-                            else{
-                              Scaffold.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text('Please select a video to upload')
-                                  )
-                              );
-                            }
-                          }
-                          },
-                        shape: RoundedRectangleBorder(
-                            side:
-                            BorderSide(color: Colors.purple.withOpacity(0.5)),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: _uploadingVideo
-                            ? CircularProgressIndicator(
-                          valueColor: new AlwaysStoppedAnimation<Color>(
-                              Colors.purple),
-                        )
-                            : Text("Upload")),
-                  ],
-                ),
+                            },
+                          shape: RoundedRectangleBorder(
+                              side:
+                              BorderSide(color: Colors.purple.withOpacity(0.5)),
+                              borderRadius: BorderRadius.circular(5)),
+                          child: _uploadingVideo
+                              ? CircularProgressIndicator(
+                            valueColor: new AlwaysStoppedAnimation<Color>(
+                                Colors.purple),
+                          )
+                              : Text("Upload")),
+                    ],
+                  ),
               ),
             ),
+                ),
           ),
         ));
   }

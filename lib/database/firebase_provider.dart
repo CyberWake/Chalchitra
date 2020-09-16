@@ -35,6 +35,7 @@ class UserVideoStore {
         'aspectRatio': video.aspectRatio,
         'uploadedAt': video.uploadedAt,
         'videoName': video.videoName,
+        'videoHashtag': video.videoHashtag,
         'category': video.category,
         'uploaderUid': video.uploaderUid,
         'likes': video.likes,
@@ -59,11 +60,11 @@ class UserVideoStore {
     }
   }
 
-  static listenToVideos(callback,uid) async {
+  static listenToVideos(callback,String uid) async {
+    print(uid+' firestore');
     try{
       _allVideos
-          .where('uploaderUid',isEqualTo: uid)
-          .orderBy('uploadedAt')
+          .where('uploaderUid', isEqualTo: uid)
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);
@@ -95,6 +96,21 @@ class UserVideoStore {
   static listenToAllVideos(callback) async{
     try{
       _allVideos.orderBy("uploadedAt", descending: true)
+          .snapshots()
+          .listen((qs) {
+        final videos = mapQueryToVideoInfo(qs);
+        callback(videos);
+      });
+      return true;
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
+  }
+  static listenToCategoryVideos(callback,String videoCategoryPage) async{
+    try{
+      _allVideos.where('category' ,isEqualTo: videoCategoryPage)
+          .orderBy("uploadedAt", descending: true)
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);

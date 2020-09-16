@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
@@ -10,6 +9,7 @@ import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
+
 class ProfilePage extends StatefulWidget {
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
@@ -27,6 +27,7 @@ class _ProfilePageState extends State <ProfilePage> {
 
   UserDataModel user;
   UserInfoStore _userInfoStore = UserInfoStore();
+  UserAuth _userAuth = UserAuth();
   // Attributes
 
   bool loading = false;
@@ -52,11 +53,11 @@ class _ProfilePageState extends State <ProfilePage> {
     getCurrentUserID();
     checkIfAlreadyFollowing();
     profileUid = widget.uid;
+    print(widget.uid);
     UserVideoStore.listenToVideos((newVideos){
-      setState(() {
         _videos = newVideos;
-      });
     }, widget.uid);
+    print('a');
   }
 
   @override
@@ -91,7 +92,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     left: size.width * 0.05,
                     right: size.width * 0.05
                 ),
-                child: widget.uid == Provider.of<User>(context).uid
+                child: widget.uid == _userAuth.user.uid
                     ? SingleChildScrollView(
                       child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
