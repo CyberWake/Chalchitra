@@ -90,7 +90,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Password",
-                    fontSize: _fontOne * 15
+                    fontSize: _fontOne * 15,
                 ),
                 style: TextStyle(
                   fontSize: _fontOne * 15,
