@@ -25,6 +25,7 @@ class _RegisterFormState extends State<RegisterForm> {
   double _fontOne;
   Size _size;
   bool _registerForm = true;
+  bool _submitted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +53,10 @@ class _RegisterFormState extends State<RegisterForm> {
                 validator: (val) => val.isEmpty ? "Username Can't be Empty"
                     : null,
                 onChanged: (val) {
-
                   _userDataModel.username = val;
+                  if(_submitted){
+                    _formKey.currentState.validate();
+                  }
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Username",
@@ -72,6 +75,9 @@ class _RegisterFormState extends State<RegisterForm> {
                 validator: validateEmail,
                 onChanged: (val) {
                   _userDataModel.email = val;
+                  if(_submitted){
+                    _formKey.currentState.validate();
+                  }
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Email",
@@ -108,7 +114,6 @@ class _RegisterFormState extends State<RegisterForm> {
                 validator: (val) => val == _userDataModel.password ? null
                     : "Password in both fields should match",
                 onChanged: (val) {
-                  _userDataModel.password = val;
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Confirm Password",
@@ -164,6 +169,10 @@ class _RegisterFormState extends State<RegisterForm> {
                         }
                       });
                     }
+                  }else{
+                    setState(() {
+                      _submitted = true;
+                    });
                   }
                 },
                 shape: RoundedRectangleBorder(

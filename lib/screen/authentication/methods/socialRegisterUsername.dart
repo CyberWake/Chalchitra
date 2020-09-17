@@ -20,6 +20,7 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
   double _heightOne;
   double _fontOne;
   Size _size;
+  bool _submitted = false;
   checkUsernameAlreadyExists() async {
     QuerySnapshot read = await ref
         .where("username", isEqualTo: _userDataModel.username)
@@ -61,8 +62,10 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
                 validator: (val) => val.isEmpty ? "Username Can't be Empty"
                     : null,
                 onChanged: (val) {
-                  checkUsernameAlreadyExists();
                   _userDataModel.username = val;
+                  if(_submitted){
+                    _formKey.currentState.validate();
+                  }
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Username",
@@ -108,6 +111,10 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
                         }
                       });
                     }
+                  }else{
+                    setState(() {
+                      _submitted = true;
+                    });
                   }
                 },
                 shape: RoundedRectangleBorder(

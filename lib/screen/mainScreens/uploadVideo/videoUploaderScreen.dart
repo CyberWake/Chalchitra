@@ -44,6 +44,7 @@ class _VideoUploaderState extends State<VideoUploader> {
   String mediaInfoPath=' ';
   String thumbnailInfoPath=' ';
   String infoPath=' ';
+  bool _submitted = false;
 
   void _onUploadProgress(event) {
     if (event.type == StorageTaskEventType.progress) {
@@ -233,6 +234,9 @@ class _VideoUploaderState extends State<VideoUploader> {
                               : null,
                           onChanged: (val) {
                             videoName = val;
+                            if(_submitted){
+                              _formKey.currentState.validate();
+                            }
                           },
                           decoration: authFormFieldFormatting(
                               hintText: "Enter Title",
@@ -255,6 +259,9 @@ class _VideoUploaderState extends State<VideoUploader> {
                               : null,
                           onChanged: (val) {
                             videoHashtag = val;
+                            if(_submitted){
+                              _formKey.currentState.validate();
+                            }
                           },
                           decoration: InputDecoration(
                             prefix: Text('#'),
@@ -428,6 +435,10 @@ class _VideoUploaderState extends State<VideoUploader> {
                                     )
                                 );
                               }
+                            }else{
+                              setState(() {
+                                _submitted = true;
+                              });
                             }
                             },
                           shape: RoundedRectangleBorder(
