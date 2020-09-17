@@ -164,15 +164,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                 _profilePage = ProfilePage(uid: user.uid);
               }
             });
+            _isMessagePage = false;
             _currentIndex = index;
           }else if(index == 3){
             _isMessagePage = true;
             _currentIndex = index;
-            setState(() {
-            });
           }else{
-            _currentIndex = index;
             _isMessagePage = false;
+            _currentIndex = index;
           }
           setState(() {});
         },

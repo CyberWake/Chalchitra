@@ -61,6 +61,7 @@ class _CategoryState extends State<Category> {
         ],
       ),
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Expanded(
             child: StaggeredGridView.countBuilder(

@@ -22,7 +22,7 @@ class VideoUploader extends StatefulWidget {
 class _VideoUploaderState extends State<VideoUploader> {
   List<VideoInfo> _videos = <VideoInfo>[];
   MediaInfo mediaInfo;
-  bool _imagePickerActive = false;
+  bool _imagePickerActive = true;
   bool _processingVideo = false;
   bool _uploadingVideo = false;
   bool _processed = false;
@@ -38,6 +38,7 @@ class _VideoUploaderState extends State<VideoUploader> {
   String category = "Vocals";
   int _selectedCategory = 0;
   final _formKey = GlobalKey<FormState>();
+  var videoFile;
   File thumbnailFile;
   double aspectRatio;
   UserAuth _userAuth = UserAuth();
@@ -113,16 +114,16 @@ class _VideoUploaderState extends State<VideoUploader> {
   uploadToServer() async {
     _uploadingVideo = true;
     int timestamp = DateTime.now().millisecondsSinceEpoch;
-    final thumbUrl = await _uploadThumbnail(thumbnailFile.path, 'thumbnail/' + _userAuth.user.uid, timestamp.toString());
     setState(() {
       _processPhase = 'Saving video thumbnail to server';
       _uploadProgress = 0.0;
     });
-    final videoUrl = await _uploadVideo(mediaInfo.path, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
+    final thumbUrl = await _uploadThumbnail(thumbnailFile.path, 'thumbnail/' + _userAuth.user.uid, timestamp.toString());
     setState(() {
       _processPhase = 'Saving video file to servers';
       _uploadProgress = 0.0;
     });
+    final videoUrl = await _uploadVideo(mediaInfo.path, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
       videoUrl: videoUrl,
@@ -149,15 +150,25 @@ class _VideoUploaderState extends State<VideoUploader> {
   }
 
   void _takeVideo(context, source) async {
-    var videoFile;
-    if (_imagePickerActive) return;
     _imagePickerActive = true;
     videoFile = await ImagePicker().getVideo(
         source: source, maxDuration: const Duration(seconds: 300));
     _imagePickerActive = false;
 
     if (videoFile == null) return;
+    if(source == ImageSource.camera){
+      _processingCameraVideo = true;
+    }else if(source == ImageSource.gallery){
+      _processingGalleryVideo = true;
+    }
+    setState(() {
+    });
     try {
+      Scaffold.of(context).showSnackBar(
+          SnackBar(
+              content: Text('Wait for the video to encode')
+          )
+      );
       setState(() {
         _processingVideo = true;
       });
@@ -165,6 +176,7 @@ class _VideoUploaderState extends State<VideoUploader> {
     } catch (e) {
       print("error" + '${e.toString()}');
     } finally {
+
       setState(() {
         _processingVideo = false;
         _processed = true;
@@ -356,12 +368,17 @@ class _VideoUploaderState extends State<VideoUploader> {
                         children: [
                           FlatButton(
                               onPressed: () {
-                                _processingCameraVideo = true;
-                                setState(() {
-                                });
-                                _takeVideo(context, ImageSource.camera);
+                                if (_processingGalleryVideo == false) {
+                                  _takeVideo(context, ImageSource.camera);
+                                }
+                                else{
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text('Wait for the video to encode')
+                                      )
+                                  );
+                                }
                               },
-                              //minWidth: MediaQuery.of(context).size.width * 0.5,
                               shape: RoundedRectangleBorder(
                                   side:
                                   BorderSide(color: Colors.orange.withOpacity(0.5)),
@@ -380,13 +397,17 @@ class _VideoUploaderState extends State<VideoUploader> {
                           ),
                           FlatButton(
                               onPressed: () {
-                                _processingGalleryVideo = true;
-                                setState(() {
-
-                                });
-                                _takeVideo(context, ImageSource.gallery);
+                                if(_processingCameraVideo == false) {
+                                  _takeVideo(context, ImageSource.gallery);
+                                }
+                                else{
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                          content: Text('Wait for the video to encode')
+                                      )
+                                  );
+                                }
                               },
-                              //minWidth: MediaQuery.of(context).size.width * 0.5,
                               shape: RoundedRectangleBorder(
                                   side:
                                   BorderSide(color: Colors.orange.withOpacity(0.5)),

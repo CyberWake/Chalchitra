@@ -54,10 +54,6 @@ class _PlayerState extends State<Player> {
        _isLiked = await _userVideoStore.checkLiked(
            videoID: widget.video.videoId
        );
-       DocumentSnapshot user = await _userInfoStore.getUserInfo(
-           uid: widget.video.uploaderUid
-       );
-       _userDataModel = UserDataModel.fromDocument(user);
        _boolFutureCalled = true;
        return true;
      }catch(e){
@@ -68,6 +64,12 @@ class _PlayerState extends State<Player> {
      return true;
    }
   }
+  getUserInfo() async {
+    DocumentSnapshot user = await _userInfoStore.getUserInfo(
+        uid: widget.video.uploaderUid
+    );
+    _userDataModel = UserDataModel.fromDocument(user);
+  }
 
   @override
   void initState() {
@@ -76,7 +78,9 @@ class _PlayerState extends State<Player> {
       ..initialize().then((_) {
         setState(() {});
       });
+    _controller.setLooping(true);
     setup();
+    getUserInfo();
     _controller.play();
     playing = true;
   }

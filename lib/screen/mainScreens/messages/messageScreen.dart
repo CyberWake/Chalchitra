@@ -266,7 +266,6 @@ class _MessageState extends State<Message> {
         _usersDetails.add(null);
       }
     }
-
     setState(() {});
   }
 
