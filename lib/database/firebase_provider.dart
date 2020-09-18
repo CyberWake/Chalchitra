@@ -77,6 +77,18 @@ class UserVideoStore {
     }
   }
 
+  Future getProfileVideos({String uid}) async {
+    try{
+      QuerySnapshot qs = await _allVideos
+          .where('uploaderUid', isEqualTo: uid)
+          .get();
+      return mapQueryToVideoInfo(qs);
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
+  }
+
   Stream getVideos(){
     return _allVideos.orderBy("uploadedAt", descending: true)
         .snapshots();
