@@ -47,17 +47,25 @@ class _ProfilePageState extends State <ProfilePage> {
 
   List<VideoInfo> _videos = <VideoInfo>[];
   List<VideoInfo> newVideos = <VideoInfo>[];
+
+  void setup() async{
+    dynamic result = await UserVideoStore().getProfileVideos(
+        uid: profileUid
+    );
+    if(result != false){
+      setState(() {
+        _videos = result;
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     getCurrentUserID();
     checkIfAlreadyFollowing();
     profileUid = widget.uid;
-    print(widget.uid);
-    UserVideoStore.listenToVideos((newVideos){
-        _videos = newVideos;
-    }, widget.uid);
-    print('a');
+    setup();
   }
 
   @override
@@ -92,53 +100,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     left: size.width * 0.05,
                     right: size.width * 0.05
                 ),
-                child: widget.uid == _userAuth.user.uid
-                    ? SingleChildScrollView(
-                      child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                      Wrap(
-                        spacing: 1,
-                        runSpacing: 1,
-                        children: List.generate(_videos.length, (index) {
-                          final video = _videos[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) {
-                                    return Player(
-                                      video: video,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: size.width * 0.2,
-                              height: size.height * 0.2,
-                              margin: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: Colors.black,
-                                image: DecorationImage(
-                                    image: NetworkImage(video.thumbUrl),
-                                    fit: BoxFit.fitWidth
-                                ),
-                                borderRadius: BorderRadius.circular(10.5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    offset: Offset(0.0, 10.0), //(x,y)
-                                    blurRadius: 10.0,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                  ],
-                ),
-                    ) : Text(""),
+                child: buildPictureCard() ,
               ),
             ),
             Row(
@@ -330,7 +292,7 @@ class _ProfilePageState extends State <ProfilePage> {
     });
   }
 
-   controlUnfollowUsers() async{
+   controlUnFollowUsers() async{
     bool result = await _userInfoStore.unFollowUser(
         uid: widget.uid
     );
@@ -447,7 +409,7 @@ class _ProfilePageState extends State <ProfilePage> {
           title: 'Edit Profile', function: gotoEditProfile);
     } else if (following) {
       return createButtonTitleORFunction(
-          title: 'Unfollow', function: controlUnfollowUsers);
+          title: 'Unfollow', function: controlUnFollowUsers);
     } else if (!following) {
       return createButtonTitleORFunction(
           title: 'Follow', function: controlFollowUsers);
@@ -496,41 +458,49 @@ class _ProfilePageState extends State <ProfilePage> {
   SingleChildScrollView buildPictureCard() {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
-      //spacing: 1,
-      //runSpacing: 1,
       child: Column(
-        children: List.generate(_videos.length, (index) {
-          final video = _videos[index];
-          print(video);
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Player(
-                      video: video,
-                    );
-                  },
-                ),
-              );
-            },
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              child: Container(
-                width: (size.width - 3) / 3,
-                height: (size.width - 3) / 3,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 1,
+            runSpacing: 1,
+            children: List.generate(_videos.length, (index) {
+              final video = _videos[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return Player(
+                        video: video,
+                      );
+                    },
+                  ),
+                  );
+                },
+                child: Container(
+                  width: size.width * 0.2,
+                  height: size.height * 0.2,
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
                     image: DecorationImage(
                         image: NetworkImage(video.thumbUrl),
-                        fit: BoxFit.cover)),
-              ),
-            ),
-          );
-        }),
+                        fit: BoxFit.fitWidth
+                    ),
+                    borderRadius: BorderRadius.circular(10.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        offset: Offset(0.0, 10.0), //(x,y)
+                        blurRadius: 10.0,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
       ),
     );
   }
