@@ -236,8 +236,10 @@ class _PostCardState extends State<PostCard> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
+                        VideoInfo video = VideoInfo.fromDocument(widget.video);
+                        video.videoId = widget.id;
                         return Player(
-                          video: VideoInfo.fromDocument(widget.video),
+                          video: video,
                         );
                       },
                     ),

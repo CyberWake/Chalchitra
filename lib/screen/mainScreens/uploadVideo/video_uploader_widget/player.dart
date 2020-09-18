@@ -55,6 +55,8 @@ class _PlayerState extends State<Player> {
            videoID: widget.video.videoId
        );
        _boolFutureCalled = true;
+       print("hishjfshfasjfsKAJFksajfshjfshSGHFAGHFhfdsgfhgsFDFYFdsgfygaFSUFGKUYFEGKFUYavkf wuyfvKUYFGEWUYgeuygKEAUYUYEGFYECLegfuyewfgWVGkewuycgKEHVFewkuycgKEWYCVEkuycgkuyecvEWYG");
+       setState(() {});
        return true;
      }catch(e){
        print(e.toString());
