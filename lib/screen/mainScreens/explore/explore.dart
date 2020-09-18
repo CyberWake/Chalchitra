@@ -1,3 +1,5 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
@@ -63,193 +65,184 @@ class _ExploreState extends State<Explore> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return Container(
-      height: size.height * 0.8,
-      child: ListView(
-        children: <Widget>[
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Padding(
-              padding: const EdgeInsets.only(left: 15),
-              child: Row(
-                children: List.generate(searchCategories.length, (index) {
-                  return CategoryStoryItem(
-                    name: searchCategories[index],
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Container(
+              width: size.width,
+              height: size.height * 0.05,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.only(left: 15),
+                    child: Row(
+                      children: List.generate(searchCategories.length, (index) {
+                        return CategoryStoryItem(
+                          name: searchCategories[index],
+                        );
+                      }),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "TRENDING",
+                style: TextStyle(
+                    color: Colors.orange.shade400,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+            ),
+            Container(
+              width: size.width,
+              height: size.height * 0.21,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
+                shrinkWrap: true,
+                children: List.generate(_videos.length, (index) {
+                  final video = _videos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, CupertinoPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),);
+                    },
+                    child: Container(
+                      width: size.width * 0.2,
+                      height: size.height * 0.2,
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        image: DecorationImage(
+                            image: NetworkImage(video.thumbUrl),
+                            fit: BoxFit.fitWidth
+                        ),
+                        borderRadius: BorderRadius.circular(10.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            offset: Offset(0.0, 10.0), //(x,y)
+                            blurRadius: 10.0,
+                          ),
+                        ],
+                      ),
+                    ),
                   );
                 }),
               ),
             ),
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "TRENDING",
-                  style: TextStyle(
-                      color: Colors.orange.shade400,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "STAFF PICKS",
+                style: TextStyle(
+                    color: Colors.orange.shade400,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
               ),
-              SingleChildScrollView(
+            ),
+            Container(
+              width: size.width,
+              height: size.height * 0.21,
+              child: ListView(
                 scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: List.generate(_videos.length, (index) {
-                    final video = _videos[index];
-                    return GestureDetector(
-                      onTap: () {
-                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return Player(
-                              video: video,
-                            );
-                          },
-                        ),);
-                      },
-                      child: Container(
-                        width: size.width * 0.2,
-                        height: size.height * 0.2,
-                        margin: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
+                shrinkWrap: true,
+                children: List.generate(_videos.length, (index) {
+                  final video = _videos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, CupertinoPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),);
+                    },
+                    child: Container(
+                      width: size.width * 0.2,
+                      height: size.height * 0.2,
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.black,
+                        image: DecorationImage(
+                            image: NetworkImage(video.thumbUrl),
+                            fit: BoxFit.fitWidth
+                        ),
+                        borderRadius: BorderRadius.circular(10.5),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.grey.withOpacity(0.2),
+                            offset: Offset(0.0, 10.0), //(x,y)
+                            blurRadius: 10.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerLeft,
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                "LATEST VIDEOS",
+                style: TextStyle(
+                    color: Colors.orange.shade400,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20),
+              ),
+            ),
+            Container(
+              width: size.width,
+              padding: EdgeInsets.symmetric(horizontal: 5),
+              child: StaggeredGridView.countBuilder(
+                physics: NeverScrollableScrollPhysics(),
+                shrinkWrap: true,
+                crossAxisCount: 3,
+                itemCount: _videos.length,
+                itemBuilder: (BuildContext context, int index){
+                  dynamic video = _videos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
                           image: DecorationImage(
                               image: NetworkImage(video.thumbUrl),
-                              fit: BoxFit.fitWidth
-                          ),
-                          borderRadius: BorderRadius.circular(10.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              offset: Offset(0.0, 10.0), //(x,y)
-                              blurRadius: 10.0,
-                            ),
-                          ],
-                        ),
+                              fit: BoxFit.cover
+                          )
                       ),
-                    );
-                  }),
-                ),
+                    ),
+                  );
+                },
+                staggeredTileBuilder: (int index) {
+                  return StaggeredTile.count(1, 1 / _videos[index].aspectRatio);
+                },
+                mainAxisSpacing: 5.0,
+                crossAxisSpacing: 5.0,
               ),
-            ],
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "STAFF PICKS",
-                  style: TextStyle(
-                      color: Colors.orange.shade400,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-              ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: List.generate(_videos.length, (index) {
-                    final video = _videos[index];
-                    return GestureDetector(
-                      onTap: () {
-                       Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return Player(
-                              video: video,
-                            );
-                          },
-                        ),);
-                      },
-                      child: Container(
-                        width: size.width * 0.2,
-                        height: size.height * 0.2,
-                        margin: EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          image: DecorationImage(
-                              image: NetworkImage(video.thumbUrl),
-                              fit: BoxFit.fitWidth
-                          ),
-                          borderRadius: BorderRadius.circular(10.5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              offset: Offset(0.0, 10.0), //(x,y)
-                              blurRadius: 10.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    );
-                  }),
-                ),
-              ),
-            ],
-          ),
-          SizedBox(
-            height: 15,
-          ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "LATEST VIDEOS",
-                  style: TextStyle(
-                      color: Colors.orange.shade400,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20),
-                ),
-              ),
-              Container(
-                padding: EdgeInsets.all(8),
-                height: size.height,
-                child: StaggeredGridView.countBuilder(
-                  physics: NeverScrollableScrollPhysics(),
-                  crossAxisCount: 3,
-                  itemCount: _videos.length,
-                  itemBuilder: (BuildContext context, int index){
-                    dynamic video = _videos[index];
-                    return GestureDetector(
-                      onTap: () {
-                        Navigator.push(context, MaterialPageRoute(
-                          builder: (context) {
-                            return Player(
-                              video: video,
-                            );
-                          },
-                        ),);
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            image: DecorationImage(
-                                image: NetworkImage(video.thumbUrl),
-                                fit: BoxFit.cover
-                            )
-                        ),
-                      ),
-                    );
-                  },
-                  staggeredTileBuilder: (int index) {
-                    return StaggeredTile.count(1, 1 / _videos[index].aspectRatio);
-                  },
-                  mainAxisSpacing: 5.0,
-                  crossAxisSpacing: 5.0,
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ),
     );
   }
