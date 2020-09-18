@@ -41,6 +41,7 @@ class VideoInfo {
       videoUrl: ds.data()['videoUrl'],
       thumbUrl: ds.data()['thumbUrl'],
       coverUrl: ds.data()['coverUrl'],
+      uploaderUid: ds.data()['uploaderUid'],
       rating: ds.data()['rating'],
       likes: ds.data()['likes'],
       comments: ds.data()['comments'],

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
@@ -313,7 +314,19 @@ class _ProfilePageState extends State <ProfilePage> {
       currentUserName = displayName;
     });
   }
-
+  String getChoppedUsername(String currentDisplayName){
+    String choppedUsername = '';
+    var subDisplayName = currentDisplayName.split(' ');
+    for(var i in subDisplayName){
+      if(choppedUsername.length + i.length < 18){
+        choppedUsername += ' ' + i;
+      }
+      else{
+        return choppedUsername;
+      }
+    }
+    return choppedUsername;
+  }
   getProfileTopView(BuildContext context) {
     return new StreamBuilder<DocumentSnapshot>(
         stream: _userInfoStore.getUserInfoStream(
@@ -324,7 +337,10 @@ class _ProfilePageState extends State <ProfilePage> {
             return Center(child: Text('Something went wrong'));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: Text("Loading"));
+            return Center(child: SpinKitCircle(
+              color: Colors.orange,
+              size: 60,
+            ),);
           }
           print(snapshot.data.exists);
           user = UserDataModel.fromDocument(snapshot.data);
@@ -371,7 +387,7 @@ class _ProfilePageState extends State <ProfilePage> {
                         children: [
                           FittedBox(
                             child: Text(
-                              user.displayName != null ? user.displayName : "WowTalent",
+                              user.displayName != null ? user.displayName.length>19? getChoppedUsername(user.displayName):user.displayName : "WowTalent",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -419,7 +435,7 @@ class _ProfilePageState extends State <ProfilePage> {
   gotoEditProfile() {
     Navigator.push(
         context,
-        MaterialPageRoute(
+        CupertinoPageRoute(
             builder: (_) => EditProfilePage(
               uid: currentUserID,
             )));

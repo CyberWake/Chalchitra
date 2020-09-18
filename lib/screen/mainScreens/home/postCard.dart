@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
+import 'package:wowtalent/database/firestore_api.dart';
+import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
@@ -39,6 +42,8 @@ class _PostCardState extends State<PostCard> {
   Size _size;
   double _sliderValue;
   UserVideoStore _userVideoStore = UserVideoStore();
+  UserDataModel _user = UserDataModel();
+  UserInfoStore _userInfoStore = UserInfoStore();
   bool _isLiked;
 
   void _button(Offset offset) async{
@@ -104,11 +109,20 @@ class _PostCardState extends State<PostCard> {
       setState(() {});
     }
   }
+  getUserInfo() async {
+    DocumentSnapshot user = await _userInfoStore.getUserInfo(
+        uid: widget.video.uploaderUid
+    );
+    _user =  UserDataModel.fromDocument(user);
+  }
+
+
 
   @override
   void initState() {
     super.initState();
     setup();
+    getUserInfo();
   }
 
   void choiceAction(String choice){
@@ -237,6 +251,7 @@ class _PostCardState extends State<PostCard> {
                     MaterialPageRoute(
                       builder: (context) {
                         return Player(
+                          user: _user,
                           video: VideoInfo.fromDocument(widget.video),
                         );
                       },

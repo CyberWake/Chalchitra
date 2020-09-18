@@ -12,9 +12,11 @@ import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 
 class Player extends StatefulWidget {
   final VideoInfo video;
+  final UserDataModel user;
   Player({
     Key key,
     @required this.video,
+    this.user
   }) : super(key: key);
   @override
   _PlayerState createState() => _PlayerState();
@@ -33,7 +35,7 @@ class _PlayerState extends State<Player> {
   int commentCount = 0;
   bool _isLiked = false;
   bool playing;
-  UserDataModel _userDataModel = UserDataModel();
+  UserDataModel _user = UserDataModel();
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _boolFutureCalled = false;
   bool _following = false;
@@ -48,13 +50,13 @@ class _PlayerState extends State<Player> {
        }
        likeCount = widget.video.likes;
        _sliderValue = await
-       _userVideoStore.checkRated(
-           videoID : widget.video.videoId
-       );
+       _userVideoStore.checkRated(videoID:widget.video.videoId);
        _isLiked = await _userVideoStore.checkLiked(
            videoID: widget.video.videoId
        );
        _boolFutureCalled = true;
+       setState(() {
+       });
        return true;
      }catch(e){
        print(e.toString());
@@ -68,7 +70,7 @@ class _PlayerState extends State<Player> {
     DocumentSnapshot user = await _userInfoStore.getUserInfo(
         uid: widget.video.uploaderUid
     );
-    _userDataModel = UserDataModel.fromDocument(user);
+    _user =  UserDataModel.fromDocument(user);
   }
 
   @override
@@ -97,27 +99,26 @@ class _PlayerState extends State<Player> {
         color: Colors.black,
             child: Stack(
             children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AspectRatio(
+              Builder(
+                builder: (context){
+                  return AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
                     child: InkWell(
-                      onTap: (){
-                        if(playing){
-                          print('paused');
-                          playing = false;
-                          _controller.pause();
-                        }else{
-                          print("played");
-                          playing = true;
-                          _controller.play();
-                        }
-                      },
-                      child: VideoPlayer(_controller)
+                        onTap: (){
+                          if(playing){
+                            print('paused');
+                            playing = false;
+                            _controller.pause();
+                          }else{
+                            print("played");
+                            playing = true;
+                            _controller.play();
+                          }
+                        },
+                        child: VideoPlayer(_controller)
                     ),
-                  ),
-                ],
+                  );
+                },
               ),
               Builder(
                 builder: (context) {
@@ -134,14 +135,14 @@ class _PlayerState extends State<Player> {
                             children: [
                               CircleAvatar(
                                 backgroundImage: NetworkImage(
-                                   _userDataModel.photoUrl == null ?
+                                   _user.photoUrl == null ?
                                    "https://via.placeholder.com/150" :
-                                       _userDataModel.photoUrl
+                                       _user.photoUrl
                                 ),
                                 radius: 13,
                               ),
                               Text(
-                                '  ${_userDataModel.username} \u2022',
+                                '  ${_user.username} \u2022',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white),
@@ -208,8 +209,8 @@ class _PlayerState extends State<Player> {
                                   InkWell(
                                       child: SvgPicture.asset(
                                         _isLiked ?
-                                        "assets/images/loved_icon.svg":
-                                        "assets/images/love_icon.svg",
+                                        "assets/images/love_icon.svg":
+                                        "assets/images/loved_icon.svg",
                                         color: Colors.white,
                                         width: 20,
                                       ),

@@ -40,7 +40,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Size _size;
   String gender;
   String _dob;
-  String url = " ";
+  String url = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
+  String onUrlNull = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
   String fileName = '';
   File file;
 
@@ -173,7 +174,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               child: CircleAvatar(
                 backgroundImage:
-                user.photoUrl==null?NetworkImage("https://via.placeholder.com/150"):NetworkImage(url),
+                url == onUrlNull?NetworkImage(url):NetworkImage(onUrlNull),
                 radius: 50.0,
               ),
             ),
