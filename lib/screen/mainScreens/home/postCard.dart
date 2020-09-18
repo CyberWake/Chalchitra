@@ -45,6 +45,7 @@ class _PostCardState extends State<PostCard> {
   UserDataModel _user = UserDataModel();
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _isLiked;
+  bool _processing = false;
 
   void _button(Offset offset) async{
     double left = offset.dx;
@@ -250,9 +251,10 @@ class _PostCardState extends State<PostCard> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
+                        VideoInfo video = VideoInfo.fromDocument(widget.video);
+                        video.videoId = widget.id;
                         return Player(
-                          user: _user,
-                          video: VideoInfo.fromDocument(widget.video),
+                          video: video,
                         );
                       },
                     ),
@@ -291,9 +293,21 @@ class _PostCardState extends State<PostCard> {
                           width: 20,
                         ),
                         onTap: () async{
-                         _isLiked = await _userVideoStore.likeVideo(
-                            videoID: widget.id,
-                          );
+                         if (!_processing) {
+                           setState(() {
+                             _processing = true;
+                           });
+                           try {
+                             _isLiked = await _userVideoStore.likeVideo(
+                                videoID: widget.id,
+                              );
+                           } on Exception catch (e) {
+                             print(e.toString());
+                           }
+                           _processing = false;
+                           setState(() {
+                           });
+                         }
                          setState(() {});
                         },
                       ) : InkWell(
@@ -302,9 +316,21 @@ class _PostCardState extends State<PostCard> {
                           width: 20,
                         ),
                         onTap: () async{
-                          _isLiked = !await _userVideoStore.dislikeVideo(
-                            videoID: widget.id,
-                          );
+                          if (!_processing) {
+                            _processing = true;
+                            setState(() {
+                            });
+                            try {
+                              _isLiked = await _userVideoStore.dislikeVideo(
+                                videoID: widget.id,
+                              );
+                            } on Exception catch (e) {
+                              print(e.toString());
+                            }
+                            _processing = false;
+                            setState(() {
+                            });
+                          }
                           setState(() {});
                         },
                       ),

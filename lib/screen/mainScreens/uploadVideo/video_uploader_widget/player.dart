@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
@@ -28,13 +29,14 @@ class _PlayerState extends State<Player> {
   double _widthOne;
   double _fontOne;
   double _iconOne;
-  Size _size;
   double _sliderValue = 0.0;
+  Size _size;
   UserVideoStore _userVideoStore = UserVideoStore();
   int likeCount = 0;
   int commentCount = 0;
   bool _isLiked = false;
   bool playing;
+  bool loading = true;
   UserDataModel _user = UserDataModel();
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _boolFutureCalled = false;
@@ -71,6 +73,9 @@ class _PlayerState extends State<Player> {
         uid: widget.video.uploaderUid
     );
     _user =  UserDataModel.fromDocument(user);
+    setState(() {
+      loading = false;
+    });
   }
 
   @override
@@ -94,28 +99,35 @@ class _PlayerState extends State<Player> {
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
     return Scaffold(
-      body: _controller.value.initialized
+      body: !loading
           ? Container(
         color: Colors.black,
             child: Stack(
             children: [
               Builder(
                 builder: (context){
-                  return AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child: InkWell(
-                        onTap: (){
-                          if(playing){
-                            print('paused');
-                            playing = false;
-                            _controller.pause();
-                          }else{
-                            print("played");
-                            playing = true;
-                            _controller.play();
-                          }
-                        },
-                        child: VideoPlayer(_controller)
+                  return Center(
+                    child: AspectRatio(
+                      aspectRatio: _controller.value.aspectRatio,
+                      child: _controller.value.initialized?
+                      InkWell(
+                          onTap: (){
+                            if(playing){
+                              print('paused');
+                              playing = false;
+                              _controller.pause();
+                            }else{
+                              print("played");
+                              playing = true;
+                              _controller.play();
+                            }
+                          },
+                          child: VideoPlayer(_controller)
+                      )
+                          :SpinKitCircle(
+                        color: Colors.grey,
+                        size: 60,
+                      )
                     ),
                   );
                 },
@@ -345,7 +357,11 @@ class _PlayerState extends State<Player> {
             ]
       ),
           )
-          : Container(),
+          : Center(
+          child: Container(child: SpinKitCircle(
+            color: Colors.orange,
+            size: 60,
+          ),)),
     );
   }
 

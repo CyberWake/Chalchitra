@@ -38,10 +38,10 @@ class VideoInfo {
 
   static fromDocument(QueryDocumentSnapshot ds) {
     return VideoInfo(
+      uploaderUid: ds.data()['uploaderUid'],
       videoUrl: ds.data()['videoUrl'],
       thumbUrl: ds.data()['thumbUrl'],
       coverUrl: ds.data()['coverUrl'],
-      uploaderUid: ds.data()['uploaderUid'],
       rating: ds.data()['rating'],
       likes: ds.data()['likes'],
       comments: ds.data()['comments'],
