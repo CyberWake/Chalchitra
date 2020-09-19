@@ -9,22 +9,27 @@ class UserDataModel {
   String username;
   String bio;
   String age;
+  String dob;
+  String country;
   String gender;
   Map followers;
   Map following;
 
-  UserDataModel(
-      {this.displayName,
-      this.email,
-      this.password,
-      this.id,
-      this.photoUrl,
-      this.bio,
-      this.username,
-      this.age,
-      this.gender,
-      this.followers,
-      this.following});
+  UserDataModel({
+    this.displayName,
+    this.email,
+    this.password,
+    this.id,
+    this.photoUrl,
+    this.bio,
+    this.username,
+    this.age,
+    this.dob,
+    this.country,
+    this.gender,
+    this.followers,
+    this.following
+  });
 
   factory UserDataModel.fromDocument(DocumentSnapshot document) {
     return UserDataModel(
@@ -35,6 +40,8 @@ class UserDataModel {
         bio: document.data()['bio'],
         username: document.data()['username'],
         age: document.data()['age'],
+        dob: document.data()['dob'],
+        country: document.data()['counrty'],
         gender: document.data()['gender'],
         followers: document.data()['followers'],
         following: document.data()['following']);

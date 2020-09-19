@@ -25,8 +25,8 @@ String validateRegisterPassword(String password){
   if(password.isEmpty){
     return "Password can't be empty";
   }else{
-    if(password.length < 6){
-      return "Password must contain atleast 6 characters";
+    if(password.length < 8){
+      return "Password must contain atleast 8 characters";
     }else{
       Pattern pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{8,}$';
       RegExp regex = new RegExp(pattern);

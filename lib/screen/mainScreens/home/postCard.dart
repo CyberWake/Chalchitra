@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
+import 'package:wowtalent/database/firestore_api.dart';
+import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
@@ -39,7 +42,10 @@ class _PostCardState extends State<PostCard> {
   Size _size;
   double _sliderValue;
   UserVideoStore _userVideoStore = UserVideoStore();
+  UserDataModel _user = UserDataModel();
+  UserInfoStore _userInfoStore = UserInfoStore();
   bool _isLiked;
+  bool _processing = false;
 
   void _button(Offset offset) async{
     double left = offset.dx;
@@ -104,11 +110,20 @@ class _PostCardState extends State<PostCard> {
       setState(() {});
     }
   }
+  getUserInfo() async {
+    DocumentSnapshot user = await _userInfoStore.getUserInfo(
+        uid: widget.video.data()['uploaderUid']
+    );
+    _user =  UserDataModel.fromDocument(user);
+  }
+
+
 
   @override
   void initState() {
     super.initState();
     setup();
+    getUserInfo();
   }
 
   void choiceAction(String choice){
@@ -236,8 +251,10 @@ class _PostCardState extends State<PostCard> {
                     context,
                     MaterialPageRoute(
                       builder: (context) {
+                        VideoInfo video = VideoInfo.fromDocument(widget.video);
+                        video.videoId = widget.id;
                         return Player(
-                          video: VideoInfo.fromDocument(widget.video),
+                          video: video,
                         );
                       },
                     ),
@@ -276,9 +293,21 @@ class _PostCardState extends State<PostCard> {
                           width: 20,
                         ),
                         onTap: () async{
-                         _isLiked = await _userVideoStore.likeVideo(
-                            videoID: widget.id,
-                          );
+                         if (!_processing) {
+                           setState(() {
+                             _processing = true;
+                           });
+                           try {
+                             _isLiked = await _userVideoStore.likeVideo(
+                                videoID: widget.id,
+                              );
+                           } on Exception catch (e) {
+                             print(e.toString());
+                           }
+                           _processing = false;
+                           setState(() {
+                           });
+                         }
                          setState(() {});
                         },
                       ) : InkWell(
@@ -287,9 +316,21 @@ class _PostCardState extends State<PostCard> {
                           width: 20,
                         ),
                         onTap: () async{
-                          _isLiked = !await _userVideoStore.dislikeVideo(
-                            videoID: widget.id,
-                          );
+                          if (!_processing) {
+                            _processing = true;
+                            setState(() {
+                            });
+                            try {
+                              _isLiked = await _userVideoStore.dislikeVideo(
+                                videoID: widget.id,
+                              );
+                            } on Exception catch (e) {
+                              print(e.toString());
+                            }
+                            _processing = false;
+                            setState(() {
+                            });
+                          }
                           setState(() {});
                         },
                       ),

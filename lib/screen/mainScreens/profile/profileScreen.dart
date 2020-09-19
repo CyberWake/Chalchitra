@@ -2,7 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/database/firebase_provider.dart';
 import 'package:wowtalent/database/firestore_api.dart';
@@ -10,6 +10,7 @@ import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/model/video_info.dart';
 import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
+
 class ProfilePage extends StatefulWidget {
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
@@ -27,9 +28,11 @@ class _ProfilePageState extends State <ProfilePage> {
 
   UserDataModel user;
   UserInfoStore _userInfoStore = UserInfoStore();
+  UserAuth _userAuth = UserAuth();
   // Attributes
 
   bool loading = false;
+  String profileUid;
   String _username;
   String currentUserID;
   int totalFollowers = 0;
@@ -44,17 +47,26 @@ class _ProfilePageState extends State <ProfilePage> {
   final thumbHeight = 150;
 
   List<VideoInfo> _videos = <VideoInfo>[];
+  List<VideoInfo> newVideos = <VideoInfo>[];
+
+  void setup() async{
+    dynamic result = await UserVideoStore().getProfileVideos(
+        uid: profileUid
+    );
+    if(result != false){
+      setState(() {
+        _videos = result;
+      });
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     getCurrentUserID();
     checkIfAlreadyFollowing();
-    UserVideoStore.listenToVideos((newVideos) {
-      setState(() {
-        _videos = newVideos;
-      });
-    });
+    profileUid = widget.uid;
+    setup();
   }
 
   @override
@@ -89,53 +101,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     left: size.width * 0.05,
                     right: size.width * 0.05
                 ),
-                child: widget.uid == Provider.of<User>(context).uid
-                    ? SingleChildScrollView(
-                      child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                      Wrap(
-                        spacing: 1,
-                        runSpacing: 1,
-                        children: List.generate(_videos.length, (index) {
-                          final video = _videos[index];
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(
-                                  builder: (context) {
-                                    return Player(
-                                      video: video,
-                                    );
-                                  },
-                                ),
-                              );
-                            },
-                            child: Container(
-                              width: size.width * 0.2,
-                              height: size.height * 0.2,
-                              margin: EdgeInsets.all(5),
-                              decoration: BoxDecoration(
-                                color: Colors.red,
-                                image: DecorationImage(
-                                    image: NetworkImage(video.thumbUrl),
-                                    fit: BoxFit.cover
-                                ),
-                                borderRadius: BorderRadius.circular(10.5),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.2),
-                                    offset: Offset(0.0, 10.0), //(x,y)
-                                    blurRadius: 10.0,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        }),
-                      ),
-                  ],
-                ),
-                    ) : Text(""),
+                child: buildPictureCard() ,
               ),
             ),
             Row(
@@ -327,7 +293,7 @@ class _ProfilePageState extends State <ProfilePage> {
     });
   }
 
-   controlUnfollowUsers() async{
+   controlUnFollowUsers() async{
     bool result = await _userInfoStore.unFollowUser(
         uid: widget.uid
     );
@@ -348,7 +314,19 @@ class _ProfilePageState extends State <ProfilePage> {
       currentUserName = displayName;
     });
   }
-
+  String getChoppedUsername(String currentDisplayName){
+    String choppedUsername = '';
+    var subDisplayName = currentDisplayName.split(' ');
+    for(var i in subDisplayName){
+      if(choppedUsername.length + i.length < 18){
+        choppedUsername += ' ' + i;
+      }
+      else{
+        return choppedUsername;
+      }
+    }
+    return choppedUsername;
+  }
   getProfileTopView(BuildContext context) {
     return new StreamBuilder<DocumentSnapshot>(
         stream: _userInfoStore.getUserInfoStream(
@@ -359,7 +337,10 @@ class _ProfilePageState extends State <ProfilePage> {
             return Center(child: Text('Something went wrong'));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: Text("Loading"));
+            return Center(child: SpinKitCircle(
+              color: Colors.orange,
+              size: 60,
+            ),);
           }
           print(snapshot.data.exists);
           user = UserDataModel.fromDocument(snapshot.data);
@@ -404,11 +385,13 @@ class _ProfilePageState extends State <ProfilePage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Text(
-                            user.displayName != null ? user.displayName : "WowTalent",
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                          FittedBox(
+                            child: Text(
+                              user.displayName != null ? user.displayName.length>19? getChoppedUsername(user.displayName):user.displayName : "WowTalent",
+                              style: TextStyle(
+                                fontSize: 22,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
                           SizedBox(height: 5,),
@@ -442,7 +425,7 @@ class _ProfilePageState extends State <ProfilePage> {
           title: 'Edit Profile', function: gotoEditProfile);
     } else if (following) {
       return createButtonTitleORFunction(
-          title: 'Unfollow', function: controlUnfollowUsers);
+          title: 'Unfollow', function: controlUnFollowUsers);
     } else if (!following) {
       return createButtonTitleORFunction(
           title: 'Follow', function: controlFollowUsers);
@@ -452,7 +435,7 @@ class _ProfilePageState extends State <ProfilePage> {
   gotoEditProfile() {
     Navigator.push(
         context,
-        MaterialPageRoute(
+        CupertinoPageRoute(
             builder: (_) => EditProfilePage(
               uid: currentUserID,
             )));
@@ -491,41 +474,49 @@ class _ProfilePageState extends State <ProfilePage> {
   SingleChildScrollView buildPictureCard() {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
-      //spacing: 1,
-      //runSpacing: 1,
       child: Column(
-        children: List.generate(_videos.length, (index) {
-          final video = _videos[index];
-          print(video);
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Player(
-                      video: video,
-                    );
-                  },
-                ),
-              );
-            },
-            child: Card(
-              elevation: 10,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(30)),
-              child: Container(
-                width: (size.width - 3) / 3,
-                height: (size.width - 3) / 3,
-                decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Wrap(
+            spacing: 1,
+            runSpacing: 1,
+            children: List.generate(_videos.length, (index) {
+              final video = _videos[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(context, MaterialPageRoute(
+                    builder: (context) {
+                      return Player(
+                        video: video,
+                      );
+                    },
+                  ),
+                  );
+                },
+                child: Container(
+                  width: size.width * 0.2,
+                  height: size.height * 0.2,
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    color: Colors.black,
                     image: DecorationImage(
                         image: NetworkImage(video.thumbUrl),
-                        fit: BoxFit.cover)),
-              ),
-            ),
-          );
-        }),
+                        fit: BoxFit.fitWidth
+                    ),
+                    borderRadius: BorderRadius.circular(10.5),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.2),
+                        offset: Offset(0.0, 10.0), //(x,y)
+                        blurRadius: 10.0,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }),
+          ),
+        ],
       ),
     );
   }

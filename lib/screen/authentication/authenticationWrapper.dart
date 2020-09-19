@@ -9,10 +9,8 @@ class Authentication extends StatefulWidget {
 }
 
 class _AuthenticationState extends State<Authentication> {
-  double _widthOne;
   double _heightOne;
   double _fontOne;
-  double _iconOne;
   Size _size;
   bool _isLogin = true;
 
@@ -25,10 +23,8 @@ class _AuthenticationState extends State<Authentication> {
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
-    _widthOne = _size.width * 0.0008;
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
-    _iconOne = (_size.height * 0.066) / 50;
 
     return Scaffold(
       extendBodyBehindAppBar: true,

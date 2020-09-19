@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/firestore_api.dart';
 import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/screen/mainScreens/messages/messageSearch.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 
@@ -21,10 +22,19 @@ class _MessageState extends State<Message> {
   Size _size;
   UserInfoStore _userInfoStore = UserInfoStore();
   List _usersDetails = [];
+  bool _isSearchActive = false;
+  String _search = "";
 
   @override
   void initState() {
     super.initState();
+  }
+
+  _updateIsSearch(bool val){
+    setState(() {
+      _isSearchActive = val;
+      _search = "";
+    });
   }
 
   @override
@@ -38,46 +48,30 @@ class _MessageState extends State<Message> {
     return Scaffold(
       body: SingleChildScrollView(
         child: Container(
-          padding: EdgeInsets.only(top: _heightOne * 20),
           height: _size.height,
           color: Colors.orange,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
-              Container(
-          padding: EdgeInsets.only(
-            bottom: _heightOne * 20,
-            top: _heightOne * 20,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              SizedBox(
-                width: _widthOne * 50,
-              ),
-              IconButton(
-                icon: Icon(
-                  Icons.arrow_back_ios,
-                  color: Colors.white,
-                ),
-                onPressed: () => Navigator.pop(context),
-              ),
-              Expanded(child: Container()),
-              Text(
-                "Messages",
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: _fontOne * 25,
-                  fontWeight: FontWeight.bold,
-                ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Spacer(),
+                  Text(
+                    "Messages",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: _fontOne * 25,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Spacer(),
+                ],
               ),
               SizedBox(
-                width: _widthOne * 100,
-              )
-            ],
-          ),
-        ),
+                height: 5,
+              ),
               Container(
                 width: _size.width * 0.8,
                 height: _heightOne * 42.5,
@@ -87,9 +81,33 @@ class _MessageState extends State<Message> {
                 padding: EdgeInsets.all(_iconOne * 5),
                 decoration: BoxDecoration(
                     color: Colors.white, borderRadius: BorderRadius.circular(15)),
-                child: TextFormField(
-                  decoration: authInputFormatting.copyWith(
-                      hintText: "Search Conversations"),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        onTap: (){
+                          _updateIsSearch(true);
+                        },
+                        onFieldSubmitted: (val){
+                          setState(() {
+                            _search = val;
+                          });
+                        },
+                        decoration: authInputFormatting.copyWith(
+                          hintText: "Search By Username",
+                        ),
+                      ),
+                    ),
+                    _isSearchActive ? IconButton(
+                      icon: Icon(
+                        Icons.cancel,
+                        color: Colors.orange,
+                      ),
+                      onPressed: (){
+                        _updateIsSearch(false);
+                      },
+                    ) : Container(),
+                  ],
                 ),
               ),
               Expanded(
@@ -101,7 +119,10 @@ class _MessageState extends State<Message> {
                           topRight: Radius.circular(25),
                           topLeft: Radius.circular(25),
                         )),
-                    child: getBody()),
+                    child: _isSearchActive ?
+                    SearchMessage(
+                      userName: _search,
+                    ) : getBody()),
               ),
             ]
           ),
@@ -282,7 +303,6 @@ class _MessageState extends State<Message> {
         _usersDetails.add(null);
       }
     }
-
     setState(() {});
   }
 

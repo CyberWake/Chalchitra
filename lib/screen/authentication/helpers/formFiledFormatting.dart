@@ -9,6 +9,7 @@ authFormFieldFormatting({String hintText, double fontSize}){
     errorBorder: InputBorder.none,
     disabledBorder: InputBorder.none,
     hintText: hintText,
+    errorMaxLines: 3,
     hintStyle: TextStyle(
         color: Colors.orange.withOpacity(0.75),
         fontSize: fontSize

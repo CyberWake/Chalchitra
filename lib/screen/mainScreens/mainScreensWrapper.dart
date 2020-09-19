@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/auth_api.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
@@ -13,7 +13,10 @@ import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoUploaderScreen.dart';
 
+// ignore: must_be_immutable
 class MainScreenWrapper extends StatefulWidget {
+  int index;
+  MainScreenWrapper({@required this.index});
   @override
   _MainScreenWrapperState createState() => _MainScreenWrapperState();
 }
@@ -25,9 +28,24 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   double _heightOne;
   double _iconOne;
   Size _size;
+  bool _isMessagePage = false;
   Widget _profilePage = Container();
+  UserAuth _userAuth = UserAuth();
+  SharedPreferences prefs;
 
+  void setup() async{
+    prefs = await SharedPreferences.getInstance();
+    if(!prefs.containsKey('onBoarded')){
+      prefs.setBool("onBoarded", true);
+    }
+  }
 
+  @override
+  void initState() {
+    super.initState();
+    _currentIndex = widget.index;
+    setup();
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -38,18 +56,15 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       Home(),
       Explore(),
       VideoUploader(),
-      Container(),
+      Message(),
       _profilePage,
     ];
-    if(_screens == null){
-
-    }
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Colors.transparent,
+        backgroundColor: _isMessagePage ? Colors.orange:Colors.transparent,
         title: Container(
           padding: EdgeInsets.symmetric(
               vertical: 10,
@@ -62,7 +77,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           _currentIndex != 4 ? IconButton(
             icon: Icon(
               Icons.search,
-              color: Colors.orange.shade400,
+              color: _isMessagePage? Colors.black: Colors.orange.shade400,
               size: _iconOne * 30,
             ),
             onPressed: (){
@@ -102,8 +117,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ],
       ),
       bottomNavigationBar: CurvedNavigationBar(
+        index: _currentIndex,
         height: _heightOne * 45,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         color: Colors.orange.shade400,
         buttonBackgroundColor: Colors.orange.shade400,
         items: <Widget>[
@@ -137,6 +153,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           ),
         ],
         onTap: (index) async{
+          if(_userAuth.user == null){
+            Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>Authentication()));
+          }
           print(index);
           if(index == 4){
             print(index);
@@ -145,12 +164,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                 _profilePage = ProfilePage(uid: user.uid);
               }
             });
+            _isMessagePage = false;
             _currentIndex = index;
           }else if(index == 3){
-            await Navigator.push(context, MaterialPageRoute(
-              builder: (context) => Message()
-            ));
+            _isMessagePage = true;
+            _currentIndex = index;
           }else{
+            _isMessagePage = false;
             _currentIndex = index;
           }
           setState(() {});

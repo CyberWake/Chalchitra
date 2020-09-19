@@ -24,6 +24,7 @@ class _LoginFormState extends State<LoginForm> {
   Size _size;
   bool _loginForm = true;
   String _message = 'Log in/out by pressing the buttons below.';
+  bool _submitted = false;
 
   void _showMessage(String message) {
     setState(() {
@@ -57,6 +58,9 @@ class _LoginFormState extends State<LoginForm> {
                 validator: validateEmail,
                 onChanged: (val) {
                   _userDataModel.email = val;
+                  if(_submitted){
+                    _formKey.currentState.validate();
+                  }
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Email",
@@ -75,6 +79,9 @@ class _LoginFormState extends State<LoginForm> {
                 validator: validateLoginPassword,
                 onChanged: (val) {
                   _userDataModel.password = val;
+                  if(_submitted){
+                    _formKey.currentState.validate();
+                  }
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Password",
@@ -104,7 +111,9 @@ class _LoginFormState extends State<LoginForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper()
+                                builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )
                             )
                         );
                       }else{
@@ -114,6 +123,10 @@ class _LoginFormState extends State<LoginForm> {
                             )
                         );
                       }
+                    });
+                  }else{
+                    setState(() {
+                      _submitted = true;
                     });
                   }
                 },
@@ -160,7 +173,9 @@ class _LoginFormState extends State<LoginForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper()
+                                builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )
                             )
                         );
                       }else{
@@ -189,7 +204,9 @@ class _LoginFormState extends State<LoginForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper()
+                                builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )
                             )
                         );
                       }else{

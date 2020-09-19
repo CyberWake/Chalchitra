@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/auth_api.dart';
@@ -16,6 +17,7 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final _formKey = GlobalKey<FormState>();
+  final ref = FirebaseFirestore.instance.collection('WowUsers');
   UserDataModel _userDataModel = UserDataModel();
   UserAuth _userAuth = UserAuth();
   double _widthOne;
@@ -23,6 +25,7 @@ class _RegisterFormState extends State<RegisterForm> {
   double _fontOne;
   Size _size;
   bool _registerForm = true;
+  bool _submitted = false;
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +46,7 @@ class _RegisterFormState extends State<RegisterForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            SizedBox(height: _heightOne * 40,),
+            SizedBox(height: _heightOne * 10,),
             authFormFieldContainer(
               child: TextFormField(
                 keyboardType: TextInputType.emailAddress,
@@ -51,6 +54,9 @@ class _RegisterFormState extends State<RegisterForm> {
                     : null,
                 onChanged: (val) {
                   _userDataModel.username = val;
+                  if(_submitted){
+                    _formKey.currentState.validate();
+                  }
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Username",
@@ -69,6 +75,9 @@ class _RegisterFormState extends State<RegisterForm> {
                 validator: validateEmail,
                 onChanged: (val) {
                   _userDataModel.email = val;
+                  if(_submitted){
+                    _formKey.currentState.validate();
+                  }
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Email",
@@ -90,7 +99,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Enter Password",
-                    fontSize: _fontOne * 15
+                    fontSize: _fontOne * 15,
                 ),
                 style: TextStyle(
                   fontSize: _fontOne * 15,
@@ -105,7 +114,6 @@ class _RegisterFormState extends State<RegisterForm> {
                 validator: (val) => val == _userDataModel.password ? null
                     : "Password in both fields should match",
                 onChanged: (val) {
-                  _userDataModel.password = val;
                 },
                 decoration: authFormFieldFormatting(
                     hintText: "Confirm Password",
@@ -121,31 +129,49 @@ class _RegisterFormState extends State<RegisterForm> {
             FlatButton(
                 onPressed: () async{
                   if(_formKey.currentState.validate()){
-                    await _userAuth.registerUserWithEmail(
-                        email: _userDataModel.email,
-                        password: _userDataModel.password,
-                        username: _userDataModel.username
-                    ).then((result){
-                      if(result == null){
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Something went wrong try again')
-                            )
-                        );
-                      }else if(result == "success"){
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) =>  MainScreenWrapper()
-                            )
-                        );
-                      }else{
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text(result)
-                            )
-                        );
-                      }
+                    QuerySnapshot read = await ref
+                        .where("username", isEqualTo: _userDataModel.username)
+                        .get();
+                    if(read.size != 0){
+                      Scaffold.of(context).showSnackBar(
+                          SnackBar(
+                              content: Text('Username already exists')
+                          )
+                      );
+                    }
+                    else{
+                      await _userAuth.registerUserWithEmail(
+                          email: _userDataModel.email,
+                          password: _userDataModel.password,
+                          username: _userDataModel.username,
+                      ).then((result){
+                        if(result == null){
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text('Something went wrong try again')
+                              )
+                          );
+                        }else if(result == "success"){
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) =>  MainScreenWrapper(
+                                    index: 0,
+                                  )
+                              )
+                          );
+                        }else{
+                          Scaffold.of(context).showSnackBar(
+                              SnackBar(
+                                  content: Text(result)
+                              )
+                          );
+                        }
+                      });
+                    }
+                  }else{
+                    setState(() {
+                      _submitted = true;
                     });
                   }
                 },
@@ -180,7 +206,30 @@ class _RegisterFormState extends State<RegisterForm> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 InkWell(
-                  onTap: (){},
+                  onTap: () async {
+                    await _userAuth.signInWithFacebook().then((result){
+                      if(result == false){
+                        Scaffold.of(context).showSnackBar(
+                            SnackBar(
+                                content: Text('Something went wrong try again')
+                            )
+                        );
+                      }else if(result == true){
+                        Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )
+                            )
+                        );
+                      }else{
+                        setState(() {
+                          _registerForm = false;
+                        });
+                      }
+                    });
+                  },
                   child: Image.asset(
                     "assets/images/fb.png",
                     scale: _fontOne * 9,
@@ -200,7 +249,9 @@ class _RegisterFormState extends State<RegisterForm> {
                         Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper()
+                                builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )
                             )
                         );
                       }else{

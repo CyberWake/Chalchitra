@@ -35,6 +35,8 @@ class UserVideoStore {
         'aspectRatio': video.aspectRatio,
         'uploadedAt': video.uploadedAt,
         'videoName': video.videoName,
+        'videoHashtag': video.videoHashtag,
+        'category': video.category,
         'uploaderUid': video.uploaderUid,
         'likes': video.likes,
         'views': video.views,
@@ -58,12 +60,11 @@ class UserVideoStore {
     }
   }
 
-  static listenToVideos(callback) async {
+  static listenToVideos(callback,String uid) async {
+    print(uid+' firestore');
     try{
-      String uid = _userAuth.user.uid;
-      _feedVideos
-          .doc(uid)
-          .collection('videos')
+      _allVideos
+          .where('uploaderUid', isEqualTo: uid)
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);
@@ -76,14 +77,52 @@ class UserVideoStore {
     }
   }
 
+  Future getProfileVideos({String uid}) async {
+    try{
+      QuerySnapshot qs = await _allVideos
+          .where('uploaderUid', isEqualTo: uid)
+          .get();
+      return mapQueryToVideoInfo(qs);
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
+  }
+
   Stream getVideos(){
     return _allVideos.orderBy("uploadedAt", descending: true)
+        .snapshots();
+  }
+
+  Stream getFollowingVideos({List<DocumentSnapshot> followings}){
+    return _allVideos
+        .where('uploaderUid',
+        whereIn: List.generate(followings.length, (index){
+          return followings[index].id;
+        }))
+        .orderBy("uploadedAt", descending: true)
+        .limit(100)
         .snapshots();
   }
 
   static listenToAllVideos(callback) async{
     try{
       _allVideos.orderBy("uploadedAt", descending: true)
+          .snapshots()
+          .listen((qs) {
+        final videos = mapQueryToVideoInfo(qs);
+        callback(videos);
+      });
+      return true;
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
+  }
+  static listenToCategoryVideos(callback,String videoCategoryPage) async{
+    try{
+      _allVideos.where('category' ,isEqualTo: videoCategoryPage)
+          .orderBy("uploadedAt", descending: true)
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);
@@ -105,7 +144,12 @@ class UserVideoStore {
           coverUrl: ds.data()['coverUrl'],
           aspectRatio: ds.data()['aspectRatio'],
           videoName: ds.data()['videoName'],
+          category: ds.data()['category'],
           uploadedAt: ds.data()['uploadedAt'],
+          uploaderUid: ds.data()['uploaderUid'],
+          likes: ds.data()['likes'],
+          comments: ds.data()['comments'],
+          videoId: ds.id
         );
       }).toList();
     }catch(e){
@@ -169,7 +213,8 @@ class UserVideoStore {
         return res.docs[0].data()['rating'];
       }
     }catch(e){
-      return false;
+      print(e.toString());
+      return 0.0;
     }
   }
 
@@ -177,7 +222,7 @@ class UserVideoStore {
     try{
       QuerySnapshot res = await _videoLikes.doc(_userAuth.user.uid)
           .collection("likedVideos").where(
-        "id", isEqualTo: videoID
+          "id", isEqualTo: videoID
       ).get();
       return res.size == 1;
     }catch(e){

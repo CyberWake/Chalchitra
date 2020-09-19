@@ -35,6 +35,8 @@ dependencies:
   # File System
   filesize: ^1.0.4
   path_provider: ^1.1.0
+  video_compress: ^2.0.0
+  shared_preferences: ^0.5.10
 
   # Utilities
   provider: ^4.3.1
@@ -47,8 +49,8 @@ dependencies:
   hexcolor:
   curved_navigation_bar: ^0.3.3
   flutter_staggered_grid_view: ^0.3.2
+  autocomplete_textfield: ^1.7.3
   popup_menu: ^1.0.5
-  splashscreen: ^1.2.0
 
   # Misc
   flutter_dotenv: ^2.0.3
