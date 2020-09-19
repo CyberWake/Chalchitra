@@ -1,13 +1,14 @@
 import 'dart:io';
-import 'package:autocomplete_textfield/autocomplete_textfield.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:path/path.dart' as path;
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wowtalent/model/countryList.dart';
 import 'package:wowtalent/model/user.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
+import 'package:wowtalent/widgets/dropdownField.dart';
 
 class EditProfilePage extends StatefulWidget {
   // User id required to open this screen
@@ -134,9 +135,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 getFieldContainer(
                                     [
                                       createBioField(),
+                                      createCountryField(),
                                       createGenderField(),
                                       createAgeField(),
-                                      createCountryField(),
                                     ]
                                 ),
                                 // createGenderField()
@@ -253,6 +254,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     nameController.text = user.displayName;
     bioController.text = user.bio;
     countryController.text = user.country;
+    print(countryController.text);
     _dob = user.dob;
     gender = user.gender;
     switch(gender){
@@ -404,21 +406,31 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-  //Gender
+  //Country
 
   createCountryField() {
+    String selectedCountry = "";
     return Container(
       padding: EdgeInsets.all(10.0),
       decoration: BoxDecoration(
           border: Border(
               bottom: BorderSide(color: Colors.grey[200]))
       ),
-      child: TextFormField(
-        style: TextStyle(color: Colors.black),
+      child: DropDownField(
+        hintText: "Country",
         controller: countryController,
-        decoration:  authInputFormatting.copyWith(
-            hintText: "Country",
-        ),
+        value: countryController.text,
+        items: countries,
+        onValueChanged: (value){
+          setState(() {
+            selectedCountry = value;
+            countryController.text = value;
+          });
+        },
+        setter: (value){
+          print(countryController.text);
+          countryController.text = value;
+        },
       ),
     );
   }

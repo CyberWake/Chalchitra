@@ -41,7 +41,7 @@ class UserDataModel {
         username: document.data()['username'],
         age: document.data()['age'],
         dob: document.data()['dob'],
-        country: document.data()['counrty'],
+        country: document.data()['country'],
         gender: document.data()['gender'],
         followers: document.data()['followers'],
         following: document.data()['following']);
