@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:like_button/like_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/auth_api.dart';
@@ -91,7 +93,27 @@ class _PlayerState extends State<Player> {
     _controller.play();
     playing = true;
   }
-
+  Future<bool> button(bool isLiked) async {
+    if(_userAuth.user == null){
+      Navigator.pop(context);
+      Navigator.pushReplacement(context,
+        MaterialPageRoute(
+          builder: (context) {
+            return Authentication(false);
+          },
+        ),
+      );
+    }else if(_isLiked == false) {
+      _isLiked = await _userVideoStore.likeVideo(
+        videoID: widget.video.videoId,
+      );
+    }else if(_isLiked == true){
+      _isLiked = await _userVideoStore.dislikeVideo(
+        videoID: widget.video.videoId,
+      );
+    }
+    return _isLiked;
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -162,22 +184,37 @@ class _PlayerState extends State<Player> {
                               GestureDetector(
                                 onTap:() async{
                                   if(_userAuth.user == null){
+                                    Navigator.pop(context);
                                     Navigator.pushReplacement(context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return Authentication();
+                                          return Authentication(false);
                                         },
                                       ),
                                     );
                                   }else{
-                                    _following = await _userInfoStore.followUser(
-                                      uid: widget.video.uploaderUid
-                                    );
-                                    setState(() {});
+                                    try {
+                                      print(_following);
+                                      _following = await _userInfoStore.followUser(
+                                        uid: widget.video.uploaderUid
+                                      );
+                                      print(_following);
+                                      print('pressed');
+                                      setState(() {
+                                      });
+                                    } on Exception catch (e) {
+                                      print(e.toString());
+                                    }
                                   }
                                 },
                                 child: Text(
-                                  _userAuth.user.uid == widget.video.uploaderUid?' ':!_following ?' Follow' : " Following",
+                                  _userAuth.user == null
+                                      ? "Follow"
+                                        :_userAuth.user.uid == widget.video.uploaderUid
+                                          ?' '
+                                          :!_following
+                                            ?' Follow'
+                                            : " Following",
                                   style: TextStyle(
                                       color: Colors.white
                                   ),
@@ -220,18 +257,19 @@ class _PlayerState extends State<Player> {
                                 children: [
                                   InkWell(
                                       child: SvgPicture.asset(
-                                        _isLiked ?
-                                        "assets/images/love_icon.svg":
-                                        "assets/images/loved_icon.svg",
+                                        _isLiked
+                                            ?"assets/images/loved_icon.svg"
+                                            :"assets/images/love_icon.svg",
                                         color: Colors.white,
                                         width: 20,
                                       ),
                                       onTap: () async {
                                         if(_userAuth.user == null){
+                                          Navigator.pop(context);
                                           Navigator.pushReplacement(context,
                                             MaterialPageRoute(
                                               builder: (context) {
-                                                return Authentication();
+                                                return Authentication(false);
                                               },
                                             ),
                                           );
@@ -241,8 +279,7 @@ class _PlayerState extends State<Player> {
                                               videoID: widget.video.videoId,
                                             );
                                             likeCount++;
-
-                                          }else{
+                                          }else if(_isLiked){
                                             _isLiked = !await _userVideoStore.dislikeVideo(
                                               videoID: widget.video.videoId,
                                             );
@@ -252,6 +289,40 @@ class _PlayerState extends State<Player> {
                                         }
                                       }
                                   ),
+                                  /*LikeButton(
+                                    isLiked: _isLiked,
+                                    onTap: button,
+                                    size: _iconOne * 23,
+                                    circleColor:
+                                    CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
+                                    bubblesColor: BubblesColor(
+                                      dotPrimaryColor: Color(0xff33b5e5),
+                                      dotSecondaryColor: Color(0xff0099cc),
+                                    ),
+                                    likeBuilder: (bool isLiked) {
+                                      return Icon(
+                                        EvaIcons.heart,
+                                        color: isLiked ? Colors.deepPurpleAccent : Colors.grey,
+                                        size: _iconOne * 23,
+                                      );
+                                    },
+                                    likeCount: likeCount,
+                                    countBuilder: (int count, bool isLiked, String text) {
+                                      var color = isLiked ? Colors.deepPurpleAccent : Colors.grey;
+                                      Widget result;
+                                      if (count == 0) {
+                                        result = Text(
+                                          "love",
+                                          style: TextStyle(color: color),
+                                        );
+                                      } else
+                                        result = Text(
+                                          text,
+                                          style: TextStyle(color: color),
+                                        );
+                                      return result;
+                                    },
+                                  ),*/
                                   SizedBox(width: _widthOne * 20,),
                                   Text(
                                     likeCount.toString() == "null"? "0" : likeCount.toString(),
@@ -270,10 +341,11 @@ class _PlayerState extends State<Player> {
                                   IconButton(
                                     onPressed: (){
                                       if(_userAuth.user == null){
+                                        Navigator.pop(context);
                                         Navigator.pushReplacement(context,
                                           MaterialPageRoute(
                                             builder: (context) {
-                                              return Authentication();
+                                              return Authentication(false);
                                             },
                                           ),
                                         );
@@ -314,10 +386,11 @@ class _PlayerState extends State<Player> {
                                   max: 5,
                                   onChangeEnd: (val) async{
                                     if(_userAuth.user == null){
+                                      Navigator.pop(context);
                                       Navigator.pushReplacement(context,
                                         MaterialPageRoute(
                                           builder: (context) {
-                                            return Authentication();
+                                            return Authentication(false);
                                           },
                                         ),
                                       );

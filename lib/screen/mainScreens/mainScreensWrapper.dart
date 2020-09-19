@@ -97,10 +97,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
             onPressed: () async{
               await UserAuth().signOut().then((value){
                 if(value){
-                  Navigator.push(
+                  Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (_) => Authentication()
+                          builder: (_) => Authentication(false)
                       )
                   );
                 }else{
@@ -154,7 +154,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ],
         onTap: (index) async{
           if(_userAuth.user == null){
-            Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>Authentication()));
+            Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>Authentication(false)));
           }
           print(index);
           if(index == 4){

@@ -4,6 +4,8 @@ import 'package:wowtalent/screen/authentication/methods/loginForm.dart';
 import 'package:wowtalent/screen/authentication/methods/registerForm.dart';
 
 class Authentication extends StatefulWidget {
+  bool _isLogin = true;
+  Authentication(this._isLogin);
   @override
   _AuthenticationState createState() => _AuthenticationState();
 }
@@ -12,11 +14,10 @@ class _AuthenticationState extends State<Authentication> {
   double _heightOne;
   double _fontOne;
   Size _size;
-  bool _isLogin = true;
 
   void _changeMethod(bool value){
     setState(() {
-      _isLogin = value;
+      widget._isLogin = value;
     });
   }
 
@@ -58,7 +59,7 @@ class _AuthenticationState extends State<Authentication> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "${_isLogin ? "LOGIN" : "REGISTER"}",
+                    "${widget._isLogin ? "LOGIN" : "REGISTER"}",
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: _fontOne * 50,
@@ -66,7 +67,7 @@ class _AuthenticationState extends State<Authentication> {
                     ),
                   ),
                   Text(
-                    "${_isLogin ? "Welcome Back." : "We'll be glad if you join us."}",
+                    "${widget._isLogin ? "Welcome Back." : "We'll be glad if you join us."}",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: _fontOne * 20,
@@ -98,7 +99,7 @@ class _AuthenticationState extends State<Authentication> {
               ),
               child: Center(
                 child: SingleChildScrollView(
-                  child: _isLogin ? LoginForm(
+                  child: widget._isLogin ? LoginForm(
                     changeMethod: _changeMethod,
                   ) : RegisterForm(
                     changeMethod: _changeMethod,

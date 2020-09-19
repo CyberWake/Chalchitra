@@ -58,10 +58,10 @@ class _HomeState extends State<Home> {
               ),
             );
           }else{
-            return StreamBuilder(
-                stream: UserVideoStore().getFollowingVideos(
+            return FutureBuilder(
+                future: UserVideoStore().getFollowingVideos(
                   followings: data.data.documents
-                ),
+                ).first,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(

@@ -21,6 +21,7 @@ class _ExploreState extends State<Explore> {
   double heightIndex2;
   double heightIndex3;
 
+
   List<VideoInfo> _videos = <VideoInfo>[];
   List searchCategories = [
     "Vocals",

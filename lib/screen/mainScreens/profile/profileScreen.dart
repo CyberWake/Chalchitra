@@ -475,7 +475,7 @@ class _ProfilePageState extends State <ProfilePage> {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Wrap(
             spacing: 1,
@@ -494,9 +494,9 @@ class _ProfilePageState extends State <ProfilePage> {
                   );
                 },
                 child: Container(
-                  width: size.width * 0.2,
-                  height: size.height * 0.2,
-                  margin: EdgeInsets.all(5),
+                  width: size.width * 0.22,
+                  height: size.height * 0.22,
+                  margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.black,
                     image: DecorationImage(

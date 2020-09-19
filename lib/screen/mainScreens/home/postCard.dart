@@ -45,6 +45,7 @@ class _PostCardState extends State<PostCard> {
   UserDataModel _user = UserDataModel();
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _isLiked;
+  int likeCount;
   bool _processing = false;
 
   void _button(Offset offset) async{
@@ -112,7 +113,7 @@ class _PostCardState extends State<PostCard> {
   }
   getUserInfo() async {
     DocumentSnapshot user = await _userInfoStore.getUserInfo(
-        uid: widget.video.uploaderUid
+        uid: widget.video.data()['uploaderUid']
     );
     _user =  UserDataModel.fromDocument(user);
   }
@@ -124,6 +125,9 @@ class _PostCardState extends State<PostCard> {
     super.initState();
     setup();
     getUserInfo();
+    if(likeCount == null) {
+      likeCount = widget.likeCount;
+    }
   }
 
   void choiceAction(String choice){
@@ -155,7 +159,8 @@ class _PostCardState extends State<PostCard> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
-
+    likeCount = widget.likeCount;
+    print(likeCount);
     return Container(
       height: _size.height * 0.4,
       width: _size.width * 0.9,
@@ -266,8 +271,9 @@ class _PostCardState extends State<PostCard> {
                       topRight: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
                     ),
+                    color: Colors.black12,
                     image: DecorationImage(
-                      fit: BoxFit.fitWidth,
+                      fit: BoxFit.cover,
                       image: NetworkImage(
                         widget.thumbnail
                       )
@@ -287,56 +293,57 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      !_isLiked ? InkWell(
-                        child: SvgPicture.asset(
-                          "assets/images/love_icon.svg",
-                          width: 20,
-                        ),
-                        onTap: () async{
-                         if (!_processing) {
-                           setState(() {
-                             _processing = true;
-                           });
-                           try {
-                             _isLiked = await _userVideoStore.likeVideo(
-                                videoID: widget.id,
-                              );
-                           } on Exception catch (e) {
-                             print(e.toString());
-                           }
-                           _processing = false;
-                           setState(() {
-                           });
-                         }
-                         setState(() {});
-                        },
-                      ) : InkWell(
-                        child: SvgPicture.asset(
-                          "assets/images/loved_icon.svg",
-                          width: 20,
-                        ),
-                        onTap: () async{
-                          if (!_processing) {
-                            _processing = true;
-                            setState(() {
-                            });
-                            try {
-                              _isLiked = await _userVideoStore.dislikeVideo(
-                                videoID: widget.id,
-                              );
-                            } on Exception catch (e) {
-                              print(e.toString());
+                      InkWell(
+                        child: !_isLiked ?
+                          SvgPicture.asset(
+                            "assets/images/love_icon.svg",
+                            width: 20,
+                          )
+                          :SvgPicture.asset(
+                            "assets/images/loved_icon.svg",
+                            width: 20,
+                          ),
+                          onTap: !_isLiked?
+                            () async{
+                              if (!_processing) {
+                                _processing = true;
+                                try {
+                                  _isLiked = await _userVideoStore.likeVideo(
+                                    videoID: widget.id,
+                                  );
+                                  setState(() {
+                                    likeCount += 1;
+                                  });
+                                  print(likeCount);
+                                } on Exception catch (e) {
+                                  print(e.toString());
+                                }
+                                _processing = false;
+                              }
+                              setState(() {});
                             }
-                            _processing = false;
-                            setState(() {
-                            });
-                          }
-                          setState(() {});
-                        },
+                            : () async{
+                              if (!_processing) {
+                                _processing = true;
+                                try {
+                                  _isLiked = await _userVideoStore.dislikeVideo(
+                                    videoID: widget.id,
+                                  );
+                                  if(_isLiked == false){
+                                    likeCount -= 1;
+                                  }
+                                  print(likeCount);
+                                } on Exception catch (e) {
+                                  print(e.toString());
+                                }
+                                _processing = false;
+                              }
+                              setState(() {});
+                            },
                       ),
                       SizedBox(width: _widthOne * 20,),
                       Text(
-                        widget.likeCount.toString(),
+                        likeCount.toString(),
                         style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: _fontOne * 14,
