@@ -112,7 +112,7 @@ class _PostCardState extends State<PostCard> {
   }
   getUserInfo() async {
     DocumentSnapshot user = await _userInfoStore.getUserInfo(
-        uid: widget.video.uploaderUid
+        uid: widget.video.data()['uploaderUid']
     );
     _user =  UserDataModel.fromDocument(user);
   }
