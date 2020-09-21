@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import '../auth/auth_api.dart';
-import '../model/video_info.dart';
+import '../auth/userAuth.dart';
+import '../model/videoInfoModel.dart';
 
 class UserVideoStore {
   static final CollectionReference _feedVideos =

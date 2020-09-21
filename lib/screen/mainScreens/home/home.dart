@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popup_menu/popup_menu.dart';
-import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/database/firebase_provider.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
 
 class Home extends StatefulWidget {

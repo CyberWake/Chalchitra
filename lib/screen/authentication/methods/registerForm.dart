@@ -1,8 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/UserInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
 import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.dart';
@@ -26,6 +28,7 @@ class _RegisterFormState extends State<RegisterForm> {
   Size _size;
   bool _registerForm = true;
   bool _submitted = false;
+  UserInfoStore _userInfoStore = UserInfoStore();
 
   @override
   Widget build(BuildContext context) {
@@ -47,152 +50,15 @@ class _RegisterFormState extends State<RegisterForm> {
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             SizedBox(height: _heightOne * 10,),
-            authFormFieldContainer(
-              child: TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                validator: (val) => val.isEmpty ? "Username Can't be Empty"
-                    : null,
-                onChanged: (val) {
-                  _userDataModel.username = val;
-                  if(_submitted){
-                    _formKey.currentState.validate();
-                  }
-                },
-                decoration: authFormFieldFormatting(
-                    hintText: "Enter Username",
-                    fontSize: _fontOne * 15
-                ),
-                style: TextStyle(
-                  fontSize: _fontOne * 15,
-                ),
-              ),
-              leftPadding: _widthOne * 20,
-            ),
+            _userNameField(),
             SizedBox(height: _heightOne * 10,),
-            authFormFieldContainer(
-              child: TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                validator: validateEmail,
-                onChanged: (val) {
-                  _userDataModel.email = val;
-                  if(_submitted){
-                    _formKey.currentState.validate();
-                  }
-                },
-                decoration: authFormFieldFormatting(
-                    hintText: "Enter Email",
-                    fontSize: _fontOne * 15
-                ),
-                style: TextStyle(
-                  fontSize: _fontOne * 15,
-                ),
-              ),
-              leftPadding: _widthOne * 20,
-            ),
+           _emailField(),
             SizedBox(height: _heightOne * 10,),
-            authFormFieldContainer(
-              child: TextFormField(
-                obscureText: true,
-                validator: validateRegisterPassword,
-                onChanged: (val) {
-                  _userDataModel.password = val;
-                },
-                decoration: authFormFieldFormatting(
-                    hintText: "Enter Password",
-                    fontSize: _fontOne * 15,
-                ),
-                style: TextStyle(
-                  fontSize: _fontOne * 15,
-                ),
-              ),
-              leftPadding: _widthOne * 20,
-            ),
+           _passwordField(),
             SizedBox(height: _heightOne * 10,),
-            authFormFieldContainer(
-              child: TextFormField(
-                obscureText: true,
-                validator: (val) => val == _userDataModel.password ? null
-                    : "Password in both fields should match",
-                onChanged: (val) {
-                },
-                decoration: authFormFieldFormatting(
-                    hintText: "Confirm Password",
-                    fontSize: _fontOne * 15
-                ),
-                style: TextStyle(
-                  fontSize: _fontOne * 15,
-                ),
-              ),
-              leftPadding: _widthOne * 20,
-            ),
+            _confirmPasswordField(),
             SizedBox(height: _heightOne * 15,),
-            FlatButton(
-                onPressed: () async{
-                  if(_formKey.currentState.validate()){
-                    QuerySnapshot read = await ref
-                        .where("username", isEqualTo: _userDataModel.username)
-                        .get();
-                    if(read.size != 0){
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Username already exists')
-                          )
-                      );
-                    }
-                    else{
-                      await _userAuth.registerUserWithEmail(
-                          email: _userDataModel.email,
-                          password: _userDataModel.password,
-                          username: _userDataModel.username,
-                      ).then((result){
-                        if(result == null){
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Something went wrong try again')
-                              )
-                          );
-                        }else if(result == "success"){
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>  MainScreenWrapper(
-                                    index: 0,
-                                  )
-                              )
-                          );
-                        }else{
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text(result)
-                              )
-                          );
-                        }
-                      });
-                    }
-                  }else{
-                    setState(() {
-                      _submitted = true;
-                    });
-                  }
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    side: BorderSide(
-                        color: Colors.orange.withOpacity(0.75),
-                        width: _widthOne * 5
-                    )
-                ),
-                splashColor: Colors.orange[100],
-                padding: EdgeInsets.symmetric(
-                    horizontal: _size.width * 0.29
-                ),
-                child: Text(
-                  "Register",
-                  style: TextStyle(
-                    color: Colors.orange.withOpacity(0.75),
-                  ),
-                )
-            ),
+            _registerButton(),
             SizedBox(height: _heightOne * 15,),
             Text(
               "Or Register With",
@@ -202,71 +68,14 @@ class _RegisterFormState extends State<RegisterForm> {
               ),
             ),
             SizedBox(height: _heightOne * 10,),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () async {
-                    await _userAuth.signInWithFacebook().then((result){
-                      if(result == false){
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Something went wrong try again')
-                            )
-                        );
-                      }else if(result == true){
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper(
-                                  index: 0,
-                                )
-                            )
-                        );
-                      }else{
-                        setState(() {
-                          _registerForm = false;
-                        });
-                      }
-                    });
-                  },
-                  child: Image.asset(
-                    "assets/images/fb.png",
-                    scale: _fontOne * 9,
-                  ),
-                ),
-                SizedBox(width: _widthOne * 50,),
-                InkWell(
-                  onTap: () async{
-                    await _userAuth.signInWithGoogle().then((result){
-                      if(result == false){
-                        Scaffold.of(context).showSnackBar(
-                            SnackBar(
-                                content: Text('Something went wrong try again')
-                            )
-                        );
-                      }else if(result == true){
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => MainScreenWrapper(
-                                  index: 0,
-                                )
-                            )
-                        );
-                      }else{
-                        setState(() {
-                          _registerForm = false;
-                        });
-                      }
-                    });
-                  },
-                  child: Image.asset(
-                    "assets/images/google.png",
-                    scale: _fontOne * 9,
-                  ),
-                ),
-              ],
+            AuthButtons.socialLogin(
+                newAccountCallback: (){
+                  setState(() {
+                    _registerForm = false;
+                  });
+                },
+                context: context,
+                size: _size
             ),
             SizedBox(height: _heightOne * 20,),
             InkWell(
@@ -286,6 +95,163 @@ class _RegisterFormState extends State<RegisterForm> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _userNameField(){
+    return FormFieldFormatting.formFieldContainer(
+      child: TextFormField(
+        keyboardType: TextInputType.emailAddress,
+        validator: (val) => val.isEmpty ? "Username Can't be Empty"
+            : null,
+        onChanged: (val) {
+          _userDataModel.username = val;
+          if(_submitted){
+            _formKey.currentState.validate();
+          }
+        },
+        decoration: FormFieldFormatting.formFieldFormatting(
+            hintText: "Enter Username",
+            fontSize: _fontOne * 15
+        ),
+        style: TextStyle(
+          fontSize: _fontOne * 15,
+        ),
+      ),
+      leftPadding: _widthOne * 20,
+    );
+  }
+
+  Widget _emailField(){
+    return  FormFieldFormatting.formFieldContainer(
+      child: TextFormField(
+        keyboardType: TextInputType.emailAddress,
+        validator: FormValidation.validateEmail,
+        onChanged: (val) {
+          _userDataModel.email = val;
+          if(_submitted){
+            _formKey.currentState.validate();
+          }
+        },
+        decoration: FormFieldFormatting.formFieldFormatting(
+            hintText: "Enter Email",
+            fontSize: _fontOne * 15
+        ),
+        style: TextStyle(
+          fontSize: _fontOne * 15,
+        ),
+      ),
+      leftPadding: _widthOne * 20,
+    );
+  }
+
+  Widget _passwordField(){
+    return  FormFieldFormatting.formFieldContainer(
+      child: TextFormField(
+        obscureText: true,
+        validator: FormValidation.validateRegisterPassword,
+        onChanged: (val) {
+          _userDataModel.password = val;
+        },
+        decoration: FormFieldFormatting.formFieldFormatting(
+          hintText: "Enter Password",
+          fontSize: _fontOne * 15,
+        ),
+        style: TextStyle(
+          fontSize: _fontOne * 15,
+        ),
+      ),
+      leftPadding: _widthOne * 20,
+    );
+  }
+
+  Widget _confirmPasswordField(){
+    return FormFieldFormatting.formFieldContainer(
+      child: TextFormField(
+        obscureText: true,
+        validator: (val) => val == _userDataModel.password ? null
+            : "Password in both fields should match",
+        onChanged: (val) {
+        },
+        decoration: FormFieldFormatting.formFieldFormatting(
+            hintText: "Confirm Password",
+            fontSize: _fontOne * 15
+        ),
+        style: TextStyle(
+          fontSize: _fontOne * 15,
+        ),
+      ),
+      leftPadding: _widthOne * 20,
+    );
+  }
+
+  Widget _registerButton(){
+    return FlatButton(
+        onPressed: () async{
+          if(_formKey.currentState.validate()){
+            bool validUsername = await _userInfoStore.isUsernameNew(
+                username: _userDataModel.username
+            );
+            if(!validUsername){
+              Scaffold.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text('Username already exists')
+                  )
+              );
+            }
+            else{
+              await _userAuth.registerUserWithEmail(
+                email: _userDataModel.email,
+                password: _userDataModel.password,
+                username: _userDataModel.username,
+              ).then((result){
+                if(result == null){
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text('Something went wrong try again')
+                      )
+                  );
+                }else if(result == "success"){
+                  Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) =>  MainScreenWrapper(
+                            index: 0,
+                          )
+                      )
+                  );
+                }else{
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(result)
+                      )
+                  );
+                }
+              });
+            }
+          }else{
+            setState(() {
+              _submitted = true;
+            });
+          }
+        },
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+            side: BorderSide(
+                color: Colors.orange.withOpacity(0.75),
+                width: _widthOne * 5
+            )
+        ),
+        splashColor: Colors.orange[100],
+        padding: EdgeInsets.symmetric(
+            horizontal: _size.width * 0.29
+        ),
+        child: Text(
+          "Register",
+          style: TextStyle(
+            color: Colors.orange.withOpacity(0.75),
+          ),
+        )
     );
   }
 }

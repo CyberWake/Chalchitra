@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wowtalent/model/user.dart';
-import '../auth/auth_api.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import '../auth/userAuth.dart';
 
 class UserInfoStore{
   UserDataModel _currentUserModel;
@@ -36,6 +36,22 @@ class UserInfoStore{
       return true;
     }catch(e){
       print(e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> isUsernameNew({String username}) async{
+    try{
+      QuerySnapshot read = await _users
+          .where("username", isEqualTo: username)
+          .get();
+
+      if(read.size != 0){
+        return false;
+      }else{
+        return true;
+      }
+    }catch(e){
       return false;
     }
   }

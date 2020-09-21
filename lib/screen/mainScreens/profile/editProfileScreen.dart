@@ -5,8 +5,8 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wowtalent/model/countryList.dart';
-import 'package:wowtalent/model/user.dart';
+import 'file:///C:/Users/yasha/Desktop/Workspace/WowTalent/lib/staticData/countryList.dart';
+import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/widgets/dropdownField.dart';
 

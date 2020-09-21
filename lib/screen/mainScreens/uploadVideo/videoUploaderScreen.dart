@@ -4,11 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/database/firebase_provider.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:path/path.dart' as p;
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
-import '../../../model/video_info.dart';
+import '../../../model/videoInfoModel.dart';
 
 class VideoUploader extends StatefulWidget {
   VideoUploader({Key key, this.title}) : super(key: key);
@@ -238,7 +238,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                     mainAxisSize: MainAxisSize.min,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      authFormFieldContainer(
+                      FormFieldFormatting.formFieldContainer(
                         child: TextFormField(
                           keyboardType: TextInputType.text,
                           validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
@@ -250,7 +250,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                               _formKey.currentState.validate();
                             }
                           },
-                          decoration: authFormFieldFormatting(
+                          decoration:  FormFieldFormatting.formFieldFormatting(
                               hintText: "Enter Title",
                               fontSize: _fontOne * 15
                           ),
@@ -263,7 +263,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                       SizedBox(
                         height: MediaQuery.of(context).size.width * 0.05,
                       ),
-                      authFormFieldContainer(
+                      FormFieldFormatting.formFieldContainer(
                         child: TextFormField(
                           keyboardType: TextInputType.text,
                           validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
