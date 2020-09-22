@@ -5,7 +5,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
-import 'package:wowtalent/widgets/search_category_widget.dart';
+import 'package:wowtalent/widgets/cahtegoryWidget.dart';
 
 class Explore extends StatefulWidget {
   @override
@@ -20,6 +20,7 @@ class _ExploreState extends State<Explore> {
   double heightIndex1;
   double heightIndex2;
   double heightIndex3;
+  Size _size;
 
 
   List<VideoInfo> _videos = <VideoInfo>[];
@@ -44,50 +45,15 @@ class _ExploreState extends State<Explore> {
       }
     });
   }
-  storeAspectRatio(int index){
-    if(index % 3 == 0){
-      heightIndex1 = _videos[index].aspectRatio;
-    }else if(index % 3 == 1){
-      heightIndex2 = _videos[index].aspectRatio;
-    }else if(index % 3 == 2){
-      heightIndex3 = _videos[index].aspectRatio;
-    }
-  }
-  increaseHeight(){
-    if(heightIndex1 > heightIndex2 && heightIndex1 > heightIndex3){
-      staggeredHeight += heightIndex1;
-    }else if(heightIndex2 > heightIndex1 && heightIndex2 > heightIndex3){
-      staggeredHeight += heightIndex2;
-    }else if(heightIndex3 > heightIndex1 && heightIndex3 > heightIndex2){
-      staggeredHeight += heightIndex3;
-    }
-  }
+
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
+    _size = MediaQuery.of(context).size;
     return Container(
       child: SingleChildScrollView(
         child: Column(
           children: [
-            Container(
-              width: size.width,
-              height: size.height * 0.05,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.only(left: 15),
-                    child: Row(
-                      children: List.generate(searchCategories.length, (index) {
-                        return CategoryStoryItem(
-                          name: searchCategories[index],
-                        );
-                      }),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+            _categories(),
             Container(
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
@@ -99,48 +65,7 @@ class _ExploreState extends State<Explore> {
                     fontSize: 20),
               ),
             ),
-            Container(
-              width: size.width,
-              height: size.height * 0.21,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                children: List.generate(_videos.length, (index) {
-                  final video = _videos[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, CupertinoPageRoute(
-                        builder: (context) {
-                          return Player(
-                            video: video,
-                          );
-                        },
-                      ),);
-                    },
-                    child: Container(
-                      width: size.width * 0.2,
-                      height: size.height * 0.2,
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        image: DecorationImage(
-                            image: NetworkImage(video.thumbUrl),
-                            fit: BoxFit.fitWidth
-                        ),
-                        borderRadius: BorderRadius.circular(10.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            offset: Offset(0.0, 10.0), //(x,y)
-                            blurRadius: 10.0,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
+            _trendingVideos(),
             Container(
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
@@ -152,48 +77,7 @@ class _ExploreState extends State<Explore> {
                     fontSize: 20),
               ),
             ),
-            Container(
-              width: size.width,
-              height: size.height * 0.21,
-              child: ListView(
-                scrollDirection: Axis.horizontal,
-                shrinkWrap: true,
-                children: List.generate(_videos.length, (index) {
-                  final video = _videos[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, CupertinoPageRoute(
-                        builder: (context) {
-                          return Player(
-                            video: video,
-                          );
-                        },
-                      ),);
-                    },
-                    child: Container(
-                      width: size.width * 0.2,
-                      height: size.height * 0.2,
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.black,
-                        image: DecorationImage(
-                            image: NetworkImage(video.thumbUrl),
-                            fit: BoxFit.fitWidth
-                        ),
-                        borderRadius: BorderRadius.circular(10.5),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.2),
-                            offset: Offset(0.0, 10.0), //(x,y)
-                            blurRadius: 10.0,
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
-                }),
-              ),
-            ),
+            _staffPicks(),
             Container(
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
@@ -205,45 +89,161 @@ class _ExploreState extends State<Explore> {
                     fontSize: 20),
               ),
             ),
-            Container(
-              width: size.width,
-              padding: EdgeInsets.symmetric(horizontal: 5),
-              child: StaggeredGridView.countBuilder(
-                physics: NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                crossAxisCount: 3,
-                itemCount: _videos.length,
-                itemBuilder: (BuildContext context, int index){
-                  dynamic video = _videos[index];
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) {
-                          return Player(
-                            video: video,
-                          );
-                        },
-                      ),);
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          image: DecorationImage(
-                              image: NetworkImage(video.thumbUrl),
-                              fit: BoxFit.cover
-                          )
-                      ),
-                    ),
-                  );
-                },
-                staggeredTileBuilder: (int index) {
-                  return StaggeredTile.count(1, 1 / _videos[index].aspectRatio);
-                },
-                mainAxisSpacing: 5.0,
-                crossAxisSpacing: 5.0,
-              ),
-            ),
+            _latestVideos(),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _categories(){
+    return Container(
+      width: _size.width,
+      height: _size.height * 0.05,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.only(left: 15),
+            child: Row(
+              children: List.generate(searchCategories.length, (index) {
+                return CategoryStoryItem(
+                  name: searchCategories[index],
+                );
+              }),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _trendingVideos(){
+    return Container(
+      width: _size.width,
+      height: _size.height * 0.21,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        children: List.generate(_videos.length, (index) {
+          final video = _videos[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(context, CupertinoPageRoute(
+                builder: (context) {
+                  return Player(
+                    video: video,
+                  );
+                },
+              ),);
+            },
+            child: Container(
+              width: _size.width * 0.2,
+              height: _size.height * 0.2,
+              margin: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                image: DecorationImage(
+                    image: NetworkImage(video.thumbUrl),
+                    fit: BoxFit.fitWidth
+                ),
+                borderRadius: BorderRadius.circular(10.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    offset: Offset(0.0, 10.0), //(x,y)
+                    blurRadius: 10.0,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _staffPicks(){
+    return Container(
+      width: _size.width,
+      height: _size.height * 0.21,
+      child: ListView(
+        scrollDirection: Axis.horizontal,
+        shrinkWrap: true,
+        children: List.generate(_videos.length, (index) {
+          final video = _videos[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(context, CupertinoPageRoute(
+                builder: (context) {
+                  return Player(
+                    video: video,
+                  );
+                },
+              ),);
+            },
+            child: Container(
+              width: _size.width * 0.2,
+              height: _size.height * 0.2,
+              margin: EdgeInsets.all(5),
+              decoration: BoxDecoration(
+                color: Colors.black,
+                image: DecorationImage(
+                    image: NetworkImage(video.thumbUrl),
+                    fit: BoxFit.fitWidth
+                ),
+                borderRadius: BorderRadius.circular(10.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.2),
+                    offset: Offset(0.0, 10.0), //(x,y)
+                    blurRadius: 10.0,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }),
+      ),
+    );
+  }
+
+  Widget _latestVideos(){
+    return Container(
+      width: _size.width,
+      padding: EdgeInsets.symmetric(horizontal: 5),
+      child: StaggeredGridView.countBuilder(
+        physics: NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        crossAxisCount: 3,
+        itemCount: _videos.length,
+        itemBuilder: (BuildContext context, int index){
+          dynamic video = _videos[index];
+          return GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(
+                builder: (context) {
+                  return Player(
+                    video: video,
+                  );
+                },
+              ),);
+            },
+            child: Container(
+              decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: NetworkImage(video.thumbUrl),
+                      fit: BoxFit.cover
+                  )
+              ),
+            ),
+          );
+        },
+        staggeredTileBuilder: (int index) {
+          return StaggeredTile.count(1, 1 / _videos[index].aspectRatio);
+        },
+        mainAxisSpacing: 5.0,
+        crossAxisSpacing: 5.0,
       ),
     );
   }

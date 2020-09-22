@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
-import 'package:wowtalent/theme/colors.dart';
 
 class CategoryStoryItem extends StatelessWidget {
   final String name;
@@ -22,7 +21,7 @@ class CategoryStoryItem extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(10),
-              color: white,
+              color: Colors.white,
               border: Border.all(color: Colors.orange.shade400)),
           child: Padding(
             padding:

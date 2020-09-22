@@ -6,6 +6,7 @@ import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
+import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
 
 class Home extends StatefulWidget {
@@ -111,7 +112,9 @@ class _HomeState extends State<Home> {
                                         uploader: snap.data.data()['username'],
                                         likeCount: snapshot.data.documents[index].data()['likes'],
                                         commentCount: snapshot.data.documents[index].data()['comments'],
-                                        uploadTime: formatDateTime(snapshot.data.documents[index].data()['uploadedAt']),
+                                        uploadTime: formatDateTime(
+                                          millisecondsSinceEpoch: snapshot.data.documents[index].data()['uploadedAt']
+                                        ),
                                         viewCount: snapshot.data.documents[index].data()['views'],
                                         rating: snapshot.data.documents[index].data()['rating']
                                     ),
@@ -129,36 +132,6 @@ class _HomeState extends State<Home> {
         }
       }
     );
-  }
-
-  String formatDateTime(int millisecondsSinceEpoch){
-    DateTime uploadTimeStamp =
-    DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
-    String sentAt = uploadTimeStamp.toString();
-    Duration difference = DateTime.now().difference(DateTime.parse(sentAt));
-
-    if(difference.inDays > 0){
-      if(difference.inDays > 365){
-        sentAt = (difference.inDays / 365).floor().toString() + ' years ago';
-      }
-      if(difference.inDays > 30 && difference.inDays < 365){
-        sentAt = (difference.inDays / 30).floor().toString() + ' months ago';
-      }
-      if(difference.inDays >=1 && difference.inDays < 305){
-        sentAt = difference.inDays.floor().toString() + ' days ago';
-      }
-    }
-    else if(difference.inHours > 0){
-      sentAt = difference.inHours.toString() + ' hours ago';
-    }
-    else if(difference.inMinutes > 0){
-      sentAt = difference.inMinutes.toString() + ' mins ago';
-    }
-    else{
-      sentAt = difference.inSeconds.toString() + ' secs';
-    }
-
-    return sentAt;
   }
 
   void getUsersDetails() async {

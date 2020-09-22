@@ -22,13 +22,14 @@ class _CategoryState extends State<Category> {
   void initState() {
     super.initState();
     UserVideoStore.listenToCategoryVideos((newVideos) {
-      if(this.mounted){
-        setState(() {
-          _videos = newVideos;
-        });
-      }
-    },widget.categoryName);
-    print(_videos);
+          if(this.mounted){
+            setState(() {
+              _videos = newVideos;
+            });
+          }
+        },
+        widget.categoryName
+    );
   }
   @override
   Widget build(BuildContext context) {
