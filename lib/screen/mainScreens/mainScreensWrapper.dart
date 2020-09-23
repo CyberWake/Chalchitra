@@ -11,7 +11,7 @@ import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoUploaderScreen.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoSelectorScreen.dart';
 
 // ignore: must_be_immutable
 class MainScreenWrapper extends StatefulWidget {

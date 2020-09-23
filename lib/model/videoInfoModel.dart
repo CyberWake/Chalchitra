@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 class VideoInfo {
   String uploaderUid;
+  String videoDiscription;
   String videoUrl;
   String thumbUrl;
   String coverUrl;
@@ -20,6 +21,7 @@ class VideoInfo {
   VideoInfo(
       {
         this.uploaderUid,
+        this.videoDiscription,
         this.videoUrl,
         this.thumbUrl,
         this.coverUrl,

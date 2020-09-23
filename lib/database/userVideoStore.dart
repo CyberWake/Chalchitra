@@ -29,6 +29,7 @@ class UserVideoStore {
       // Map of video data to be added ot firestore
       Map<String, dynamic> videoData = {
         'videoUrl': video.videoUrl,
+        'discription': video.videoDiscription,
         'thumbUrl': video.thumbUrl,
         'coverUrl': video.coverUrl,
         'aspectRatio': video.aspectRatio,
@@ -139,6 +140,8 @@ class UserVideoStore {
       return qs.docs.map((DocumentSnapshot ds) {
         return VideoInfo(
           videoUrl: ds.data()['videoUrl'],
+          videoDiscription: ds.data()['discription'],
+          videoHashtag: ds.data()['videoHashtag'],
           thumbUrl: ds.data()['thumbUrl'],
           coverUrl: ds.data()['coverUrl'],
           aspectRatio: ds.data()['aspectRatio'],

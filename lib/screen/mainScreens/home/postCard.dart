@@ -139,19 +139,7 @@ class _PostCardState extends State<PostCard> {
       print('SignOut');
     }
   }
-  showPopUp(BuildContext context){
-    return PopupMenuButton<String>(
-      onSelected: choiceAction,
-      itemBuilder: (BuildContext context){
-        return Constants.choices.map((String choice){
-          return PopupMenuItem<String>(
-            value: choice,
-            child: Text(choice),
-          );
-        }).toList();
-      },
-    );
-  }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;

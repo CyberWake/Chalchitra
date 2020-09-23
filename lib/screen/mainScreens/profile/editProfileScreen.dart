@@ -5,10 +5,11 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'file:///C:/Users/yasha/Desktop/Workspace/WowTalent/lib/staticData/countryList.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/widgets/dropdownField.dart';
+import 'package:wowtalent/staticData/countryList.dart';
+
 
 class EditProfilePage extends StatefulWidget {
   // User id required to open this screen
@@ -44,6 +45,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String _dob;
   String url = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
   String onUrlNull = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
+  String selectedCountry = "";
   String fileName = '';
   File file;
 
@@ -409,7 +411,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
   //Country
 
   createCountryField() {
-    String selectedCountry = "";
     return Container(
       padding: EdgeInsets.all(10.0),
       decoration: BoxDecoration(

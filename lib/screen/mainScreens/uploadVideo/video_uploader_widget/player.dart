@@ -1,8 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:eva_icons_flutter/eva_icons_flutter.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:like_button/like_button.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -114,6 +112,19 @@ class _PlayerState extends State<Player> {
     }
     return _isLiked;
   }
+  String getChoppedUsername(String currentDiscription){
+    String choppedDiscription = '';
+    var subDisplayName = currentDiscription.split(' ');
+    for(var i in subDisplayName){
+      if(choppedDiscription.length + i.length < 60){
+        choppedDiscription += ' ' + i;
+      }
+      else{
+        return choppedDiscription + ' ...';
+      }
+    }
+    return choppedDiscription + ' ...';
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -224,12 +235,19 @@ class _PlayerState extends State<Player> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 23,top: 5),
+                          padding: EdgeInsets.symmetric(horizontal: 23, vertical: 4),
+                          child: Text(
+                            widget.video.videoDiscription != null ? widget.video.videoDiscription.length>81? getChoppedUsername(widget.video.videoDiscription):widget.video.videoDiscription : "Discription",
+                            style:TextStyle(color: Colors.white),
+                          )
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 23),
                           child: Row(
                             children: [
                               Icon(Icons.equalizer,color: Colors.white,),
                               Text(
-                                '  ${widget.video.videoName} \u2022',
+                                '${widget.video.videoName} \u2022 ',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,

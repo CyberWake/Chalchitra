@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -26,7 +25,7 @@ class _ExploreState extends State<Explore> {
   List<VideoInfo> _videos = <VideoInfo>[];
   List searchCategories = [
     "Vocals",
-    "Precussions",
+    "Percussions",
     "Performing Arts",
     "Instrumental",
     "Videography",
