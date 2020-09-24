@@ -41,6 +41,7 @@ class UserInfoStore{
   }
 
   Future<bool> isUsernameNew({String username}) async{
+    print(username);
     try{
       QuerySnapshot read = await _users
           .where("username", isEqualTo: username)

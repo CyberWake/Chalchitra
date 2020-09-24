@@ -5,6 +5,7 @@ import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/menuConstants.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
@@ -59,47 +60,60 @@ class _PostCardState extends State<PostCard> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Share'),
-                    IconButton(
-                        icon: Icon(Icons.share,size: 18,color: Colors.blueAccent),
-                        onPressed: null
-                    ),
-                  ],
+                SizedBox(height: 5,),
+                InkWell(
+                  onTap: () => choiceAction(Menu.Share),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(Menu.Share),
+                      Icon(Icons.share,size: 18,color: Colors.blueAccent),
+                    ],
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Download'),
-                    IconButton(
-                        icon: Icon(Icons.arrow_downward,size: 20,color: Colors.green),
-                        onPressed: null
-                    ),
-                  ],
+                SizedBox(height: 10,),
+                InkWell(
+                  onTap: () => choiceAction(Menu.Download),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(Menu.Download),
+                      Icon(Icons.arrow_downward,size: 20,color: Colors.green),
+                    ],
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Forward'),
-                    Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationY(math.pi),
-                      child: IconButton(
-                          icon: Icon(Icons.reply,size: 20,color: Colors.orangeAccent,),
-                          onPressed: null
-                      ),
-                    )
-                  ],
+                SizedBox(height: 10,),
+                InkWell(
+                  onTap: () => choiceAction(Menu.Forward),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(Menu.Forward),
+                      Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(math.pi),
+                        child: Icon(Icons.reply,size: 20,color: Colors.orangeAccent,),
+                      )
+                    ],
+                  ),
                 ),
+                SizedBox(height: 5,),
               ],
             ),
           )
         ]
     );
   }
-
+  void choiceAction(String choice){
+    print('called');
+    if(choice == Menu.Share){
+      print('Share');
+    }else if(choice == Menu.Download){
+      print('Download');
+    }else if(choice == Menu.Forward){
+      print('Forward');
+    }
+  }
   void setup() async{
     _sliderValue = await
     _userVideoStore.checkRated(videoID:widget.id);
@@ -127,16 +141,6 @@ class _PostCardState extends State<PostCard> {
     getUserInfo();
     if(likeCount == null) {
       likeCount = widget.likeCount;
-    }
-  }
-
-  void choiceAction(String choice){
-    if(choice == Constants.Settings){
-      print('Settings');
-    }else if(choice == Constants.Subscribe){
-      print('Subscribe');
-    }else if(choice == Constants.SignOut){
-      print('SignOut');
     }
   }
 
@@ -374,28 +378,39 @@ class _PostCardState extends State<PostCard> {
                   ),
                   SizedBox(width: _widthOne * 50,),
                   Expanded(
-                    child: Slider(
-                      value: _sliderValue,
-                      min: 0,
-                      max: 5,
-                      onChangeEnd: (val) async {
-                        _sliderValue = val;
-                        bool success =
-                            await _userVideoStore.rateVideo(videoID:widget.id,rating: _sliderValue);
-                        if(success){
-                          print('done rating');
-                        }
-                        else{
-                          print('failure');
-                        }
-                        },
-                      onChanged: (val) {
-                        setState(() {
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        trackShape: RectangularSliderTrackShape(),
+                        trackHeight: 4.0,
+                        thumbColor: Colors.orange[600],
+                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                        overlayColor: Colors.red.withAlpha(32),
+                        overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
+                      ),
+                      child: Slider(
+                        value: _sliderValue,
+                        min: 0,
+                        max: 5,
+                        divisions: 5,
+                        onChangeEnd: (val) async {
                           _sliderValue = val;
-                        });
-                      },
-                      inactiveColor: Colors.orange[100],
-                      activeColor: Colors.orange[400],
+                          bool success =
+                              await _userVideoStore.rateVideo(videoID:widget.id,rating: _sliderValue);
+                          if(success){
+                            print('done rating');
+                          }
+                          else{
+                            print('failure');
+                          }
+                          },
+                        onChanged: (val) {
+                          setState(() {
+                            _sliderValue = val;
+                          });
+                        },
+                        inactiveColor: Colors.orange[100],
+                        activeColor: Colors.orange[400],
+                      ),
                     ),
                   ),
                 ],
@@ -406,16 +421,4 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
-}
-
-class Constants{
-  static const String Subscribe = 'Subscribe';
-  static const String Settings = 'Settings';
-  static const String SignOut = 'Sign out';
-
-  static const List<String> choices = <String>[
-    Subscribe,
-    Settings,
-    SignOut
-  ];
 }

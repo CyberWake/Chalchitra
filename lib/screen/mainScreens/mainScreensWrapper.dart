@@ -46,6 +46,96 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
     _currentIndex = widget.index;
     setup();
   }
+  _buildConfirmSignOut(context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+          borderRadius:
+          BorderRadius.circular(20.0),
+      ), //this right here
+      child: Container(
+        height: 200,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(color: Colors.orange,width: 3)
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 20.0,left: 10),
+                child: Text(
+                  'Do you really want to logout?',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 50.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: _size.width * 0.3,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.orange,width: 2)
+                        ),
+                        onPressed: () async{
+                          await UserAuth().signOut().then((value){
+                            if(value){
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (_) => Authentication(false)
+                                  )
+                              );
+                            }else{
+                              Scaffold.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text('Something went wrong try again')
+                                  )
+                              );
+                            }
+                          });
+                        },
+                        child: Text(
+                          "Yes",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: const Color(0xFF1BC0C5),
+                      ),
+                    ),
+                    SizedBox(
+                      width: _size.width * 0.3,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.orange,width: 2)
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "No",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: const Color(0xFF1BC0C5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -95,22 +185,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
               size: _iconOne * 25,
             ),
             onPressed: () async{
-              await UserAuth().signOut().then((value){
-                if(value){
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => Authentication(false)
-                      )
-                  );
-                }else{
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Something went wrong try again')
-                      )
-                  );
-                }
-              });
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildConfirmSignOut(context),
+              );
             },
           ) ,
           SizedBox(width: _widthOne * 100,)

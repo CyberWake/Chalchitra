@@ -2,7 +2,6 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:line_icons/line_icons.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -355,7 +354,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                 value: 1,
                               ),
                               DropdownMenuItem(
-                                  child: Text("Performing Arts"),
+                                  child: Text("Acting"),
                                   value: 2
                               ),
                               DropdownMenuItem(
@@ -374,17 +373,32 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                   child: Text("DIY"),
                                   value: 6
                               ),
+                              DropdownMenuItem(
+                                  child: Text("DJing"),
+                                  value: 7
+                              ),
+                              DropdownMenuItem(
+                                  child: Text("Story Telling"),
+                                  value: 8
+                              ),
+                              DropdownMenuItem(
+                                  child: Text("Dance"),
+                                  value: 9
+                              ),
                             ],
                             onChanged: (value) {
                               _selectedCategory = value;
                               switch(value){
                                 case 0: category = "Vocals";break;
                                 case 1: category = "Percussions";break;
-                                case 2: category = "Performing Arts";break;
+                                case 2: category = "Acting";break;
                                 case 3: category = "Instrumental";break;
                                 case 4: category = "Videography";break;
                                 case 5: category = "Standup Comedy";break;
                                 case 6: category = "DIY";break;
+                                case 7: category = "DJing";break;
+                                case 8: category = "Story Telling";break;
+                                case 9: category = "Dance";break;
                               }
                               setState(() {
                               });

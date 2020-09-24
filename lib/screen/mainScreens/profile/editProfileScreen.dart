@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import "package:flutter/material.dart";
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/widgets/dropdownField.dart';
@@ -32,13 +33,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Global key for snack bar
 
   final _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
-
+  UserDataModel _userDataModel = UserDataModel();
+  UserInfoStore _userInfoStore = UserInfoStore();
   // Some Attributes for text field
   DateTime pickedDate;
   bool loading = false;
   UserDataModel user;
   bool _usernameValid = true;
   bool _nameValid = true;
+  bool _updateButton = true;
   int _selectedGender;
   Size _size;
   String gender;
@@ -99,7 +102,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             child: Column(
                           children: <Widget>[
                             Padding(
-                              padding: EdgeInsets.only(top: 45),
+                              padding: EdgeInsets.only(top: 40),
                               child: Column(children: <Widget>[
                                 /*Card(
                                   child: ListTile(
@@ -122,24 +125,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                /*Card(
-                                  child: ListTile(
-                                    title: Text("Your Info"),
-                                    trailing: Icon(Icons.person),
-                                    onTap: () {},
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0)),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),*/
                                 getFieldContainer(
                                     [
                                       createBioField(),
                                       createGenderField(),
                                       createCountryField(),
-                                      createAgeField(),
+                                      createDOBField(),
                                     ]
                                 ),
                                 // createGenderField()
@@ -149,7 +140,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               height: 20,
                             ),
                             InkWell(
-                              onTap: updateUserProfile,
+                              onTap: _updateButton
+                                  ? updateUserProfile
+                                  :()=>Navigator.pop(context),
                               child: Container(
                                 height: 50,
                                 margin: EdgeInsets.symmetric(horizontal: 10),
@@ -158,11 +151,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   color: Colors.orange,
                                 ),
                                 child: Center(
-                                  child: Text("Update", style: TextStyle(color: Colors
+                                  child: _updateButton?
+                                  Text("Update", style: TextStyle(color: Colors
                                       .white,
                                       fontWeight: FontWeight.bold,
                                       letterSpacing: 1.5,
-                                      fontSize: 17),),
+                                      fontSize: 17),):
+                                  Text("Back", style: TextStyle(color: Colors
+                                      .white,
+                                      fontWeight: FontWeight.bold,
+                                      letterSpacing: 1.5,
+                                      fontSize: 17),)
                                 ),
                               ),
                             ),
@@ -262,6 +261,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       case "Male": _selectedGender = 0;break;
       case "FeMale": _selectedGender = 1;break;
       case "Others": _selectedGender = 2;break;
+      case "Prefer not to say": _selectedGender = 3;break;
     }
     setState(() {
       loading = false;
@@ -270,7 +270,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
   // Updating user profile
 
-  updateUserProfile() {
+  updateUserProfile() async {
     // Validate text field
 
     setState(() {
@@ -281,8 +281,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       nameController.text.isEmpty ? _nameValid = false : _nameValid = true;
     });
+    bool validUsername = await _userInfoStore.isUsernameNew(
+        username: usernameController.text);
+    print(validUsername);
 
-    if (_usernameValid && _nameValid) {
+    if (_usernameValid && _nameValid && validUsername) {
       setState(() {
         loading = true;
       });
@@ -299,20 +302,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       setState(() {
         loading = false;
+        _updateButton = !_updateButton;
       });
 
       // showing a alert to the user
-
       SnackBar successSnackBar = SnackBar(
         content: Text('Profile has update successfully!!'),
       );
       _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
       print('updated successfully');
     }
+    else if(!validUsername){
+      SnackBar successSnackBar = SnackBar(
+        content: Text('Username Already Taken!!'),
+      );
+      _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
+    }
   }
 
   // Creating username field
-
   createUsernameField() {
     return Container(
       padding: EdgeInsets.all(10.0),
@@ -332,9 +340,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
-
-  // Creating profilename field
-
+  // Creating profile name field
   createProfileNameField() {
     return Container(
       padding: EdgeInsets.all(10.0),
@@ -354,9 +360,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
-
   // Creating bio field
-
   createBioField() {
     return Container(
       padding: EdgeInsets.all(10.0),
@@ -371,38 +375,56 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1900, 1),
-        lastDate: DateTime.now());
-    if (picked != null)
-      setState(() {
-        pickedDate = picked;
-        _dob = pickedDate.day.toString()+"-"+pickedDate.month.toString()+"-"+pickedDate.year.toString();
-      });
-  }
-
-  // Creating age field
-
-  createAgeField() {
+  //Gender
+  createGenderField() {
     return Stack(
       children: <Widget>[
         Container(
           margin: EdgeInsets.all(10),
-          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+          padding: const EdgeInsets.only(left:5, top:5, bottom:5),
           alignment: Alignment.centerLeft,
           width: double.infinity,
-          height: _size.height * 0.075,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[700]),
+            border: Border.all(color: Colors.grey[600]),
             borderRadius: BorderRadius.circular(5),
           ),
-          child: InkWell(
-            onTap:() => _selectDate(context),
-            child: Text(_dob == null?"Please Provide your Date of Birth":_dob,
-            style: TextStyle(fontSize: 16),),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 13.0,right: 15),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton(
+                  value: _selectedGender,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text("Male"),
+                      value: 0,
+                    ),
+                    DropdownMenuItem(
+                      child: Text("Female"),
+                      value: 1,
+                    ),
+                    DropdownMenuItem(
+                        child: Text("Others"),
+                        value: 2
+                    ),
+                    DropdownMenuItem(
+                        child: Text("Prefer not to say"),
+                        value: 3
+                    ),
+                  ],
+                  onChanged: (value) {
+                    _selectedGender = value;
+                    switch(_selectedGender){
+                      case 0: gender = "Male";break;
+                      case 1: gender = "Female";break;
+                      case 2: gender = "Others";break;
+                      case 3: gender = "Prefer not to say";break;
+                    }
+                    setState(() {
+
+                    });
+                  }),
+            ),
           ),
         ),
         Align(
@@ -413,7 +435,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
               child: Text(
-                'Date of Birth',
+                'Gender',
                 style: TextStyle(color: Colors.grey[600],fontSize: 13),
               ),
             ),
@@ -422,9 +444,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ],
     );
   }
-
   //Country
-
   createCountryField() {
     return Stack(
       children: <Widget>[
@@ -469,49 +489,38 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ],
     );
   }
-  createGenderField() {
+  // Creating date of birth field
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime picked = await showDatePicker(
+        context: context,
+        initialDate: DateTime.now(),
+        firstDate: DateTime(1900, 1),
+        lastDate: DateTime.now());
+    if (picked != null)
+      setState(() {
+        pickedDate = picked;
+        _dob = pickedDate.day.toString()+"-"+pickedDate.month.toString()+"-"+pickedDate.year.toString();
+      });
+  }
+  createDOBField() {
     return Stack(
       children: <Widget>[
         Container(
           margin: EdgeInsets.all(10),
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
           alignment: Alignment.centerLeft,
           width: double.infinity,
+          height: _size.height * 0.075,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[600]),
+            border: Border.all(color: Colors.grey[700]),
             borderRadius: BorderRadius.circular(5),
           ),
-          child: Padding(
-            padding: const EdgeInsets.only(left: 7.0),
-            child: DropdownButtonHideUnderline(
-              child: DropdownButton(
-                  value: _selectedGender,
-                  isExpanded: true,
-                  items: [
-                    DropdownMenuItem(
-                      child: Text("Male"),
-                      value: 0,
-                    ),
-                    DropdownMenuItem(
-                      child: Text("Female"),
-                      value: 1,
-                    ),
-                    DropdownMenuItem(
-                        child: Text("Others"),
-                        value: 2
-                    ),
-                  ],
-                  onChanged: (value) {
-                    _selectedGender = value;
-                    switch(_selectedGender){
-                      case 0: gender = "Male";break;
-                      case 1: gender = "Female";break;
-                      case 2: gender = "Others";break;
-                    }
-                    setState(() {
-
-                    });
-                  }),
+          child: InkWell(
+            onTap:() => _selectDate(context),
+            child: Padding(
+              padding: EdgeInsets.only(left: 4.0),
+              child: Text(_dob == null?"Please Provide your Date of Birth":_dob,
+                style: TextStyle(fontSize: 16,color: Colors.black),),
             ),
           ),
         ),
@@ -523,7 +532,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
               child: Text(
-                'Gender',
+                'Date of Birth',
                 style: TextStyle(color: Colors.grey[600],fontSize: 13),
               ),
             ),

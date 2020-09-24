@@ -26,11 +26,14 @@ class _ExploreState extends State<Explore> {
   List searchCategories = [
     "Vocals",
     "Percussions",
-    "Performing Arts",
+    "Acting",
     "Instrumental",
     "Videography",
     "Stand up Comedy",
     "DIY",
+    "DJing",
+    "Story Telling",
+    "Dance",
   ];
 
   @override
