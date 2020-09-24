@@ -99,9 +99,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             child: Column(
                           children: <Widget>[
                             Padding(
-                              padding: EdgeInsets.only(top: 16),
+                              padding: EdgeInsets.only(top: 45),
                               child: Column(children: <Widget>[
-                                Card(
+                                /*Card(
                                   child: ListTile(
                                     title: Text("Your Identity"),
                                     trailing: Icon(Icons.person),
@@ -112,7 +112,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                                 SizedBox(
                                   height: 20,
-                                ),
+                                ),*/
                                 getFieldContainer(
                                     [
                                       createProfileNameField(),
@@ -122,7 +122,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 SizedBox(
                                   height: 20,
                                 ),
-                                Card(
+                                /*Card(
                                   child: ListTile(
                                     title: Text("Your Info"),
                                     trailing: Icon(Icons.person),
@@ -133,12 +133,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                                 SizedBox(
                                   height: 20,
-                                ),
+                                ),*/
                                 getFieldContainer(
                                     [
                                       createBioField(),
-                                      createCountryField(),
                                       createGenderField(),
+                                      createCountryField(),
                                       createAgeField(),
                                     ]
                                 ),
@@ -248,7 +248,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() {
       loading = true;
     });
-
     DocumentSnapshot documentSnapshot = await ref.doc(widget.uid).get();
     user = UserDataModel.fromDocument(documentSnapshot);
     url = user.photoUrl;
@@ -325,7 +324,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
         style: TextStyle(color: Colors.black),
         controller: usernameController,
         decoration: authInputFormatting.copyWith(
-            hintText: "UserName",
+            hintText: "Username",
+            border: OutlineInputBorder(),
+            labelText: 'Username',
             errorText: _usernameValid ? null : 'Username is too sort!'
         ),
       ),
@@ -346,6 +347,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         controller: nameController,
         decoration: authInputFormatting.copyWith(
             hintText: "Profile Name",
+            border: OutlineInputBorder(),
+            labelText: 'Profile Name',
             errorText: _nameValid ? null : 'Profile name cannot be empty!'
         ),
       ),
@@ -357,15 +360,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
   createBioField() {
     return Container(
       padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Colors.grey[200]))
-      ),
       child: TextFormField(
         style: TextStyle(color: Colors.black),
         controller: bioController,
         decoration:  authInputFormatting.copyWith(
             hintText: "Your Bio",
+          border: OutlineInputBorder(),
+          labelText: 'Your Bio',
         ),
       ),
     );
@@ -386,92 +387,149 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Creating age field
 
   createAgeField() {
-    return Container(
-        padding: EdgeInsets.symmetric(vertical:10.0, horizontal: 20),
-        height: MediaQuery.of(context).size.width * 0.2,
-        decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Colors.grey[200])
+    return Stack(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(10),
+          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+          alignment: Alignment.centerLeft,
+          width: double.infinity,
+          height: _size.height * 0.075,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[700]),
+            borderRadius: BorderRadius.circular(5),
           ),
-        ),
           child: InkWell(
             onTap:() => _selectDate(context),
-            child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text('Date of Birth',style: TextStyle(fontSize: 16),),
-                Text(_dob == null?"Please Provide your Date of Birth":_dob),
-              ],
+            child: Text(_dob == null?"Please Provide your Date of Birth":_dob,
+            style: TextStyle(fontSize: 16),),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            color: Colors.white,
+            margin: EdgeInsets.only(left: 15),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
+              child: Text(
+                'Date of Birth',
+                style: TextStyle(color: Colors.grey[600],fontSize: 13),
+              ),
             ),
-          )
+          ),
+        ),
+      ],
     );
   }
 
   //Country
 
   createCountryField() {
-    return Container(
-      padding: EdgeInsets.all(10.0),
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Colors.grey[200]))
-      ),
-      child: DropDownField(
-        hintText: "Country",
-        controller: countryController,
-        value: countryController.text,
-        items: countries,
-        onValueChanged: (value){
-          setState(() {
-            selectedCountry = value;
-            countryController.text = value;
-          });
-        },
-        setter: (value){
-          print(countryController.text);
-          countryController.text = value;
-        },
-      ),
+    return Stack(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(5),
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[700]),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: DropDownField(
+            hintText: "Country",
+            controller: countryController,
+            value: countryController.text,
+            items: countries,
+            onValueChanged: (value){
+              setState(() {
+                selectedCountry = value;
+                countryController.text = value;
+              });
+            },
+            setter: (value){
+              print(countryController.text);
+              countryController.text = value;
+            },
+          ),
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            color: Colors.white,
+            margin: EdgeInsets.only(left: 15),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
+              child: Text(
+                'Country',
+                style: TextStyle(color: Colors.grey[600],fontSize: 13),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
   createGenderField() {
-    return Container(
-      padding: EdgeInsets.symmetric(horizontal: 20,vertical: 10),
-      width: double.maxFinite,
-      decoration: BoxDecoration(
-          border: Border(
-              bottom: BorderSide(color: Colors.grey[200]))
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton(
-            value: _selectedGender,
-            items: [
-              DropdownMenuItem(
-                child: Text("Male"),
-                value: 0,
-              ),
-              DropdownMenuItem(
-                child: Text("Female"),
-                value: 1,
-              ),
-              DropdownMenuItem(
-                  child: Text("Others"),
-                  value: 2
-              ),
-            ],
-            onChanged: (value) {
-              _selectedGender = value;
-              switch(_selectedGender){
-                case 0: gender = "Male";break;
-                case 1: gender = "Female";break;
-                case 2: gender = "Others";break;
-              }
-              setState(() {
+    return Stack(
+      children: <Widget>[
+        Container(
+          margin: EdgeInsets.all(10),
+          padding: const EdgeInsets.all(5),
+          alignment: Alignment.centerLeft,
+          width: double.infinity,
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey[600]),
+            borderRadius: BorderRadius.circular(5),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.only(left: 7.0),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton(
+                  value: _selectedGender,
+                  isExpanded: true,
+                  items: [
+                    DropdownMenuItem(
+                      child: Text("Male"),
+                      value: 0,
+                    ),
+                    DropdownMenuItem(
+                      child: Text("Female"),
+                      value: 1,
+                    ),
+                    DropdownMenuItem(
+                        child: Text("Others"),
+                        value: 2
+                    ),
+                  ],
+                  onChanged: (value) {
+                    _selectedGender = value;
+                    switch(_selectedGender){
+                      case 0: gender = "Male";break;
+                      case 1: gender = "Female";break;
+                      case 2: gender = "Others";break;
+                    }
+                    setState(() {
 
-              });
-            }),
-      ),
+                    });
+                  }),
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.topLeft,
+          child: Container(
+            color: Colors.white,
+            margin: EdgeInsets.only(left: 15),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
+              child: Text(
+                'Gender',
+                style: TextStyle(color: Colors.grey[600],fontSize: 13),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }
