@@ -13,19 +13,17 @@ class CategoryStoryItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: (){
-        print('adding soon');
         Navigator.of(context).push(CupertinoPageRoute(builder: (context) => Category(categoryName: name,)));
       },
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
-        child: Container(
-          decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: Colors.white,
-              border: Border.all(color: Colors.orange.shade400)),
-          child: Padding(
-            padding:
-                const EdgeInsets.only(left: 20, right: 25, top: 10, bottom: 10),
+        child: Center(
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
+            decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: Colors.white,
+                border: Border.all(color: Colors.orange.shade400)),
             child: Text(
               name,
               style: TextStyle(

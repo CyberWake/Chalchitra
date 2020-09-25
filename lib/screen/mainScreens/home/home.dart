@@ -1,3 +1,4 @@
+import 'package:animated_background/animated_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popup_menu/popup_menu.dart';
@@ -14,7 +15,7 @@ class Home extends StatefulWidget {
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
 
   List<VideoInfo> _videos = <VideoInfo>[];
   double _widthOne;
@@ -24,6 +25,24 @@ class _HomeState extends State<Home> {
   PopupMenu menu;
   GlobalKey btnKey = GlobalKey();
   UserAuth _userAuth = UserAuth();
+
+  ParticleOptions particleOptions = ParticleOptions(
+    image: Image.asset('assets/images/star_stroke.png'),
+    baseColor: Colors.blue,
+    spawnOpacity: 0.0,
+    opacityChangeRate: 0.25,
+    minOpacity: 0.1,
+    maxOpacity: 0.4,
+    spawnMinSpeed: 30.0,
+    spawnMaxSpeed: 70.0,
+    spawnMinRadius: 7.0,
+    spawnMaxRadius: 15.0,
+    particleCount: 40,
+  );
+
+  var particlePaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.0;
 
   @override
   void initState() {
@@ -49,12 +68,36 @@ class _HomeState extends State<Home> {
           );
         }else{
           if(data.data.documents.length == 0){
-            return Center(
-              child: Text(
-                "Start following creators to see videos",
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 16,
+            return AnimatedBackground(
+              behaviour: RandomParticleBehaviour(
+                options: particleOptions,
+                paint: particlePaint,
+              ),
+              vsync: this,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 35),
+                child: Center(
+                  child: Text.rich(
+                      TextSpan(
+                          text: '',
+                          children: <InlineSpan>[
+                            TextSpan(
+                              text: 'Follow',
+                              style: TextStyle(
+                                  fontSize: 56,
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold),
+                            ),
+                            TextSpan(
+                              text: '  Creators to see content',
+                              style: TextStyle(
+                                  fontSize: 38,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold),
+                            )
+                          ]
+                      )
+                  ),
                 ),
               ),
             );

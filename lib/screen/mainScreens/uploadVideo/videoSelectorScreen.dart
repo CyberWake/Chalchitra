@@ -1,10 +1,12 @@
 import 'dart:io';
+import 'package:animated_background/animated_background.dart';
+import 'package:animated_background/particles.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoDataInputScreen.dart';
-import 'package:flutter_colored_progress_indicators/flutter_colored_progress_indicators.dart';
 
 
 class VideoUploader extends StatefulWidget {
@@ -16,18 +18,39 @@ class VideoUploader extends StatefulWidget {
   _VideoUploaderState createState() => _VideoUploaderState();
 }
 
-class _VideoUploaderState extends State<VideoUploader> {
+class _VideoUploaderState extends State<VideoUploader> with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+  VideoPlayerController controller;
   MediaInfo mediaInfo;
+  MediaInfo videoInfo;
   bool _encodingFinished = false;
   bool _encodingVideo = false;
   String _processPhase = '';
 
-  var videoFile;
+  PickedFile videoFile;
   File thumbnailFile;
   double aspectRatio;
   String mediaInfoPath = ' ';
   String thumbnailInfoPath = ' ';
   String infoPath = ' ';
+
+  ParticleOptions particleOptions = ParticleOptions(
+    image: Image.asset('assets/images/star_stroke.png'),
+    baseColor: Colors.blue,
+    spawnOpacity: 0.0,
+    opacityChangeRate: 0.25,
+    minOpacity: 0.1,
+    maxOpacity: 0.4,
+    spawnMinSpeed: 30.0,
+    spawnMaxSpeed: 70.0,
+    spawnMinRadius: 7.0,
+    spawnMaxRadius: 15.0,
+    particleCount: 40,
+  );
+
+  var particlePaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.0;
 
 
   Future<void> _processVideo(PickedFile rawVideoFile) async {
@@ -64,15 +87,30 @@ class _VideoUploaderState extends State<VideoUploader> {
         source: source, maxDuration: const Duration(seconds: 300));
 
     if (videoFile == null) return;
-    try {
-      setState(() {
-        _encodingVideo = true;
-      });
-      await _processVideo(videoFile);
-    } catch (e) {
-      print("error" + '${e.toString()}');
-    } finally {
-      print('Success');
+    videoInfo = await VideoCompress.getMediaInfo(videoFile.path);
+    print(videoInfo.duration);
+    if(videoInfo.duration <= 90000 || videoInfo.duration >= 300000)
+    {
+      try {
+        setState(() {
+          _encodingVideo = true;
+        });
+        await _processVideo(videoFile);
+      } catch (e) {
+        print("error" + '${e.toString()}');
+      } finally {
+        print('Success');
+        print(videoInfo.duration);
+      }
+    }else{
+      Scaffold.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  videoInfo.duration < 90000
+                  ?"Select a video greater than 90 seconds duration"
+                      :"Select a video less than 300 seconds duration"),
+          )
+      );
     }
 
   }
@@ -101,85 +139,93 @@ class _VideoUploaderState extends State<VideoUploader> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: Center(
-            child: _encodingVideo
-                ? _getProgressBar()
-                : SingleChildScrollView(
-              child: Container(
-                padding: EdgeInsets.all(50),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(25),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.purple.withOpacity(0.15),
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
-                      )
-                    ]),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      "Showcase your Talent",
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      key: _scaffoldGlobalKey,
+        body: Stack(
+          children: [
+            AnimatedBackground(
+            behaviour: RandomParticleBehaviour(
+            options: particleOptions,
+              paint: particlePaint,
+            ),
+            vsync: this,
+            child: Center(
+              child: _encodingVideo
+                  ? _getProgressBar()
+                  : Container(
+                    padding: EdgeInsets.all(50),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.purple.withOpacity(0.15),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          )
+                        ]),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        FlatButton(
+                        Text(
+                          "Showcase your Talent",
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            FlatButton(
+                                onPressed: () {
+                                  _encodingFinished = false;
+                                  _takeVideo(context, ImageSource.camera);
+                                },
+                                shape: RoundedRectangleBorder(
+                                    side:
+                                    BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: Text("Turn on Camera")
+                            ),
+                            FlatButton(
+                                onPressed: () {
+                                  _encodingFinished = false;
+                                  _takeVideo(context, ImageSource.gallery);
+                                },
+                                shape: RoundedRectangleBorder(
+                                    side:
+                                    BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: Text("Pick from Gallery")
+                            ),
+                          ],
+                        ),
+                        SizedBox(
+                          height: 10.0,
+                        ),
+                        _encodingFinished && videoFile != null?FlatButton(
                             onPressed: () {
-                              _encodingFinished = false;
-                              _takeVideo(context, ImageSource.camera);
+                              print("go to next screen");
+                              Navigator.push(context, CupertinoPageRoute(
+                                builder: (context) {
+                                  return VideoDataInput(mediainfoPath: mediaInfoPath, thumbnailPath: thumbnailInfoPath,aspectRatio: aspectRatio,);
+                                }));
                             },
                             shape: RoundedRectangleBorder(
                                 side:
                                 BorderSide(color: Colors.orange.withOpacity(0.5)),
                                 borderRadius: BorderRadius.circular(5)),
-                            child: Text("Turn on Camera")
-                        ),
-                        FlatButton(
-                            onPressed: () {
-                              _encodingFinished = false;
-                              _takeVideo(context, ImageSource.gallery);
-                            },
-                            shape: RoundedRectangleBorder(
-                                side:
-                                BorderSide(color: Colors.orange.withOpacity(0.5)),
-                                borderRadius: BorderRadius.circular(5)),
-                            child: Text("Pick from Gallery")
-                        ),
+                            child: Text("Next")
+                        )
+                            :SizedBox()
                       ],
                     ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    _encodingFinished && videoFile != null?FlatButton(
-                        onPressed: () {
-                          print("go to next screen");
-                          Navigator.push(context, CupertinoPageRoute(
-                            builder: (context) {
-                              return VideoDataInput(mediainfoPath: mediaInfoPath, thumbnailPath: thumbnailInfoPath,aspectRatio: aspectRatio,);
-                            }));
-                        },
-                        shape: RoundedRectangleBorder(
-                            side:
-                            BorderSide(color: Colors.orange.withOpacity(0.5)),
-                            borderRadius: BorderRadius.circular(5)),
-                        child: Text("Next")
-                    )
-                        :SizedBox()
-                  ],
+                  ),
                 ),
               ),
-            ),
-          ),
-        ));
+            ]
+        )
+    );
   }
 }

@@ -4,7 +4,7 @@ import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
-import 'package:wowtalent/widgets/cahtegoryWidget.dart';
+import 'package:wowtalent/widgets/categoryWidget.dart';
 
 class Explore extends StatefulWidget {
   @override
@@ -104,7 +104,7 @@ class _ExploreState extends State<Explore> {
   Widget _categories(){
     return Container(
       width: _size.width,
-      height: _size.height * 0.05,
+      height: _size.height * 0.07,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
@@ -126,7 +126,7 @@ class _ExploreState extends State<Explore> {
   Widget _trendingVideos(){
     return Container(
       width: _size.width,
-      height: _size.height * 0.21,
+      height: _size.height * 0.25,
       child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
@@ -143,8 +143,8 @@ class _ExploreState extends State<Explore> {
               ),);
             },
             child: Container(
-              width: _size.width * 0.2,
-              height: _size.height * 0.2,
+              width: _size.width * 0.25,
+              height: _size.height * 0.25,
               margin: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 color: Colors.black,
@@ -171,7 +171,7 @@ class _ExploreState extends State<Explore> {
   Widget _staffPicks(){
     return Container(
       width: _size.width,
-      height: _size.height * 0.21,
+      height: _size.height * 0.25,
       child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
@@ -188,8 +188,8 @@ class _ExploreState extends State<Explore> {
               ),);
             },
             child: Container(
-              width: _size.width * 0.2,
-              height: _size.height * 0.2,
+              width: _size.width * 0.25,
+              height: _size.height * 0.25,
               margin: EdgeInsets.all(5),
               decoration: BoxDecoration(
                 color: Colors.black,
@@ -236,6 +236,7 @@ class _ExploreState extends State<Explore> {
             },
             child: Container(
               decoration: BoxDecoration(
+                border: Border.all(color: Colors.grey,width: 1),
                   image: DecorationImage(
                       image: NetworkImage(video.thumbUrl),
                       fit: BoxFit.cover

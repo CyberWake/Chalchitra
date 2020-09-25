@@ -144,6 +144,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         );
                         setState(() {
                           controller.clear();
+                          _comment = "";
                         });
                       },
                     ),

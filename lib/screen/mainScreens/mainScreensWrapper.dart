@@ -48,7 +48,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       print('running');
       _currentUserInfo = await _userInfoStore.getUserInfo(
           uid: _userAuth.user.uid
-      ) as DocumentSnapshot;
+      );
       user = UserDataModel.fromDocument(_currentUserInfo);
     }
     prefs = await SharedPreferences.getInstance();
@@ -222,7 +222,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                 children: [
                   ListTile(
                     title: Center(
-                      child: Text(user.username,
+                      child: Text(user == null?" ":user.username,
                           style:TextStyle(color: Colors.white)),
                     ),
                   ),
