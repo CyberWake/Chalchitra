@@ -297,7 +297,6 @@ class _PostCardState extends State<PostCard> {
                                   );
                                   if(_isLiked){
                                     likeCount += 1;
-                                    print("liked");
                                   }
                                 }else{
                                   await _userVideoStore.dislikeVideo(
@@ -309,12 +308,11 @@ class _PostCardState extends State<PostCard> {
                                   });
                                   if(!_isLiked){
                                     likeCount -= 1;
-                                    print("disliked");
                                   }
                                 }
                                 _processing = false;
                               }
-                              setState(() {});print("state");
+                              setState(() {});
 
                             },
                       ),

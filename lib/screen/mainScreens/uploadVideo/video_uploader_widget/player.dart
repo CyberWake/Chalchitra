@@ -41,6 +41,7 @@ class _PlayerState extends State<Player> {
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _boolFutureCalled = false;
   bool _following = false;
+  bool _processing = false;
 
   Future<bool> setup() async{
    if(!_boolFutureCalled){
@@ -235,9 +236,15 @@ class _PlayerState extends State<Player> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 23, vertical: 4),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 23, vertical: 4
+                          ),
                           child: Text(
-                            widget.video.videoDiscription != null ? widget.video.videoDiscription.length>81? getChoppedUsername(widget.video.videoDiscription):widget.video.videoDiscription : "Discription",
+                            widget.video.videoDiscription != null ?
+                            widget.video.videoDiscription.length > 81 ?
+                            getChoppedUsername
+                              (widget.video.videoDiscription)
+                                :widget.video.videoDiscription : "Discription",
                             style:TextStyle(color: Colors.white),
                           )
                         ),
@@ -292,55 +299,36 @@ class _PlayerState extends State<Player> {
                                             ),
                                           );
                                         }else{
-                                          if(!_isLiked){
-                                            _isLiked = await _userVideoStore.likeVideo(
-                                              videoID: widget.video.videoId,
-                                            );
-                                            likeCount++;
-                                          }else if(_isLiked){
-                                            _isLiked = !await _userVideoStore.dislikeVideo(
-                                              videoID: widget.video.videoId,
-                                            );
-                                            likeCount--;
+                                          if (!_processing) {
+                                            _processing = true;
+                                            if(!_isLiked){
+
+                                              _isLiked = await _userVideoStore.likeVideo(
+                                                videoID: widget.video.videoId,
+                                              );
+                                              if(_isLiked){
+                                                likeCount += 1;
+                                                print("liked");
+                                              }
+                                            }else{
+                                              await _userVideoStore.dislikeVideo(
+                                                videoID: widget.video.videoId,
+                                              ).then((value){
+                                                if(value){
+                                                  _isLiked = false;
+                                                }
+                                              });
+                                              if(!_isLiked){
+                                                likeCount -= 1;
+                                                print("disliked");
+                                              }
+                                            }
+                                            _processing = false;
                                           }
                                           setState(() {});
                                         }
                                       }
                                   ),
-                                  /*LikeButton(
-                                    isLiked: _isLiked,
-                                    onTap: button,
-                                    size: _iconOne * 23,
-                                    circleColor:
-                                    CircleColor(start: Color(0xff00ddff), end: Color(0xff0099cc)),
-                                    bubblesColor: BubblesColor(
-                                      dotPrimaryColor: Color(0xff33b5e5),
-                                      dotSecondaryColor: Color(0xff0099cc),
-                                    ),
-                                    likeBuilder: (bool isLiked) {
-                                      return Icon(
-                                        EvaIcons.heart,
-                                        color: isLiked ? Colors.deepPurpleAccent : Colors.grey,
-                                        size: _iconOne * 23,
-                                      );
-                                    },
-                                    likeCount: likeCount,
-                                    countBuilder: (int count, bool isLiked, String text) {
-                                      var color = isLiked ? Colors.deepPurpleAccent : Colors.grey;
-                                      Widget result;
-                                      if (count == 0) {
-                                        result = Text(
-                                          "love",
-                                          style: TextStyle(color: color),
-                                        );
-                                      } else
-                                        result = Text(
-                                          text,
-                                          style: TextStyle(color: color),
-                                        );
-                                      return result;
-                                    },
-                                  ),*/
                                   SizedBox(width: _widthOne * 20,),
                                   Text(
                                     likeCount.toString() == "null"? "0" : likeCount.toString(),
