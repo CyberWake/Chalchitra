@@ -63,6 +63,7 @@ class _ExploreState extends State<Explore> {
                 "#Trending",
                 style: TextStyle(
                     color: Colors.orange.shade400,
+                    fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
               ),
@@ -75,6 +76,7 @@ class _ExploreState extends State<Explore> {
                 "#StaffPicks",
                 style: TextStyle(
                     color: Colors.orange.shade400,
+                    fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
               ),
@@ -87,6 +89,7 @@ class _ExploreState extends State<Explore> {
                 "#LatestVideos",
                 style: TextStyle(
                     color: Colors.orange.shade400,
+                    fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
               ),

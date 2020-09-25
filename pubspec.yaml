@@ -69,3 +69,14 @@ flutter:
   assets:
     - assets/images/
     - assets/videos/
+    -
+fonts:
+  - family: League Spartan
+    fonts:
+      - asset: assets/fonts/LeagueSpartan-Bold.otf
+        weight: 700
+  - family: Montserrat
+    fonts:
+      - asset: assets/fonts/Montserrat-Regular.otf
+      - asset: assets/fonts/Montserrat-Bold.otf
+        weight: 700
