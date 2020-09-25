@@ -10,6 +10,7 @@ import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
+import 'package:wowtalent/screen/mainScreens/drafts.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
@@ -232,6 +233,11 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                         style:TextStyle(color: Colors.white)
                     ),
                     onTap: () {
+                      Navigator.push(context,
+                          CupertinoPageRoute(
+                              builder: (BuildContext context)=> Drafts()
+                          )
+                      );
                     },
                   ),
                   ListTile(

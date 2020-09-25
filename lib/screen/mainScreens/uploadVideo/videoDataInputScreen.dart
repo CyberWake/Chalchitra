@@ -23,6 +23,7 @@ class VideoDataInput extends StatefulWidget {
 class _VideoDataInputState extends State<VideoDataInput> {
   MediaInfo mediaInfo;
   bool _uploadingVideo = false;
+  bool _draftSaved = false;
   double _uploadProgress = 0.0;
   String _processPhase = '';
   double _fontOne;
@@ -113,6 +114,45 @@ class _VideoDataInputState extends State<VideoDataInput> {
     await VideoCompress.deleteAllCache();
   }
 
+  uploadDraftToServer() async {
+    _uploadingVideo = true;
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
+    setState(() {
+      _processPhase = 'Saving video thumbnail to server';
+      _uploadProgress = 0.0;
+    });
+    final thumbUrl = await _uploadThumbnail(widget.thumbnailPath, 'thumbnail/' + _userAuth.user.uid, timestamp.toString());
+    setState(() {
+      _processPhase = 'Saving video file to servers';
+      _uploadProgress = 0.0;
+    });
+    final videoUrl = await _uploadVideo(widget.mediainfoPath, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
+    final videoInfo = VideoInfo(
+      uploaderUid: UserAuth().user.uid,
+      videoDiscription: videoDiscription,
+      videoUrl: videoUrl,
+      thumbUrl: thumbUrl,
+      coverUrl: thumbUrl,
+      aspectRatio: widget.aspectRatio,
+      uploadedAt: timestamp,
+      videoName: videoName,
+      videoHashtag: videoHashTag,
+      category: category,
+      likes: 0,
+      views: 0,
+      rating: 0,
+      comments: 0,
+    );
+
+    await UserVideoStore.saveVideoDraft(videoInfo);
+    setState(() {
+      _processPhase = '';
+      _uploadProgress = 0.0;
+      _uploadingVideo = false;
+    });
+    await VideoCompress.deleteAllCache();
+  }
+
   _getProgressBar() {
     return Container(
       padding: EdgeInsets.all(30.0),
@@ -189,7 +229,9 @@ class _VideoDataInputState extends State<VideoDataInput> {
                             side: BorderSide(color: Colors.orange,width: 2)
                         ),
                         onPressed: () {
-
+                          Navigator.pop(context);
+                          _draftSaved = true;
+                          uploadDraftToServer();
                         },
                         child: Text(
                           "Save as Draft",
@@ -239,10 +281,15 @@ class _VideoDataInputState extends State<VideoDataInput> {
             size: _iconOne * 30,
           ),
           onPressed: (){
-            showDialog(
-              context: context,
-              builder: (BuildContext context) => _buildConfirmDiscard(context),
-            );
+            if(_draftSaved){
+              Navigator.pop(context);
+            }
+            else{
+              showDialog(
+                context: context,
+                builder: (BuildContext context) => _buildConfirmDiscard(context),
+              );
+            }
           }
         ),
         actions: [
@@ -253,6 +300,8 @@ class _VideoDataInputState extends State<VideoDataInput> {
               size: _iconOne * 30,
             ),
             onPressed: (){
+              _draftSaved = true;
+              uploadDraftToServer();
             },
           )
         ],

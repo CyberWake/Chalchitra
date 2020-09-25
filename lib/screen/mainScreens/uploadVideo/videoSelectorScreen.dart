@@ -160,7 +160,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                     SizedBox(
                       height: 10.0,
                     ),
-                    _encodingFinished?FlatButton(
+                    _encodingFinished && videoFile != null?FlatButton(
                         onPressed: () {
                           print("go to next screen");
                           Navigator.push(context, CupertinoPageRoute(

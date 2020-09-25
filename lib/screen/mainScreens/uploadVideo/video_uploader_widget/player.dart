@@ -386,41 +386,51 @@ class _PlayerState extends State<Player> {
                               SizedBox(width: _widthOne * 30,),
                               SizedBox(
                                 width: _widthOne * 650,
-                                child: Slider(
-                                  value: _sliderValue,
-                                  min: 0,
-                                  max: 5,
-                                  onChangeEnd: (val) async{
-                                    if(_userAuth.user == null){
-                                      Navigator.pop(context);
-                                      Navigator.pushReplacement(context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return Authentication(false);
-                                          },
-                                        ),
-                                      );
-                                    }
-                                    else{
-                                      bool success = await _userVideoStore
-                                          .rateVideo(
-                                          videoID:widget.video.videoId,
-                                          rating: _sliderValue
-                                      );
-                                      if(!success){
-                                        setState(() {
-                                          _sliderValue = 0;
-                                        });
+                                child: SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                    trackShape: RectangularSliderTrackShape(),
+                                    trackHeight: 2.0,
+                                    thumbColor: Colors.orange[600],
+                                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                                    overlayColor: Colors.red.withAlpha(32),
+                                    overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
+                                  ),
+                                  child: Slider(
+                                    value: _sliderValue,
+                                    min: 0,
+                                    max: 5,
+                                    onChangeEnd: (val) async{
+                                      if(_userAuth.user == null){
+                                        Navigator.pop(context);
+                                        Navigator.pushReplacement(context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return Authentication(false);
+                                            },
+                                          ),
+                                        );
                                       }
-                                    }
-                                  },
-                                  onChanged: (val) async {
-                                   setState(() {
-                                     _sliderValue = val;
-                                   });
-                                  },
-                                  inactiveColor: Colors.white,
-                                  activeColor: Colors.grey,
+                                      else{
+                                        bool success = await _userVideoStore
+                                            .rateVideo(
+                                            videoID:widget.video.videoId,
+                                            rating: _sliderValue
+                                        );
+                                        if(!success){
+                                          setState(() {
+                                            _sliderValue = 0;
+                                          });
+                                        }
+                                      }
+                                    },
+                                    onChanged: (val) async {
+                                     setState(() {
+                                       _sliderValue = val;
+                                     });
+                                    },
+                                    inactiveColor: Colors.white,
+                                    activeColor: Colors.grey,
+                                  ),
                                 ),
                               ),
                             ],
