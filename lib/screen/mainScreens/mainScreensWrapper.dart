@@ -87,7 +87,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
               Padding(
                 padding: EdgeInsets.only(top: 20.0,left: 10),
                 child: Text(
-                  'Do you really want to logout?',
+                  'Are you sure you want to log out?',
                   style: TextStyle(fontSize: 18),
                 ),
               ),

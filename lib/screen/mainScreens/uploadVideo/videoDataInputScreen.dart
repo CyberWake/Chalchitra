@@ -194,7 +194,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
               Padding(
                 padding: EdgeInsets.only(top: 20.0,left: 10),
                 child: Text(
-                  'Do you really want to discard or save the post as draft?',
+                  'Do you want to save this post as a draft?',
                   style: TextStyle(fontSize: 18),
                 ),
               ),
@@ -215,7 +215,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           Navigator.pop(context);
                         },
                         child: Text(
-                          "Discard",
+                          "No",
                           style: TextStyle(color: Colors.white),
                         ),
                         color: const Color(0xFF1BC0C5),
@@ -234,7 +234,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           uploadDraftToServer();
                         },
                         child: Text(
-                          "Save as Draft",
+                          "Yes",
                           style: TextStyle(color: Colors.white),
                         ),
                         color: const Color(0xFF1BC0C5),

@@ -124,7 +124,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Pick your Video",
+                      "Showcase your Talent",
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
                     SizedBox(
@@ -142,7 +142,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                                 side:
                                 BorderSide(color: Colors.orange.withOpacity(0.5)),
                                 borderRadius: BorderRadius.circular(5)),
-                            child: Text("Camera")
+                            child: Text("Turn on Camera")
                         ),
                         FlatButton(
                             onPressed: () {
@@ -153,7 +153,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                                 side:
                                 BorderSide(color: Colors.orange.withOpacity(0.5)),
                                 borderRadius: BorderRadius.circular(5)),
-                            child: Text("Gallery")
+                            child: Text("Pick from Gallery")
                         ),
                       ],
                     ),

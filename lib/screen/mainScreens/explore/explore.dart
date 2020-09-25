@@ -60,7 +60,7 @@ class _ExploreState extends State<Explore> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "TRENDING",
+                "#Trending",
                 style: TextStyle(
                     color: Colors.orange.shade400,
                     fontWeight: FontWeight.bold,
@@ -72,7 +72,7 @@ class _ExploreState extends State<Explore> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "STAFF PICKS",
+                "#StaffPicks",
                 style: TextStyle(
                     color: Colors.orange.shade400,
                     fontWeight: FontWeight.bold,
@@ -84,7 +84,7 @@ class _ExploreState extends State<Explore> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "LATEST VIDEOS",
+                "#LatestVideos",
                 style: TextStyle(
                     color: Colors.orange.shade400,
                     fontWeight: FontWeight.bold,
