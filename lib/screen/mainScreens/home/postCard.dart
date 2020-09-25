@@ -115,21 +115,19 @@ class _PostCardState extends State<PostCard> {
     }
   }
   void setup() async{
+    DocumentSnapshot user = await _userInfoStore.getUserInfo(
+        uid: widget.video.data()['uploaderUid']
+    );
+    _user =  UserDataModel.fromDocument(user);
     _sliderValue = await
     _userVideoStore.checkRated(videoID:widget.id);
     _isLiked = await _userVideoStore.checkLiked(
       videoID: widget.id
     );
-
+    likeCount = widget.likeCount;
     if(this.mounted){
       setState(() {});
     }
-  }
-  getUserInfo() async {
-    DocumentSnapshot user = await _userInfoStore.getUserInfo(
-        uid: widget.video.data()['uploaderUid']
-    );
-    _user =  UserDataModel.fromDocument(user);
   }
 
 
@@ -138,10 +136,6 @@ class _PostCardState extends State<PostCard> {
   void initState() {
     super.initState();
     setup();
-    getUserInfo();
-    if(likeCount == null) {
-      likeCount = widget.likeCount;
-    }
   }
 
   @override
@@ -151,8 +145,6 @@ class _PostCardState extends State<PostCard> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
-    likeCount = widget.likeCount;
-    print(likeCount);
     return Container(
       height: _size.height * 0.4,
       width: _size.width * 0.9,
@@ -295,42 +287,35 @@ class _PostCardState extends State<PostCard> {
                             "assets/images/loved_icon.svg",
                             width: 20,
                           ),
-                          onTap: !_isLiked?
-                            () async{
+                          onTap: () async{
                               if (!_processing) {
                                 _processing = true;
-                                try {
+                                if(!_isLiked){
+
                                   _isLiked = await _userVideoStore.likeVideo(
                                     videoID: widget.id,
                                   );
-                                  setState(() {
+                                  if(_isLiked){
                                     likeCount += 1;
-                                  });
-                                  print(likeCount);
-                                } on Exception catch (e) {
-                                  print(e.toString());
-                                }
-                                _processing = false;
-                              }
-                              setState(() {});
-                            }
-                            : () async{
-                              if (!_processing) {
-                                _processing = true;
-                                try {
-                                  _isLiked = await _userVideoStore.dislikeVideo(
-                                    videoID: widget.id,
-                                  );
-                                  if(_isLiked == false){
-                                    likeCount -= 1;
+                                    print("liked");
                                   }
-                                  print(likeCount);
-                                } on Exception catch (e) {
-                                  print(e.toString());
+                                }else{
+                                  await _userVideoStore.dislikeVideo(
+                                    videoID: widget.id,
+                                  ).then((value){
+                                    if(value){
+                                      _isLiked = false;
+                                    }
+                                  });
+                                  if(!_isLiked){
+                                    likeCount -= 1;
+                                    print("disliked");
+                                  }
                                 }
                                 _processing = false;
                               }
-                              setState(() {});
+                              setState(() {});print("state");
+
                             },
                       ),
                       SizedBox(width: _widthOne * 20,),
