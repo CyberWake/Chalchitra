@@ -7,8 +7,7 @@ import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:path/path.dart' as p;
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
-import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import '../../../model/videoInfoModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
 
 class VideoDataInput extends StatefulWidget {
   final String thumbnailPath;
@@ -132,6 +131,84 @@ class _VideoDataInputState extends State<VideoDataInput> {
       ),
     );
   }
+
+  _buildConfirmDiscard(context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius:
+        BorderRadius.circular(20.0),
+      ), //this right here
+      child: Container(
+        height: 200,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.0),
+            border: Border.all(color: Colors.orange,width: 3)
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 20.0,left: 10),
+                child: Text(
+                  'Do you really want to discard or save the post as draft?',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 50.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(
+                      width: _size.width * 0.3,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.orange,width: 2)
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                          Navigator.pop(context);
+                        },
+                        child: Text(
+                          "Discard",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: const Color(0xFF1BC0C5),
+                      ),
+                    ),
+                    SizedBox(
+                      width: _size.width * 0.3,
+                      child: RaisedButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(18.0),
+                            side: BorderSide(color: Colors.orange,width: 2)
+                        ),
+                        onPressed: () {
+
+                        },
+                        child: Text(
+                          "Save as Draft",
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        color: const Color(0xFF1BC0C5),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(height: 10)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -155,20 +232,27 @@ class _VideoDataInputState extends State<VideoDataInput> {
           width: _size.width / 2.5,
           child: Image.asset('assets/images/appBarLogo1.png',fit: BoxFit.fitHeight,),
         ),
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: Colors.black,
+            size: _iconOne * 30,
+          ),
+          onPressed: (){
+            showDialog(
+              context: context,
+              builder: (BuildContext context) => _buildConfirmDiscard(context),
+            );
+          }
+        ),
         actions: [
           IconButton(
             icon: Icon(
-              Icons.search,
+              Icons.save,
               color: Colors.black,
               size: _iconOne * 30,
             ),
             onPressed: (){
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => SearchUser()
-                  )
-              );
             },
           )
         ],
@@ -223,7 +307,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                             maxLines: 5,
                             keyboardType: TextInputType.text,
                             validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
-                                ? "Video Discription can't be Empty"
+                                ? "Video Description can't be Empty"
                                 : null,
                             onChanged: (val) {
                               videoDiscription = val;
@@ -237,7 +321,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                               enabledBorder: InputBorder.none,
                               errorBorder: InputBorder.none,
                               disabledBorder: InputBorder.none,
-                              hintText: "Enter Discription",
+                              hintText: "Enter Description",
                               errorMaxLines: 3,
                               hintStyle: TextStyle(
                                   color: Colors.orange.withOpacity(0.75),

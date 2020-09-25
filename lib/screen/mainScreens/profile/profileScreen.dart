@@ -28,7 +28,6 @@ class _ProfilePageState extends State <ProfilePage> {
 
   UserDataModel user;
   UserInfoStore _userInfoStore = UserInfoStore();
-  UserAuth _userAuth = UserAuth();
   // Attributes
 
   bool loading = false;

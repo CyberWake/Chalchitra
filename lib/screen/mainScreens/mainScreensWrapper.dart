@@ -1,10 +1,14 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
@@ -22,6 +26,7 @@ class MainScreenWrapper extends StatefulWidget {
 }
 
 class _MainScreenWrapperState extends State<MainScreenWrapper> {
+  final GlobalKey<ScaffoldState> _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
   List<Widget> _screens;
   int _currentIndex = 0;
   double _widthOne;
@@ -31,21 +36,34 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   bool _isMessagePage = false;
   Widget _profilePage = Container();
   UserAuth _userAuth = UserAuth();
+  UserInfoStore _userInfoStore = UserInfoStore();
+  UserDataModel user;
+  DocumentSnapshot _currentUserInfo;
+
   SharedPreferences prefs;
 
   void setup() async{
+    if(_userAuth.user != null) {
+      print('running');
+      _currentUserInfo = await _userInfoStore.getUserInfo(
+          uid: _userAuth.user.uid
+      ) as DocumentSnapshot;
+      user = UserDataModel.fromDocument(_currentUserInfo);
+    }
     prefs = await SharedPreferences.getInstance();
     if(!prefs.containsKey('onBoarded')){
       prefs.setBool("onBoarded", true);
     }
+    setState(() {});
   }
 
   @override
-  void initState() {
+  void initState(){
+    setup();
     super.initState();
     _currentIndex = widget.index;
-    setup();
   }
+
   _buildConfirmSignOut(context) {
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -136,6 +154,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       ),
     );
   }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -152,6 +171,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
 
     return Scaffold(
       backgroundColor: Colors.white,
+      key: _scaffoldGlobalKey,
       appBar: AppBar(
         elevation: 0.0,
         backgroundColor: _isMessagePage ? Colors.orange:Colors.transparent,
@@ -164,7 +184,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
           child: Image.asset('assets/images/appBarLogo1.png',fit: BoxFit.fitHeight,),
         ),
         actions: [
-          _currentIndex != 4 ? IconButton(
+          _currentIndex != 4 ?
+          IconButton(
             icon: Icon(
               Icons.search,
               color: _isMessagePage? Colors.black: Colors.orange.shade400,
@@ -178,21 +199,71 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                 )
               );
             },
-          ) : IconButton(
+          ):IconButton(
             icon: Icon(
-              Icons.power_settings_new,
+              Icons.menu,
               color: Colors.orange.shade400,
               size: _iconOne * 25,
             ),
-            onPressed: () async{
-              showDialog(
-                context: context,
-                builder: (BuildContext context) => _buildConfirmSignOut(context),
-              );
-            },
+            onPressed: () => _scaffoldGlobalKey.currentState.openEndDrawer(),
+            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
           ) ,
           SizedBox(width: _widthOne * 100,)
         ],
+      ),
+      endDrawer: SafeArea(
+        child: Container(
+          width: _size.width * 0.5,
+          child: Drawer(
+            child: Container(
+              color: Colors.black87,
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Center(
+                      child: Text(user.username,
+                          style:TextStyle(color: Colors.white)),
+                    ),
+                  ),
+                  Divider(color: Colors.white,thickness: 0.5,),
+                  ListTile(
+                    leading: Icon(Icons.drafts,color: Colors.white),
+                    title: Text("Drafted Post",
+                        style:TextStyle(color: Colors.white)
+                    ),
+                    onTap: () {
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.security,color: Colors.white),
+                    title: Text('Privacy',style:TextStyle(color: Colors.white)),
+                    onTap: () {
+                    },
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.group_add,color: Colors.white),
+                    title: Text('Invite',style:TextStyle(color: Colors.white)),
+                    onTap: () {
+                    },
+                  ),
+                  Spacer(),
+                  Divider(color: Colors.white,thickness: 0.5,),
+                  ListTile(
+                    leading: Icon(Icons.power_settings_new,color: Colors.white),
+                    title: Text('Signout',style:TextStyle(color: Colors.white)),
+                    onTap: () {
+                      Navigator.pop(context);
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) => _buildConfirmSignOut(context),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            )
+          ),
+        ),
       ),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
