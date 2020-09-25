@@ -18,6 +18,9 @@ class UserVideoStore {
   static final CollectionReference _videoRating =
   FirebaseFirestore.instance.collection('ratings');
 
+  static final CollectionReference _videoDrafts =
+  FirebaseFirestore.instance.collection('videoDrafts');
+
   static final UserAuth _userAuth = UserAuth();
 
 
@@ -44,13 +47,6 @@ class UserVideoStore {
         'rating': video.rating,
       };
 
-
-      await _feedVideos
-          .doc(uid)
-          .collection('videos')
-          .doc()
-          .set(videoData);
-
       await _allVideos
           .doc()
           .set(videoData);
@@ -59,6 +55,49 @@ class UserVideoStore {
       print(e.toString());
     }
   }
+
+  static saveVideoDraft(VideoInfo video) async {
+    try{
+
+      // Map of video data to be added ot firestore
+      Map<String, dynamic> videoData = {
+        'videoUrl': video.videoUrl,
+        'discription': video.videoDiscription,
+        'thumbUrl': video.thumbUrl,
+        'coverUrl': video.coverUrl,
+        'aspectRatio': video.aspectRatio,
+        'uploadedAt': video.uploadedAt,
+        'videoName': video.videoName,
+        'videoHashtag': video.videoHashtag,
+        'category': video.category,
+        'uploaderUid': video.uploaderUid,
+        'likes': video.likes,
+        'views': video.views,
+        'comments': video.comments,
+        'rating': video.rating,
+      };
+
+      await _videoDrafts
+          .doc()
+          .set(videoData);
+
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
+  Future getDraftVideos({String uid}) async {
+    try{
+      QuerySnapshot qs = await _videoDrafts
+          .where('uploaderUid', isEqualTo: uid)
+          .get();
+      return mapQueryToVideoInfo(qs);
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
+  }
+
 
   static listenToVideos(callback,String uid) async {
     print(uid+' firestore');
@@ -173,6 +212,22 @@ class UserVideoStore {
       return false;
     }
   }
+
+  Future getLikeCount({String videoID}) async{
+    try{
+      await _allVideos.doc(videoID).update(
+          {"likes" : FieldValue.increment(1)}
+      );
+      await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").doc(videoID).set({
+        "id" : videoID
+      });
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
 
   Future dislikeVideo({String videoID}) async{
     try{
