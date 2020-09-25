@@ -40,6 +40,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   bool loading = false;
   UserDataModel user;
   bool _usernameValid = true;
+  bool validUsername;
   bool _nameValid = true;
   bool _updateButton = true;
   int _selectedGender;
@@ -50,6 +51,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String onUrlNull = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
   String selectedCountry = "";
   String fileName = '';
+  String currentUserName;
   File file;
 
   // Calling Cloud Firestore collection
@@ -104,18 +106,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             Padding(
                               padding: EdgeInsets.only(top: 40),
                               child: Column(children: <Widget>[
-                                /*Card(
-                                  child: ListTile(
-                                    title: Text("Your Identity"),
-                                    trailing: Icon(Icons.person),
-                                    onTap: () {},
-                                  ),
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(10.0)),
-                                ),
-                                SizedBox(
-                                  height: 20,
-                                ),*/
                                 getFieldContainer(
                                     [
                                       createProfileNameField(),
@@ -250,6 +240,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     DocumentSnapshot documentSnapshot = await ref.doc(widget.uid).get();
     user = UserDataModel.fromDocument(documentSnapshot);
     url = user.photoUrl;
+    currentUserName = user.username;
     usernameController.text = user.username;
     nameController.text = user.displayName;
     bioController.text = user.bio;
@@ -281,9 +272,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       nameController.text.isEmpty ? _nameValid = false : _nameValid = true;
     });
-    bool validUsername = await _userInfoStore.isUsernameNew(
-        username: usernameController.text);
-    print(validUsername);
+    if (currentUserName != usernameController.text) {
+      validUsername = await _userInfoStore.isUsernameNew(
+          username: usernameController.text);
+      print(validUsername);
+    }else{
+      validUsername = true;
+    }
 
     if (_usernameValid && _nameValid && validUsername) {
       setState(() {
