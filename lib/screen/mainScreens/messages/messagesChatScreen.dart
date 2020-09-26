@@ -210,6 +210,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                 message: text,
               );
               controller.clear();
+              text = "";
             },
           ),
         ],
