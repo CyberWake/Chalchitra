@@ -130,7 +130,7 @@ class _VideoUploaderState extends State<VideoUploader> {
                     SizedBox(
                       height: 10.0,
                     ),
-                    Row(
+                    Column(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         FlatButton(
