@@ -5,6 +5,7 @@ import 'package:wowtalent/screen/authentication/methods/forgotPasswordForm.dart'
 import 'package:wowtalent/screen/authentication/methods/loginForm.dart';
 import 'package:wowtalent/screen/authentication/methods/registerForm.dart';
 
+// ignore: must_be_immutable
 class Authentication extends StatefulWidget {
   AuthIndex index;
   Authentication(this.index);
@@ -94,7 +95,9 @@ class _AuthenticationState extends State<Authentication> {
                     topText(),
                     style: TextStyle(
                       color: Colors.white,
-                      fontSize: _fontOne * 50,
+                      fontSize: widget.index == AuthIndex.FORGOT
+                          ?_fontOne *40
+                          :_fontOne * 50,
                       fontWeight: FontWeight.w300
                     ),
                   ),

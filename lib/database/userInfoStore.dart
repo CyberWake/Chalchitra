@@ -56,6 +56,22 @@ class UserInfoStore{
       return false;
     }
   }
+  Future<bool> emailExists({String email}) async{
+    print(email);
+    try{
+      QuerySnapshot read = await _users
+          .where("email", isEqualTo: email)
+          .get();
+
+      if(read.size != 0){
+        return true;
+      }else{
+        return false;
+      }
+    }catch(e){
+      return false;
+    }
+  }
 
   Stream getFollowers({String uid}){
     return _followers

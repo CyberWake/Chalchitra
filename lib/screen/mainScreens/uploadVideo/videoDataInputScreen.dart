@@ -11,10 +11,10 @@ import 'package:wowtalent/model/videoInfoModel.dart';
 
 class VideoDataInput extends StatefulWidget {
   final String thumbnailPath;
-  final String mediainfoPath;
+  final String mediaInfoPath;
   final double aspectRatio;
 
-  VideoDataInput({this.mediainfoPath,this.thumbnailPath,this.aspectRatio});
+  VideoDataInput({this.mediaInfoPath,this.thumbnailPath,this.aspectRatio});
 
   @override
   _VideoDataInputState createState() => _VideoDataInputState();
@@ -31,7 +31,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
   double _widthOne;
   Size _size;
   String videoName = "";
-  String videoDiscription = "";
+  String videoDescription = "";
   String videoHashTag = "";
   String category = "Vocals";
   int _selectedCategory = 0;
@@ -87,10 +87,10 @@ class _VideoDataInputState extends State<VideoDataInput> {
       _processPhase = 'Saving video file to servers';
       _uploadProgress = 0.0;
     });
-    final videoUrl = await _uploadVideo(widget.mediainfoPath, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
+    final videoUrl = await _uploadVideo(widget.mediaInfoPath, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
-      videoDiscription: videoDiscription,
+      videoDiscription: videoDescription,
       videoUrl: videoUrl,
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
@@ -126,10 +126,10 @@ class _VideoDataInputState extends State<VideoDataInput> {
       _processPhase = 'Saving video file to servers';
       _uploadProgress = 0.0;
     });
-    final videoUrl = await _uploadVideo(widget.mediainfoPath, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
+    final videoUrl = await _uploadVideo(widget.mediaInfoPath, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
-      videoDiscription: videoDiscription,
+      videoDiscription: videoDescription,
       videoUrl: videoUrl,
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
@@ -182,7 +182,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
         height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: Colors.orange,width: 3)
+            border: Border.all(color: Colors.deepOrangeAccent,width: 3)
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -208,7 +208,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange,width: 2)
+                            side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -218,7 +218,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           "No",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: const Color(0xFF1BC0C5),
+                        color: Colors.orange
                       ),
                     ),
                     SizedBox(
@@ -226,7 +226,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange,width: 2)
+                            side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -237,7 +237,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           "Yes",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: const Color(0xFF1BC0C5),
+                        color: Colors.orange,
                       ),
                     ),
                   ],
@@ -302,6 +302,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
             onPressed: (){
               _draftSaved = true;
               uploadDraftToServer();
+              Navigator.pop(context);
             },
           )
         ],
@@ -359,7 +360,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                 ? "Video Description can't be Empty"
                                 : null,
                             onChanged: (val) {
-                              videoDiscription = val;
+                              videoDescription = val;
                               if(_submitted){
                                 _formKey.currentState.validate();
                               }

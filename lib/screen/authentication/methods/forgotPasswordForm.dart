@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
@@ -15,6 +17,8 @@ class ForgotPasswordForm extends StatefulWidget {
 class ForgotPasswordFormState extends State<ForgotPasswordForm> {
   final _formKey = GlobalKey<FormState>();
   UserDataModel _userDataModel = UserDataModel();
+  UserInfoStore _userInfoStore = UserInfoStore();
+  UserAuth _user = UserAuth();
   double _widthOne;
   double _heightOne;
   double _fontOne;
@@ -83,12 +87,47 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
       leftPadding: _widthOne * 20,
     );
   }
+  showAlertDialog(BuildContext context, String message) {
+    // Create button
+    Widget okButton = FlatButton(
+      child: Text("OK"),
+      onPressed: () {
+        Navigator.of(context).pop();
+      },
+    );
+
+    // Create AlertDialog
+    AlertDialog alert = AlertDialog(
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
+      title: Text("Message"),
+      content: Text(message),
+      actions: [
+        okButton,
+      ],
+    );
+
+    // show the dialog
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
 
   Widget _submitButton(){
     return FlatButton(
         onPressed: () async{
           if(_formKey.currentState.validate()){
-
+            bool validEmail = await _userInfoStore.emailExists(
+                email: _userDataModel.email
+            );
+            if (validEmail) {
+              final result = await _user.resetPassword(_userDataModel.email);
+              showAlertDialog(context, result,);
+            }else{
+              showAlertDialog(context, "Email does not exist!");
+            }
           }else{
             setState(() {
               _submitted = true;

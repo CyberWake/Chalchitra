@@ -146,6 +146,14 @@ class UserAuth{
       return false;
     }
   }
+  Future<String> resetPassword(String email) async {
+    try {
+      await _auth.sendPasswordResetEmail(email: email);
+      return "Password reset link sent";
+    } on Exception catch (e) {
+      return e.toString();
+    }
+  }
 
   Future<bool> signOut() async{
     try{

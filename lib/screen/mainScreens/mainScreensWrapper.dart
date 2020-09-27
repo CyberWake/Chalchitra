@@ -58,14 +58,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
     setState(() {});
   }
 
-  Future<void> share() async {
-    await FlutterShare.share(
-        title: 'Join WowTalent',
-        text: 'I Love the app. I invite you to join me!!',
-        linkUrl: 'https://flutter.dev/',
-        chooserTitle: 'Test'
-    );
-  }
 
   @override
   void initState(){
@@ -84,7 +76,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         height: 200,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(color: Colors.orange,width: 3)
+          border: Border.all(color: Colors.deepOrangeAccent,width: 3)
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -110,7 +102,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange,width: 2)
+                            side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
                         ),
                         onPressed: () async{
                           await UserAuth().signOut().then((value){
@@ -134,7 +126,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                           "Yes",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: const Color(0xFF1BC0C5),
+                        color: Colors.orangeAccent,
                       ),
                     ),
                     SizedBox(
@@ -142,7 +134,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange,width: 2)
+                            side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -151,7 +143,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                           "No",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: const Color(0xFF1BC0C5),
+                        color: Colors.orange,
                       ),
                     ),
                   ],
@@ -202,12 +194,21 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
               size: _iconOne * 30,
             ),
             onPressed: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => SearchUser()
-                )
-              );
+              if (_userAuth.user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => SearchUser()
+                  )
+                );
+              }else{
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (_) => Authentication(AuthIndex.REGISTER)
+                    )
+                );
+              }
             },
           ):IconButton(
             icon: Icon(
@@ -242,6 +243,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                         style:TextStyle(color: Colors.white)
                     ),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(context,
                           CupertinoPageRoute(
                               builder: (BuildContext context)=> Drafts()
@@ -258,7 +260,16 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                   ListTile(
                     leading: Icon(Icons.group_add,color: Colors.white),
                     title: Text('Invite',style:TextStyle(color: Colors.white)),
-                    onTap: share,
+                    onTap: () async {
+                      await FlutterShare.share(
+                          title: 'Join WowTalent',
+                          text: 'I am Loving the app. I invite you to join me'+
+                                ' in the journey to show your talent!!',
+                          linkUrl: 'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                          chooserTitle: 'Test'
+                      );
+                      Navigator.pop(context);
+                    },
                   ),
                   Spacer(),
                   Divider(color: Colors.white,thickness: 0.5,),

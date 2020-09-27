@@ -24,12 +24,10 @@ class UserVideoStore {
 
   static final UserAuth _userAuth = UserAuth();
 
-
   static saveVideo(VideoInfo video) async {
     try{
       // Get Current User
       String uid = _userAuth.user.uid;
-
       // Map of video data to be added ot firestore
       Map<String, dynamic> videoData = {
         'videoUrl': video.videoUrl,
@@ -47,7 +45,6 @@ class UserVideoStore {
         'comments': video.comments,
         'rating': video.rating,
       };
-
       await _allVideos
           .doc()
           .set(videoData);
@@ -82,6 +79,15 @@ class UserVideoStore {
           .doc()
           .set(videoData);
 
+    }catch(e){
+      print(e.toString());
+    }
+  }
+  static deleteVideoDraft(VideoInfo video) async {
+    try{
+      await _videoDrafts
+          .doc(video.videoId)
+          .delete();
     }catch(e){
       print(e.toString());
     }
