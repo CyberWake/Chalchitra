@@ -1,11 +1,13 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/screen/authentication/methods/forgotPasswordForm.dart';
 import 'package:wowtalent/screen/authentication/methods/loginForm.dart';
 import 'package:wowtalent/screen/authentication/methods/registerForm.dart';
 
 class Authentication extends StatefulWidget {
-  bool _isLogin = true;
-  Authentication(this._isLogin);
+  AuthIndex index;
+  Authentication(this.index);
   @override
   _AuthenticationState createState() => _AuthenticationState();
 }
@@ -15,10 +17,40 @@ class _AuthenticationState extends State<Authentication> {
   double _fontOne;
   Size _size;
 
-  void _changeMethod(bool value){
+  void _changeMethod(AuthIndex val){
     setState(() {
-      widget._isLogin = value;
+      widget.index = val;
+      //widget._isLogin = value;
     });
+  }
+  topText(){
+    if(widget.index == AuthIndex.LOGIN) {
+      return "LOGIN";
+    }else if(widget.index == AuthIndex.REGISTER) {
+      return "REGISTER";
+    }else if(widget.index == AuthIndex.FORGOT) {
+      return "FORGOT\nPASSWORD";
+    }
+  }
+  greetingText(){
+    switch(widget.index){
+      case AuthIndex.LOGIN: return "Welcome Back.";break;
+      case AuthIndex.FORGOT: return "We are always there to help";break;
+      case AuthIndex.REGISTER: return "We'll be glad if you join us.";break;
+    }
+  }
+  authPage(){
+    switch(widget.index){
+      case AuthIndex.LOGIN: return LoginForm(
+        changeMethod: _changeMethod,
+      );break;
+      case AuthIndex.FORGOT: return ForgotPasswordForm(
+        changeMethod: _changeMethod,
+      );break;
+      case AuthIndex.REGISTER: return RegisterForm(
+        changeMethod: _changeMethod,
+      );break;
+    }
   }
 
   @override
@@ -59,7 +91,7 @@ class _AuthenticationState extends State<Authentication> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    "${widget._isLogin ? "LOGIN" : "REGISTER"}",
+                    topText(),
                     style: TextStyle(
                       color: Colors.white,
                       fontSize: _fontOne * 50,
@@ -67,7 +99,7 @@ class _AuthenticationState extends State<Authentication> {
                     ),
                   ),
                   Text(
-                    "${widget._isLogin ? "Welcome Back." : "We'll be glad if you join us."}",
+                    greetingText(),
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: _fontOne * 20,
@@ -99,11 +131,7 @@ class _AuthenticationState extends State<Authentication> {
               ),
               child: Center(
                 child: SingleChildScrollView(
-                  child: widget._isLogin ? LoginForm(
-                    changeMethod: _changeMethod,
-                  ) : RegisterForm(
-                    changeMethod: _changeMethod,
-                  ),
+                  child: authPage(),
                 ),
               ),
             ),

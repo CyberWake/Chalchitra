@@ -1,6 +1,7 @@
   import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
@@ -9,7 +10,7 @@ import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.d
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class LoginForm extends StatefulWidget {
-  final ValueChanged<bool> changeMethod;
+  final ValueChanged<AuthIndex> changeMethod;
   LoginForm({this.changeMethod});
   @override
   _LoginFormState createState() => _LoginFormState();
@@ -50,15 +51,29 @@ class _LoginFormState extends State<LoginForm> {
           horizontal: _widthOne * 100,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: _heightOne * 130,),
+            SizedBox(height: _heightOne * 90,),
             _emailField(),
             SizedBox(height: _heightOne * 10,),
             _passwordFiled(),
             SizedBox(height: _heightOne * 15,),
             _loginButton(),
             SizedBox(height: _heightOne * 15,),
+            InkWell(
+              onTap: (){
+                widget.changeMethod(AuthIndex.FORGOT);
+              },
+              child: Text(
+                "Forgot Password?\nReset it here",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: _fontOne * 15
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ),
+            SizedBox(height: _heightOne * 35,),
             Text(
               "Or Login With",
               style: TextStyle(
@@ -76,10 +91,10 @@ class _LoginFormState extends State<LoginForm> {
               context: context,
               size: _size
             ),
-            SizedBox(height: _heightOne * 50,),
+            SizedBox(height: _heightOne * 30,),
             InkWell(
               onTap: (){
-                widget.changeMethod(false);
+                widget.changeMethod(AuthIndex.REGISTER);
               },
               child: Text(
                 "Don't Have an account? \nTap here to register.",
@@ -199,73 +214,4 @@ class _LoginFormState extends State<LoginForm> {
         )
     );
   }
-
-  /*Widget _socialLogin(){
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        InkWell(
-          onTap: () async {
-            await _userAuth.signInWithFacebook().then((result){
-              if(result == false){
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Something went wrong try again')
-                    )
-                );
-              }else if(result == true){
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => MainScreenWrapper(
-                          index: 0,
-                        )
-                    )
-                );
-              }else{
-                setState(() {
-                  _loginForm = false;
-                });
-              }
-            });
-          },
-          child: Image.asset(
-            "assets/images/fb.png",
-            scale: _fontOne * 9,
-          ),
-        ),
-        SizedBox(width: _widthOne * 50,),
-        InkWell(
-          onTap: () async{
-            await _userAuth.signInWithGoogle().then((result){
-              if(result == false){
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Something went wrong try again')
-                    )
-                );
-              }else if(result == true){
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => MainScreenWrapper(
-                          index: 0,
-                        )
-                    )
-                );
-              }else{
-                setState(() {
-                  _loginForm = false;
-                });
-              }
-            });
-          },
-          child: Image.asset(
-            "assets/images/google.png",
-            scale: _fontOne * 9,
-          ),
-        ),
-      ],
-    );
-  }*/
 }

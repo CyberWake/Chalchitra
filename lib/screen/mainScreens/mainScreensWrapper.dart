@@ -1,13 +1,13 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/drafts.dart';
@@ -56,6 +56,15 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
       prefs.setBool("onBoarded", true);
     }
     setState(() {});
+  }
+
+  Future<void> share() async {
+    await FlutterShare.share(
+        title: 'Join WowTalent',
+        text: 'I Love the app. I invite you to join me!!',
+        linkUrl: 'https://flutter.dev/',
+        chooserTitle: 'Test'
+    );
   }
 
   @override
@@ -109,7 +118,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (_) => Authentication(false)
+                                      builder: (_) => Authentication(AuthIndex.LOGIN)
                                   )
                               );
                             }else{
@@ -249,8 +258,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                   ListTile(
                     leading: Icon(Icons.group_add,color: Colors.white),
                     title: Text('Invite',style:TextStyle(color: Colors.white)),
-                    onTap: () {
-                    },
+                    onTap: share,
                   ),
                   Spacer(),
                   Divider(color: Colors.white,thickness: 0.5,),
@@ -309,7 +317,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ],
         onTap: (index) async{
           if(_userAuth.user == null){
-            Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>Authentication(false)));
+            Navigator.pushReplacement(context, CupertinoPageRoute(builder:
+                (context)=>Authentication(AuthIndex.REGISTER)));
           }
           print(index);
           if(index == 4){

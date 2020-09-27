@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
@@ -98,7 +99,7 @@ class _PlayerState extends State<Player> {
       Navigator.pushReplacement(context,
         MaterialPageRoute(
           builder: (context) {
-            return Authentication(false);
+            return Authentication(AuthIndex.REGISTER);
           },
         ),
       );
@@ -200,7 +201,7 @@ class _PlayerState extends State<Player> {
                                     Navigator.pushReplacement(context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return Authentication(false);
+                                          return Authentication(AuthIndex.REGISTER);
                                         },
                                       ),
                                     );
@@ -294,7 +295,7 @@ class _PlayerState extends State<Player> {
                                           Navigator.pushReplacement(context,
                                             MaterialPageRoute(
                                               builder: (context) {
-                                                return Authentication(false);
+                                                return Authentication(AuthIndex.REGISTER);
                                               },
                                             ),
                                           );
@@ -351,7 +352,7 @@ class _PlayerState extends State<Player> {
                                         Navigator.pushReplacement(context,
                                           MaterialPageRoute(
                                             builder: (context) {
-                                              return Authentication(false);
+                                              return Authentication(AuthIndex.REGISTER);
                                             },
                                           ),
                                         );
@@ -405,7 +406,7 @@ class _PlayerState extends State<Player> {
                                         Navigator.pushReplacement(context,
                                           MaterialPageRoute(
                                             builder: (context) {
-                                              return Authentication(false);
+                                              return Authentication(AuthIndex.REGISTER);
                                             },
                                           ),
                                         );

@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/UserInfoStore.dart';
+import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
@@ -11,7 +12,7 @@ import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.d
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class RegisterForm extends StatefulWidget {
-  final ValueChanged<bool> changeMethod;
+  final ValueChanged<AuthIndex> changeMethod;
   RegisterForm({this.changeMethod});
   @override
   _RegisterFormState createState() => _RegisterFormState();
@@ -80,7 +81,7 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(height: _heightOne * 20,),
             InkWell(
               onTap: (){
-                widget.changeMethod(true);
+                widget.changeMethod(AuthIndex.LOGIN);
               },
               child: Text(
                 "Already Have an account? \nTap here to login.",
