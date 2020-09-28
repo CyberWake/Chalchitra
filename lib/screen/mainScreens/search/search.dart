@@ -11,6 +11,7 @@ class SearchUser extends StatefulWidget {
 class _SearchUserState extends State<SearchUser> {
   final thumbWidth = 100;
   final thumbHeight = 150;
+  String search = "";
 
   TextEditingController searchTextEditingController = TextEditingController();
   Future<QuerySnapshot> futureSearchResult;
@@ -61,11 +62,14 @@ class _SearchUserState extends State<SearchUser> {
                                   Icons.clear,
                                   color: Colors.orange.shade400
                               ),
-                              onPressed: () =>
-                                  searchTextEditingController.clear(),
+                              onPressed: () {
+                                searchTextEditingController.clear();
+                                search = "";
+                              }
                           )
                       ),
                       onFieldSubmitted: (String username) {
+                        search = username;
                         Future<QuerySnapshot> allUsers = ref
                             .where("username", isGreaterThanOrEqualTo: username)
                             .get();
