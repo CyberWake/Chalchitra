@@ -48,6 +48,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
                 aspectRatio: 0.3,
                 child: CupertinoSwitch(
                   value: user == null? false: user.private,
+                  activeColor: Colors.orange,
                   onChanged: (bool value) async {
                     print("user.private" + user.private.toString());
                     user.private = value;

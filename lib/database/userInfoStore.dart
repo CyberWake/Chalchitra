@@ -53,16 +53,19 @@ class UserInfoStore{
   }
   Future<bool> getPrivacy({String uid})async{
     try {
+      bool result;
       await _users
           .where("id", isEqualTo: uid)
           .get()
           .then((QuerySnapshot querySnapshot) => {
             querySnapshot.docs.forEach((doc) {
               if(doc.data()['id'] == uid){
-                return doc.data()["privacy"];
+                print("privacy in database "+doc.data()["private"].toString());
+                result = doc.data()["private"];
               }
             })
           });
+      return result;
     } on Exception catch (e) {
       print(e.toString());
       return false;

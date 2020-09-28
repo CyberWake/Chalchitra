@@ -39,7 +39,7 @@ class _ProfilePageState extends State <ProfilePage> {
   int totalFollowings = 0;
   int totalPost = 0;
   bool following = false;
-  bool isSecure = false;
+  bool isSecure = true;
   String currentUserImgUrl;
   String currentUserName;
 
@@ -62,6 +62,12 @@ class _ProfilePageState extends State <ProfilePage> {
   }
   void getPrivacy()async{
     isSecure =  await _userInfoStore.getPrivacy(uid: widget.uid);
+    if(!isSecure){
+      print("private "+ isSecure.toString());
+      setup();
+    }
+    setState(() {
+    });
   }
 
   @override
@@ -72,13 +78,10 @@ class _ProfilePageState extends State <ProfilePage> {
     profileUid = widget.uid;
     print("following "+ following.toString());
     if(following || widget.uid == _userAuth.user.uid){
+      print("called a");
       setup();
     }else{
       getPrivacy();
-      print("private "+ isSecure.toString());
-      if(!isSecure){
-        setup();
-      }
     }
   }
 
