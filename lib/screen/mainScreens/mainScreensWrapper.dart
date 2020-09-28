@@ -68,14 +68,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   _buildConfirmSignOut(context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-          borderRadius:
-          BorderRadius.circular(20.0),
+        borderRadius:
+        BorderRadius.circular(20.0),
       ), //this right here
       child: Container(
         height: 200,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(color: Colors.orange,width: 3)
+            borderRadius: BorderRadius.circular(20.0),
+            border: Border.all(color: Colors.orange, width: 3)
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -85,7 +85,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: 20.0,left: 10),
+                padding: EdgeInsets.only(top: 20.0, left: 10),
                 child: Text(
                   'Are you sure you want to log out?',
                   style: TextStyle(fontSize: 18),
@@ -101,21 +101,22 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange,width: 2)
+                            side: BorderSide(color: Colors.orange, width: 2)
                         ),
-                        onPressed: () async{
-                          await UserAuth().signOut().then((value){
-                            if(value){
+                        onPressed: () async {
+                          await UserAuth().signOut().then((value) {
+                            if (value) {
                               Navigator.pushReplacement(
                                   context,
                                   MaterialPageRoute(
                                       builder: (_) => Authentication(false)
                                   )
                               );
-                            }else{
+                            } else {
                               Scaffold.of(context).showSnackBar(
                                   SnackBar(
-                                      content: Text('Something went wrong try again')
+                                      content: Text(
+                                          'Something went wrong try again')
                                   )
                               );
                             }
@@ -133,7 +134,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange,width: 2)
+                            side: BorderSide(color: Colors.orange, width: 2)
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -154,6 +155,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ),
       ),
     );
+  }
+
+  _gotoExplore(){
+    _currentIndex = 1;
+    setState(() {
+
+    });
   }
 
   @override
@@ -222,7 +230,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                 children: [
                   ListTile(
                     title: Center(
-                      child: Text(user == null ? " " : user.username,
+                      child: Text(user == null?" ":user.username,
                           style:TextStyle(color: Colors.white)),
                     ),
                   ),
@@ -233,6 +241,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                         style:TextStyle(color: Colors.white)
                     ),
                     onTap: () {
+                      Navigator.pop(context);
                       Navigator.push(context,
                           CupertinoPageRoute(
                               builder: (BuildContext context)=> Drafts()
@@ -244,12 +253,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                     leading: Icon(Icons.security,color: Colors.white),
                     title: Text('Privacy',style:TextStyle(color: Colors.white)),
                     onTap: () {
+                      Navigator.pop(context);
                     },
                   ),
                   ListTile(
                     leading: Icon(Icons.group_add,color: Colors.white),
                     title: Text('Invite',style:TextStyle(color: Colors.white)),
                     onTap: () {
+                      Navigator.pop(context);
                     },
                   ),
                   Spacer(),

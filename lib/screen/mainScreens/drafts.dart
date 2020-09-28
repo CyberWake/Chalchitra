@@ -88,7 +88,8 @@ class _DraftsState extends State<Drafts> {
         centerTitle: true,
         title: Text('Drafts'),
       ),
-      body: Form(
+      body: _videos.length>0?
+       Form(
         key: _formKey,
         child: Container(
           child: ListView.builder(
@@ -355,7 +356,10 @@ class _DraftsState extends State<Drafts> {
             }
           ),
         ),
-      ),
+      )
+          :Center(
+        child: Text("No saved drafts",style: TextStyle(fontSize: 18),),
+      )
     );
   }
 }

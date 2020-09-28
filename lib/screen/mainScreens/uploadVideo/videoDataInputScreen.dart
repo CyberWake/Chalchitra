@@ -544,7 +544,9 @@ class _VideoDataInputState extends State<VideoDataInput> {
                     FlatButton(
                         onPressed: (){
                           if(_formKey.currentState.validate()){
+                            _draftSaved = true;
                             uploadToServer();
+                            Navigator.pop(context);
                           }else{
                             setState(() {
                               _submitted = true;

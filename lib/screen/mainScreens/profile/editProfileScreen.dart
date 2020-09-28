@@ -502,7 +502,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       children: <Widget>[
         Container(
           margin: EdgeInsets.all(10),
-          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
           alignment: Alignment.centerLeft,
           width: double.infinity,
           height: _size.height * 0.075,
@@ -512,10 +512,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
           child: InkWell(
             onTap:() => _selectDate(context),
-            child: Padding(
-              padding: EdgeInsets.only(left: 4.0),
-              child: Text(_dob == null?"Please Provide your Date of Birth":_dob,
-                style: TextStyle(fontSize: 16,color: Colors.black),),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 4.0),
+                child: Text(_dob == null?"Please Provide your Date of Birth":_dob,
+                  style: TextStyle(fontSize: 16,color: Colors.black),),
+              ),
             ),
           ),
         ),
