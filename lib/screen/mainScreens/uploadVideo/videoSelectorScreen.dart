@@ -206,10 +206,13 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
                         ),
                         _encodingFinished && videoFile != null?FlatButton(
                             onPressed: () {
+                              setState(() {
+                                _encodingFinished = false;
+                              });
                               print("go to next screen");
                               Navigator.push(context, CupertinoPageRoute(
                                 builder: (context) {
-                                  return VideoDataInput(mediainfoPath: mediaInfoPath, thumbnailPath: thumbnailInfoPath,aspectRatio: aspectRatio,);
+                                  return VideoDataInput(mediaInfoPath: mediaInfoPath, thumbnailPath: thumbnailInfoPath,aspectRatio: aspectRatio,);
                                 }));
                             },
                             shape: RoundedRectangleBorder(

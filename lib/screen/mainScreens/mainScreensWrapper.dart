@@ -1,19 +1,20 @@
 import 'dart:math';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/drafts.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
+import 'package:wowtalent/screen/mainScreens/privacyPage.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoSelectorScreen.dart';
@@ -57,6 +58,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
     }
     setState(() {});
   }
+
 
   @override
   void initState(){
@@ -108,8 +110,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                             if (value) {
                               Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(
-                                      builder: (_) => Authentication(false)
+                                  CupertinoPageRoute(
+                                      builder: (_) => Authentication(AuthIndex.LOGIN)
                                   )
                               );
                             } else {
@@ -126,7 +128,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                           "Yes",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: const Color(0xFF1BC0C5),
+                        color: Colors.orangeAccent,
                       ),
                     ),
                     SizedBox(
@@ -143,7 +145,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                           "No",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: const Color(0xFF1BC0C5),
+                        color: Colors.orange,
                       ),
                     ),
                   ],
@@ -201,12 +203,21 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
               size: _iconOne * 30,
             ),
             onPressed: (){
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => SearchUser()
-                )
-              );
+              if (_userAuth.user != null) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => SearchUser()
+                  )
+                );
+              }else{
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (_) => Authentication(AuthIndex.REGISTER)
+                    )
+                );
+              }
             },
           ):IconButton(
             icon: Icon(
@@ -252,15 +263,28 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                   ListTile(
                     leading: Icon(Icons.security,color: Colors.white),
                     title: Text('Privacy',style:TextStyle(color: Colors.white)),
-                    onTap: () {
+                    onTap: (){
                       Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) => PrivacyPage()
+                          )
+                      );
                     },
                   ),
                   ListTile(
                     leading: Icon(Icons.group_add,color: Colors.white),
                     title: Text('Invite',style:TextStyle(color: Colors.white)),
-                    onTap: () {
+                    onTap: () async {
                       Navigator.pop(context);
+                      await FlutterShare.share(
+                          title: 'Join WowTalent',
+                          text: 'I am Loving the app. I invite you to join me'+
+                                ' in the journey to show your talent!!',
+                          linkUrl: 'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                          chooserTitle: 'Test'
+                      );
                     },
                   ),
                   Spacer(),
@@ -320,7 +344,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ],
         onTap: (index) async{
           if(_userAuth.user == null){
-            Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context)=>Authentication(false)));
+            Navigator.pushReplacement(context, CupertinoPageRoute(builder:
+                (context)=>Authentication(AuthIndex.REGISTER)));
           }
           print(index);
           if(index == 4){

@@ -100,20 +100,29 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
                                       fontSize: 38,
                                       color: Colors.black,
                                       fontWeight: FontWeight.bold),
-                                ),
+                                )
                               ]
                           )
                       ),
-                      SizedBox(height: 40,),
+                      SizedBox(height: 20),
                       FlatButton(
-                          onPressed: (){
-                            Navigator.pushReplacement(context, CupertinoPageRoute(builder: (context) => MainScreenWrapper(index: 1)));
-                          },
-                          color: Colors.orange,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(5),
-                          ),
-                          child: Text('Explore Content'))
+                        color: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)
+                        ),
+                        onPressed: (){
+                          Navigator.pushReplacement(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (_) => MainScreenWrapper(index: 1,)
+                              )
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal:2),
+                          child: Text('Explore Content',style: TextStyle(fontSize: 18),),
+                        ),
+                      )
                     ],
                   ),
                 ),

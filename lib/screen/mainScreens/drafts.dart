@@ -33,6 +33,17 @@ class _DraftsState extends State<Drafts> {
       print(_videos.length);
     }
   }
+
+  removeVideoFromDrafts(index) async{
+    final videoInfo = VideoInfo(
+      videoUrl: _videos[index].videoUrl,
+      thumbUrl: _videos[index].thumbUrl,
+      coverUrl: _videos[index].coverUrl,
+      videoId: _videos[index].videoId
+    );
+    await UserVideoStore.deleteVideoDraft(videoInfo);
+  }
+
   moveVideoToPost(int index) async {
     _uploadingVideo = true;
     int timestamp = DateTime
@@ -329,26 +340,48 @@ class _DraftsState extends State<Drafts> {
                           SizedBox(
                             height: MediaQuery.of(context).size.width/10,
                           ),
-                          FlatButton(
-                              onPressed: (){
-                                if(_formKey.currentState.validate()){
-                                  moveVideoToPost(index);
-                                }else{
-                                  setState(() {
-                                    _submitted = true;
-                                  });
-                                }
-                              },
-                              shape: RoundedRectangleBorder(
-                                  side:
-                                  BorderSide(color: Colors.purple.withOpacity(0.5)),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: _uploadingVideo
-                                  ? CircularProgressIndicator(
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                    Colors.purple),
-                              )
-                                  : Text("Upload")),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              FlatButton(
+                                  onPressed: (){
+                                    removeVideoFromDrafts(index);
+                                    setup();
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                      side:
+                                      BorderSide(color: Colors.purple.withOpacity(0.5)),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: _uploadingVideo
+                                      ? CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.purple),
+                                  )
+                                      : Text("Delete")),
+                              FlatButton(
+                                  onPressed: (){
+                                    if(_formKey.currentState.validate()){
+                                      moveVideoToPost(index);
+                                      removeVideoFromDrafts(index);
+                                      setup();
+                                    }else{
+                                      setState(() {
+                                        _submitted = true;
+                                      });
+                                    }
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                      side:
+                                      BorderSide(color: Colors.purple.withOpacity(0.5)),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: _uploadingVideo
+                                      ? CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.purple),
+                                  )
+                                      : Text("Upload")),
+                            ],
+                          ),
                         ],
                       ),
                     ),
