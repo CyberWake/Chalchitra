@@ -245,7 +245,7 @@ class _PlayerState extends State<Player> {
                             widget.video.videoDiscription.length > 81 ?
                             getChoppedUsername
                               (widget.video.videoDiscription)
-                                :widget.video.videoDiscription : "Discription",
+                                :widget.video.videoDiscription : "Description",
                             style:TextStyle(color: Colors.white),
                           )
                         ),

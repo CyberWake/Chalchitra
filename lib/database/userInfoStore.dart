@@ -65,6 +65,7 @@ class UserInfoStore{
               }
             })
           });
+      print("result "+result.toString());
       return result;
     } on Exception catch (e) {
       print(e.toString());

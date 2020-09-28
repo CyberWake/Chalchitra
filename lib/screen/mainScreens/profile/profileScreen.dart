@@ -39,7 +39,7 @@ class _ProfilePageState extends State <ProfilePage> {
   int totalFollowings = 0;
   int totalPost = 0;
   bool following = false;
-  bool isSecure = true;
+  bool isSecure = false;
   String currentUserImgUrl;
   String currentUserName;
 
@@ -65,16 +65,14 @@ class _ProfilePageState extends State <ProfilePage> {
     if(!isSecure){
       print("private "+ isSecure.toString());
       setup();
+      setState(() {
+      });
     }
-    setState(() {
-    });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    getCurrentUserID();
-    checkIfAlreadyFollowing();
+  void mySuper() async{
+    await getCurrentUserID();
+    await checkIfAlreadyFollowing();
     profileUid = widget.uid;
     print("following "+ following.toString());
     if(following || widget.uid == _userAuth.user.uid){
@@ -83,6 +81,12 @@ class _ProfilePageState extends State <ProfilePage> {
     }else{
       getPrivacy();
     }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    mySuper();
   }
 
   @override
@@ -304,6 +308,7 @@ class _ProfilePageState extends State <ProfilePage> {
     bool result = await _userInfoStore.followUser(
       uid: widget.uid
     );
+    mySuper();
     setState(() {
       following = result;
     });
@@ -313,7 +318,8 @@ class _ProfilePageState extends State <ProfilePage> {
     bool result = await _userInfoStore.unFollowUser(
         uid: widget.uid
     );
-
+    _videos = [];
+    getPrivacy();
     setState(() {
       following = result;
     });

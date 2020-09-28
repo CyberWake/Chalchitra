@@ -46,7 +46,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
 
   void setup() async{
     if(_userAuth.user != null) {
-      print('running');
+      print(_userAuth.user.uid);
       _currentUserInfo = await _userInfoStore.getUserInfo(
           uid: _userAuth.user.uid
       );
@@ -70,14 +70,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   _buildConfirmSignOut(context) {
     return Dialog(
       shape: RoundedRectangleBorder(
-          borderRadius:
-          BorderRadius.circular(20.0),
+        borderRadius:
+        BorderRadius.circular(20.0),
       ), //this right here
       child: Container(
         height: 200,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(color: Colors.deepOrangeAccent,width: 3)
+            borderRadius: BorderRadius.circular(20.0),
+            border: Border.all(color: Colors.orange, width: 3)
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -87,7 +87,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
             mainAxisSize: MainAxisSize.max,
             children: [
               Padding(
-                padding: EdgeInsets.only(top: 20.0,left: 10),
+                padding: EdgeInsets.only(top: 20.0, left: 10),
                 child: Text(
                   'Are you sure you want to log out?',
                   style: TextStyle(fontSize: 18),
@@ -103,21 +103,22 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
+                            side: BorderSide(color: Colors.orange, width: 2)
                         ),
-                        onPressed: () async{
-                          await UserAuth().signOut().then((value){
-                            if(value){
+                        onPressed: () async {
+                          await UserAuth().signOut().then((value) {
+                            if (value) {
                               Navigator.pushReplacement(
                                   context,
                                   CupertinoPageRoute(
                                       builder: (_) => Authentication(AuthIndex.LOGIN)
                                   )
                               );
-                            }else{
+                            } else {
                               Scaffold.of(context).showSnackBar(
                                   SnackBar(
-                                      content: Text('Something went wrong try again')
+                                      content: Text(
+                                          'Something went wrong try again')
                                   )
                               );
                             }
@@ -135,7 +136,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
+                            side: BorderSide(color: Colors.orange, width: 2)
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -156,6 +157,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ),
       ),
     );
+  }
+
+  _gotoExplore(){
+    _currentIndex = 1;
+    setState(() {
+
+    });
   }
 
   @override
