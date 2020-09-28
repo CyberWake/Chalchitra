@@ -1,4 +1,5 @@
 import 'package:animated_background/animated_background.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popup_menu/popup_menu.dart';
@@ -9,6 +10,7 @@ import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
+import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -77,26 +79,51 @@ class _HomeState extends State<Home> with SingleTickerProviderStateMixin {
               child: Padding(
                 padding: EdgeInsets.symmetric(horizontal: 35),
                 child: Center(
-                  child: Text.rich(
-                      TextSpan(
-                          text: '',
-                          children: <InlineSpan>[
-                            TextSpan(
-                              text: 'Follow',
-                              style: TextStyle(
-                                  fontSize: 56,
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: '  Creators to see content',
-                              style: TextStyle(
-                                  fontSize: 38,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ]
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(
+                          TextSpan(
+                              text: '',
+                              children: <InlineSpan>[
+                                TextSpan(
+                                  text: 'Follow',
+                                  style: TextStyle(
+                                      fontSize: 56,
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: '  Creators to see content',
+                                  style: TextStyle(
+                                      fontSize: 38,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ]
+                          )
+                      ),
+                      SizedBox(height: 20),
+                      FlatButton(
+                        color: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)
+                        ),
+                        onPressed: (){
+                          Navigator.pushReplacement(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (_) => MainScreenWrapper(index: 1,)
+                              )
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal:2),
+                          child: Text('Explore Content',style: TextStyle(fontSize: 18),),
+                        ),
                       )
+                    ],
                   ),
                 ),
               ),

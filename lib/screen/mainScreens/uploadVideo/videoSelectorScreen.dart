@@ -89,7 +89,7 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
     if (videoFile == null) return;
     videoInfo = await VideoCompress.getMediaInfo(videoFile.path);
     print(videoInfo.duration);
-    if(videoInfo.duration >= 90000.0 && videoInfo.duration <= 300000.0)
+    if(videoInfo.duration >= 900.0 && videoInfo.duration <= 300000.0)
     {
       try {
         setState(() {
@@ -206,6 +206,9 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
                         ),
                         _encodingFinished && videoFile != null?FlatButton(
                             onPressed: () {
+                              setState(() {
+                                _encodingFinished = false;
+                              });
                               print("go to next screen");
                               Navigator.push(context, CupertinoPageRoute(
                                 builder: (context) {

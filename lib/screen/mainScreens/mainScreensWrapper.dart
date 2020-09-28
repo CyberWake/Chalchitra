@@ -14,6 +14,7 @@ import 'package:wowtalent/screen/mainScreens/drafts.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
+import 'package:wowtalent/screen/mainScreens/privacyPage.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoSelectorScreen.dart';
@@ -109,7 +110,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                             if(value){
                               Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(
+                                  CupertinoPageRoute(
                                       builder: (_) => Authentication(AuthIndex.LOGIN)
                                   )
                               );
@@ -254,13 +255,21 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                   ListTile(
                     leading: Icon(Icons.security,color: Colors.white),
                     title: Text('Privacy',style:TextStyle(color: Colors.white)),
-                    onTap: () {
+                    onTap: (){
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) => PrivacyPage()
+                          )
+                      );
                     },
                   ),
                   ListTile(
                     leading: Icon(Icons.group_add,color: Colors.white),
                     title: Text('Invite',style:TextStyle(color: Colors.white)),
                     onTap: () async {
+                      Navigator.pop(context);
                       await FlutterShare.share(
                           title: 'Join WowTalent',
                           text: 'I am Loving the app. I invite you to join me'+
@@ -268,7 +277,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
                           linkUrl: 'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
                           chooserTitle: 'Test'
                       );
-                      Navigator.pop(context);
                     },
                   ),
                   Spacer(),

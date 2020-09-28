@@ -23,6 +23,7 @@ class VideoDataInput extends StatefulWidget {
 class _VideoDataInputState extends State<VideoDataInput> {
   MediaInfo mediaInfo;
   bool _uploadingVideo = false;
+  bool _uploadSuccess = false;
   bool _draftSaved = false;
   double _uploadProgress = 0.0;
   String _processPhase = '';
@@ -110,6 +111,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
       _processPhase = '';
       _uploadProgress = 0.0;
       _uploadingVideo = false;
+      _uploadSuccess = true;
     });
     await VideoCompress.deleteAllCache();
   }
@@ -149,6 +151,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
       _processPhase = '';
       _uploadProgress = 0.0;
       _uploadingVideo = false;
+      _uploadSuccess = true;
     });
     await VideoCompress.deleteAllCache();
   }
@@ -251,6 +254,60 @@ class _VideoDataInputState extends State<VideoDataInput> {
     );
   }
 
+  _buildUploadSuccess(context) {
+    return Dialog(
+      shape: RoundedRectangleBorder(
+        borderRadius:
+        BorderRadius.circular(20.0),
+      ), //this right here
+      child: Container(
+        height: 200,
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.0),
+            border: Border.all(color: Colors.deepOrangeAccent,width: 3)
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(12.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.max,
+            children: [
+              Padding(
+                padding: EdgeInsets.only(top: 20.0,left: 10),
+                child: Text(
+                  _draftSaved? 'Draft Saved Successfully':'Video Posted Succesfully',
+                  style: TextStyle(fontSize: 18),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.only(top: 50.0),
+                child: SizedBox(
+                  width: _size.width * 0.3,
+                  child: RaisedButton(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18.0),
+                          side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: Text(
+                        "OK",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      color: Colors.orange
+                  ),
+                ),
+              ),
+              SizedBox(height: 10)
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -302,7 +359,6 @@ class _VideoDataInputState extends State<VideoDataInput> {
             onPressed: (){
               _draftSaved = true;
               uploadDraftToServer();
-              Navigator.pop(context);
             },
           )
         ],
@@ -311,7 +367,8 @@ class _VideoDataInputState extends State<VideoDataInput> {
           padding: EdgeInsets.symmetric(horizontal: 20),
           child: _uploadingVideo
               ? Center(child: _getProgressBar())
-              : SingleChildScrollView(
+              : !_uploadSuccess
+                ? SingleChildScrollView(
             child: Container(
               margin: EdgeInsets.only(top: 20),
               padding: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
@@ -337,13 +394,13 @@ class _VideoDataInputState extends State<VideoDataInput> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Container(
-                          height: _size.height * 0.2,
-                          width: _size.width * 0.2,
-                          child: Image.file(file,fit: BoxFit.fitWidth,)
+                            height: _size.height * 0.2,
+                            width: _size.width * 0.2,
+                            child: Image.file(file,fit: BoxFit.fitWidth,)
                         ),
                         Container(
                           padding: EdgeInsets.only(
-                              left: _widthOne * 20,
+                            left: _widthOne * 20,
                           ),
                           width: _size.width / 1.6,
                           height: _size.height * 0.2,
@@ -546,8 +603,9 @@ class _VideoDataInputState extends State<VideoDataInput> {
                         onPressed: (){
                           if(_formKey.currentState.validate()){
                             uploadToServer();
-                            _draftSaved = true;
-                            Navigator.pop(context);
+                            setState(() {
+                              _draftSaved = true;
+                            });
                           }else{
                             setState(() {
                               _submitted = true;
@@ -568,7 +626,8 @@ class _VideoDataInputState extends State<VideoDataInput> {
                 ),
               ),
             ),
-          ),
+          )
+                :_buildUploadSuccess(context)
         ));
   }
 }

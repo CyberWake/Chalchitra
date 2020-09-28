@@ -26,6 +26,7 @@ class UserInfoStore{
             "photoUrl": _userAuth.user.photoURL,
             "username": username,
             "bio": "Welcome To My Profile",
+            "private": false,
           };
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
@@ -38,6 +39,35 @@ class UserInfoStore{
       print(e.toString());
       return false;
     }
+  }
+  Future<bool> updatePrivacy({String uid, bool privacy})async{
+    try {
+      _users.doc(_userAuth.user.uid).update({
+        "private": privacy,
+      });
+      return true;
+    } on Exception catch (e) {
+      print(e.toString());
+    }
+    return false;
+  }
+  Future<bool> getPrivacy({String uid})async{
+    try {
+      await _users
+          .where("id", isEqualTo: uid)
+          .get()
+          .then((QuerySnapshot querySnapshot) => {
+            querySnapshot.docs.forEach((doc) {
+              if(doc.data()['id'] == uid){
+                return doc.data()["privacy"];
+              }
+            })
+          });
+    } on Exception catch (e) {
+      print(e.toString());
+      return false;
+    }
+
   }
 
   Future<bool> isUsernameNew({String username}) async{
