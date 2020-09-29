@@ -135,6 +135,16 @@ class UserVideoStore {
     }
   }
 
+  Future<VideoInfo> getSharedLinkVideo({String videoId})async{
+    try{
+      DocumentSnapshot ds = await _allVideos.doc(videoId).get();
+      return mapDocumentToVideoInfo(ds);
+    }catch(e){
+      print(e.toString());
+      return null;
+    }
+  }
+
   Stream getVideos(){
     return _allVideos.orderBy("uploadedAt", descending: true)
         .snapshots();
@@ -200,6 +210,28 @@ class UserVideoStore {
           videoId: ds.id
         );
       }).toList();
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
+  static mapDocumentToVideoInfo(DocumentSnapshot ds) {
+    try{
+      return VideoInfo(
+          videoUrl: ds.data()['videoUrl'],
+          videoDiscription: ds.data()['discription'],
+          videoHashtag: ds.data()['videoHashtag'],
+          thumbUrl: ds.data()['thumbUrl'],
+          coverUrl: ds.data()['coverUrl'],
+          aspectRatio: ds.data()['aspectRatio'],
+          videoName: ds.data()['videoName'],
+          category: ds.data()['category'],
+          uploadedAt: ds.data()['uploadedAt'],
+          uploaderUid: ds.data()['uploaderUid'],
+          likes: ds.data()['likes'],
+          comments: ds.data()['comments'],
+          videoId: ds.id
+      );
     }catch(e){
       print(e.toString());
     }

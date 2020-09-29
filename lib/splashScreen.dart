@@ -3,135 +3,118 @@ import 'dart:core';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:wowtalent/database/dynamicLinkService.dart';
 
 class SplashScreen extends StatefulWidget {
-  final int seconds;
-  final Text title;
-  final Color backgroundColor;
-  final TextStyle styleTextUnderTheLoader;
   final dynamic navigateAfterSeconds;
-  final double photoSize;
-  final dynamic onClick;
-  final Color loaderColor;
-  final Image image;
-  final Text loadingText;
-  final ImageProvider imageBackground;
-  final Gradient gradientBackground;
-  SplashScreen(
-      {
-        this.loaderColor,
-        @required this.seconds,
-        this.photoSize,
-        this.onClick,
+  SplashScreen({
         this.navigateAfterSeconds,
-        this.title = const Text(''),
-        this.backgroundColor = Colors.white,
-        this.styleTextUnderTheLoader = const TextStyle(
-            fontSize: 18.0,
-            fontWeight: FontWeight.bold,
-            color: Colors.black
-        ),
-        this.image,
-        this.loadingText  = const Text(""),
-        this.imageBackground,
-        this.gradientBackground
-      }
-      );
+      });
 
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-    Timer(
-        Duration(seconds: widget.seconds),
-            () {
-          if (widget.navigateAfterSeconds is String) {
-            // It's fairly safe to assume this is using the in-built material
-            // named route component
-            Navigator.of(context).pushReplacementNamed(widget.navigateAfterSeconds);
-          } else if (widget.navigateAfterSeconds is Widget) {
-            Navigator.of(context).pushReplacement(new MaterialPageRoute(builder: (BuildContext context) => widget.navigateAfterSeconds));
-          } else {
-            throw new ArgumentError(
-                'widget.navigateAfterSeconds must either be a String or Widget'
-            );
-          }
-        }
-    );
+class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver{
+  DynamicLinkService links = DynamicLinkService();
+  Timer _timerLink;
+
+  _retrieveDynamicLink() async {
+    await links.handleDynamicLinks(context,true);
+    if(!links.isFromLink){
+      Timer(
+          Duration(seconds: 4), (){
+        print("Pushing navigate after page");
+        Navigator.of(context).pushReplacement(
+            MaterialPageRoute(
+                builder: (BuildContext context) => widget.navigateAfterSeconds
+            )
+        );
+      }
+      );
+    }
   }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("running did change");
+    if (state == AppLifecycleState.resumed) {
+      _timerLink = new Timer(const Duration(milliseconds: 850), () {
+        _retrieveDynamicLink();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    if (_timerLink != null) {
+      _timerLink.cancel();
+    }
+    super.dispose();
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    print("running binding");
+    WidgetsBinding.instance.addObserver(this);
+    print("running dynamic link");
+    _retrieveDynamicLink();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: new InkWell(
-        onTap: widget.onClick,
-        child:new Stack(
-          fit: StackFit.expand,
-          children: <Widget>[
-            new Container(
-              decoration: new BoxDecoration(
-                image: widget.imageBackground == null
-                    ? null
-                    : new DecorationImage(
-                  fit: BoxFit.cover,
-                  image: widget.imageBackground,
-                ),
-                gradient: widget.gradientBackground,
-                color: widget.backgroundColor,
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Expanded(
+                flex: 2,
+                child: Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        CircleAvatar(
+                          backgroundColor: Colors.transparent,
+                          child: Container(
+                              child: Image.asset('assets/images/splash.png'),
+                          ),
+                          radius: 100.0,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                        ),
+                      ],
+                    )),
               ),
-            ),
-            new Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                new Expanded(
-                  flex: 2,
-                  child: new Container(
-                      child: new Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          new CircleAvatar(
-                            backgroundColor: Colors.transparent,
-                            child: new Container(
-                                child: widget.image
-                            ),
-                            radius: widget.photoSize,
+              Expanded(
+                flex: 1,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    SpinKitFadingCircle(
+                      itemBuilder: (BuildContext context, int index) {
+                        return DecoratedBox(
+                          decoration: BoxDecoration(
+                            color: index.isEven ? Colors.red : Colors.green,
                           ),
-                          new Padding(
-                            padding: const EdgeInsets.only(top: 10.0),
-                          ),
-                          widget.title
-                        ],
-                      )),
+                        );
+                      },
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 20.0),
+                    ),
+                  ],
                 ),
-                Expanded(
-                  flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: <Widget>[
-                      SpinKitFadingCircle(
-                        itemBuilder: (BuildContext context, int index) {
-                          return DecoratedBox(
-                            decoration: BoxDecoration(
-                              color: index.isEven ? Colors.red : Colors.green,
-                            ),
-                          );
-                        },
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.only(top: 20.0),
-                      ),
-                      widget.loadingText
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

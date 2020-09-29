@@ -117,9 +117,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                                 getFieldContainer(
                                     [
+                                      createCountryField(),
                                       createBioField(),
                                       createGenderField(),
-                                      createCountryField(),
                                       createDOBField(),
                                     ]
                                 ),

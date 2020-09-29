@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -6,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/dynamicLinkService.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
@@ -27,7 +29,7 @@ class MainScreenWrapper extends StatefulWidget {
   _MainScreenWrapperState createState() => _MainScreenWrapperState();
 }
 
-class _MainScreenWrapperState extends State<MainScreenWrapper> {
+class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
   List<Widget> _screens;
   int _currentIndex = 0;
@@ -41,6 +43,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
   UserInfoStore _userInfoStore = UserInfoStore();
   UserDataModel user;
   DocumentSnapshot _currentUserInfo;
+  DynamicLinkService links = DynamicLinkService();
+  Timer _timerLink;
 
   SharedPreferences prefs;
 
@@ -59,10 +63,36 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
     setState(() {});
   }
 
+  _retrieveDynamicLink() async {
+    await links.handleDynamicLinks(context,false);
+    if(!links.isFromLink){
+      setup();
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    print("running did change");
+    if (state == AppLifecycleState.resumed) {
+      _timerLink = new Timer(const Duration(milliseconds: 850), () {
+        _retrieveDynamicLink();
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    if (_timerLink != null) {
+      _timerLink.cancel();
+    }
+    super.dispose();
+  }
 
   @override
   void initState(){
-    setup();
+    WidgetsBinding.instance.addObserver(this);
+    _retrieveDynamicLink();
     super.initState();
     _currentIndex = widget.index;
   }
@@ -157,13 +187,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> {
         ),
       ),
     );
-  }
-
-  _gotoExplore(){
-    _currentIndex = 1;
-    setState(() {
-
-    });
   }
 
   @override

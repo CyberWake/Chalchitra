@@ -17,9 +17,9 @@ void main() async{
 }
 
 class MyApp extends StatelessWidget {
-  UserAuth _userAuth = UserAuth();
   @override
   Widget build(BuildContext context) {
+    UserAuth _userAuth = UserAuth();
     return StreamProvider<User>.value(
       value: UserAuth().account,
       child: MaterialApp(
@@ -29,18 +29,10 @@ class MyApp extends StatelessWidget {
           primarySwatch: Colors.orange,
         ),
         home: SplashScreen(
-            seconds: 3,
-            navigateAfterSeconds: prefs.containsKey('onBoarded') ?
-            MainScreenWrapper(
-              index: _userAuth.user != null ? 0 : 1,
-            ) : OnBoardScreen1(),
-            image: Image.asset('assets/images/splash.png'),
-            backgroundColor: Colors.white,
-            styleTextUnderTheLoader: TextStyle(),
-            photoSize: 100.0,
-            onClick: ()=>print("Wow Talent"),
-            loaderColor: Colors.orange,
-        )
+          navigateAfterSeconds: prefs.containsKey('onBoarded')
+              ? MainScreenWrapper(index: _userAuth.user != null ? 0 : 1,)
+              : OnBoardScreen1(),
+        ),
       ),
     );
   }
