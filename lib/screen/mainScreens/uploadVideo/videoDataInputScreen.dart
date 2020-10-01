@@ -6,7 +6,7 @@ import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:path/path.dart' as p;
-import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
+import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart'; 
 import 'package:wowtalent/model/videoInfoModel.dart';
 
 class VideoDataInput extends StatefulWidget {

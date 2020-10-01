@@ -15,6 +15,7 @@ class VideoPreview extends StatefulWidget {
 }
 
 class _VideoPreviewState extends State<VideoPreview> {
+  final _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
   VideoPlayerController _controller;
   File selectedVideo;
   bool playing;
@@ -92,6 +93,7 @@ class _VideoPreviewState extends State<VideoPreview> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldGlobalKey,
       backgroundColor: Colors.black,
       appBar: AppBar(
         centerTitle: true,
@@ -99,73 +101,86 @@ class _VideoPreviewState extends State<VideoPreview> {
       ),
       body: _encodingVideo
           ? _getProgressBar()
-          : Center(
-            child: _controller.value.initialized
-                ? Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                AspectRatio(
-                    aspectRatio: _controller.value.aspectRatio,
-                    child:
-                    InkWell(
-                        onTap: (){
-                          if(playing){
-                            Scaffold.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: Duration(milliseconds: 500),
-                                  content: Text('Audio Muted'),
-                                )
-                            );
-                            playing = false;
-                            _controller.setVolume(0.0);
-                          }else{
-                            Scaffold.of(context).showSnackBar(
-                                SnackBar(
-                                  duration: Duration(milliseconds: 500),
-                                  content: Text('Audio Unmuted'),
-                                )
-                            );
-                            print("unmuted");
-                            playing = true;
-                            _controller.setVolume(1.0);
-                          }
-                        },
-                        child: VideoPlayer(_controller)
-                    ),
+          : _controller.value.initialized
+              ? Stack(
+                children: [
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      AspectRatio(
+                        aspectRatio: _controller.value.aspectRatio,
+                        child:
+                        InkWell(
+                            onTap: (){
+                              if(playing){
+                                print("running");
+                                _scaffoldGlobalKey.currentState.showSnackBar(
+                                    SnackBar(
+                                      duration: Duration(milliseconds: 500),
+                                      content: Text('Audio Muted'),
+                                    )
+                                );
+                                print("running");
+                                playing = false;
+                                _controller.setVolume(0.0);
+                              }else{
+                                _scaffoldGlobalKey.currentState.showSnackBar(
+                                    SnackBar(
+                                      duration: Duration(milliseconds: 500),
+                                      content: Text('Audio Unmuted'),
+                                    )
+                                );
+                                playing = true;
+                                _controller.setVolume(1.0);
+                              }
+                            },
+                            child: VideoPlayer(_controller)
+                        ),
 
-                ),
-                VideoProgressIndicator(
-                  _controller,
-                  allowScrubbing: true,
-                  colors: VideoProgressColors(playedColor: Colors.orange,bufferedColor: Colors.grey,backgroundColor: Colors.white),),
-                SizedBox(height: 20,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.only(left: 15.0),
-                      child: FloatingActionButton(
-                        onPressed: () {
-                          setState(() {
-                            _controller.value.isPlaying
-                                ? _controller.pause()
-                                : _controller.play();
-                          });
-                        },
-                        child: Icon(
-                          _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                      ),
+                      VideoProgressIndicator(
+                        _controller,
+                        allowScrubbing: true,
+                        colors: VideoProgressColors(
+                            playedColor: Colors.orange,
+                            bufferedColor: Colors.grey,
+                            backgroundColor: Colors.white
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ):SpinKitCircle(
-              color: Colors.grey,
-              size: 60,
-            )
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(height: MediaQuery.of(context).size.height * 0.68,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.only(right: 25.0,bottom: 10),
+                            child: FloatingActionButton(
+                              onPressed: () {
+                                setState(() {
+                                  _controller.value.isPlaying
+                                      ? _controller.pause()
+                                      : _controller.play();
+                                });
+                              },
+                              child: Icon(
+                                _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  )
+                ],
+              ):SpinKitCircle(
+            color: Colors.grey,
+            size: 60,
           ),
-      bottomSheet: Container(
+      bottomNavigationBar: Container(
         padding: EdgeInsets.only(bottom: 10),
         color: Colors.black,
 //        height: MediaQuery.of(context).size.height *0.08,

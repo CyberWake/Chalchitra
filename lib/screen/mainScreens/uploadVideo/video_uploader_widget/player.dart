@@ -55,6 +55,7 @@ class _PlayerState extends State<Player> {
        likeCount = widget.video.likes;
        _sliderValue = await
        _userVideoStore.checkRated(videoID:widget.video.videoId);
+       print(_sliderValue);
        _isLiked = await _userVideoStore.checkLiked(
            videoID: widget.video.videoId
        );
