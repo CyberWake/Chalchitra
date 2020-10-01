@@ -10,6 +10,7 @@ class DynamicLinkService{
   VideoInfo video = VideoInfo();
   Map<String,String> linkVideoInfo;
   bool isFromLink;
+
   Future handleDynamicLinks(context,bool replacement) async{
     print("in dynamic links");
     final PendingDynamicLinkData data = await FirebaseDynamicLinks.instance.getInitialLink();

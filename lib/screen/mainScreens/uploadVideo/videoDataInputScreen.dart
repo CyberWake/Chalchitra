@@ -340,6 +340,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
           onPressed: (){
             if(_draftSaved){
               Navigator.pop(context);
+              Navigator.pop(context);
             }
             else{
               showDialog(

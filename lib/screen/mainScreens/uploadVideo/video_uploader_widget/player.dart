@@ -142,30 +142,77 @@ class _PlayerState extends State<Player> {
               Builder(
                 builder: (context){
                   return Center(
-                    child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: _controller.value.initialized?
-                      InkWell(
-                          onTap: (){
-                            if(playing){
-                              print('paused');
-                              playing = false;
-                              _controller.pause();
-                            }else{
-                              print("played");
-                              playing = true;
-                              _controller.play();
-                            }
-                          },
-                          child: VideoPlayer(_controller)
-                      )
-                          :SpinKitCircle(
-                        color: Colors.grey,
-                        size: 60,
-                      )
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: _controller.value.initialized?
+                          InkWell(
+                              onTap: (){
+                                if(playing){
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration: Duration(milliseconds: 500),
+                                        content: Text('Audio Muted'),
+                                      )
+                                  );
+                                  playing = false;
+                                  _controller.setVolume(0.0);
+                                }else{
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration: Duration(milliseconds: 500),
+                                        content: Text('Audio Unmuted'),
+                                      )
+                                  );
+                                  print("unmuted");
+                                  playing = true;
+                                  _controller.setVolume(1.0);
+                                }
+                              },
+                              child: VideoPlayer(_controller)
+                          )
+                              :SpinKitCircle(
+                            color: Colors.grey,
+                            size: 60,
+                          )
+                        ),
+                        VideoProgressIndicator(
+                          _controller,
+                          allowScrubbing: true,
+                          colors: VideoProgressColors(playedColor: Colors.orange,bufferedColor: Colors.grey,backgroundColor: Colors.white),
+                        ),
+                      ],
                     ),
                   );
                 },
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 15.0),
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            setState(() {
+                              _controller.value.isPlaying
+                                  ? _controller.pause()
+                                  : _controller.play();
+                            });
+                          },
+                          child: Icon(
+                            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.15,),
+                ],
               ),
               Builder(
                 builder: (context) {
@@ -438,7 +485,7 @@ class _PlayerState extends State<Player> {
                           ),
                         ),
                         SizedBox(
-                          height: 20,
+                          height: 35,
                         )
                       ],
                     );

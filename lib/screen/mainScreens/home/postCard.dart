@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -104,10 +105,25 @@ class _PostCardState extends State<PostCard> {
         ]
     );
   }
-  void choiceAction(String choice){
+  void choiceAction(String choice) async {
     print('called');
     if(choice == Menu.Share){
-      print('Share');
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+        uriPrefix: 'https://wowtalent.page.link/view-video/'+'${widget.id}',
+        link: Uri.parse('https://wowtalent.com/player?videoId=hPscNgwrLhZhC5TlJYiK'),
+        androidParameters: AndroidParameters(
+          packageName: 'com.example.wowtalant',
+          minimumVersion: 125,
+        ),
+        iosParameters: IosParameters(
+          bundleId: 'com.example.wowtalant',
+          minimumVersion: '1.0.0',
+          appStoreId: '123456789',
+        ),
+      );
+      final Uri dynamicUrl = await parameters.buildUrl();
+      print(dynamicUrl);
+
     }else if(choice == Menu.Download){
       print('Download');
     }else if(choice == Menu.Forward){
