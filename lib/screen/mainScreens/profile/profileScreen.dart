@@ -92,7 +92,8 @@ class _ProfilePageState extends State <ProfilePage> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Column(
+    return SingleChildScrollView(
+      child: Column(
       children: [
         Stack(
           children: [
@@ -183,7 +184,7 @@ class _ProfilePageState extends State <ProfilePage> {
           ],
         ),
       ],
-    );
+    ));
   }
 
 

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'dart:io' show Platform;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
@@ -193,7 +194,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
-    _heightOne = (_size.height * 0.007) / 5;
+    _heightOne = !Platform.isIOS?(_size.height * 0.007) / 5:(_size.height*0.009)/5;
     _iconOne = (_size.height * 0.066) / 50;
     _screens = [
       Home(),
@@ -254,18 +255,16 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
           SizedBox(width: _widthOne * 100,)
         ],
       ),
-      endDrawer: SafeArea(
-        child: Container(
+      endDrawer: Container(
           width: _size.width * 0.5,
           child: Drawer(
             child: Container(
               color: Colors.black87,
               child: Column(
                 children: [
-                  ListTile(
-                    title: Center(
-                      child: Text(user == null?" ":user.username,
-                          style:TextStyle(color: Colors.white)),
+                  DrawerHeader(
+                    child: Center(
+                      child: Text(user==null?" ": user.username, style: TextStyle(color: Colors.white),),
                     ),
                   ),
                   Divider(color: Colors.white,thickness: 0.5,),
@@ -323,12 +322,12 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                       );
                     },
                   ),
+                  Padding(padding: EdgeInsets.only(bottom: _heightOne*10),)
                 ],
               ),
             )
           ),
         ),
-      ),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
         height: _heightOne * 45,
