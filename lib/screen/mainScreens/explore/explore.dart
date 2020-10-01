@@ -25,15 +25,11 @@ class _ExploreState extends State<Explore> {
   List<VideoInfo> _videos = <VideoInfo>[];
   List searchCategories = [
     "Vocals",
-    "Percussions",
-    "Acting",
-    "Instrumental",
-    "Videography",
-    "Stand up Comedy",
-    "DIY",
-    "DJing",
-    "Story Telling",
     "Dance",
+    "Instrumental",
+    "Stand up Comedy",
+    "DJing",
+    "Acting",
   ];
 
   @override

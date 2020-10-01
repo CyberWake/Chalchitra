@@ -227,7 +227,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
             ),
             onPressed: (){
               if (_userAuth.user != null) {
-                Navigator.push(
+                Navigator.pushReplacement(
                   context,
                   MaterialPageRoute(
                       builder: (_) => SearchUser()

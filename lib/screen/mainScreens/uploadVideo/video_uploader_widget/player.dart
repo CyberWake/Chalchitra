@@ -118,7 +118,7 @@ class _PlayerState extends State<Player> {
     String choppedDiscription = '';
     var subDisplayName = currentDiscription.split(' ');
     for(var i in subDisplayName){
-      if(choppedDiscription.length + i.length < 60){
+      if(choppedDiscription.length + i.length < 36){
         choppedDiscription += ' ' + i;
       }
       else{
@@ -288,11 +288,11 @@ class _PlayerState extends State<Player> {
                               horizontal: 23, vertical: 4
                           ),
                           child: Text(
-                            widget.video.videoDiscription != null ?
-                            widget.video.videoDiscription.length > 81 ?
-                            getChoppedUsername
-                              (widget.video.videoDiscription)
-                                :widget.video.videoDiscription : "Description",
+                            widget.video.videoName != null
+                                ? widget.video.videoName.length > 37
+                                  ? "Title" + ' \u2022 ' + getChoppedUsername(widget.video.videoName)
+                                  :"Title" + ' \u2022 '+ widget.video.videoName + ' \u2022 '
+                                : "Title" + ' \u2022 ',
                             style:TextStyle(color: Colors.white),
                           )
                         ),
@@ -302,15 +302,7 @@ class _PlayerState extends State<Player> {
                             children: [
                               Icon(Icons.equalizer,color: Colors.white,),
                               Text(
-                                '${widget.video.videoName} \u2022 ',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                widget.video.category?? "Category",
+                                ' \u2022 ' + widget.video.category?? "Category",
                                 style:
                                 TextStyle(
                                     color: Colors.white

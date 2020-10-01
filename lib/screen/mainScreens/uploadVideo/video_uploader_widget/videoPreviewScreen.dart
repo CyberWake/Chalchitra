@@ -54,6 +54,7 @@ class _VideoPreviewState extends State<VideoPreview> {
           builder: (context) {
             return VideoDataInput(mediaInfoPath: mediaInfoPath, thumbnailPath: thumbnailInfoPath,aspectRatio: aspectRatio,);
           }));
+      _encodingVideo = false;
     });
   }
 
@@ -80,7 +81,7 @@ class _VideoPreviewState extends State<VideoPreview> {
         children: <Widget>[
           Container(
             margin: EdgeInsets.only(bottom: 30.0),
-            child: Text(_processPhase),
+            child: Text(_processPhase,style: TextStyle(color: Colors.white),),
           ),
           LinearProgressIndicator(),
         ],
@@ -99,12 +100,13 @@ class _VideoPreviewState extends State<VideoPreview> {
       body: _encodingVideo
           ? _getProgressBar()
           : Center(
-            child: Column(
+            child: _controller.value.initialized
+                ? Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 AspectRatio(
                     aspectRatio: _controller.value.aspectRatio,
-                    child: _controller.value.initialized?
+                    child:
                     InkWell(
                         onTap: (){
                           if(playing){
@@ -129,11 +131,8 @@ class _VideoPreviewState extends State<VideoPreview> {
                           }
                         },
                         child: VideoPlayer(_controller)
-                    )
-                        :SpinKitCircle(
-                      color: Colors.grey,
-                      size: 60,
-                    )
+                    ),
+
                 ),
                 VideoProgressIndicator(
                   _controller,
@@ -161,7 +160,10 @@ class _VideoPreviewState extends State<VideoPreview> {
                   ],
                 ),
               ],
-            ),
+            ):SpinKitCircle(
+              color: Colors.grey,
+              size: 60,
+            )
           ),
       bottomSheet: Container(
         padding: EdgeInsets.only(bottom: 10),
@@ -181,11 +183,12 @@ class _VideoPreviewState extends State<VideoPreview> {
             FlatButton(
               onPressed: ()async{
                 setState(() {
+                  _controller.pause();
                   _encodingVideo = true;
                 });
                 await _processVideo(selectedVideo);
               },
-              child: Text('Encode',
+              child: Text(_encodingVideo ?'Encoding..':'Encode',
                   style: TextStyle(color: Colors.white,fontSize: 20)),),
           ],
         ),

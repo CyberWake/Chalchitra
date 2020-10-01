@@ -32,7 +32,6 @@ class _VideoDataInputState extends State<VideoDataInput> {
   double _widthOne;
   Size _size;
   String videoName = "";
-  String videoDescription = "";
   String videoHashTag = "";
   String category = "Vocals";
   int _selectedCategory = 0;
@@ -91,7 +90,6 @@ class _VideoDataInputState extends State<VideoDataInput> {
     final videoUrl = await _uploadVideo(widget.mediaInfoPath, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
-      videoDiscription: videoDescription,
       videoUrl: videoUrl,
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
@@ -131,7 +129,6 @@ class _VideoDataInputState extends State<VideoDataInput> {
     final videoUrl = await _uploadVideo(widget.mediaInfoPath, 'videos/'+_userAuth.user.uid+videoName, timestamp.toString());
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
-      videoDiscription: videoDescription,
       videoUrl: videoUrl,
       thumbUrl: thumbUrl,
       coverUrl: thumbUrl,
@@ -216,6 +213,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                         onPressed: () {
                           Navigator.pop(context);
                           Navigator.pop(context);
+                          Navigator.pop(context);
                         },
                         child: Text(
                           "No",
@@ -276,7 +274,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
               Padding(
                 padding: EdgeInsets.only(top: 20.0,left: 10),
                 child: Text(
-                  _draftSaved? 'Draft Saved Successfully':'Video Posted Succesfully',
+                  _draftSaved? 'Draft Saved Successfully': _uploadSuccess?'Video Posted Succesfully':'Error somewhere',
                   style: TextStyle(fontSize: 18),
                 ),
               ),
@@ -290,6 +288,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           side: BorderSide(color: Colors.deepOrangeAccent,width: 2)
                       ),
                       onPressed: () {
+                        Navigator.pop(context);
                         Navigator.pop(context);
                       },
                       child: Text(
@@ -340,7 +339,6 @@ class _VideoDataInputState extends State<VideoDataInput> {
           onPressed: (){
             if(_draftSaved){
               Navigator.pop(context);
-              Navigator.pop(context);
             }
             else{
               showDialog(
@@ -389,62 +387,9 @@ class _VideoDataInputState extends State<VideoDataInput> {
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Row(
-                      mainAxisSize: MainAxisSize.max,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Container(
-                            height: _size.height * 0.2,
-                            width: _size.width * 0.2,
-                            child: Image.file(file,fit: BoxFit.fitWidth,)
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(
-                            left: _widthOne * 20,
-                          ),
-                          width: _size.width / 1.6,
-                          height: _size.height * 0.2,
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Colors.orange.withOpacity(0.75)
-                              ),
-                              borderRadius: BorderRadius.circular(15.0)
-                          ),
-                          child: TextFormField(
-                            maxLines: 5,
-                            keyboardType: TextInputType.text,
-                            validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
-                                ? "Video Description can't be Empty"
-                                : null,
-                            onChanged: (val) {
-                              videoDescription = val;
-                              if(_submitted){
-                                _formKey.currentState.validate();
-                              }
-                            },
-                            decoration:  InputDecoration(
-                              border: InputBorder.none,
-                              focusedBorder: InputBorder.none,
-                              enabledBorder: InputBorder.none,
-                              errorBorder: InputBorder.none,
-                              disabledBorder: InputBorder.none,
-                              hintText: "Enter Description",
-                              errorMaxLines: 3,
-                              hintStyle: TextStyle(
-                                  color: Colors.orange.withOpacity(0.75),
-                                  fontSize: _fontOne * 15
-                              ),
-                              errorStyle: TextStyle(
-                                  fontSize: _fontOne * 15
-                              ),
-                            ),
-                            style: TextStyle(
-                              fontSize: _fontOne * 15,
-                            ),
-                          ),
-                        ),
-                      ],
+                    AspectRatio(
+                        aspectRatio: widget.aspectRatio,
+                        child: Image.file(file,fit: BoxFit.fitWidth,)
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.width * 0.05,
@@ -456,7 +401,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                             ? "Video Title can't be Empty"
                             : null,
                         onChanged: (val) {
-                          videoHashTag = val;
+                          videoName = val;
                           if(_submitted){
                             _formKey.currentState.validate();
                           }
@@ -542,55 +487,35 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                 value: 0,
                               ),
                               DropdownMenuItem(
-                                child: Text("Percussions"),
-                                value: 1,
-                              ),
-                              DropdownMenuItem(
-                                  child: Text("Acting"),
-                                  value: 2
+                                  child: Text("Dance"),
+                                  value: 1,
                               ),
                               DropdownMenuItem(
                                 child: Text("Instrumental"),
-                                value: 3,
-                              ),
-                              DropdownMenuItem(
-                                child: Text("Videography"),
-                                value: 4,
+                                value: 2,
                               ),
                               DropdownMenuItem(
                                   child: Text("Standup Comedy"),
-                                  value: 5
-                              ),
-                              DropdownMenuItem(
-                                  child: Text("DIY"),
-                                  value: 6
+                                  value: 3
                               ),
                               DropdownMenuItem(
                                   child: Text("DJing"),
-                                  value: 7
+                                  value: 4
                               ),
                               DropdownMenuItem(
-                                  child: Text("Story Telling"),
-                                  value: 8
-                              ),
-                              DropdownMenuItem(
-                                  child: Text("Dance"),
-                                  value: 9
+                                  child: Text("Acting"),
+                                  value: 5
                               ),
                             ],
                             onChanged: (value) {
                               _selectedCategory = value;
                               switch(value){
                                 case 0: category = "Vocals";break;
-                                case 1: category = "Percussions";break;
-                                case 2: category = "Acting";break;
-                                case 3: category = "Instrumental";break;
-                                case 4: category = "Videography";break;
-                                case 5: category = "Standup Comedy";break;
-                                case 6: category = "DIY";break;
-                                case 7: category = "DJing";break;
-                                case 8: category = "Story Telling";break;
-                                case 9: category = "Dance";break;
+                                case 1: category = "Dance";break;
+                                case 2: category = "Instrumental";break;
+                                case 3: category = "Story Telling";break;
+                                case 4: category = "DJing";break;
+                                case 5: category = "Acting";break;
                               }
                               setState(() {
                               });
@@ -605,7 +530,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           if(_formKey.currentState.validate()){
                             uploadToServer();
                             setState(() {
-                              _draftSaved = true;
+                              _uploadSuccess = true;
                             });
                           }else{
                             setState(() {

@@ -13,7 +13,7 @@ class _DraftsState extends State<Drafts> {
   List<VideoInfo> _videos = <VideoInfo>[];
   final _formKey = GlobalKey<FormState>();
   String videoHashTag = "";
-  String videoDiscription = "";
+  String videoName = "";
   bool _uploadingVideo = false;
   double _fontOne;
   bool _submitted = false;
@@ -51,13 +51,12 @@ class _DraftsState extends State<Drafts> {
         .millisecondsSinceEpoch;
     final videoInfo = VideoInfo(
       uploaderUid: UserAuth().user.uid,
-      videoDiscription: videoDiscription,
       videoUrl: _videos[index].videoUrl,
       thumbUrl: _videos[index].thumbUrl,
       coverUrl: _videos[index].coverUrl,
       aspectRatio: _videos[index].aspectRatio,
       uploadedAt: timestamp,
-      videoName: _videos[index].videoName,
+      videoName: videoName,
       videoHashtag: videoHashTag,
       category: category,
       likes: 0,
@@ -126,63 +125,9 @@ class _DraftsState extends State<Drafts> {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Container(
-                                  height: _size.height * 0.2,
-                                  width: _size.width * 0.2,
-                                  child: Image.network(_videos[index].thumbUrl,fit: BoxFit.fitWidth,)
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(
-                                  left: _widthOne * 20,
-                                ),
-                                width: _size.width / 1.6,
-                                height: _size.height * 0.2,
-                                decoration: BoxDecoration(
-                                    border: Border.all(
-                                        color: Colors.orange.withOpacity(0.75)
-                                    ),
-                                    borderRadius: BorderRadius.circular(15.0)
-                                ),
-                                child: TextFormField(
-                                  initialValue: _videos[index].videoDiscription,
-                                  maxLines: 5,
-                                  keyboardType: TextInputType.text,
-                                  validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
-                                      ? "Video Description can't be Empty"
-                                      : null,
-                                  onChanged: (val) {
-                                    videoDiscription = val;
-                                    if(_submitted){
-                                      _formKey.currentState.validate();
-                                    }
-                                  },
-                                  decoration:  InputDecoration(
-                                    border: InputBorder.none,
-                                    focusedBorder: InputBorder.none,
-                                    enabledBorder: InputBorder.none,
-                                    errorBorder: InputBorder.none,
-                                    disabledBorder: InputBorder.none,
-                                    hintText: "Enter Description",
-                                    errorMaxLines: 3,
-                                    hintStyle: TextStyle(
-                                        color: Colors.orange.withOpacity(0.75),
-                                        fontSize: _fontOne * 15
-                                    ),
-                                    errorStyle: TextStyle(
-                                        fontSize: _fontOne * 15
-                                    ),
-                                  ),
-                                  style: TextStyle(
-                                    fontSize: _fontOne * 15,
-                                  ),
-                                ),
-                              ),
-                            ],
+                          AspectRatio(
+                              aspectRatio: _videos[index].aspectRatio,
+                              child: Image.network(_videos[index].thumbUrl,fit: BoxFit.fitWidth,)
                           ),
                           SizedBox(
                             height: MediaQuery.of(context).size.width * 0.05,
@@ -195,7 +140,7 @@ class _DraftsState extends State<Drafts> {
                                   ? "Video Title can't be Empty"
                                   : null,
                               onChanged: (val) {
-                                videoHashTag = val;
+                                videoName = val;
                                 if(_submitted){
                                   _formKey.currentState.validate();
                                 }
