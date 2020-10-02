@@ -117,9 +117,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 ),
                                 getFieldContainer(
                                     [
-                                      createCountryField(),
                                       createBioField(),
                                       createGenderField(),
+                                      createCountryField(),
                                       createDOBField(),
                                     ]
                                 ),
@@ -447,7 +447,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           margin: EdgeInsets.all(10),
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[700]),
+            border: Border.all(color: Colors.grey[700],width: 1),
             borderRadius: BorderRadius.circular(5),
           ),
           child: DropDownField(
@@ -456,12 +456,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
             value: countryController.text,
             items: countries,
             onValueChanged: (value){
+              FocusScope.of(context).unfocus();
               setState(() {
                 selectedCountry = value;
                 countryController.text = value;
               });
             },
             setter: (value){
+              FocusScope.of(context).unfocus();
               print(countryController.text);
               countryController.text = value;
             },
@@ -507,7 +509,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           width: double.infinity,
           height: _size.height * 0.075,
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey[700]),
+            border: Border.all(color: Colors.grey[700],width: 1),
             borderRadius: BorderRadius.circular(5),
           ),
           child: InkWell(

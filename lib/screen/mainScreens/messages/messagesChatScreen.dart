@@ -73,7 +73,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         Icons.arrow_back_ios,
                         color: Colors.white,
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: (){
+                        FocusScope.of(context).unfocus();
+                        Navigator.pop(context);
+                      }
                     ),
                     Expanded(child: Container()),
                     Text(

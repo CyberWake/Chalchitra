@@ -139,6 +139,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                         onPressed: () async {
                           await UserAuth().signOut().then((value) {
                             if (value) {
+                              Navigator.pop(context);
                               Navigator.pushReplacement(
                                   context,
                                   CupertinoPageRoute(
@@ -228,14 +229,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
             ),
             onPressed: (){
               if (_userAuth.user != null) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (_) => SearchUser()
                   )
                 );
               }else{
-                Navigator.push(
+                Navigator.pushReplacement(
                     context,
                     CupertinoPageRoute(
                         builder: (_) => Authentication(AuthIndex.REGISTER)
