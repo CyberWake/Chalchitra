@@ -22,6 +22,7 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
   Size _size;
   bool _submitted = false;
 
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;

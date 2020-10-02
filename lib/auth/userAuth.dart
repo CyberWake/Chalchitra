@@ -87,7 +87,7 @@ class UserAuth{
       }
       return true;
     } catch (e) {
-      print(e.toString());
+      print("facebook login error: "+e.toString());
       return false;
     }
   }
@@ -110,42 +110,11 @@ class UserAuth{
       return true;
     }
     catch(e){
-      print(e.toString());
+      print("google login error: "+e.toString());
       return false;
     }
   }
 
-  Future<bool> registerWithGoogle() async {
-    try{
-      final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
-      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
-      final GoogleAuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleAuth.accessToken,
-        idToken: googleAuth.idToken,
-      );
-
-      UserCredential userCredential =
-      await _auth.signInWithCredential(credential);
-
-      DocumentSnapshot userRecord =
-      await _usersCollection.doc(userCredential.user.uid).get();
-
-      if(!userRecord.exists){
-        await UserInfoStore().createUserRecord().then((value) async{
-          if(value){
-            userRecord =
-            await _usersCollection.doc(userCredential.user.uid).get();
-            currentUserModel = UserDataModel.fromDocument(userRecord);
-          }
-        });
-      }
-      return true;
-    }
-    catch(e){
-      print(e.toString());
-      return false;
-    }
-  }
   Future<String> resetPassword(String email) async {
     try {
       await _auth.sendPasswordResetEmail(email: email);
