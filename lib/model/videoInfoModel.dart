@@ -50,6 +50,7 @@ class VideoInfo {
       videoName: ds.data()['videoName'],
       uploadedAt: ds.data()['uploadedAt'],
       category: ds.data()['category'],
+      videoId: ds.id,
     );
   }
 }

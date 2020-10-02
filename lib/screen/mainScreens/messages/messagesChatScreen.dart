@@ -1,9 +1,9 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/theme/colors.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/screen/mainScreens/messages/chatBubble.dart';
 
 double _heightOne;
 double _widthOne;
@@ -113,77 +113,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           color: Colors.orange,
                           size: _fontOne * 60,
                         ),
-                      ): getBody()
+                      ): messages()
                   )
               ),
-              Container(
-                padding: EdgeInsets.zero,
-                margin: EdgeInsets.only(bottom: 0),
-                height: 70,
-                color: Colors.white,
-                child: Row(
-                  children: <Widget>[
-                    IconButton(
-                      icon: Icon(Icons.photo),
-                      iconSize: 25,
-                      color: Colors.orange,
-                      onPressed: () {},
-                    ),
-                    Expanded(
-                      child: TextField(
-                        controller: controller,
-                        onChanged: (val){
-                          text = val;
-                        },
-                        decoration: InputDecoration.collapsed(
-                          hintText: 'Send a message..',
-                        ),
-                        textCapitalization: TextCapitalization.sentences,
-                      ),
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.send),
-                      iconSize: 25,
-                      color:  Colors.orange,
-                      onPressed: () async{
-                        if(text.isEmpty || text.replaceAll(" ", "").length == 0){
-                          return;
-                        }
-
-                        if(_checkChatAlreadyAdded){
-                          await _userInfoStore.checkChatExists(
-                              targetUID: widget.targetUID
-                          ).then((value) async{
-                            print(value);
-                            if(value == false){
-                              await _userInfoStore.addChatSender(
-                                  targetUID: widget.targetUID
-                              );
-                              await _userInfoStore.addChatReceiver(
-                                  targetUID: widget.targetUID
-                              );
-                            }
-                          });
-                          _checkChatAlreadyAdded = false;
-                        }
-
-                        await _userInfoStore.sendMessage(
-                          targetUID: widget.targetUID,
-                          message: text,
-                        );
-                        controller.clear();
-                      },
-                    ),
-                  ],
-                ),
-              )
+              sendMessageField()
             ],
           )
       ),
     );
   }
 
-  Widget getBody() {
+  Widget messages() {
     return StreamBuilder(
       stream: _userInfoStore.getChatDetails(
         targetUID: widget.targetUID,
@@ -201,7 +141,6 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => ChatBubble(
               isMe: snapshot.data.documents[index].data()["reciever"] == widget.targetUID,
-              messageType: 1,
               message: snapshot.data.documents[index].data()['message'],
               profileImg: _userDataModel.photoUrl == null ?
               'https://via.placeholder.com/150' : _userDataModel.photoUrl
@@ -213,156 +152,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       },
     );
   }
-}
 
-class ChatBubble extends StatelessWidget {
-  final bool isMe;
-  final String profileImg;
-  final String message;
-  final int messageType;
-  const ChatBubble({
-    Key key,
-    this.isMe,
-    this.profileImg,
-    this.message,
-    this.messageType,
-  }) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    print("message" + isMe.toString());
-    if (isMe) {
-      return Padding(
-        padding: const EdgeInsets.only(
-          bottom: 5
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: <Widget>[
-            Flexible(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.orangeAccent,
-                    borderRadius: getMessageType(messageType)
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(13.0),
-                  child: Text(
-                    message,
-                    style: TextStyle(color: white, fontSize: 17),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      );
-    } else {
-      return Padding(
-        padding: const EdgeInsets.only(
-          bottom: 5
-      ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Container(
-              width: 35,
-              height: 35,
-              decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  image: DecorationImage(
-                      image: NetworkImage(profileImg), fit: BoxFit.cover)),
-            ),
-            SizedBox(
-              width: 15,
-            ),
-            Flexible(
-              child: Container(
-                decoration: BoxDecoration(
-                    color: Colors.orange[50],
-                    borderRadius: getMessageType(messageType)),
-                child: Padding(
-                  padding: const EdgeInsets.all(13.0),
-                  child: Text(
-                    message,
-                    style: TextStyle(color: black, fontSize: 17),
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-      );
-    }
-  }
-
-  getMessageType(messageType) {
-    if (isMe) {
-      // start message
-      if (messageType == 1) {
-        return BorderRadius.only(
-            topRight: Radius.circular(30),
-            bottomRight: Radius.circular(5),
-            topLeft: Radius.circular(30),
-            bottomLeft: Radius.circular(30));
-      }
-      // middle message
-      else if (messageType == 2) {
-        return BorderRadius.only(
-            topRight: Radius.circular(5),
-            bottomRight: Radius.circular(5),
-            topLeft: Radius.circular(30),
-            bottomLeft: Radius.circular(30));
-      }
-      // end message
-      else if (messageType == 3) {
-        return BorderRadius.only(
-            topRight: Radius.circular(5),
-            bottomRight: Radius.circular(30),
-            topLeft: Radius.circular(30),
-            bottomLeft: Radius.circular(30));
-      }
-      // standalone message
-      else {
-        return BorderRadius.all(Radius.circular(30));
-      }
-    }
-    // for sender bubble
-    else {
-      // start message
-      if (messageType == 1) {
-        return BorderRadius.only(
-            topLeft: Radius.circular(30),
-            bottomLeft: Radius.circular(5),
-            topRight: Radius.circular(30),
-            bottomRight: Radius.circular(30));
-      }
-      // middle message
-      else if (messageType == 2) {
-        return BorderRadius.only(
-            topLeft: Radius.circular(5),
-            bottomLeft: Radius.circular(5),
-            topRight: Radius.circular(30),
-            bottomRight: Radius.circular(30));
-      }
-      // end message
-      else if (messageType == 3) {
-        return BorderRadius.only(
-            topLeft: Radius.circular(5),
-            bottomLeft: Radius.circular(30),
-            topRight: Radius.circular(30),
-            bottomRight: Radius.circular(30));
-      }
-      // standalone message
-      else {
-        return BorderRadius.all(Radius.circular(30));
-      }
-    }
-  }
-
-  _sendMessageArea() {
+  Widget sendMessageField(){
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 8),
+      padding: EdgeInsets.zero,
+      margin: EdgeInsets.only(bottom: 0),
       height: 70,
       color: Colors.white,
       child: Row(
@@ -370,11 +164,15 @@ class ChatBubble extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.photo),
             iconSize: 25,
-            color: primary,
+            color: Colors.orange,
             onPressed: () {},
           ),
           Expanded(
             child: TextField(
+              controller: controller,
+              onChanged: (val){
+                text = val;
+              },
               decoration: InputDecoration.collapsed(
                 hintText: 'Send a message..',
               ),
@@ -384,8 +182,36 @@ class ChatBubble extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.send),
             iconSize: 25,
-            color: primary,
-            onPressed: () {},
+            color:  Colors.orange,
+            onPressed: () async{
+              if(text.isEmpty || text.replaceAll(" ", "").length == 0){
+                return;
+              }
+
+              if(_checkChatAlreadyAdded){
+                await _userInfoStore.checkChatExists(
+                    targetUID: widget.targetUID
+                ).then((value) async{
+                  print(value);
+                  if(value == false){
+                    await _userInfoStore.addChatSender(
+                        targetUID: widget.targetUID
+                    );
+                    await _userInfoStore.addChatReceiver(
+                        targetUID: widget.targetUID
+                    );
+                  }
+                });
+                _checkChatAlreadyAdded = false;
+              }
+
+              await _userInfoStore.sendMessage(
+                targetUID: widget.targetUID,
+                message: text,
+              );
+              controller.clear();
+              text = "";
+            },
           ),
         ],
       ),

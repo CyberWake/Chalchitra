@@ -3,11 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/database/firebase_provider.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 
@@ -39,6 +39,7 @@ class _ProfilePageState extends State <ProfilePage> {
   int totalFollowings = 0;
   int totalPost = 0;
   bool following = false;
+  bool isSecure = false;
   String currentUserImgUrl;
   String currentUserName;
 
@@ -59,20 +60,40 @@ class _ProfilePageState extends State <ProfilePage> {
       });
     }
   }
+  void getPrivacy()async{
+    isSecure =  await _userInfoStore.getPrivacy(uid: widget.uid);
+    if(!isSecure){
+      print("private "+ isSecure.toString());
+      setup();
+      setState(() {
+      });
+    }
+  }
+
+  void mySuper() async{
+    await getCurrentUserID();
+    await checkIfAlreadyFollowing();
+    profileUid = widget.uid;
+    print("following "+ following.toString());
+    if(following || widget.uid == _userAuth.user.uid){
+      print("called a");
+      setup();
+    }else{
+      getPrivacy();
+    }
+  }
 
   @override
   void initState() {
     super.initState();
-    getCurrentUserID();
-    checkIfAlreadyFollowing();
-    profileUid = widget.uid;
-    setup();
+    mySuper();
   }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    return Column(
+    return SingleChildScrollView(
+      child: Column(
       children: [
         Stack(
           children: [
@@ -163,7 +184,7 @@ class _ProfilePageState extends State <ProfilePage> {
           ],
         ),
       ],
-    );
+    ));
   }
 
 
@@ -288,6 +309,7 @@ class _ProfilePageState extends State <ProfilePage> {
     bool result = await _userInfoStore.followUser(
       uid: widget.uid
     );
+    mySuper();
     setState(() {
       following = result;
     });
@@ -297,7 +319,8 @@ class _ProfilePageState extends State <ProfilePage> {
     bool result = await _userInfoStore.unFollowUser(
         uid: widget.uid
     );
-
+    _videos = [];
+    getPrivacy();
     setState(() {
       following = result;
     });
@@ -475,7 +498,7 @@ class _ProfilePageState extends State <ProfilePage> {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Wrap(
             spacing: 1,
@@ -494,9 +517,9 @@ class _ProfilePageState extends State <ProfilePage> {
                   );
                 },
                 child: Container(
-                  width: size.width * 0.2,
-                  height: size.height * 0.2,
-                  margin: EdgeInsets.all(5),
+                  width: size.width * 0.22,
+                  height: size.height * 0.22,
+                  margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.black,
                     image: DecorationImage(

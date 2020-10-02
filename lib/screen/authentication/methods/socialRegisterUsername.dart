@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
@@ -21,18 +21,7 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
   double _fontOne;
   Size _size;
   bool _submitted = false;
-  checkUsernameAlreadyExists() async {
-    QuerySnapshot read = await ref
-        .where("username", isEqualTo: _userDataModel.username)
-        .get();
-    if(read.size != 0){
-      Scaffold.of(context).showSnackBar(
-          SnackBar(
-              content: Text('UserName already exists')
-          )
-      );
-    }
-  }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -56,7 +45,7 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
               ),
             ),
             SizedBox(height: _heightOne * 40,),
-            authFormFieldContainer(
+            FormFieldFormatting.formFieldContainer(
               child: TextFormField(
                 keyboardType: TextInputType.emailAddress,
                 validator: (val) => val.isEmpty ? "Username Can't be Empty"
@@ -67,7 +56,7 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
                     _formKey.currentState.validate();
                   }
                 },
-                decoration: authFormFieldFormatting(
+                decoration: FormFieldFormatting.formFieldFormatting(
                     hintText: "Enter Username",
                     fontSize: _fontOne * 15
                 ),
@@ -78,65 +67,69 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
               leftPadding: _widthOne * 20,
             ),
             SizedBox(height: _heightOne * 15,),
-            FlatButton(
-                onPressed: () async{
-                  if(_formKey.currentState.validate()){
-                    QuerySnapshot read = await ref
-                        .where("username", isEqualTo: _userDataModel.username)
-                        .get();
-                    if(read.size != 0){
-                      Scaffold.of(context).showSnackBar(
-                          SnackBar(
-                              content: Text('Username already exists')
-                          )
-                      );
-                    }
-                    else{
-                      await _userInfoStore.createUserRecord(
-                          username: _userDataModel.username
-                      ).then((result){
-                        if(!result){
-                          Scaffold.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Something went wrong try again')
-                              )
-                          );
-                        }else{
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (_) =>  MainScreenWrapper(index: 0,)
-                              )
-                          );
-                        }
-                      });
-                    }
-                  }else{
-                    setState(() {
-                      _submitted = true;
-                    });
-                  }
-                },
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                    side: BorderSide(
-                        color: Colors.orange.withOpacity(0.75),
-                        width: _widthOne * 5
-                    )
-                ),
-                splashColor: Colors.orange[100],
-                padding: EdgeInsets.symmetric(
-                    horizontal: _size.width * 0.29
-                ),
-                child: Text(
-                  "Register",
-                  style: TextStyle(
-                    color: Colors.orange.withOpacity(0.75),
-                  ),
-                ),
-            ),
+            _registerButton(),
             SizedBox(height: _heightOne * 15,),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _registerButton(){
+    return FlatButton(
+      onPressed: () async{
+        if(_formKey.currentState.validate()){
+          bool validUsername = await _userInfoStore.isUsernameNew(
+              username: _userDataModel.username
+          );
+          if(!validUsername){
+            Scaffold.of(context).showSnackBar(
+                SnackBar(
+                    content: Text('Username already exists')
+                )
+            );
+          }
+          else{
+            await _userInfoStore.createUserRecord(
+                username: _userDataModel.username
+            ).then((result){
+              if(!result){
+                Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text('Something went wrong try again')
+                    )
+                );
+              }else{
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (_) =>  MainScreenWrapper(index: 0,)
+                    )
+                );
+              }
+            });
+          }
+        }else{
+          setState(() {
+            _submitted = true;
+          });
+        }
+      },
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5.0),
+          side: BorderSide(
+              color: Colors.orange.withOpacity(0.75),
+              width: _widthOne * 5
+          )
+      ),
+      splashColor: Colors.orange[100],
+      padding: EdgeInsets.symmetric(
+          horizontal: _size.width * 0.29
+      ),
+      child: Text(
+        "Register",
+        style: TextStyle(
+          color: Colors.orange.withOpacity(0.75),
         ),
       ),
     );

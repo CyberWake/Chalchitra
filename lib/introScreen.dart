@@ -44,7 +44,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
   _getVideoBackground() {
     return AnimatedOpacity(
       opacity: _visible ? 1.0 : 0.0,
-      duration: Duration(milliseconds: 1000),
+      duration: Duration(milliseconds: 500),
       child: VideoPlayer(_controller),
     );
   }

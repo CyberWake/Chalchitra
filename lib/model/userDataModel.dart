@@ -12,6 +12,7 @@ class UserDataModel {
   String dob;
   String country;
   String gender;
+  bool private;
   Map followers;
   Map following;
 
@@ -27,6 +28,7 @@ class UserDataModel {
     this.dob,
     this.country,
     this.gender,
+    this.private = false,
     this.followers,
     this.following
   });
@@ -41,8 +43,9 @@ class UserDataModel {
         username: document.data()['username'],
         age: document.data()['age'],
         dob: document.data()['dob'],
-        country: document.data()['counrty'],
+        country: document.data()['country'],
         gender: document.data()['gender'],
+        private: document.data()['private'],
         followers: document.data()['followers'],
         following: document.data()['following']);
   }

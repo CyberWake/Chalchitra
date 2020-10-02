@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:wowtalent/model/user.dart';
-import '../auth/auth_api.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import '../auth/userAuth.dart';
 
 class UserInfoStore{
   UserDataModel _currentUserModel;
@@ -26,6 +26,7 @@ class UserInfoStore{
             "photoUrl": _userAuth.user.photoURL,
             "username": username,
             "bio": "Welcome To My Profile",
+            "private": false,
           };
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
@@ -36,6 +37,72 @@ class UserInfoStore{
       return true;
     }catch(e){
       print(e.toString());
+      return false;
+    }
+  }
+  Future<bool> updatePrivacy({String uid, bool privacy})async{
+    try {
+      _users.doc(_userAuth.user.uid).update({
+        "private": privacy,
+      });
+      return true;
+    } on Exception catch (e) {
+      print(e.toString());
+    }
+    return false;
+  }
+  Future<bool> getPrivacy({String uid})async{
+    try {
+      bool result;
+      await _users
+          .where("id", isEqualTo: uid)
+          .get()
+          .then((QuerySnapshot querySnapshot) => {
+            querySnapshot.docs.forEach((doc) {
+              if(doc.data()['id'] == uid){
+                print("privacy in database "+doc.data()["private"].toString());
+                result = doc.data()["private"];
+              }
+            })
+          });
+      print("result "+result.toString());
+      return result;
+    } on Exception catch (e) {
+      print(e.toString());
+      return false;
+    }
+
+  }
+
+  Future<bool> isUsernameNew({String username}) async{
+    print(username);
+    try{
+      QuerySnapshot read = await _users
+          .where("username", isEqualTo: username)
+          .get();
+
+      if(read.size != 0){
+        return false;
+      }else{
+        return true;
+      }
+    }catch(e){
+      return false;
+    }
+  }
+  Future<bool> emailExists({String email}) async{
+    print(email);
+    try{
+      QuerySnapshot read = await _users
+          .where("email", isEqualTo: email)
+          .get();
+
+      if(read.size != 0){
+        return true;
+      }else{
+        return false;
+      }
+    }catch(e){
       return false;
     }
   }
@@ -147,7 +214,7 @@ class UserInfoStore{
         .snapshots();
   }
 
-  Future getUserInfo({String uid}){
+  getUserInfo({String uid}){
     try{
       return _users
           .doc(uid)

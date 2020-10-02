@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "107639817018-f9f2efcgk33ba8gfk4nsj6f2k5t4ma4b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wowtalent",
+            "certificate_hash": "85cdf5ae5eff1677b49fdf4ef436c10a97f3e546"
+          }
+        },
+        {
           "client_id": "107639817018-rh8td4gsm5bbm9ch633nsugo2e2155gn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -3,11 +3,12 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/database/firebase_provider.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 
@@ -41,6 +42,7 @@ class _PlayerState extends State<Player> {
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _boolFutureCalled = false;
   bool _following = false;
+  bool _processing = false;
 
   Future<bool> setup() async{
    if(!_boolFutureCalled){
@@ -53,6 +55,7 @@ class _PlayerState extends State<Player> {
        likeCount = widget.video.likes;
        _sliderValue = await
        _userVideoStore.checkRated(videoID:widget.video.videoId);
+       print(_sliderValue);
        _isLiked = await _userVideoStore.checkLiked(
            videoID: widget.video.videoId
        );
@@ -91,7 +94,40 @@ class _PlayerState extends State<Player> {
     _controller.play();
     playing = true;
   }
-
+  Future<bool> button(bool isLiked) async {
+    if(_userAuth.user == null){
+      Navigator.pop(context);
+      Navigator.pushReplacement(context,
+        MaterialPageRoute(
+          builder: (context) {
+            return Authentication(AuthIndex.REGISTER);
+          },
+        ),
+      );
+    }else if(_isLiked == false) {
+      _isLiked = await _userVideoStore.likeVideo(
+        videoID: widget.video.videoId,
+      );
+    }else if(_isLiked == true){
+      _isLiked = await _userVideoStore.dislikeVideo(
+        videoID: widget.video.videoId,
+      );
+    }
+    return _isLiked;
+  }
+  String getChoppedUsername(String currentDiscription){
+    String choppedDiscription = '';
+    var subDisplayName = currentDiscription.split(' ');
+    for(var i in subDisplayName){
+      if(choppedDiscription.length + i.length < 36){
+        choppedDiscription += ' ' + i;
+      }
+      else{
+        return choppedDiscription + ' ...';
+      }
+    }
+    return choppedDiscription + ' ...';
+  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -107,30 +143,77 @@ class _PlayerState extends State<Player> {
               Builder(
                 builder: (context){
                   return Center(
-                    child: AspectRatio(
-                      aspectRatio: _controller.value.aspectRatio,
-                      child: _controller.value.initialized?
-                      InkWell(
-                          onTap: (){
-                            if(playing){
-                              print('paused');
-                              playing = false;
-                              _controller.pause();
-                            }else{
-                              print("played");
-                              playing = true;
-                              _controller.play();
-                            }
-                          },
-                          child: VideoPlayer(_controller)
-                      )
-                          :SpinKitCircle(
-                        color: Colors.grey,
-                        size: 60,
-                      )
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AspectRatio(
+                          aspectRatio: _controller.value.aspectRatio,
+                          child: _controller.value.initialized?
+                          InkWell(
+                              onTap: (){
+                                if(playing){
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration: Duration(milliseconds: 500),
+                                        content: Text('Audio Muted'),
+                                      )
+                                  );
+                                  playing = false;
+                                  _controller.setVolume(0.0);
+                                }else{
+                                  Scaffold.of(context).showSnackBar(
+                                      SnackBar(
+                                        duration: Duration(milliseconds: 500),
+                                        content: Text('Audio Unmuted'),
+                                      )
+                                  );
+                                  print("unmuted");
+                                  playing = true;
+                                  _controller.setVolume(1.0);
+                                }
+                              },
+                              child: VideoPlayer(_controller)
+                          )
+                              :SpinKitCircle(
+                            color: Colors.grey,
+                            size: 60,
+                          )
+                        ),
+                        VideoProgressIndicator(
+                          _controller,
+                          allowScrubbing: true,
+                          colors: VideoProgressColors(playedColor: Colors.orange,bufferedColor: Colors.grey,backgroundColor: Colors.white),
+                        ),
+                      ],
                     ),
                   );
                 },
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.only(right: 15.0),
+                        child: FloatingActionButton(
+                          onPressed: () {
+                            setState(() {
+                              _controller.value.isPlaying
+                                  ? _controller.pause()
+                                  : _controller.play();
+                            });
+                          },
+                          child: Icon(
+                            _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.15,),
+                ],
               ),
               Builder(
                 builder: (context) {
@@ -162,22 +245,37 @@ class _PlayerState extends State<Player> {
                               GestureDetector(
                                 onTap:() async{
                                   if(_userAuth.user == null){
+                                    Navigator.pop(context);
                                     Navigator.pushReplacement(context,
                                       MaterialPageRoute(
                                         builder: (context) {
-                                          return Authentication();
+                                          return Authentication(AuthIndex.REGISTER);
                                         },
                                       ),
                                     );
                                   }else{
-                                    _following = await _userInfoStore.followUser(
-                                      uid: widget.video.uploaderUid
-                                    );
-                                    setState(() {});
+                                    try {
+                                      print(_following);
+                                      _following = await _userInfoStore.followUser(
+                                        uid: widget.video.uploaderUid
+                                      );
+                                      print(_following);
+                                      print('pressed');
+                                      setState(() {
+                                      });
+                                    } on Exception catch (e) {
+                                      print(e.toString());
+                                    }
                                   }
                                 },
                                 child: Text(
-                                  _userAuth.user.uid == widget.video.uploaderUid?' ':!_following ?' Follow' : " Following",
+                                  _userAuth.user == null
+                                      ? "Follow"
+                                        :_userAuth.user.uid == widget.video.uploaderUid
+                                          ?' '
+                                          :!_following
+                                            ?' Follow'
+                                            : " Following",
                                   style: TextStyle(
                                       color: Colors.white
                                   ),
@@ -187,20 +285,25 @@ class _PlayerState extends State<Player> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.only(left: 23,top: 5),
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 23, vertical: 4
+                          ),
+                          child: Text(
+                            widget.video.videoName != null
+                                ? widget.video.videoName.length > 37
+                                  ? "Title" + ' \u2022 ' + getChoppedUsername(widget.video.videoName)
+                                  :"Title" + ' \u2022 '+ widget.video.videoName + ' \u2022 '
+                                : "Title" + ' \u2022 ',
+                            style:TextStyle(color: Colors.white),
+                          )
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(left: 23),
                           child: Row(
                             children: [
                               Icon(Icons.equalizer,color: Colors.white,),
                               Text(
-                                '  ${widget.video.videoName} \u2022',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                ),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                              Text(
-                                widget.video.category?? "Category",
+                                ' \u2022 ' + widget.video.category?? "Category",
                                 style:
                                 TextStyle(
                                     color: Colors.white
@@ -220,33 +323,48 @@ class _PlayerState extends State<Player> {
                                 children: [
                                   InkWell(
                                       child: SvgPicture.asset(
-                                        _isLiked ?
-                                        "assets/images/love_icon.svg":
-                                        "assets/images/loved_icon.svg",
+                                        _isLiked
+                                            ?"assets/images/loved_icon.svg"
+                                            :"assets/images/love_icon.svg",
                                         color: Colors.white,
                                         width: 20,
                                       ),
                                       onTap: () async {
                                         if(_userAuth.user == null){
+                                          Navigator.pop(context);
                                           Navigator.pushReplacement(context,
                                             MaterialPageRoute(
                                               builder: (context) {
-                                                return Authentication();
+                                                return Authentication(AuthIndex.REGISTER);
                                               },
                                             ),
                                           );
                                         }else{
-                                          if(!_isLiked){
-                                            _isLiked = await _userVideoStore.likeVideo(
-                                              videoID: widget.video.videoId,
-                                            );
-                                            likeCount++;
+                                          if (!_processing) {
+                                            _processing = true;
+                                            if(!_isLiked){
 
-                                          }else{
-                                            _isLiked = !await _userVideoStore.dislikeVideo(
-                                              videoID: widget.video.videoId,
-                                            );
-                                            likeCount--;
+                                              _isLiked = await _userVideoStore.likeVideo(
+                                                videoID: widget.video.videoId,
+                                              );
+                                              if(_isLiked){
+                                                likeCount += 1;
+                                                print("liked");
+                                              }
+                                            }else{
+                                              await _userVideoStore.dislikeVideo(
+                                                videoID: widget.video.videoId,
+                                              ).then((value){
+                                                if(value){
+                                                  _isLiked = false;
+                                                }
+                                              });
+                                              if(!_isLiked){
+                                                likeCount -= 1;
+                                                print("disliked");
+                                              }
+                                            }
+                                            _processing = false;
                                           }
                                           setState(() {});
                                         }
@@ -270,10 +388,11 @@ class _PlayerState extends State<Player> {
                                   IconButton(
                                     onPressed: (){
                                       if(_userAuth.user == null){
+                                        Navigator.pop(context);
                                         Navigator.pushReplacement(context,
                                           MaterialPageRoute(
                                             builder: (context) {
-                                              return Authentication();
+                                              return Authentication(AuthIndex.REGISTER);
                                             },
                                           ),
                                         );
@@ -308,47 +427,58 @@ class _PlayerState extends State<Player> {
                               SizedBox(width: _widthOne * 30,),
                               SizedBox(
                                 width: _widthOne * 650,
-                                child: Slider(
-                                  value: _sliderValue,
-                                  min: 0,
-                                  max: 5,
-                                  onChangeEnd: (val) async{
-                                    if(_userAuth.user == null){
-                                      Navigator.pushReplacement(context,
-                                        MaterialPageRoute(
-                                          builder: (context) {
-                                            return Authentication();
-                                          },
-                                        ),
-                                      );
-                                    }
-                                    else{
-                                      bool success = await _userVideoStore
-                                          .rateVideo(
-                                          videoID:widget.video.videoId,
-                                          rating: _sliderValue
-                                      );
-                                      if(!success){
-                                        setState(() {
-                                          _sliderValue = 0;
-                                        });
+                                child: SliderTheme(
+                                  data: SliderTheme.of(context).copyWith(
+                                    trackShape: RectangularSliderTrackShape(),
+                                    trackHeight: 2.0,
+                                    thumbColor: Colors.orange[600],
+                                    thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                                    overlayColor: Colors.red.withAlpha(32),
+                                    overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
+                                  ),
+                                  child: Slider(
+                                    value: _sliderValue,
+                                    min: 0,
+                                    max: 5,
+                                    onChangeEnd: (val) async{
+                                      if(_userAuth.user == null){
+                                        Navigator.pop(context);
+                                        Navigator.pushReplacement(context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return Authentication(AuthIndex.REGISTER);
+                                            },
+                                          ),
+                                        );
                                       }
-                                    }
-                                  },
-                                  onChanged: (val) async {
-                                   setState(() {
-                                     _sliderValue = val;
-                                   });
-                                  },
-                                  inactiveColor: Colors.white,
-                                  activeColor: Colors.grey,
+                                      else{
+                                        bool success = await _userVideoStore
+                                            .rateVideo(
+                                            videoID:widget.video.videoId,
+                                            rating: _sliderValue
+                                        );
+                                        if(!success){
+                                          setState(() {
+                                            _sliderValue = 0;
+                                          });
+                                        }
+                                      }
+                                    },
+                                    onChanged: (val) async {
+                                     setState(() {
+                                       _sliderValue = val;
+                                     });
+                                    },
+                                    inactiveColor: Colors.white,
+                                    activeColor: Colors.grey,
+                                  ),
                                 ),
                               ),
                             ],
                           ),
                         ),
                         SizedBox(
-                          height: 20,
+                          height: 35,
                         )
                       ],
                     );

@@ -1,13 +1,12 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 
 class MessageSearchResult extends StatelessWidget {
   final UserDataModel eachUser;
-  MessageSearchResult(this.eachUser);
+  MessageSearchResult(this.eachUser) : assert(eachUser != null);
 
   @override
   Widget build(BuildContext context) {

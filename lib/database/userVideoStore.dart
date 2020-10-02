@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import '../auth/auth_api.dart';
-import '../model/video_info.dart';
+import 'package:flutter/services.dart';
+import '../auth/userAuth.dart';
+import '../model/videoInfoModel.dart';
 
 class UserVideoStore {
   static final CollectionReference _feedVideos =
@@ -19,13 +19,42 @@ class UserVideoStore {
   static final CollectionReference _videoRating =
   FirebaseFirestore.instance.collection('ratings');
 
-  static final UserAuth _userAuth = UserAuth();
+  static final CollectionReference _videoDrafts =
+  FirebaseFirestore.instance.collection('videoDrafts');
 
+  static final UserAuth _userAuth = UserAuth();
 
   static saveVideo(VideoInfo video) async {
     try{
       // Get Current User
       String uid = _userAuth.user.uid;
+      // Map of video data to be added ot firestore
+      Map<String, dynamic> videoData = {
+        'videoUrl': video.videoUrl,
+        'thumbUrl': video.thumbUrl,
+        'coverUrl': video.coverUrl,
+        'aspectRatio': video.aspectRatio,
+        'uploadedAt': video.uploadedAt,
+        'videoName': video.videoName,
+        'videoHashtag': video.videoHashtag,
+        'category': video.category,
+        'uploaderUid': video.uploaderUid,
+        'likes': video.likes,
+        'views': video.views,
+        'comments': video.comments,
+        'rating': video.rating,
+      };
+      await _allVideos
+          .doc()
+          .set(videoData);
+
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
+  static saveVideoDraft(VideoInfo video) async {
+    try{
 
       // Map of video data to be added ot firestore
       Map<String, dynamic> videoData = {
@@ -44,14 +73,7 @@ class UserVideoStore {
         'rating': video.rating,
       };
 
-
-      await _feedVideos
-          .doc(uid)
-          .collection('videos')
-          .doc()
-          .set(videoData);
-
-      await _allVideos
+      await _videoDrafts
           .doc()
           .set(videoData);
 
@@ -59,6 +81,28 @@ class UserVideoStore {
       print(e.toString());
     }
   }
+  static deleteVideoDraft(VideoInfo video) async {
+    try{
+      await _videoDrafts
+          .doc(video.videoId)
+          .delete();
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
+  Future getDraftVideos({String uid}) async {
+    try{
+      QuerySnapshot qs = await _videoDrafts
+          .where('uploaderUid', isEqualTo: uid)
+          .get();
+      return mapQueryToVideoInfo(qs);
+    }catch(e){
+      print(e.toString());
+      return false;
+    }
+  }
+
 
   static listenToVideos(callback,String uid) async {
     print(uid+' firestore');
@@ -86,6 +130,16 @@ class UserVideoStore {
     }catch(e){
       print(e.toString());
       return false;
+    }
+  }
+
+  Future<VideoInfo> getSharedLinkVideo({String videoId})async{
+    try{
+      DocumentSnapshot ds = await _allVideos.doc(videoId).get();
+      return mapDocumentToVideoInfo(ds);
+    }catch(e){
+      print(e.toString());
+      return null;
     }
   }
 
@@ -140,6 +194,7 @@ class UserVideoStore {
       return qs.docs.map((DocumentSnapshot ds) {
         return VideoInfo(
           videoUrl: ds.data()['videoUrl'],
+          videoHashtag: ds.data()['videoHashtag'],
           thumbUrl: ds.data()['thumbUrl'],
           coverUrl: ds.data()['coverUrl'],
           aspectRatio: ds.data()['aspectRatio'],
@@ -152,6 +207,27 @@ class UserVideoStore {
           videoId: ds.id
         );
       }).toList();
+    }catch(e){
+      print(e.toString());
+    }
+  }
+
+  static mapDocumentToVideoInfo(DocumentSnapshot ds) {
+    try{
+      return VideoInfo(
+          videoUrl: ds.data()['videoUrl'],
+          videoHashtag: ds.data()['videoHashtag'],
+          thumbUrl: ds.data()['thumbUrl'],
+          coverUrl: ds.data()['coverUrl'],
+          aspectRatio: ds.data()['aspectRatio'],
+          videoName: ds.data()['videoName'],
+          category: ds.data()['category'],
+          uploadedAt: ds.data()['uploadedAt'],
+          uploaderUid: ds.data()['uploaderUid'],
+          likes: ds.data()['likes'],
+          comments: ds.data()['comments'],
+          videoId: ds.id
+      );
     }catch(e){
       print(e.toString());
     }
@@ -171,6 +247,22 @@ class UserVideoStore {
       return false;
     }
   }
+
+  Future getLikeCount({String videoID}) async{
+    try{
+      await _allVideos.doc(videoID).update(
+          {"likes" : FieldValue.increment(1)}
+      );
+      await _videoLikes.doc(_userAuth.user.uid)
+          .collection("likedVideos").doc(videoID).set({
+        "id" : videoID
+      });
+      return true;
+    }catch(e){
+      return false;
+    }
+  }
+
 
   Future dislikeVideo({String videoID}) async{
     try{
@@ -210,6 +302,7 @@ class UserVideoStore {
         return 0.0;
       }
       else{
+        print(res.docs[0].data()['rating']);
         return res.docs[0].data()['rating'];
       }
     }catch(e){

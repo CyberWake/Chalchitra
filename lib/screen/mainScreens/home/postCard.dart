@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:wowtalent/database/firebase_provider.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/menuConstants.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 
@@ -45,6 +47,7 @@ class _PostCardState extends State<PostCard> {
   UserDataModel _user = UserDataModel();
   UserInfoStore _userInfoStore = UserInfoStore();
   bool _isLiked;
+  int likeCount;
   bool _processing = false;
 
   void _button(Offset offset) async{
@@ -58,63 +61,89 @@ class _PostCardState extends State<PostCard> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Share'),
-                    IconButton(
-                        icon: Icon(Icons.share,size: 18,color: Colors.blueAccent),
-                        onPressed: null
-                    ),
-                  ],
+                SizedBox(height: 5,),
+                InkWell(
+                  onTap: () => choiceAction(Menu.Share),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(Menu.Share),
+                      Icon(Icons.share,size: 18,color: Colors.blueAccent),
+                    ],
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Download'),
-                    IconButton(
-                        icon: Icon(Icons.arrow_downward,size: 20,color: Colors.green),
-                        onPressed: null
-                    ),
-                  ],
+                SizedBox(height: 10,),
+                InkWell(
+                  onTap: () => choiceAction(Menu.Download),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(Menu.Download),
+                      Icon(Icons.arrow_downward,size: 20,color: Colors.green),
+                    ],
+                  ),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text('Forward'),
-                    Transform(
-                      alignment: Alignment.center,
-                      transform: Matrix4.rotationY(math.pi),
-                      child: IconButton(
-                          icon: Icon(Icons.reply,size: 20,color: Colors.orangeAccent,),
-                          onPressed: null
-                      ),
-                    )
-                  ],
+                SizedBox(height: 10,),
+                InkWell(
+                  onTap: () => choiceAction(Menu.Forward),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(Menu.Forward),
+                      Transform(
+                        alignment: Alignment.center,
+                        transform: Matrix4.rotationY(math.pi),
+                        child: Icon(Icons.reply,size: 20,color: Colors.orangeAccent,),
+                      )
+                    ],
+                  ),
                 ),
+                SizedBox(height: 5,),
               ],
             ),
           )
         ]
     );
   }
+  void choiceAction(String choice) async {
+    print('called');
+    if(choice == Menu.Share){
+      final DynamicLinkParameters parameters = DynamicLinkParameters(
+        uriPrefix: 'https://wowtalent.page.link/view-video/'+'${widget.id}',
+        link: Uri.parse('https://wowtalent.com/player?videoId=hPscNgwrLhZhC5TlJYiK'),
+        androidParameters: AndroidParameters(
+          packageName: 'com.example.wowtalant',
+          minimumVersion: 125,
+        ),
+        iosParameters: IosParameters(
+          bundleId: 'com.example.wowtalant',
+          minimumVersion: '1.0.0',
+          appStoreId: '123456789',
+        ),
+      );
+      final Uri dynamicUrl = await parameters.buildUrl();
+      print(dynamicUrl);
 
+    }else if(choice == Menu.Download){
+      print('Download');
+    }else if(choice == Menu.Forward){
+      print('Forward');
+    }
+  }
   void setup() async{
+    DocumentSnapshot user = await _userInfoStore.getUserInfo(
+        uid: widget.video.data()['uploaderUid']
+    );
+    _user =  UserDataModel.fromDocument(user);
     _sliderValue = await
     _userVideoStore.checkRated(videoID:widget.id);
     _isLiked = await _userVideoStore.checkLiked(
       videoID: widget.id
     );
-
+    likeCount = widget.likeCount;
     if(this.mounted){
       setState(() {});
     }
-  }
-  getUserInfo() async {
-    DocumentSnapshot user = await _userInfoStore.getUserInfo(
-        uid: widget.video.data()['uploaderUid']
-    );
-    _user =  UserDataModel.fromDocument(user);
   }
 
 
@@ -123,31 +152,8 @@ class _PostCardState extends State<PostCard> {
   void initState() {
     super.initState();
     setup();
-    getUserInfo();
   }
 
-  void choiceAction(String choice){
-    if(choice == Constants.Settings){
-      print('Settings');
-    }else if(choice == Constants.Subscribe){
-      print('Subscribe');
-    }else if(choice == Constants.SignOut){
-      print('SignOut');
-    }
-  }
-  showPopUp(BuildContext context){
-    return PopupMenuButton<String>(
-      onSelected: choiceAction,
-      itemBuilder: (BuildContext context){
-        return Constants.choices.map((String choice){
-          return PopupMenuItem<String>(
-            value: choice,
-            child: Text(choice),
-          );
-        }).toList();
-      },
-    );
-  }
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -155,7 +161,6 @@ class _PostCardState extends State<PostCard> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
-
     return Container(
       height: _size.height * 0.4,
       width: _size.width * 0.9,
@@ -266,8 +271,9 @@ class _PostCardState extends State<PostCard> {
                       topRight: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
                     ),
+                    color: Colors.black12,
                     image: DecorationImage(
-                      fit: BoxFit.fitWidth,
+                      fit: BoxFit.cover,
                       image: NetworkImage(
                         widget.thumbnail
                       )
@@ -287,56 +293,48 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      !_isLiked ? InkWell(
-                        child: SvgPicture.asset(
-                          "assets/images/love_icon.svg",
-                          width: 20,
-                        ),
-                        onTap: () async{
-                         if (!_processing) {
-                           setState(() {
-                             _processing = true;
-                           });
-                           try {
-                             _isLiked = await _userVideoStore.likeVideo(
-                                videoID: widget.id,
-                              );
-                           } on Exception catch (e) {
-                             print(e.toString());
-                           }
-                           _processing = false;
-                           setState(() {
-                           });
-                         }
-                         setState(() {});
-                        },
-                      ) : InkWell(
-                        child: SvgPicture.asset(
-                          "assets/images/loved_icon.svg",
-                          width: 20,
-                        ),
-                        onTap: () async{
-                          if (!_processing) {
-                            _processing = true;
-                            setState(() {
-                            });
-                            try {
-                              _isLiked = await _userVideoStore.dislikeVideo(
-                                videoID: widget.id,
-                              );
-                            } on Exception catch (e) {
-                              print(e.toString());
-                            }
-                            _processing = false;
-                            setState(() {
-                            });
-                          }
-                          setState(() {});
-                        },
+                      InkWell(
+                        child: !_isLiked ?
+                          SvgPicture.asset(
+                            "assets/images/love_icon.svg",
+                            width: 20,
+                          )
+                          :SvgPicture.asset(
+                            "assets/images/loved_icon.svg",
+                            width: 20,
+                          ),
+                          onTap: () async{
+                              if (!_processing) {
+                                _processing = true;
+                                if(!_isLiked){
+
+                                  _isLiked = await _userVideoStore.likeVideo(
+                                    videoID: widget.id,
+                                  );
+                                  if(_isLiked){
+                                    likeCount += 1;
+                                  }
+                                }else{
+                                  await _userVideoStore.dislikeVideo(
+                                    videoID: widget.id,
+                                  ).then((value){
+                                    if(value){
+                                      _isLiked = false;
+                                    }
+                                  });
+                                  if(!_isLiked){
+                                    likeCount -= 1;
+                                  }
+                                }
+                                _processing = false;
+                              }
+                              setState(() {});
+
+                            },
                       ),
                       SizedBox(width: _widthOne * 20,),
                       Text(
-                        widget.likeCount.toString(),
+                        likeCount.toString(),
                         style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: _fontOne * 14,
@@ -379,28 +377,39 @@ class _PostCardState extends State<PostCard> {
                   ),
                   SizedBox(width: _widthOne * 50,),
                   Expanded(
-                    child: Slider(
-                      value: _sliderValue,
-                      min: 0,
-                      max: 5,
-                      onChangeEnd: (val) async {
-                        _sliderValue = val;
-                        bool success =
-                            await _userVideoStore.rateVideo(videoID:widget.id,rating: _sliderValue);
-                        if(success){
-                          print('done rating');
-                        }
-                        else{
-                          print('failure');
-                        }
-                        },
-                      onChanged: (val) {
-                        setState(() {
+                    child: SliderTheme(
+                      data: SliderTheme.of(context).copyWith(
+                        trackShape: RectangularSliderTrackShape(),
+                        trackHeight: 4.0,
+                        thumbColor: Colors.orange[600],
+                        thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
+                        overlayColor: Colors.red.withAlpha(32),
+                        overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
+                      ),
+                      child: Slider(
+                        value: _sliderValue,
+                        min: 0,
+                        max: 5,
+                        divisions: 5,
+                        onChangeEnd: (val) async {
                           _sliderValue = val;
-                        });
-                      },
-                      inactiveColor: Colors.orange[100],
-                      activeColor: Colors.orange[400],
+                          bool success =
+                              await _userVideoStore.rateVideo(videoID:widget.id,rating: _sliderValue);
+                          if(success){
+                            print('done rating');
+                          }
+                          else{
+                            print('failure');
+                          }
+                          },
+                        onChanged: (val) {
+                          setState(() {
+                            _sliderValue = val;
+                          });
+                        },
+                        inactiveColor: Colors.orange[100],
+                        activeColor: Colors.orange[400],
+                      ),
                     ),
                   ),
                 ],
@@ -411,16 +420,4 @@ class _PostCardState extends State<PostCard> {
       ),
     );
   }
-}
-
-class Constants{
-  static const String Subscribe = 'Subscribe';
-  static const String Settings = 'Settings';
-  static const String SignOut = 'Sign out';
-
-  static const List<String> choices = <String>[
-    Subscribe,
-    Settings,
-    SignOut
-  ];
 }

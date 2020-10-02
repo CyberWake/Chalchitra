@@ -1,19 +1,23 @@
+import 'package:animated_background/animated_background.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:popup_menu/popup_menu.dart';
-import 'package:wowtalent/auth/auth_api.dart';
-import 'package:wowtalent/database/firebase_provider.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
-import 'package:wowtalent/model/video_info.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
+import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
+import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> {
+class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   List<VideoInfo> _videos = <VideoInfo>[];
   double _widthOne;
@@ -23,6 +27,24 @@ class _HomeState extends State<Home> {
   PopupMenu menu;
   GlobalKey btnKey = GlobalKey();
   UserAuth _userAuth = UserAuth();
+
+  ParticleOptions particleOptions = ParticleOptions(
+    image: Image.asset('assets/images/star_stroke.png'),
+    baseColor: Colors.blue,
+    spawnOpacity: 0.0,
+    opacityChangeRate: 0.25,
+    minOpacity: 0.1,
+    maxOpacity: 0.4,
+    spawnMinSpeed: 30.0,
+    spawnMaxSpeed: 70.0,
+    spawnMinRadius: 7.0,
+    spawnMaxRadius: 15.0,
+    particleCount: 40,
+  );
+
+  var particlePaint = Paint()
+    ..style = PaintingStyle.stroke
+    ..strokeWidth = 1.0;
 
   @override
   void initState() {
@@ -48,20 +70,69 @@ class _HomeState extends State<Home> {
           );
         }else{
           if(data.data.documents.length == 0){
-            return Center(
-              child: Text(
-                "Start following creators to see videos",
-                style: TextStyle(
-                  color: Colors.orange,
-                  fontSize: 16,
+            return AnimatedBackground(
+              behaviour: RandomParticleBehaviour(
+                options: particleOptions,
+                paint: particlePaint,
+              ),
+              vsync: this,
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 35),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text.rich(
+                          TextSpan(
+                              text: '',
+                              children: <InlineSpan>[
+                                TextSpan(
+                                  text: 'Follow',
+                                  style: TextStyle(
+                                      fontSize: 56,
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                                TextSpan(
+                                  text: '  Creators to see content',
+                                  style: TextStyle(
+                                      fontSize: 38,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ]
+                          )
+                      ),
+                      SizedBox(height: 20),
+                      FlatButton(
+                        color: Colors.orange,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)
+                        ),
+                        onPressed: (){
+                          Navigator.pushReplacement(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (_) => MainScreenWrapper(index: 1,)
+                              )
+                          );
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal:2),
+                          child: Text('Explore Content',style: TextStyle(fontSize: 18),),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ),
             );
           }else{
-            return StreamBuilder(
-                stream: UserVideoStore().getFollowingVideos(
+            return FutureBuilder(
+                future: UserVideoStore().getFollowingVideos(
                   followings: data.data.documents
-                ),
+                ).first,
                 builder: (context, snapshot) {
                   if (!snapshot.hasData) {
                     return Center(
@@ -111,7 +182,9 @@ class _HomeState extends State<Home> {
                                         uploader: snap.data.data()['username'],
                                         likeCount: snapshot.data.documents[index].data()['likes'],
                                         commentCount: snapshot.data.documents[index].data()['comments'],
-                                        uploadTime: formatDateTime(snapshot.data.documents[index].data()['uploadedAt']),
+                                        uploadTime: formatDateTime(
+                                          millisecondsSinceEpoch: snapshot.data.documents[index].data()['uploadedAt']
+                                        ),
                                         viewCount: snapshot.data.documents[index].data()['views'],
                                         rating: snapshot.data.documents[index].data()['rating']
                                     ),
@@ -129,36 +202,6 @@ class _HomeState extends State<Home> {
         }
       }
     );
-  }
-
-  String formatDateTime(int millisecondsSinceEpoch){
-    DateTime uploadTimeStamp =
-    DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
-    String sentAt = uploadTimeStamp.toString();
-    Duration difference = DateTime.now().difference(DateTime.parse(sentAt));
-
-    if(difference.inDays > 0){
-      if(difference.inDays > 365){
-        sentAt = (difference.inDays / 365).floor().toString() + ' years ago';
-      }
-      if(difference.inDays > 30 && difference.inDays < 365){
-        sentAt = (difference.inDays / 30).floor().toString() + ' months ago';
-      }
-      if(difference.inDays >=1 && difference.inDays < 305){
-        sentAt = difference.inDays.floor().toString() + ' days ago';
-      }
-    }
-    else if(difference.inHours > 0){
-      sentAt = difference.inHours.toString() + ' hours ago';
-    }
-    else if(difference.inMinutes > 0){
-      sentAt = difference.inMinutes.toString() + ' mins ago';
-    }
-    else{
-      sentAt = difference.inSeconds.toString() + ' secs';
-    }
-
-    return sentAt;
   }
 
   void getUsersDetails() async {

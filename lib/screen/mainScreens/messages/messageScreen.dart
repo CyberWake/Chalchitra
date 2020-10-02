@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/database/firestore_api.dart';
-import 'package:wowtalent/model/user.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageSearch.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
@@ -263,10 +264,11 @@ class _MessageState extends State<Message> {
                                    Text(
                                      snapshot.hasData ?
                                      formatDateTime(
-                                         snapshot
-                                             .data
-                                             .documents[0]
-                                             .data()['timestamp']
+                                        millisecondsSinceEpoch:
+                                        snapshot
+                                            .data
+                                            .documents[0]
+                                            .data()['timestamp']
                                      ) : ".....",
                                      style: TextStyle(
                                          color: Colors.grey,
@@ -304,35 +306,5 @@ class _MessageState extends State<Message> {
       }
     }
     setState(() {});
-  }
-
-  String formatDateTime(int millisecondsSinceEpoch){
-    DateTime uploadTimeStamp =
-    DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
-    String sentAt = uploadTimeStamp.toString();
-    Duration difference = DateTime.now().difference(DateTime.parse(sentAt));
-
-    if(difference.inDays > 0){
-      if(difference.inDays > 365){
-        sentAt = (difference.inDays / 365).floor().toString() + ' years';
-      }
-      if(difference.inDays > 30 && difference.inDays < 365){
-        sentAt = (difference.inDays / 30).floor().toString() + ' months';
-      }
-      if(difference.inDays >=1 && difference.inDays < 305){
-        sentAt = difference.inDays.floor().toString() + ' days';
-      }
-    }
-    else if(difference.inHours > 0){
-      sentAt = difference.inHours.toString() + ' hours';
-    }
-    else if(difference.inMinutes > 0){
-      sentAt = difference.inMinutes.toString() + ' mins';
-    }
-    else{
-      sentAt = difference.inSeconds.toString() + ' secs';
-    }
-
-    return sentAt;
   }
 }
