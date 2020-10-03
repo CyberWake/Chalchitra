@@ -4,6 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 class CommentsScreen extends StatefulWidget {
@@ -55,7 +56,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
       body: Container(
           padding: EdgeInsets.only(top: _heightOne * 20),
           height: _size.height,
-          color: Colors.orange,
+          color: AppTheme.primaryColor,
           child: Column(
             children: [
               Container(
@@ -71,7 +72,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     IconButton(
                       icon: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.white,
+                        color: AppTheme.backgroundColor
                       ),
                       onPressed: () => Navigator.pop(context),
                     ),
@@ -79,7 +80,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         child: Text(
                           "Comments",
                           style: TextStyle(
-                            color: Colors.white,
+                            color: AppTheme.backgroundColor,
                             fontSize: _fontOne * 25,
                             fontWeight: FontWeight.bold,
                           ),
@@ -92,7 +93,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                   child: Container(
                       padding: EdgeInsets.only(top: _heightOne * 20),
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppTheme.backgroundColor,
                           borderRadius: BorderRadius.only(
                             topRight: Radius.circular(25),
                             topLeft: Radius.circular(25),
@@ -105,7 +106,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                 padding: EdgeInsets.zero,
                 margin: EdgeInsets.only(bottom: 0),
                 height: 70,
-                color: Colors.white,
+                color: AppTheme.backgroundColor,
                 child: Row(
                   children: <Widget>[
                     SizedBox(width: _widthOne * 15,),
@@ -121,11 +122,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     Expanded(
                       child: TextField(
                         controller: controller,
+                        style: TextStyle(color: AppTheme.pureWhiteColor),
                         onChanged: (val){
                           _comment = val;
                         },
                         decoration: InputDecoration.collapsed(
                           hintText: 'Post a comment..',
+                          hintStyle: TextStyle(color: AppTheme.pureWhiteColor),
                         ),
                         textCapitalization: TextCapitalization.sentences,
                       ),
@@ -133,7 +136,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     IconButton(
                       icon: Icon(Icons.send),
                       iconSize: 25,
-                      color:  Colors.orange,
+                      color: AppTheme.primaryColor,
                       onPressed: () async{
                         if(_comment.isEmpty || _comment.replaceAll(" ", "").length == 0){
                           return;
@@ -235,7 +238,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       Text(
                         comment,
                         style: TextStyle(
-                          color: Colors.black54,
+                          color: AppTheme.pureWhiteColor,
                           fontSize: _fontOne * 13,
                           fontWeight: FontWeight.w500,
                         ),

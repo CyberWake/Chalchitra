@@ -39,7 +39,6 @@ class _CategoryState extends State<Category> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Colors.transparent,
         centerTitle: true,
         title: Text(widget.categoryName),
         actions: [
@@ -61,42 +60,45 @@ class _CategoryState extends State<Category> {
           SizedBox(width: _widthOne * 100,)
         ],
       ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: StaggeredGridView.countBuilder(
-              crossAxisCount: 3,
-              itemCount: _videos.length,
-              itemBuilder: (BuildContext context, int index){
-                dynamic video = _videos[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) {
-                        return Player(
-                          video: video,
-                        );
-                      },
-                    ),);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(video.thumbUrl),
-                            fit: BoxFit.cover
-                        )
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: StaggeredGridView.countBuilder(
+                crossAxisCount: 3,
+                itemCount: _videos.length,
+                itemBuilder: (BuildContext context, int index){
+                  dynamic video = _videos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(context, MaterialPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),);
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          image: DecorationImage(
+                              image: NetworkImage(video.thumbUrl),
+                              fit: BoxFit.cover
+                          )
+                      ),
                     ),
-                  ),
-                );
-              },
-              staggeredTileBuilder: (int index) =>
-                  StaggeredTile.count(1, 1/_videos[index].aspectRatio),
-              mainAxisSpacing: 5.0,
-              crossAxisSpacing: 5.0,
+                  );
+                },
+                staggeredTileBuilder: (int index) =>
+                    StaggeredTile.count(1, 1/_videos[index].aspectRatio),
+                mainAxisSpacing: 5.0,
+                crossAxisSpacing: 5.0,
+              ),
             ),
-          ),
-        ]
+          ]
+        ),
       ),
     );
   }

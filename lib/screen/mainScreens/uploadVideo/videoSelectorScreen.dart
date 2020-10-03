@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/videoPreviewScreen.dart';
 
 
@@ -73,6 +74,7 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       key: _scaffoldGlobalKey,
         body: Stack(
           children: [
@@ -86,11 +88,11 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
                 child: Container(
                   padding: EdgeInsets.all(50),
                   decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: AppTheme.elevationColor,
                       borderRadius: BorderRadius.circular(25),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.purple.withOpacity(0.15),
+                          color: Colors.white.withOpacity(0.15),
                           blurRadius: 20,
                           offset: Offset(0, 10),
                         )
@@ -101,7 +103,7 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
                     children: [
                       Text(
                         "Showcase your Talent",
-                        style: TextStyle(fontWeight: FontWeight.bold),
+                        style: TextStyle(fontWeight: FontWeight.bold,color: AppTheme.pureWhiteColor),
                       ),
                       SizedBox(
                         height: 10.0,
@@ -117,9 +119,9 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
                               },
                               shape: RoundedRectangleBorder(
                                   side:
-                                  BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                  BorderSide(color: AppTheme.primaryColor,),
                                   borderRadius: BorderRadius.circular(5)),
-                              child: Text("Turn on Camera")
+                              child: Text("Turn on Camera",style: TextStyle(color: AppTheme.pureWhiteColor,))
                           ),
                           FlatButton(
                               onPressed: () {
@@ -127,9 +129,9 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
                               },
                               shape: RoundedRectangleBorder(
                                   side:
-                                  BorderSide(color: Colors.orange.withOpacity(0.5)),
+                                  BorderSide(color: AppTheme.primaryColor,),
                                   borderRadius: BorderRadius.circular(5)),
-                              child: Text("Pick from Gallery")
+                              child: Text("Pick from Gallery",style: TextStyle(color: AppTheme.pureWhiteColor,))
                           ),
                         ],
                       ),
@@ -153,9 +155,9 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
                           },
                           shape: RoundedRectangleBorder(
                               side:
-                              BorderSide(color: Colors.orange.withOpacity(0.5)),
+                              BorderSide(color: AppTheme.primaryColor,),
                               borderRadius: BorderRadius.circular(5)),
-                          child: Text("Next")
+                          child: Text("Next",style: TextStyle(color: AppTheme.pureWhiteColor,))
                       ): SizedBox()
                     ],
                   ),

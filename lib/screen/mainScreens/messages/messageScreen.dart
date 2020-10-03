@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageSearch.dart';
@@ -50,7 +51,7 @@ class _MessageState extends State<Message> {
       body: SingleChildScrollView(
         child: Container(
           height: _size.height,
-          color: Colors.orange,
+          color: AppTheme.primaryColor,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
@@ -62,7 +63,7 @@ class _MessageState extends State<Message> {
                   Text(
                     "Messages",
                     style: TextStyle(
-                      color: Colors.white,
+                      color: AppTheme.backgroundColor,
                       fontSize: _fontOne * 25,
                       fontWeight: FontWeight.bold,
                     ),
@@ -102,7 +103,7 @@ class _MessageState extends State<Message> {
                     _isSearchActive ? IconButton(
                       icon: Icon(
                         Icons.cancel,
-                        color: Colors.orange,
+                        color: AppTheme.primaryColor,
                       ),
                       onPressed: (){
                         _updateIsSearch(false);
@@ -115,7 +116,7 @@ class _MessageState extends State<Message> {
                 child: Container(
                     padding: EdgeInsets.only(top: _heightOne * 20),
                     decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: AppTheme.backgroundColor,
                         borderRadius: BorderRadius.only(
                           topRight: Radius.circular(25),
                           topLeft: Radius.circular(25),
@@ -139,7 +140,7 @@ class _MessageState extends State<Message> {
         if (!snapshot.hasData) {
           return Center(
             child: SpinKitCircle(
-              color: Colors.orange,
+              color: AppTheme.primaryColor,
               size: _fontOne * 60,
             ),
           );
@@ -149,7 +150,7 @@ class _MessageState extends State<Message> {
               child: Text(
                 "No chats found",
                 style: TextStyle(
-                  color: Colors.orange,
+                  color: AppTheme.primaryColor,
                   fontSize: _fontOne * 16,
                 ),
               ),
@@ -163,7 +164,7 @@ class _MessageState extends State<Message> {
               child: Text(
                 "No chats found",
                 style: TextStyle(
-                  color: Colors.orange,
+                  color: AppTheme.primaryColor,
                   fontSize: _fontOne * 16,
                 ),
               ),
@@ -171,7 +172,7 @@ class _MessageState extends State<Message> {
           } else if (_usersDetails.length < keys.length) {
             return Center(
               child: SpinKitCircle(
-                color: Colors.orange,
+                color: AppTheme.primaryColor,
                 size: _fontOne * 60,
               ),
             );
@@ -237,6 +238,7 @@ class _MessageState extends State<Message> {
                                            _usersDetails[index].username,
                                            style: TextStyle(
                                                fontSize: 17,
+                                               color: AppTheme.pureWhiteColor,
                                                fontWeight: FontWeight.w500
                                            ),
                                          ),
@@ -252,7 +254,7 @@ class _MessageState extends State<Message> {
                                                  : ".....",
                                              style: TextStyle(
                                                  fontSize: _fontOne * 13,
-                                                 color: Colors.black.withOpacity(0.6)
+                                                 color: AppTheme.pureWhiteColor,
                                              ),
                                              overflow: TextOverflow.ellipsis,
                                            ),

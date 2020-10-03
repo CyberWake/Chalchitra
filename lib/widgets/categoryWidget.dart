@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
 
 class CategoryStoryItem extends StatelessWidget {
@@ -22,12 +23,12 @@ class CategoryStoryItem extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
-                color: Colors.white,
-                border: Border.all(color: Colors.orange.shade400)),
+                color: AppTheme.backgroundColor,
+                border: Border.all(color: AppTheme.primaryColor)),
             child: Text(
               name,
               style: TextStyle(
-                  color: Colors.orange.shade400,
+                  color: AppTheme.primaryColor,
                   fontWeight: FontWeight.w500,
                   fontSize: 15),
             ),

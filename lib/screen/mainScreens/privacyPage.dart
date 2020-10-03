@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 class PrivacyPage extends StatefulWidget {
@@ -35,13 +36,18 @@ class _PrivacyPageState extends State<PrivacyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldGlobalKey,
-      appBar: AppBar(),
+        backgroundColor: AppTheme.backgroundColor,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('Privacy'),
+        ),
       body: ListView(
+        padding: EdgeInsets.only(top:20),
         children: [
           ListTile(
-            leading: Icon(Icons.security,color: Colors.black),
-            title: Text('Privacy',style:TextStyle(color: Colors.black)),
-            onTap: (){},
+            leading: Icon(Icons.security,color: AppTheme.primaryColor),
+            title: Text('Make account private',style:TextStyle(color: AppTheme.pureWhiteColor)),
+            subtitle: Text('Enable this to make your account private',style:TextStyle(color: AppTheme.pureWhiteColor)),
             trailing: Padding(
               padding: EdgeInsets.only(right: 15.0),
               child: AspectRatio(

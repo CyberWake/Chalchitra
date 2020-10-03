@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 
@@ -94,6 +95,7 @@ class _DraftsState extends State<Drafts> {
     _widthOne = _size.width * 0.0008;
 
     return Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         centerTitle: true,
         title: Text('Drafts'),
@@ -336,7 +338,7 @@ class _DraftsState extends State<Drafts> {
         ),
       )
           :Center(
-        child: Text("No saved drafts",style: TextStyle(fontSize: 18),),
+        child: Text("No saved drafts",style: TextStyle(fontSize: 18,color: AppTheme.primaryColor),),
       )
     );
   }

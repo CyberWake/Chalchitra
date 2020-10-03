@@ -6,6 +6,7 @@ import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:path/path.dart' as p;
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart'; 
 import 'package:wowtalent/model/videoInfoModel.dart';
 
@@ -321,7 +322,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
     return Scaffold(
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: Colors.orange,
+        backgroundColor: AppTheme.backgroundColor,
         title: Container(
           padding: EdgeInsets.symmetric(
             vertical: 10,
@@ -333,7 +334,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
         leading: IconButton(
           icon: Icon(
             Icons.arrow_back_ios,
-            color: Colors.black,
+            color: AppTheme.pureWhiteColor,
             size: _iconOne * 30,
           ),
           onPressed: (){
@@ -352,7 +353,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
           IconButton(
             icon: Icon(
               Icons.save,
-              color: Colors.black,
+              color: AppTheme.pureWhiteColor,
               size: _iconOne * 30,
             ),
             onPressed: (){
@@ -372,7 +373,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
               margin: EdgeInsets.only(top: 20),
               padding: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppTheme.backgroundColor,
                   borderRadius: BorderRadius.circular(25),
                   boxShadow: [
                     BoxShadow(
@@ -414,7 +415,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           disabledBorder: InputBorder.none,
                           hintText: "Enter Title",
                           hintStyle: TextStyle(
-                            color: Colors.orange.withOpacity(0.75),
+                            color: AppTheme.pureWhiteColor,
                             fontSize: _fontOne * 15,
                           ),
                           errorStyle: TextStyle(
@@ -422,6 +423,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           ),
                         ),
                         style: TextStyle(
+                          color: AppTheme.pureWhiteColor,
                           fontSize: _fontOne * 15,
                         ),
                       ),
@@ -451,7 +453,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           disabledBorder: InputBorder.none,
                           hintText: "Enter hashtag",
                           hintStyle: TextStyle(
-                            color: Colors.orange.withOpacity(0.75),
+                            color: AppTheme.pureWhiteColor,
                             fontSize: _fontOne * 15,
                           ),
                           errorStyle: TextStyle(
@@ -459,6 +461,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           ),
                         ),
                         style: TextStyle(
+                          color: AppTheme.pureWhiteColor,
                           fontSize: _fontOne * 15,
                         ),
                       ),
@@ -474,7 +477,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                       width: _size.width * 0.87,
                       decoration: BoxDecoration(
                           border: Border.all(
-                              color: Colors.orange.withOpacity(0.75)
+                              color: AppTheme.primaryColor,
                           ),
                           borderRadius: BorderRadius.circular(15.0)
                       ),

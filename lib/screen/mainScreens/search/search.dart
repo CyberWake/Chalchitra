@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchResult.dart';
 
@@ -21,20 +22,20 @@ class _SearchUserState extends State<SearchUser> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
+      backgroundColor: AppTheme.backgroundColor,
       extendBody: true,
       body: SafeArea(
         child: Column(
           children: [
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: AppTheme.backgroundColor,
                 border: Border(
                   bottom: BorderSide(color: Colors.orange.withOpacity(0.5))
                 ),
                 boxShadow: [BoxShadow(
                   offset: Offset(0, 2),
-                  color: Colors.grey,
+                  color: AppTheme.pureWhiteColor.withOpacity(0.2),
                   blurRadius: 8
                 )]
               ),
@@ -49,12 +50,12 @@ class _SearchUserState extends State<SearchUser> {
                   ),
                   Expanded(
                     child: TextFormField(
-                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      style: TextStyle(fontSize: 18, color: AppTheme.pureWhiteColor),
                       controller: searchTextEditingController,
                       decoration: InputDecoration(
                           hintText: "Search By Username",
                           hintStyle: TextStyle(
-                              color: Colors.grey.withOpacity(0.5)
+                              color: AppTheme.pureWhiteColor
                           ),
                           border: InputBorder.none,
                           suffixIcon: IconButton(

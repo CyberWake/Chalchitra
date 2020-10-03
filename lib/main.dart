@@ -26,7 +26,8 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'WowTalent',
         theme: ThemeData(
-          primarySwatch: Colors.orange,
+          backgroundColor: Color(0xFF181818),
+          primaryColor: Color(0xFFFFCF40),
         ),
         home: SplashScreen(
           navigateAfterSeconds: prefs.containsKey('onBoarded')

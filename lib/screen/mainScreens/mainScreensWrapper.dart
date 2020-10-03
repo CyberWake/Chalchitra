@@ -11,6 +11,7 @@ import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/dynamicLinkService.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/drafts.dart';
@@ -108,7 +109,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
         height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: Colors.orange, width: 3)
+            border: Border.all(color: AppTheme.primaryColor, width: 3)
         ),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
@@ -134,7 +135,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange, width: 2)
+                            side: BorderSide(color: AppTheme.primaryColor, width: 2)
                         ),
                         onPressed: () async {
                           await UserAuth().signOut().then((value) {
@@ -160,7 +161,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                           "Yes",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: Colors.orangeAccent,
+                        color: AppTheme.primaryColor,
                       ),
                     ),
                     SizedBox(
@@ -168,7 +169,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange, width: 2)
+                            side: BorderSide(color: AppTheme.primaryColor, width: 2)
                         ),
                         onPressed: () {
                           Navigator.pop(context);
@@ -177,7 +178,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                           "No",
                           style: TextStyle(color: Colors.white),
                         ),
-                        color: Colors.orange,
+                        color: AppTheme.primaryColor,
                       ),
                     ),
                   ],
@@ -206,11 +207,11 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
     ];
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundColor,
       key: _scaffoldGlobalKey,
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: _isMessagePage ? Colors.orange:Colors.transparent,
+        backgroundColor: _isMessagePage ? AppTheme.primaryColor:Colors.transparent,
         title: Container(
           padding: EdgeInsets.symmetric(
               vertical: 10,
@@ -224,7 +225,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
           IconButton(
             icon: Icon(
               Icons.search,
-              color: _isMessagePage? Colors.black: Colors.orange.shade400,
+              color: _isMessagePage? AppTheme.backgroundColor: AppTheme.primaryColor,
               size: _iconOne * 30,
             ),
             onPressed: (){
@@ -247,7 +248,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
           ):IconButton(
             icon: Icon(
               Icons.menu,
-              color: Colors.orange.shade400,
+              color: AppTheme.primaryColor,
               size: _iconOne * 25,
             ),
             onPressed: () => _scaffoldGlobalKey.currentState.openEndDrawer(),
@@ -260,7 +261,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
           width: _size.width * 0.5,
           child: Drawer(
             child: Container(
-              color: Colors.black87,
+              color: AppTheme.backgroundColor,
               child: Column(
                 children: [
                   DrawerHeader(
@@ -333,36 +334,36 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
         index: _currentIndex,
         height: _heightOne * 45,
         backgroundColor: Colors.transparent,
-        color: Colors.orange.shade400,
-        buttonBackgroundColor: Colors.orange.shade400,
+        color: AppTheme.primaryColor,
+        buttonBackgroundColor: AppTheme.primaryColor,
         items: <Widget>[
           Icon(
             Icons.home,
             size: 25,
-            color: Colors.white,
+            color: AppTheme.backgroundColor,
           ),
           Icon(
             Icons.explore,
             size: 25,
-            color: Colors.white,
+            color: AppTheme.backgroundColor,
           ),
           Icon(
             Icons.add,
             size: 25,
-            color: Colors.white,
+            color: AppTheme.backgroundColor,
           ),
           Transform.rotate(
             angle: 180 * pi / 100,
             child: Icon(
               Icons.send,
               size: 25,
-              color: Colors.white,
+              color: AppTheme.backgroundColor,
             ),
           ),
           Icon(
             Icons.account_circle,
             size: 25,
-            color: Colors.white,
+            color: AppTheme.backgroundColor,
           ),
         ],
         onTap: (index) async{

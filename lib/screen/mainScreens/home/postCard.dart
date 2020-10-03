@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/menuConstants.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
@@ -408,7 +409,7 @@ class _PostCardState extends State<PostCard> {
                           });
                         },
                         inactiveColor: Colors.orange[100],
-                        activeColor: Colors.orange[400],
+                        activeColor: AppTheme.primaryColor,
                       ),
                     ),
                   ),

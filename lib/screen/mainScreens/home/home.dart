@@ -6,6 +6,7 @@ import 'package:popup_menu/popup_menu.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
@@ -64,66 +65,69 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
         if (!data.hasData) {
           return Center(
             child: SpinKitCircle(
-              color: Colors.orange,
+              color: AppTheme.primaryColor,
               size: 60,
             ),
           );
         }else{
           if(data.data.documents.length == 0){
-            return AnimatedBackground(
-              behaviour: RandomParticleBehaviour(
-                options: particleOptions,
-                paint: particlePaint,
-              ),
-              vsync: this,
-              child: Padding(
-                padding: EdgeInsets.symmetric(horizontal: 35),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text.rich(
-                          TextSpan(
-                              text: '',
-                              children: <InlineSpan>[
-                                TextSpan(
-                                  text: 'Follow',
-                                  style: TextStyle(
-                                      fontSize: 56,
-                                      color: Colors.redAccent,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: '  Creators to see content',
-                                  style: TextStyle(
-                                      fontSize: 38,
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.bold),
+            return Container(
+              color: Colors.transparent,
+              child: AnimatedBackground(
+                behaviour: RandomParticleBehaviour(
+                  options: particleOptions,
+                  paint: particlePaint,
+                ),
+                vsync: this,
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 35),
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text.rich(
+                            TextSpan(
+                                text: '',
+                                children: <InlineSpan>[
+                                  TextSpan(
+                                    text: 'Follow',
+                                    style: TextStyle(
+                                        fontSize: 56,
+                                        color: Colors.redAccent,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                  TextSpan(
+                                    text: '  Creators to see content',
+                                    style: TextStyle(
+                                        fontSize: 38,
+                                        color: AppTheme.pureWhiteColor,
+                                        fontWeight: FontWeight.bold),
+                                  )
+                                ]
+                            )
+                        ),
+                        SizedBox(height: 20),
+                        FlatButton(
+                          color: AppTheme.primaryColor,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)
+                          ),
+                          onPressed: (){
+                            Navigator.pushReplacement(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (_) => MainScreenWrapper(index: 1,)
                                 )
-                              ]
-                          )
-                      ),
-                      SizedBox(height: 20),
-                      FlatButton(
-                        color: Colors.orange,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)
-                        ),
-                        onPressed: (){
-                          Navigator.pushReplacement(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (_) => MainScreenWrapper(index: 1,)
-                              )
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal:2),
-                          child: Text('Explore Content',style: TextStyle(fontSize: 18),),
-                        ),
-                      )
-                    ],
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 10.0,horizontal:2),
+                            child: Text('Explore Content',style: TextStyle(fontSize: 18),),
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -137,7 +141,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                   if (!snapshot.hasData) {
                     return Center(
                       child: SpinKitCircle(
-                        color: Colors.orange,
+                        color: AppTheme.primaryColor,
                         size: 60,
                       ),
                     );
@@ -147,7 +151,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         child: Text(
                           "No videos to show",
                           style: TextStyle(
-                            color: Colors.orange,
+                            color: AppTheme.primaryColor,
                             fontSize: 16,
                           ),
                         ),

@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/messages/chatBubble.dart';
 
@@ -55,7 +56,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       body: Container(
           padding: EdgeInsets.only(top: _heightOne * 20),
           height: _size.height,
-          color: Colors.orange,
+          color: AppTheme.primaryColor,
           child: Column(
             children: [
               Container(
@@ -71,7 +72,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     IconButton(
                       icon: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.white,
+                        color: AppTheme.backgroundColor,
                       ),
                       onPressed: (){
                         FocusScope.of(context).unfocus();
@@ -82,7 +83,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                     Text(
                       _loading ?  " " : _userDataModel.username,
                       style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.backgroundColor,
                         fontSize: _fontOne * 25,
                         fontWeight: FontWeight.bold,
                       ),
@@ -105,7 +106,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   child: Container(
                       padding: EdgeInsets.only(top: _heightOne * 20),
                       decoration: BoxDecoration(
-                          color: Colors.white,
+                          color: AppTheme.backgroundColor,
                           borderRadius: BorderRadius.only(
                             topRight: Radius.circular(25),
                             topLeft: Radius.circular(25),
@@ -113,7 +114,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       ),
                       child: _loading ? Center(
                         child: SpinKitCircle(
-                          color: Colors.orange,
+                          color: AppTheme.primaryColor,
                           size: _fontOne * 60,
                         ),
                       ): messages()
@@ -135,7 +136,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         if (!snapshot.hasData) {
           return Center(
               child: SpinKitCircle(
-                color: Colors.orange,
+                color: AppTheme.primaryColor,
                 size: _fontOne * 60,
               ),
           );
@@ -161,13 +162,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       padding: EdgeInsets.zero,
       margin: EdgeInsets.only(bottom: 0),
       height: 70,
-      color: Colors.white,
+      color: AppTheme.backgroundColor,
       child: Row(
         children: <Widget>[
           IconButton(
             icon: Icon(Icons.photo),
             iconSize: 25,
-            color: Colors.orange,
+            color: AppTheme.primaryColor,
             onPressed: () {},
           ),
           Expanded(
@@ -176,8 +177,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               onChanged: (val){
                 text = val;
               },
+              style: TextStyle(color: AppTheme.pureWhiteColor,),
               decoration: InputDecoration.collapsed(
                 hintText: 'Send a message..',
+                hintStyle: TextStyle(color: AppTheme.pureWhiteColor,),
               ),
               textCapitalization: TextCapitalization.sentences,
             ),
@@ -185,7 +188,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           IconButton(
             icon: Icon(Icons.send),
             iconSize: 25,
-            color:  Colors.orange,
+            color:  AppTheme.primaryColor,
             onPressed: () async{
               if(text.isEmpty || text.replaceAll(" ", "").length == 0){
                 return;

@@ -5,6 +5,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoDataInputScreen.dart';
 
 class VideoPreview extends StatefulWidget {
@@ -142,7 +143,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                         _controller,
                         allowScrubbing: true,
                         colors: VideoProgressColors(
-                            playedColor: Colors.orange,
+                            playedColor: AppTheme.primaryColor,
                             bufferedColor: Colors.grey,
                             backgroundColor: Colors.white
                         ),

@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 import 'package:wowtalent/widgets/categoryWidget.dart';
@@ -58,7 +59,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#Trending",
                 style: TextStyle(
-                    color: Colors.orange.shade400,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -71,7 +72,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#StaffPicks",
                 style: TextStyle(
-                    color: Colors.orange.shade400,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -84,7 +85,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#LatestVideos",
                 style: TextStyle(
-                    color: Colors.orange.shade400,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),

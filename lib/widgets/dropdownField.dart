@@ -2,6 +2,7 @@ library dropdownfield;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:wowtalent/model/theme.dart';
 
 ///DropDownField has customized autocomplete text field functionality
 ///
@@ -97,7 +98,7 @@ class DropDownField extends FormField<String> {
           icon: icon,
           suffixIcon: IconButton(
               icon: Icon(Icons.arrow_drop_down,
-                  size: 23.0, color: Colors.black54),
+                  size: 23.0, color: Colors.grey.withOpacity(0.6)),
               onPressed: () {
                 SystemChannels.textInput.invokeMethod('TextInput.hide');
                 state.setState(() {
@@ -120,7 +121,7 @@ class DropDownField extends FormField<String> {
                   controller: state._effectiveController,
                   decoration: effectiveDecoration.copyWith(
                     errorText: field.errorText,
-                    fillColor: Colors.white,
+                    fillColor: AppTheme.backgroundColor,
                   ),
                   style: textStyle,
                   textAlign: TextAlign.start,
@@ -265,6 +266,7 @@ class DropDownFieldState extends FormFieldState<String> {
       dense: true,
       title: Text(
         text,
+        style: TextStyle(color: AppTheme.pureWhiteColor),
       ),
       onTap: () {
         setState(() {

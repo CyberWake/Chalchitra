@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 
@@ -24,7 +25,7 @@ class _SearchProfileState extends State<SearchProfile> {
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: AppTheme.backgroundColor,
       body: Column(
         children: [
           Container(
@@ -40,7 +41,7 @@ class _SearchProfileState extends State<SearchProfile> {
                 IconButton(
                   icon: Icon(
                     Icons.arrow_back_ios,
-                    color: Colors.orange,
+                    color: AppTheme.pureWhiteColor,
                   ),
                   onPressed: () => Navigator.pop(context),
                 ),
@@ -48,7 +49,7 @@ class _SearchProfileState extends State<SearchProfile> {
                 IconButton(
                   icon: Icon(
                     Icons.message,
-                    color: Colors.orange,
+                    color: AppTheme.pureWhiteColor,
                   ),
                   onPressed: () => Navigator.push(
                     context,

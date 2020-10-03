@@ -6,6 +6,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
@@ -93,98 +94,103 @@ class _ProfilePageState extends State <ProfilePage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
-      child: Column(
-      children: [
-        Stack(
-          children: [
-            getProfileTopView(context),
-            SingleChildScrollView(
-              child: Container(
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(20),
-                    topLeft: Radius.circular(20),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      offset: Offset(0.0, -10.0), //(x,y)
-                      blurRadius: 10.0,
+      child: Container(
+        color: AppTheme.backgroundColor,
+        child: Column(
+        children: [
+          Stack(
+            children: [
+              getProfileTopView(context),
+              SingleChildScrollView(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.backgroundColor,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
                     ),
-                  ],
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        offset: Offset(0.0, -10.0), //(x,y)
+                        blurRadius: 10.0,
+                      ),
+                    ],
+                  ),
+                  height: size.height * 0.4423,
+                  width: size.width,
+                  margin: EdgeInsets.only(top: size.height * 0.35),
+                  padding: EdgeInsets.only(
+                      top: size.height * 0.1,
+                      left: size.width * 0.05,
+                      right: size.width * 0.05
+                  ),
+                  child: buildPictureCard() ,
                 ),
-                height: size.height * 0.4423,
-                width: size.width,
-                margin: EdgeInsets.only(top: size.height * 0.35),
-                padding: EdgeInsets.only(
-                    top: size.height * 0.1,
-                    left: size.width * 0.05,
-                    right: size.width * 0.05
-                ),
-                child: buildPictureCard() ,
               ),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  margin: EdgeInsets.only(
-                      top: size.height * 0.16
-                  ),
-                  width: size.width * 0.9,
-                  child: Card(
-                    elevation: 20,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                          Radius.circular(10)
-                      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    color: AppTheme.elevationColor,
+                    margin: EdgeInsets.only(
+                        top: size.height * 0.16
                     ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 15,
-                          ),
-                          user != null ? Text(
-                            user.bio,
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              color: Colors.grey,
-                              fontSize: 14,
-                            ),
-                            textAlign: TextAlign.center,
-                          ) : Container(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          createButton(),
-                          SizedBox(
-                            height: 15,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              buildStatColumn(_videos.length, "Posts"),
-                              getFollowers(),
-                              getFollowings()
-                            ],
-                          ),
-                          SizedBox(
-                            height: 15,
-                          ),
-                        ],
+                    width: size.width * 0.9,
+                    child: Card(
+                      elevation: 20,
+                      color: AppTheme.elevationColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                            Radius.circular(10)
+                        ),
                       ),
-                    ) ,
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 15,
+                            ),
+                            user != null ? Text(
+                              user.bio,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.grey,
+                                fontSize: 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ) : Container(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            createButton(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                buildStatColumn(_videos.length, "Posts"),
+                                getFollowers(),
+                                getFollowings()
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
+                        ),
+                      ) ,
+                    ),
                   ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ],
-    ));
+                ],
+              ),
+            ],
+          ),
+        ],
+    ),
+      ));
   }
 
 
@@ -203,7 +209,7 @@ class _ProfilePageState extends State <ProfilePage> {
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange
+                          color: AppTheme.primaryColor
                       ),
                     ),
                     Text(
@@ -226,7 +232,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange
+                        color: AppTheme.primaryColor
                     ),
                   ),
                   Text(
@@ -257,7 +263,7 @@ class _ProfilePageState extends State <ProfilePage> {
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: Colors.orange
+                          color: AppTheme.primaryColor
                       ),
                     ),
                     Text(
@@ -280,7 +286,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: Colors.orange
+                        color: AppTheme.primaryColor
                     ),
                   ),
                   Text(
@@ -361,7 +367,7 @@ class _ProfilePageState extends State <ProfilePage> {
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: SpinKitCircle(
-              color: Colors.orange,
+              color: AppTheme.primaryColor,
               size: 60,
             ),);
           }
@@ -372,7 +378,7 @@ class _ProfilePageState extends State <ProfilePage> {
 
           return Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Colors.black,
               borderRadius: BorderRadius.only(
                 bottomRight: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
@@ -414,6 +420,7 @@ class _ProfilePageState extends State <ProfilePage> {
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
+                                color: AppTheme.pureWhiteColor,
                               ),
                             ),
                           ),
@@ -468,7 +475,7 @@ class _ProfilePageState extends State <ProfilePage> {
     return Container(
         padding: EdgeInsets.only(top: 5),
         child: RaisedButton(
-            color: Colors.orange ,
+            color: AppTheme.primaryColor,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
                     Radius.circular(15)
@@ -486,7 +493,7 @@ class _ProfilePageState extends State <ProfilePage> {
               child: Text(title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: AppTheme.pureWhiteColor,
                       fontSize: 16
                   )
               ),
@@ -552,7 +559,7 @@ class _ProfilePageState extends State <ProfilePage> {
           style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: Colors.orange
+              color: AppTheme.primaryColor,
           ),
         ),
         Text(

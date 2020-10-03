@@ -7,6 +7,7 @@ import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
@@ -175,14 +176,14 @@ class _PlayerState extends State<Player> {
                               child: VideoPlayer(_controller)
                           )
                               :SpinKitCircle(
-                            color: Colors.grey,
+                            color: AppTheme.primaryColor,
                             size: 60,
                           )
                         ),
                         VideoProgressIndicator(
                           _controller,
                           allowScrubbing: true,
-                          colors: VideoProgressColors(playedColor: Colors.orange,bufferedColor: Colors.grey,backgroundColor: Colors.white),
+                          colors: VideoProgressColors(playedColor: AppTheme.primaryColor,bufferedColor: Colors.grey,backgroundColor: Colors.white),
                         ),
                       ],
                     ),
@@ -198,6 +199,7 @@ class _PlayerState extends State<Player> {
                       Padding(
                         padding: EdgeInsets.only(right: 15.0),
                         child: FloatingActionButton(
+                          backgroundColor: AppTheme.primaryColor,
                           onPressed: () {
                             setState(() {
                               _controller.value.isPlaying
@@ -207,6 +209,7 @@ class _PlayerState extends State<Player> {
                           },
                           child: Icon(
                             _controller.value.isPlaying ? Icons.pause : Icons.play_arrow,
+                            color: AppTheme.backgroundColor,
                           ),
                         ),
                       ),
@@ -326,7 +329,7 @@ class _PlayerState extends State<Player> {
                                         _isLiked
                                             ?"assets/images/loved_icon.svg"
                                             :"assets/images/love_icon.svg",
-                                        color: Colors.white,
+                                        color: AppTheme.primaryColor,
                                         width: 20,
                                       ),
                                       onTap: () async {
@@ -397,15 +400,18 @@ class _PlayerState extends State<Player> {
                                           ),
                                         );
                                       }
-                                      print( widget.video.uploaderUid);
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => CommentsScreen(
-                                                videoId: widget.video.videoId,
-                                              )
-                                          )
-                                      );
+                                      else{
+                                        print( widget.video.uploaderUid);
+                                        _controller.pause();
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => CommentsScreen(
+                                                  videoId: widget.video.videoId,
+                                                )
+                                            )
+                                        );
+                                      }
                                     },
                                     icon: Icon(
                                       Icons.comment,
@@ -431,10 +437,10 @@ class _PlayerState extends State<Player> {
                                   data: SliderTheme.of(context).copyWith(
                                     trackShape: RectangularSliderTrackShape(),
                                     trackHeight: 2.0,
-                                    thumbColor: Colors.orange[600],
+                                    thumbColor: AppTheme.primaryColor,
                                     thumbShape: RoundSliderThumbShape(enabledThumbRadius: 8.0),
                                     overlayColor: Colors.red.withAlpha(32),
-                                    overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
+                                    overlayShape: RoundSliderOverlayShape(overlayRadius: 30.0),
                                   ),
                                   child: Slider(
                                     value: _sliderValue,
@@ -470,7 +476,7 @@ class _PlayerState extends State<Player> {
                                      });
                                     },
                                     inactiveColor: Colors.white,
-                                    activeColor: Colors.grey,
+                                    activeColor: AppTheme.primaryColor,
                                   ),
                                 ),
                               ),
@@ -489,7 +495,7 @@ class _PlayerState extends State<Player> {
           )
           : Center(
           child: Container(child: SpinKitCircle(
-            color: Colors.orange,
+            color: AppTheme.primaryColor,
             size: 60,
           ),)),
     );

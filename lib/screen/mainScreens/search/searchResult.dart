@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 
@@ -13,6 +14,7 @@ class SearchResult extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(10),
       child: Container(
+        color: AppTheme.backgroundColor,
           child: Column(
             children: <Widget>[
               GestureDetector(
@@ -35,7 +37,7 @@ class SearchResult extends StatelessWidget {
                     title: Text(
                         eachUser.displayName == null ? eachUser.username : eachUser.displayName,
                         style: TextStyle(
-                            color: Colors.black,
+                            color: AppTheme.pureWhiteColor,
                             fontSize: 16,
                             fontWeight: FontWeight.bold
                         )
