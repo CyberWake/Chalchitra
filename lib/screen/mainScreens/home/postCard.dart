@@ -1,11 +1,6 @@
-import 'dart:io';
-import 'dart:isolate';
-import 'dart:ui';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
@@ -18,7 +13,7 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 
 class PostCard extends StatefulWidget {
   final video;
@@ -58,7 +53,6 @@ class _PostCardState extends State<PostCard> {
   bool _isLiked;
   int likeCount;
   bool _processing = false;
-  ReceivePort _port = ReceivePort();
 
   void _button(Offset offset) async{
     double left = offset.dx;
@@ -195,7 +189,6 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
     super.initState();
-
     setup();
   }
 

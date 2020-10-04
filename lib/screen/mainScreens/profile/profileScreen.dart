@@ -4,13 +4,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 
 class ProfilePage extends StatefulWidget {
   final String url =
@@ -24,7 +24,7 @@ class ProfilePage extends StatefulWidget {
   _ProfilePageState createState() => _ProfilePageState();
 }
 
-class _ProfilePageState extends State <ProfilePage> {
+class _ProfilePageState extends State<ProfilePage> {
   // Fetching user attributes from the user model
 
   UserDataModel user;
@@ -51,35 +51,33 @@ class _ProfilePageState extends State <ProfilePage> {
   List<VideoInfo> _videos = <VideoInfo>[];
   List<VideoInfo> newVideos = <VideoInfo>[];
 
-  void setup() async{
-    dynamic result = await UserVideoStore().getProfileVideos(
-        uid: profileUid
-    );
-    if(result != false){
+  void setup() async {
+    dynamic result = await UserVideoStore().getProfileVideos(uid: profileUid);
+    if (result != false) {
       setState(() {
         _videos = result;
       });
     }
   }
-  void getPrivacy()async{
-    isSecure =  await _userInfoStore.getPrivacy(uid: widget.uid);
-    if(!isSecure){
-      print("private "+ isSecure.toString());
+
+  void getPrivacy() async {
+    isSecure = await _userInfoStore.getPrivacy(uid: widget.uid);
+    if (!isSecure) {
+      print("private " + isSecure.toString());
       setup();
-      setState(() {
-      });
+      setState(() {});
     }
   }
 
-  void mySuper() async{
+  void mySuper() async {
     await getCurrentUserID();
     await checkIfAlreadyFollowing();
     profileUid = widget.uid;
-    print("following "+ following.toString());
-    if(following || widget.uid == _userAuth.user.uid){
+    print("following " + following.toString());
+    if (following || widget.uid == _userAuth.user.uid) {
       print("called a");
       setup();
-    }else{
+    } else {
       getPrivacy();
     }
   }
@@ -94,9 +92,9 @@ class _ProfilePageState extends State <ProfilePage> {
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
-      child: Container(
-        color: AppTheme.elevationColor,
-        child: Column(
+        child: Container(
+      color: AppTheme.elevationColor,
+      child: Column(
         children: [
           Stack(
             children: [
@@ -123,9 +121,8 @@ class _ProfilePageState extends State <ProfilePage> {
                   padding: EdgeInsets.only(
                       top: size.height * 0.1,
                       left: size.width * 0.05,
-                      right: size.width * 0.05
-                  ),
-                  child: buildPictureCard() ,
+                      right: size.width * 0.05),
+                  child: buildPictureCard(),
                 ),
               ),
               Row(
@@ -133,17 +130,13 @@ class _ProfilePageState extends State <ProfilePage> {
                 children: [
                   Container(
                     color: Colors.transparent,
-                    margin: EdgeInsets.only(
-                        top: size.height * 0.16
-                    ),
+                    margin: EdgeInsets.only(top: size.height * 0.16),
                     width: size.width * 0.9,
                     child: Card(
                       elevation: 20,
                       color: Colors.yellow[100],
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                            Radius.circular(10)
-                        ),
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
                       child: Padding(
                         padding: const EdgeInsets.all(10.0),
@@ -152,15 +145,17 @@ class _ProfilePageState extends State <ProfilePage> {
                             SizedBox(
                               height: 15,
                             ),
-                            user != null ? Text(
-                              user.bio,
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                color: AppTheme.elevationColor,
-                                fontSize: 14,
-                              ),
-                              textAlign: TextAlign.center,
-                            ) : Container(),
+                            user != null
+                                ? Text(
+                                    user.bio,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: AppTheme.elevationColor,
+                                      fontSize: 14,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : Container(),
                             SizedBox(
                               height: 15,
                             ),
@@ -181,7 +176,7 @@ class _ProfilePageState extends State <ProfilePage> {
                             ),
                           ],
                         ),
-                      ) ,
+                      ),
                     ),
                   ),
                 ],
@@ -189,142 +184,123 @@ class _ProfilePageState extends State <ProfilePage> {
             ],
           ),
         ],
-    ),
-      ));
+      ),
+    ));
   }
-
 
   getFollowers() {
     return new StreamBuilder(
-        stream: _userInfoStore.getFollowers(
-          uid: widget.uid
-        ),
+        stream: _userInfoStore.getFollowers(uid: widget.uid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return new SingleChildScrollView(
                 child: Column(
-                  children: [
-                    Text(
-                      '0',
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.elevationColor
-                      ),
-                    ),
-                    Text(
-                      'Followers',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.elevationColor
-                      ),
-                    ),
-                  ],
-                ));
+              children: [
+                Text(
+                  '0',
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.elevationColor),
+                ),
+                Text(
+                  'Followers',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.elevationColor),
+                ),
+              ],
+            ));
           }
 
           return new SingleChildScrollView(
               child: Column(
-                children: [
-                  Text(
-                    snapshot.data.documents.length.toString(),
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.elevationColor
-                    ),
-                  ),
-                  Text(
-                    'Followers',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.elevationColor
-                    ),
-                  ),
-                ],
-              ));
+            children: [
+              Text(
+                snapshot.data.documents.length.toString(),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.elevationColor),
+              ),
+              Text(
+                'Followers',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.elevationColor),
+              ),
+            ],
+          ));
         });
   }
 
   getFollowings() {
     return new StreamBuilder(
-        stream: _userInfoStore.getFollowing(
-          uid: widget.uid
-        ),
+        stream: _userInfoStore.getFollowing(uid: widget.uid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
           if (!snapshot.hasData) {
             return new SingleChildScrollView(
                 child: Column(
-                  children: [
-                    Text(
-                      '0',
-                      style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.elevationColor
-                      ),
-                    ),
-                    Text(
-                      'Following',
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.elevationColor
-                      ),
-                    ),
-                  ],
-                ));
+              children: [
+                Text(
+                  '0',
+                  style: TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.elevationColor),
+                ),
+                Text(
+                  'Following',
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.elevationColor),
+                ),
+              ],
+            ));
           }
 
           return new SingleChildScrollView(
               child: Column(
-                children: [
-                  Text(
-                    snapshot.data.documents.length.toString(),
-                    style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.elevationColor
-                    ),
-                  ),
-                  Text(
-                    'Following',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.elevationColor
-                    ),
-                  ),
-                ],
-              ));
+            children: [
+              Text(
+                snapshot.data.documents.length.toString(),
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.elevationColor),
+              ),
+              Text(
+                'Following',
+                style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.bold,
+                    color: AppTheme.elevationColor),
+              ),
+            ],
+          ));
         });
   }
 
   checkIfAlreadyFollowing() async {
-    bool result = await _userInfoStore.checkIfAlreadyFollowing(
-      uid: widget.uid
-    );
+    bool result = await _userInfoStore.checkIfAlreadyFollowing(uid: widget.uid);
     setState(() {
       following = result;
     });
   }
 
-  controlFollowUsers() async{
-    bool result = await _userInfoStore.followUser(
-      uid: widget.uid
-    );
+  controlFollowUsers() async {
+    bool result = await _userInfoStore.followUser(uid: widget.uid);
     mySuper();
     setState(() {
       following = result;
     });
   }
 
-   controlUnFollowUsers() async{
-    bool result = await _userInfoStore.unFollowUser(
-        uid: widget.uid
-    );
+  controlUnFollowUsers() async {
+    bool result = await _userInfoStore.unFollowUser(uid: widget.uid);
     _videos = [];
     getPrivacy();
     setState(() {
@@ -343,33 +319,34 @@ class _ProfilePageState extends State <ProfilePage> {
       currentUserName = displayName;
     });
   }
-  String getChoppedUsername(String currentDisplayName){
+
+  String getChoppedUsername(String currentDisplayName) {
     String choppedUsername = '';
     var subDisplayName = currentDisplayName.split(' ');
-    for(var i in subDisplayName){
-      if(choppedUsername.length + i.length < 18){
+    for (var i in subDisplayName) {
+      if (choppedUsername.length + i.length < 18) {
         choppedUsername += ' ' + i;
-      }
-      else{
+      } else {
         return choppedUsername;
       }
     }
     return choppedUsername;
   }
+
   getProfileTopView(BuildContext context) {
     return new StreamBuilder<DocumentSnapshot>(
-        stream: _userInfoStore.getUserInfoStream(
-          uid: widget.uid
-        ),
+        stream: _userInfoStore.getUserInfoStream(uid: widget.uid),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(child: Text('Something went wrong'));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: SpinKitCircle(
-              color: AppTheme.primaryColor,
-              size: 60,
-            ),);
+            return Center(
+              child: SpinKitCircle(
+                color: AppTheme.primaryColor,
+                size: 60,
+              ),
+            );
           }
           print(snapshot.data.exists);
           user = UserDataModel.fromDocument(snapshot.data);
@@ -402,9 +379,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     children: [
                       CircleAvatar(
                         backgroundImage: NetworkImage(
-                            user.photoUrl != null ?
-                            user.photoUrl : widget.url
-                        ),
+                            user.photoUrl != null ? user.photoUrl : widget.url),
                         radius: 40,
                       ),
                       SizedBox(
@@ -416,7 +391,11 @@ class _ProfilePageState extends State <ProfilePage> {
                         children: [
                           FittedBox(
                             child: Text(
-                              user.displayName != null ? user.displayName.length>19? getChoppedUsername(user.displayName):user.displayName : "WowTalent",
+                              user.displayName != null
+                                  ? user.displayName.length > 19
+                                      ? getChoppedUsername(user.displayName)
+                                      : user.displayName
+                                  : "WowTalent",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -424,7 +403,9 @@ class _ProfilePageState extends State <ProfilePage> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 5,),
+                          SizedBox(
+                            height: 5,
+                          ),
                           Row(
                             children: [
                               Text(
@@ -441,7 +422,9 @@ class _ProfilePageState extends State <ProfilePage> {
                     ],
                   ),
                 ),
-                SizedBox(height: 50,)
+                SizedBox(
+                  height: 50,
+                )
               ],
             ),
           );
@@ -467,8 +450,8 @@ class _ProfilePageState extends State <ProfilePage> {
         context,
         CupertinoPageRoute(
             builder: (_) => EditProfilePage(
-              uid: currentUserID,
-            )));
+                  uid: currentUserID,
+                )));
   }
 
   Container createButtonTitleORFunction({String title, Function function}) {
@@ -477,15 +460,11 @@ class _ProfilePageState extends State <ProfilePage> {
         child: RaisedButton(
             color: AppTheme.primaryColor,
             shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(
-                    Radius.circular(15)
-                )
-            ),
-            onPressed: () async{
+                borderRadius: BorderRadius.all(Radius.circular(15))),
+            onPressed: () async {
               await function();
               await getFollowers();
-              setState(() {
-              });
+              setState(() {});
             },
             child: Container(
               width: 150,
@@ -494,9 +473,7 @@ class _ProfilePageState extends State <ProfilePage> {
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       color: AppTheme.elevationColor,
-                      fontSize: 16
-                  )
-              ),
+                      fontSize: 16)),
               alignment: Alignment.center,
             )));
   }
@@ -514,25 +491,26 @@ class _ProfilePageState extends State <ProfilePage> {
               final video = _videos[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(
-                    builder: (context) {
-                      return Player(
-                        video: video,
-                      );
-                    },
-                  ),
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return Player(
+                          video: video,
+                        );
+                      },
+                    ),
                   );
                 },
                 child: Container(
                   width: size.width * 0.22,
                   height: size.height * 0.22,
-                  margin: EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.black,
                     image: DecorationImage(
                         image: NetworkImage(video.thumbUrl),
-                        fit: BoxFit.fitWidth
-                    ),
+                        fit: BoxFit.fitWidth),
                     borderRadius: BorderRadius.circular(10.5),
                     boxShadow: [
                       BoxShadow(
@@ -557,9 +535,9 @@ class _ProfilePageState extends State <ProfilePage> {
         Text(
           value.toString(),
           style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: AppTheme.elevationColor,
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: AppTheme.elevationColor,
           ),
         ),
         Text(

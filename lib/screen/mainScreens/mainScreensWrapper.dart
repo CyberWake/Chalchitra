@@ -15,14 +15,15 @@ import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/drafts.dart';
+import 'package:wowtalent/screen/mainScreens/endDrawerScreens/privacyPage.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
-import 'package:wowtalent/screen/mainScreens/privacyPage.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoSelectorScreen.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoSelectorScreen.dart';
+
+import 'endDrawerScreens/drafts.dart';
 
 // ignore: must_be_immutable
 class MainScreenWrapper extends StatefulWidget {
