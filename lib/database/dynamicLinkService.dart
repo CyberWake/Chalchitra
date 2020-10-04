@@ -24,6 +24,7 @@ class DynamicLinkService{
       }
     );
   }
+
   Future<bool> _handleDeepLink(PendingDynamicLinkData data,bool replacement,context)async{
     final Uri deepLink = data?.link;
     if(deepLink !=null){

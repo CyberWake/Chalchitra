@@ -179,6 +179,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                         video: snapshot.data.documents[index],
                                         id: snapshot.data.documents[index].id,
                                         thumbnail: snapshot.data.documents[index].data()['thumbUrl'],
+                                        videoUrl: snapshot.data.documents[index].data()['videoUrl'],
                                         profileImg: snap.data.data()['photoUrl'] == null ?
                                         "https://via.placeholder.com/150"
                                             : snap.data.data()['photoUrl'],

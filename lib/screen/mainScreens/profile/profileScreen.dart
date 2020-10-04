@@ -95,7 +95,7 @@ class _ProfilePageState extends State <ProfilePage> {
     Size size = MediaQuery.of(context).size;
     return SingleChildScrollView(
       child: Container(
-        color: AppTheme.backgroundColor,
+        color: AppTheme.elevationColor,
         child: Column(
         children: [
           Stack(
@@ -132,14 +132,14 @@ class _ProfilePageState extends State <ProfilePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    color: AppTheme.elevationColor,
+                    color: Colors.transparent,
                     margin: EdgeInsets.only(
                         top: size.height * 0.16
                     ),
                     width: size.width * 0.9,
                     child: Card(
                       elevation: 20,
-                      color: AppTheme.elevationColor,
+                      color: Colors.yellow[100],
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(
                             Radius.circular(10)
@@ -156,7 +156,7 @@ class _ProfilePageState extends State <ProfilePage> {
                               user.bio,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
-                                color: Colors.grey,
+                                color: AppTheme.elevationColor,
                                 fontSize: 14,
                               ),
                               textAlign: TextAlign.center,
@@ -209,7 +209,7 @@ class _ProfilePageState extends State <ProfilePage> {
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryColor
+                          color: AppTheme.elevationColor
                       ),
                     ),
                     Text(
@@ -217,7 +217,7 @@ class _ProfilePageState extends State <ProfilePage> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[400],
+                        color: AppTheme.elevationColor
                       ),
                     ),
                   ],
@@ -232,7 +232,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor
+                        color: AppTheme.elevationColor
                     ),
                   ),
                   Text(
@@ -240,7 +240,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[400],
+                      color: AppTheme.elevationColor
                     ),
                   ),
                 ],
@@ -263,7 +263,7 @@ class _ProfilePageState extends State <ProfilePage> {
                       style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.primaryColor
+                          color: AppTheme.elevationColor
                       ),
                     ),
                     Text(
@@ -271,7 +271,7 @@ class _ProfilePageState extends State <ProfilePage> {
                       style: TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.bold,
-                        color: Colors.grey[400],
+                        color: AppTheme.elevationColor
                       ),
                     ),
                   ],
@@ -286,7 +286,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     style: TextStyle(
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryColor
+                        color: AppTheme.elevationColor
                     ),
                   ),
                   Text(
@@ -294,7 +294,7 @@ class _ProfilePageState extends State <ProfilePage> {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
-                      color: Colors.grey[400],
+                      color: AppTheme.elevationColor
                     ),
                   ),
                 ],
@@ -378,14 +378,14 @@ class _ProfilePageState extends State <ProfilePage> {
 
           return Container(
             decoration: BoxDecoration(
-              color: Colors.black,
+              color: AppTheme.backgroundColor,
               borderRadius: BorderRadius.only(
                 bottomRight: Radius.circular(20),
                 bottomLeft: Radius.circular(20),
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.grey.withOpacity(0.08),
+                  color: Colors.grey.withOpacity(0.8),
                   offset: Offset(0.0, 20.0), //(x,y)
                   blurRadius: 10.0,
                 ),
@@ -493,7 +493,7 @@ class _ProfilePageState extends State <ProfilePage> {
               child: Text(title,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.pureWhiteColor,
+                      color: AppTheme.elevationColor,
                       fontSize: 16
                   )
               ),
@@ -559,7 +559,7 @@ class _ProfilePageState extends State <ProfilePage> {
           style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.bold,
-              color: AppTheme.primaryColor,
+              color: AppTheme.elevationColor,
           ),
         ),
         Text(
@@ -567,7 +567,7 @@ class _ProfilePageState extends State <ProfilePage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: Colors.grey[400],
+            color: AppTheme.elevationColor,
           ),
         ),
       ],

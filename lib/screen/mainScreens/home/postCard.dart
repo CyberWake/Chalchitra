@@ -1,9 +1,16 @@
+import 'dart:io';
+import 'dart:isolate';
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:dio/dio.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/menuConstants.dart';
@@ -15,13 +22,14 @@ import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/p
 
 class PostCard extends StatefulWidget {
   final video;
-  final String title, uploadTime, thumbnail, profileImg, uploader, id;
+  final String title, uploadTime, thumbnail, profileImg, uploader, id, videoUrl;
   final int commentCount, likeCount, viewCount;
   final int rating;
 
   PostCard({
     this.video,
     this.id,
+    this.videoUrl,
     this.title,
     this.commentCount,
     this.likeCount,
@@ -50,47 +58,49 @@ class _PostCardState extends State<PostCard> {
   bool _isLiked;
   int likeCount;
   bool _processing = false;
+  ReceivePort _port = ReceivePort();
 
   void _button(Offset offset) async{
     double left = offset.dx;
     double top = offset.dy;
     await showMenu(
         context: context,
+        color: AppTheme.backgroundColor,
         position: RelativeRect.fromLTRB(left, top, 0, 0),
         items:[
           PopupMenuItem(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                SizedBox(height: 5,),
+                SizedBox(height: 10,),
                 InkWell(
                   onTap: () => choiceAction(Menu.Share),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(Menu.Share),
+                      Text(Menu.Share,style: TextStyle(color: AppTheme.pureWhiteColor),),
                       Icon(Icons.share,size: 18,color: Colors.blueAccent),
                     ],
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(height: 20,),
                 InkWell(
                   onTap: () => choiceAction(Menu.Download),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(Menu.Download),
+                      Text(Menu.Download,style: TextStyle(color: AppTheme.pureWhiteColor),),
                       Icon(Icons.arrow_downward,size: 20,color: Colors.green),
                     ],
                   ),
                 ),
-                SizedBox(height: 10,),
+                SizedBox(height: 20,),
                 InkWell(
                   onTap: () => choiceAction(Menu.Forward),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(Menu.Forward),
+                      Text(Menu.Forward,style: TextStyle(color: AppTheme.pureWhiteColor),),
                       Transform(
                         alignment: Alignment.center,
                         transform: Matrix4.rotationY(math.pi),
@@ -99,19 +109,21 @@ class _PostCardState extends State<PostCard> {
                     ],
                   ),
                 ),
-                SizedBox(height: 5,),
+                SizedBox(height: 10,),
               ],
             ),
           )
         ]
     );
   }
+
   void choiceAction(String choice) async {
     print('called');
     if(choice == Menu.Share){
+      Navigator.pop(context);
       final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: 'https://wowtalent.page.link/view-video/'+'${widget.id}',
-        link: Uri.parse('https://wowtalent.com/player?videoId=hPscNgwrLhZhC5TlJYiK'),
+        uriPrefix: 'https://wowtalent.page.link',
+        link: Uri.parse('https://wowtalent.com/player?videoId=${widget.id}'),
         androidParameters: AndroidParameters(
           packageName: 'com.example.wowtalant',
           minimumVersion: 125,
@@ -125,12 +137,45 @@ class _PostCardState extends State<PostCard> {
       final Uri dynamicUrl = await parameters.buildUrl();
       print(dynamicUrl);
 
-    }else if(choice == Menu.Download){
+    }
+    else if(choice == Menu.Download) {
       print('Download');
-    }else if(choice == Menu.Forward){
+      final directory = await getExternalStorageDirectories();
+      print(directory[0].path);
+      Scaffold.of(context).showSnackBar(
+          SnackBar(
+            duration: Duration(milliseconds: 1000),
+            content: Text('Download Started'),
+          )
+      );
+      Dio dio = Dio();
+      String time = DateTime.now().toString();
+      try{
+        Navigator.pop(context);
+        await dio.download(
+            widget.videoUrl,
+            '${directory[0].path}/${time.substring(0,time.lastIndexOf("."))}/video.mp4',
+            onReceiveProgress:(received,total){
+              if(total == received){
+                Scaffold.of(context).showSnackBar(
+                    SnackBar(
+                      duration: Duration(milliseconds: 1000),
+                      content: Text('Download Completed'),
+                    )
+                );
+              }
+            });
+      }catch(e){
+        print(e.toString());
+      }
+
+    }
+    else if(choice == Menu.Forward){
       print('Forward');
+      Navigator.pop(context);
     }
   }
+
   void setup() async{
     DocumentSnapshot user = await _userInfoStore.getUserInfo(
         uid: widget.video.data()['uploaderUid']
@@ -147,11 +192,10 @@ class _PostCardState extends State<PostCard> {
     }
   }
 
-
-
   @override
   void initState() {
     super.initState();
+
     setup();
   }
 
@@ -166,7 +210,7 @@ class _PostCardState extends State<PostCard> {
       height: _size.height * 0.4,
       width: _size.width * 0.9,
       decoration: BoxDecoration(
-        color: Colors.white,
+        color: AppTheme.elevationColor,
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(25),
           bottomLeft: Radius.circular(25),
@@ -207,7 +251,8 @@ class _PostCardState extends State<PostCard> {
                         widget.title,
                         style: TextStyle(
                           fontWeight: FontWeight.w500,
-                          fontSize: _fontOne * 14
+                          fontSize: _fontOne * 14,
+                          color: AppTheme.pureWhiteColor,
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
@@ -231,7 +276,7 @@ class _PostCardState extends State<PostCard> {
                       child: Icon(
                         Icons.more_horiz,
                         color: Colors.grey,
-                        size: _iconOne * 20
+                        size: _iconOne * 30
                       ),
                       onTapDown: (TapDownDetails details) {
                         _button(details.globalPosition);
@@ -272,7 +317,7 @@ class _PostCardState extends State<PostCard> {
                       topRight: Radius.circular(15),
                       bottomLeft: Radius.circular(15),
                     ),
-                    color: Colors.black12,
+                    color: AppTheme.backgroundColor,
                     image: DecorationImage(
                       fit: BoxFit.cover,
                       image: NetworkImage(
@@ -299,10 +344,12 @@ class _PostCardState extends State<PostCard> {
                           SvgPicture.asset(
                             "assets/images/love_icon.svg",
                             width: 20,
+                            color: Colors.red,
                           )
                           :SvgPicture.asset(
                             "assets/images/loved_icon.svg",
                             width: 20,
+                            color: Colors.red,
                           ),
                           onTap: () async{
                               if (!_processing) {
@@ -339,7 +386,7 @@ class _PostCardState extends State<PostCard> {
                         style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: _fontOne * 14,
-                            color: Colors.grey
+                            color: Colors.grey,
                         ),
                       ),
                     ],

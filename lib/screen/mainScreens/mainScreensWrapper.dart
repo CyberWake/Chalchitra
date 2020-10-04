@@ -210,8 +210,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
       backgroundColor: AppTheme.backgroundColor,
       key: _scaffoldGlobalKey,
       appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: _isMessagePage ? AppTheme.primaryColor:Colors.transparent,
+        backgroundColor: AppTheme.primaryColor,
         title: Container(
           padding: EdgeInsets.symmetric(
               vertical: 10,
@@ -225,7 +224,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
           IconButton(
             icon: Icon(
               Icons.search,
-              color: _isMessagePage? AppTheme.backgroundColor: AppTheme.primaryColor,
+              color: AppTheme.backgroundColor,
               size: _iconOne * 30,
             ),
             onPressed: (){
@@ -248,7 +247,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
           ):IconButton(
             icon: Icon(
               Icons.menu,
-              color: AppTheme.primaryColor,
+              color: AppTheme.elevationColor,
               size: _iconOne * 25,
             ),
             onPressed: () => _scaffoldGlobalKey.currentState.openEndDrawer(),

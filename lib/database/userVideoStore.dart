@@ -103,7 +103,6 @@ class UserVideoStore {
     }
   }
 
-
   static listenToVideos(callback,String uid) async {
     print(uid+' firestore');
     try{
