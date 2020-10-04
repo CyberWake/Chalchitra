@@ -1,17 +1,17 @@
 import 'dart:io';
-import 'package:flutter/cupertino.dart';
-import 'package:path/path.dart' as path;
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:path/path.dart' as path;
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
-import 'package:wowtalent/widgets/dropdownField.dart';
 import 'package:wowtalent/staticData/countryList.dart';
-
+import 'package:wowtalent/widgets/dropdownField.dart';
 
 class EditProfilePage extends StatefulWidget {
   // User id required to open this screen
@@ -48,8 +48,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Size _size;
   String gender;
   String _dob;
-  String url = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
-  String onUrlNull = "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
+  String url =
+      "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
+  String onUrlNull =
+      "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
   String selectedCountry = "";
   String fileName = '';
   String currentUserName;
@@ -76,9 +78,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         child: Stack(
           children: [
             Container(
-              margin: EdgeInsets.only(
-                top: _size.height * 0.1
-              ),
+              margin: EdgeInsets.only(top: _size.height * 0.1),
               decoration: BoxDecoration(
                 color: AppTheme.backgroundColor,
                 borderRadius: BorderRadius.only(
@@ -96,66 +96,68 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: loading
                   ? LinearProgressIndicator()
                   : ListView(children: <Widget>[
-                    Container(
-                        padding: EdgeInsets.all(20),
-                        child: Column(
-                      children: <Widget>[
-                        Container(
-                          color: AppTheme.backgroundColor,
-                          padding: EdgeInsets.only(top: 40),
-                          child: Column(children: <Widget>[
-                            getFieldContainer(
-                                [
-                                  createProfileNameField(),
-                                  createUsernameField(),
-                                  createBioField(),
-                                ]
-                            ),
-                            SizedBox(
-                              height: 20,
-                            ),
-                            getFieldContainer(
-                                [
-                                  createCountryField(),
-                                  createGenderField(),
-                                  createDOBField(),
-                                ]
-                            ),
-                            // createGenderField()
-                          ]),
-                        ),
-                        SizedBox(
-                          height: 20,
-                        ),
-                        InkWell(
-                          onTap: _updateButton
-                              ? updateUserProfile
-                              :()=>Navigator.pop(context),
-                          child: Container(
-                            height: 50,
-                            margin: EdgeInsets.symmetric(horizontal: 10),
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(50),
-                              color: AppTheme.primaryColor,
-                            ),
-                            child: Center(
-                              child: _updateButton?
-                              Text("Update", style: TextStyle(color: Colors
-                                  .white,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.5,
-                                  fontSize: 17),):
-                              Text("Back", style: TextStyle(color: Colors
-                                  .white,
-                                  fontWeight: FontWeight.bold,
-                                  letterSpacing: 1.5,
-                                  fontSize: 17),)
-                            ),
-                          ),
-                        ),
-                      ],
-                    ))
-                  ]),
+                      Container(
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                color: AppTheme.backgroundColor,
+                                padding: EdgeInsets.only(top: 40),
+                                child: Column(children: <Widget>[
+                                  getFieldContainer([
+                                    createProfileNameField(),
+                                    createUsernameField(),
+                                    createBioField(),
+                                  ]),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getFieldContainer([
+                                    createCountryField(),
+                                    createGenderField(),
+                                    createDOBField(),
+                                  ]),
+                                  // createGenderField()
+                                ]),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              InkWell(
+                                onTap: _updateButton
+                                    ? updateUserProfile
+                                    : () => Navigator.pop(context),
+                                child: Container(
+                                  height: 50,
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                  child: Center(
+                                      child: _updateButton
+                                          ? Text(
+                                              "Update",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.5,
+                                                  fontSize: 17),
+                                            )
+                                          : Text(
+                                              "Back",
+                                              style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  letterSpacing: 1.5,
+                                                  fontSize: 17),
+                                            )),
+                                ),
+                              ),
+                            ],
+                          ))
+                    ]),
             ),
             Container(
               margin: EdgeInsets.only(
@@ -164,7 +166,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
               child: CircleAvatar(
                 backgroundImage:
-                url == onUrlNull?NetworkImage(url):NetworkImage(onUrlNull),
+                    url == "" ? NetworkImage(onUrlNull) : NetworkImage(url),
                 radius: 50.0,
               ),
             ),
@@ -175,25 +177,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 setState(() {
                   fileName = path.basename(file.path);
                 });
-                StorageReference storageReference = FirebaseStorage
-                    .instance
-                    .ref()
-                    .child("images/"+user.id);
-                StorageUploadTask uploadTask =
-                storageReference.putFile(file);
+                StorageReference storageReference =
+                    FirebaseStorage.instance.ref().child("images/" + user.id);
+                StorageUploadTask uploadTask = storageReference.putFile(file);
 
                 final StorageTaskSnapshot downloadUrl =
-                (await uploadTask.onComplete);
+                    (await uploadTask.onComplete);
                 url = (await downloadUrl.ref.getDownloadURL());
-                await ref.doc(widget.uid).update({"photoUrl": url,});
-                setState((){
+                _scaffoldGlobalKey.currentState.showSnackBar(
+                    SnackBar(content: Text('Profile Picture Updated')));
+                setState(() {
+                  print("setstate called");
+                });
+                await ref.doc(widget.uid).update({
+                  "photoUrl": url,
                 });
               },
               child: Container(
                 decoration: BoxDecoration(
-                  color: Colors.orange.shade800,
-                  borderRadius: BorderRadius.circular(50)
-                ),
+                    color: Colors.orange.shade800,
+                    borderRadius: BorderRadius.circular(50)),
                 padding: EdgeInsets.all(2.5),
                 margin: EdgeInsets.only(
                   top: _size.height * 0.05,
@@ -211,8 +214,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     );
   }
 
-
-  getFieldContainer(List<Widget> fields){
+  getFieldContainer(List<Widget> fields) {
     return Container(
       decoration: BoxDecoration(
         color: AppTheme.backgroundColor,
@@ -230,7 +232,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     });
     DocumentSnapshot documentSnapshot = await ref.doc(widget.uid).get();
     user = UserDataModel.fromDocument(documentSnapshot);
-    url = user.photoUrl;
+    url = user.photoUrl ?? "";
     currentUserName = user.username;
     usernameController.text = user.username;
     nameController.text = user.displayName;
@@ -239,11 +241,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
     print(countryController.text);
     _dob = user.dob;
     gender = user.gender;
-    switch(gender){
-      case "Male": _selectedGender = 0;break;
-      case "FeMale": _selectedGender = 1;break;
-      case "Others": _selectedGender = 2;break;
-      case "Prefer not to say": _selectedGender = 3;break;
+    switch (gender) {
+      case "Male":
+        _selectedGender = 0;
+        break;
+      case "FeMale":
+        _selectedGender = 1;
+        break;
+      case "Others":
+        _selectedGender = 2;
+        break;
+      case "Prefer not to say":
+        _selectedGender = 3;
+        break;
     }
     setState(() {
       loading = false;
@@ -257,17 +267,17 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
     setState(() {
       usernameController.text.trim().length < 3 ||
-          usernameController.text.isEmpty
+              usernameController.text.isEmpty
           ? _usernameValid = false
           : _usernameValid = true;
 
       nameController.text.isEmpty ? _nameValid = false : _nameValid = true;
     });
     if (currentUserName != usernameController.text) {
-      validUsername = await _userInfoStore.isUsernameNew(
-          username: usernameController.text);
+      validUsername =
+          await _userInfoStore.isUsernameNew(username: usernameController.text);
       print(validUsername);
-    }else{
+    } else {
       validUsername = true;
     }
 
@@ -297,8 +307,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
       _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
       print('updated successfully');
-    }
-    else if(!validUsername){
+    } else if (!validUsername) {
       SnackBar successSnackBar = SnackBar(
         content: Text('Username Already Taken!!'),
       );
@@ -311,14 +320,20 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Container(
       padding: EdgeInsets.all(10.0),
       child: TextFormField(
-        style: TextStyle(color: AppTheme.pureWhiteColor,),
+        style: TextStyle(
+          color: AppTheme.pureWhiteColor,
+        ),
         controller: usernameController,
         decoration: authInputFormatting.copyWith(
             hintText: "Username",
             labelText: 'Username',
             fillColor: AppTheme.backgroundColor,
-            hintStyle: TextStyle(color: AppTheme.pureWhiteColor,),
-            labelStyle: TextStyle(color: AppTheme.pureWhiteColor,),
+            hintStyle: TextStyle(
+              color: AppTheme.pureWhiteColor,
+            ),
+            labelStyle: TextStyle(
+              color: AppTheme.pureWhiteColor,
+            ),
             filled: true,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -332,23 +347,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 width: 2.0,
               ),
             ),
-            errorText: _usernameValid ? null : 'Username is too sort!'
-        ),
+            errorText: _usernameValid ? null : 'Username is too sort!'),
       ),
     );
   }
+
   // Creating profile name field
   createProfileNameField() {
     return Container(
       padding: EdgeInsets.all(10.0),
       child: TextFormField(
-        style: TextStyle(color: AppTheme.pureWhiteColor,),
+        style: TextStyle(
+          color: AppTheme.pureWhiteColor,
+        ),
         controller: nameController,
         decoration: authInputFormatting.copyWith(
             hintText: "Profile Name",
             fillColor: AppTheme.backgroundColor,
-            hintStyle: TextStyle(color: AppTheme.pureWhiteColor,),
-            labelStyle: TextStyle(color: AppTheme.pureWhiteColor,),
+            hintStyle: TextStyle(
+              color: AppTheme.pureWhiteColor,
+            ),
+            labelStyle: TextStyle(
+              color: AppTheme.pureWhiteColor,
+            ),
             filled: true,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
@@ -357,30 +378,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                color: AppTheme.primaryColor,
-                width: 2.0
-              ),
+              borderSide: BorderSide(color: AppTheme.primaryColor, width: 2.0),
             ),
             labelText: 'Profile Name',
-            errorText: _nameValid ? null : 'Profile name cannot be empty!'
-        ),
+            errorText: _nameValid ? null : 'Profile name cannot be empty!'),
       ),
     );
   }
+
   // Creating bio field
   createBioField() {
     return Container(
       padding: EdgeInsets.all(10.0),
       child: TextFormField(
-        style: TextStyle(color: AppTheme.pureWhiteColor,),
+        style: TextStyle(
+          color: AppTheme.pureWhiteColor,
+        ),
         controller: bioController,
-        decoration:  authInputFormatting.copyWith(
+        decoration: authInputFormatting.copyWith(
           hintText: "Your Bio",
           labelText: 'Your Bio',
           fillColor: AppTheme.backgroundColor,
-          hintStyle: TextStyle(color: AppTheme.pureWhiteColor,),
-          labelStyle: TextStyle(color: AppTheme.pureWhiteColor,),
+          hintStyle: TextStyle(
+            color: AppTheme.pureWhiteColor,
+          ),
+          labelStyle: TextStyle(
+            color: AppTheme.pureWhiteColor,
+          ),
           filled: true,
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
@@ -390,7 +414,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-                color: AppTheme.primaryColor,
+              color: AppTheme.primaryColor,
               width: 2.0,
             ),
           ),
@@ -398,21 +422,22 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ),
     );
   }
+
   //Gender
   createGenderField() {
     return Stack(
       children: <Widget>[
         Container(
           margin: EdgeInsets.all(10),
-          padding: const EdgeInsets.only(left:5, top:5, bottom:5),
+          padding: const EdgeInsets.only(left: 5, top: 5, bottom: 5),
           alignment: Alignment.centerLeft,
           width: double.infinity,
           decoration: BoxDecoration(
-            border: Border.all(color: AppTheme.pureWhiteColor,width: 1.0),
+            border: Border.all(color: AppTheme.pureWhiteColor, width: 1.0),
             borderRadius: BorderRadius.circular(5),
           ),
           child: Padding(
-            padding: const EdgeInsets.only(left: 13.0,right: 15),
+            padding: const EdgeInsets.only(left: 13.0, right: 15),
             child: DropdownButtonHideUnderline(
               child: DropdownButton(
                   value: _selectedGender,
@@ -420,34 +445,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   isExpanded: true,
                   items: [
                     DropdownMenuItem(
-                      child: Text("Male",style: TextStyle(color: AppTheme.pureWhiteColor)),
+                      child: Text("Male",
+                          style: TextStyle(color: AppTheme.pureWhiteColor)),
                       value: 0,
                     ),
                     DropdownMenuItem(
-                      child: Text("Female",style: TextStyle(color: AppTheme.pureWhiteColor)),
+                      child: Text("Female",
+                          style: TextStyle(color: AppTheme.pureWhiteColor)),
                       value: 1,
                     ),
                     DropdownMenuItem(
-                        child: Text("Others",style: TextStyle(color: AppTheme.pureWhiteColor)),
-                        value: 2
-                    ),
+                        child: Text("Others",
+                            style: TextStyle(color: AppTheme.pureWhiteColor)),
+                        value: 2),
                     DropdownMenuItem(
-                        child: Text("Prefer not to say",style: TextStyle(color: AppTheme.pureWhiteColor)),
-                        value: 3
-                    ),
+                        child: Text("Prefer not to say",
+                            style: TextStyle(color: AppTheme.pureWhiteColor)),
+                        value: 3),
                   ],
                   onChanged: (value) {
                     _selectedGender = value;
-                    switch(_selectedGender){
-                      case 0: gender = "Male";break;
-                      case 1: gender = "Female";break;
-                      case 2: gender = "Others";break;
-                      case 3: gender = "Prefer not to say";break;
+                    switch (_selectedGender) {
+                      case 0:
+                        gender = "Male";
+                        break;
+                      case 1:
+                        gender = "Female";
+                        break;
+                      case 2:
+                        gender = "Others";
+                        break;
+                      case 3:
+                        gender = "Prefer not to say";
+                        break;
                     }
                     FocusScope.of(context).requestFocus(FocusNode());
-                    setState(() {
-
-                    });
+                    setState(() {});
                   }),
             ),
           ),
@@ -458,10 +491,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
             color: AppTheme.backgroundColor,
             margin: EdgeInsets.only(left: 15),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
               child: Text(
                 'Gender',
-                style: TextStyle(color: AppTheme.pureWhiteColor,fontSize: 13),
+                style: TextStyle(color: AppTheme.pureWhiteColor, fontSize: 13),
               ),
             ),
           ),
@@ -469,6 +503,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ],
     );
   }
+
   //Country
   createCountryField() {
     return Stack(
@@ -478,24 +513,28 @@ class _EditProfilePageState extends State<EditProfilePage> {
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
             color: AppTheme.backgroundColor,
-            border: Border.all(color: AppTheme.pureWhiteColor,width: 1),
+            border: Border.all(color: AppTheme.pureWhiteColor, width: 1),
             borderRadius: BorderRadius.circular(5),
           ),
           child: DropDownField(
-            textStyle: TextStyle(color: AppTheme.pureWhiteColor,),
-            hintStyle: TextStyle(color: AppTheme.pureWhiteColor,),
+            textStyle: TextStyle(
+              color: AppTheme.pureWhiteColor,
+            ),
+            hintStyle: TextStyle(
+              color: AppTheme.pureWhiteColor,
+            ),
             hintText: "Country",
             controller: countryController,
             value: countryController.text,
             items: countries,
-            onValueChanged: (value){
+            onValueChanged: (value) {
               FocusScope.of(context).unfocus();
               setState(() {
                 selectedCountry = value;
                 countryController.text = value;
               });
             },
-            setter: (value){
+            setter: (value) {
               FocusScope.of(context).unfocus();
               print(countryController.text);
               countryController.text = value;
@@ -508,10 +547,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
             color: AppTheme.backgroundColor,
             margin: EdgeInsets.only(left: 15),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
               child: Text(
                 'Country',
-                style: TextStyle(color: AppTheme.pureWhiteColor,fontSize: 13),
+                style: TextStyle(color: AppTheme.pureWhiteColor, fontSize: 13),
               ),
             ),
           ),
@@ -519,6 +559,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       ],
     );
   }
+
   // Creating date of birth field
   Future<void> _selectDate(BuildContext context) async {
     final DateTime picked = await showDatePicker(
@@ -529,24 +570,29 @@ class _EditProfilePageState extends State<EditProfilePage> {
     if (picked != null)
       setState(() {
         pickedDate = picked;
-        _dob = pickedDate.day.toString()+"-"+pickedDate.month.toString()+"-"+pickedDate.year.toString();
+        _dob = pickedDate.day.toString() +
+            "-" +
+            pickedDate.month.toString() +
+            "-" +
+            pickedDate.year.toString();
       });
   }
+
   createDOBField() {
     return Stack(
       children: <Widget>[
         Container(
           margin: EdgeInsets.all(10),
-          padding: const EdgeInsets.symmetric(horizontal: 10,vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           alignment: Alignment.centerLeft,
           width: double.infinity,
           height: _size.height * 0.075,
           decoration: BoxDecoration(
-            border: Border.all(color: AppTheme.pureWhiteColor,width: 1),
+            border: Border.all(color: AppTheme.pureWhiteColor, width: 1),
             borderRadius: BorderRadius.circular(5),
           ),
           child: InkWell(
-            onTap:(){
+            onTap: () {
               FocusScope.of(context).requestFocus(FocusNode());
               _selectDate(context);
             },
@@ -554,8 +600,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
               alignment: Alignment.centerLeft,
               child: Padding(
                 padding: EdgeInsets.only(left: 4.0),
-                child: Text(_dob == null?"Please Provide your Date of Birth":_dob,
-                  style: TextStyle(fontSize: 16,color: AppTheme.pureWhiteColor),),
+                child: Text(
+                  _dob == null ? "Please Provide your Date of Birth" : _dob,
+                  style:
+                      TextStyle(fontSize: 16, color: AppTheme.pureWhiteColor),
+                ),
               ),
             ),
           ),
@@ -566,10 +615,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
             color: AppTheme.backgroundColor,
             margin: EdgeInsets.only(left: 15),
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5.0,vertical: 3.0),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
               child: Text(
                 'Date of Birth',
-                style: TextStyle(color: AppTheme.pureWhiteColor,fontSize: 13),
+                style: TextStyle(color: AppTheme.pureWhiteColor, fontSize: 13),
               ),
             ),
           ),

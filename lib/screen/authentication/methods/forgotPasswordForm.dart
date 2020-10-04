@@ -38,48 +38,51 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
           horizontal: _widthOne * 100,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 8,
+            ),
             _emailField(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             _submitButton(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 15,
+            ),
             InkWell(
-              onTap: (){
+              onTap: () {
                 widget.changeMethod(AuthIndex.LOGIN);
               },
               child: Text(
                 "Already Have an account? \nTap here to login.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
+                style: TextStyle(color: Colors.black, fontSize: _fontOne * 15),
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: _heightOne * 30,),
+            SizedBox(
+              height: _heightOne * 40,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _emailField(){
-    return  FormFieldFormatting.formFieldContainer(
+  Widget _emailField() {
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
         onChanged: (val) {
           _userDataModel.email = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Email",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Email", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -87,6 +90,7 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
       leftPadding: _widthOne * 20,
     );
   }
+
   showAlertDialog(BuildContext context, String message) {
     // Create button
     Widget okButton = FlatButton(
@@ -115,20 +119,22 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
     );
   }
 
-  Widget _submitButton(){
+  Widget _submitButton() {
     return FlatButton(
-        onPressed: () async{
-          if(_formKey.currentState.validate()){
-            bool validEmail = await _userInfoStore.emailExists(
-                email: _userDataModel.email
-            );
+        onPressed: () async {
+          if (_formKey.currentState.validate()) {
+            bool validEmail =
+                await _userInfoStore.emailExists(email: _userDataModel.email);
             if (validEmail) {
               final result = await _user.resetPassword(_userDataModel.email);
-              showAlertDialog(context, result,);
-            }else{
+              showAlertDialog(
+                context,
+                result,
+              );
+            } else {
               showAlertDialog(context, "Email does not exist!");
             }
-          }else{
+          } else {
             setState(() {
               _submitted = true;
             });
@@ -136,21 +142,14 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(
-                color: Colors.orange.withOpacity(0.75),
-                width: _widthOne * 5
-            )
-        ),
+            side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
         splashColor: Colors.orange[100],
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.29
-        ),
+        padding: EdgeInsets.symmetric(horizontal: _size.width * 0.277),
         child: Text(
           "Submit",
           style: TextStyle(
-            color: Colors.orange.withOpacity(0.75),
+            color: Color(0xFFFFCF40),
           ),
-        )
-    );
+        ));
   }
 }

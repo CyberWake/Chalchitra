@@ -7,7 +7,6 @@ import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/videoPreviewScreen.dart';
 
-
 class VideoUploader extends StatefulWidget {
   VideoUploader({Key key, this.title}) : super(key: key);
 
@@ -17,12 +16,13 @@ class VideoUploader extends StatefulWidget {
   _VideoUploaderState createState() => _VideoUploaderState();
 }
 
-class _VideoUploaderState extends State<VideoUploader> with SingleTickerProviderStateMixin {
-  final GlobalKey<ScaffoldState> _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+class _VideoUploaderState extends State<VideoUploader>
+    with SingleTickerProviderStateMixin {
+  final GlobalKey<ScaffoldState> _scaffoldGlobalKey =
+      GlobalKey<ScaffoldState>();
   MediaInfo videoInfo;
   bool _selected = false;
   bool _videoCheckOK = false;
-
 
   PickedFile videoFile;
 
@@ -45,130 +45,126 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
     ..strokeWidth = 1.0;
 
   void _takeVideo(context, source) async {
-    videoFile = await ImagePicker().getVideo(
-        source: source, maxDuration: const Duration(seconds: 300));
+    videoFile = await ImagePicker()
+        .getVideo(source: source, maxDuration: const Duration(seconds: 300));
 
     if (videoFile == null) return;
-    setState(() {
-      _selected = true;
-    });
     videoInfo = await VideoCompress.getMediaInfo(videoFile.path);
     print(videoInfo.duration);
-    if(videoInfo.duration >= 90000.0 && videoInfo.duration <= 300000.0)
-    {
+    if (videoInfo.duration >= 90000.0 && videoInfo.duration <= 300000.0) {
       setState(() {
+        _selected = true;
         _videoCheckOK = true;
       });
-    }else{
-      Scaffold.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  videoInfo.duration < 90000
-                  ?"Select a video greater than 90 seconds duration"
-                      :"Select a video less than 300 seconds duration"),
-          )
-      );
+    } else {
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(videoInfo.duration < 90000
+            ? "Select a video greater than 90 seconds duration"
+            : "Select a video less than 300 seconds duration"),
+      ));
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      key: _scaffoldGlobalKey,
-        body: Stack(
-          children: [
-            AnimatedBackground(
-              behaviour: RandomParticleBehaviour(
+        backgroundColor: AppTheme.backgroundColor,
+        key: _scaffoldGlobalKey,
+        body: Stack(children: [
+          AnimatedBackground(
+            behaviour: RandomParticleBehaviour(
               options: particleOptions,
-                paint: particlePaint,
-              ),
-              vsync: this,
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.all(50),
-                  decoration: BoxDecoration(
-                      color: AppTheme.elevationColor,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.15),
-                          blurRadius: 20,
-                          offset: Offset(0, 10),
-                        )
-                      ]),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Showcase your Talent",
-                        style: TextStyle(fontWeight: FontWeight.bold,color: AppTheme.pureWhiteColor),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      _selected
-                          ? SizedBox()
-                          : Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          FlatButton(
-                              onPressed: () {
-                                _takeVideo(context, ImageSource.camera);
-                              },
-                              shape: RoundedRectangleBorder(
-                                  side:
-                                  BorderSide(color: AppTheme.primaryColor,),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Text("Turn on Camera",style: TextStyle(color: AppTheme.pureWhiteColor,))
+              paint: particlePaint,
+            ),
+            vsync: this,
+            child: Center(
+              child: Container(
+                padding: EdgeInsets.all(50),
+                decoration: BoxDecoration(
+                    color: AppTheme.elevationColor,
+                    borderRadius: BorderRadius.circular(25),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.white.withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: Offset(0, 10),
+                      )
+                    ]),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Showcase your Talent",
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.pureWhiteColor),
+                    ),
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    _videoCheckOK
+                        ? FlatButton(
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (context) => VideoPreview(
+                                            videoFile: videoFile,
+                                          )));
+                              print("go to preview screen");
+                              setState(() {
+                                _videoCheckOK = false;
+                              });
+                            },
+                            shape: RoundedRectangleBorder(
+                                side: BorderSide(
+                                  color: AppTheme.primaryColor,
+                                ),
+                                borderRadius: BorderRadius.circular(5)),
+                            child: Text("Next",
+                                style: TextStyle(
+                                  color: AppTheme.pureWhiteColor,
+                                )))
+                        : Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              FlatButton(
+                                  onPressed: () {
+                                    _takeVideo(context, ImageSource.camera);
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Text("Turn on Camera",
+                                      style: TextStyle(
+                                        color: AppTheme.pureWhiteColor,
+                                      ))),
+                              FlatButton(
+                                  onPressed: () {
+                                    _takeVideo(context, ImageSource.gallery);
+                                  },
+                                  shape: RoundedRectangleBorder(
+                                      side: BorderSide(
+                                        color: AppTheme.primaryColor,
+                                      ),
+                                      borderRadius: BorderRadius.circular(5)),
+                                  child: Text("Pick from Gallery",
+                                      style: TextStyle(
+                                        color: AppTheme.pureWhiteColor,
+                                      ))),
+                            ],
                           ),
-                          FlatButton(
-                              onPressed: () {
-                                _takeVideo(context, ImageSource.gallery);
-                              },
-                              shape: RoundedRectangleBorder(
-                                  side:
-                                  BorderSide(color: AppTheme.primaryColor,),
-                                  borderRadius: BorderRadius.circular(5)),
-                              child: Text("Pick from Gallery",style: TextStyle(color: AppTheme.pureWhiteColor,))
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      _videoCheckOK ? FlatButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) =>
-                                        VideoPreview(
-                                          videoFile: videoFile,
-                                        )
-                                )
-                            );
-                            print("go to next screen");
-                            _videoCheckOK = false;
-                            _selected = false;
-                          },
-                          shape: RoundedRectangleBorder(
-                              side:
-                              BorderSide(color: AppTheme.primaryColor,),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text("Next",style: TextStyle(color: AppTheme.pureWhiteColor,))
-                      ): SizedBox()
-                    ],
-                  ),
+                  ],
                 ),
-                /*_encodingVideo
+              ),
+              /*_encodingVideo
                   ? _getProgressBar()
                   : */
-              ),
             ),
-          ]
-        )
-    );
+          ),
+        ]));
   }
 }

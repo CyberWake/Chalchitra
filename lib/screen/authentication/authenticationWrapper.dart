@@ -18,39 +18,54 @@ class _AuthenticationState extends State<Authentication> {
   double _fontOne;
   Size _size;
 
-  void _changeMethod(AuthIndex val){
+  void _changeMethod(AuthIndex val) {
     setState(() {
       widget.index = val;
       //widget._isLogin = value;
     });
   }
-  topText(){
-    if(widget.index == AuthIndex.LOGIN) {
+
+  topText() {
+    if (widget.index == AuthIndex.LOGIN) {
       return "LOGIN";
-    }else if(widget.index == AuthIndex.REGISTER) {
+    } else if (widget.index == AuthIndex.REGISTER) {
       return "REGISTER";
-    }else if(widget.index == AuthIndex.FORGOT) {
-      return "FORGOT\nPASSWORD";
+    } else if (widget.index == AuthIndex.FORGOT) {
+      return "FORGOT PASSWORD";
     }
   }
-  greetingText(){
-    switch(widget.index){
-      case AuthIndex.LOGIN: return "Welcome Back.";break;
-      case AuthIndex.FORGOT: return "We are always there to help";break;
-      case AuthIndex.REGISTER: return "We'll be glad if you join us.";break;
+
+  greetingText() {
+    switch (widget.index) {
+      case AuthIndex.LOGIN:
+        return "Welcome Back.";
+        break;
+      case AuthIndex.FORGOT:
+        return "We are always there to help";
+        break;
+      case AuthIndex.REGISTER:
+        return "We'll be glad if you join us.";
+        break;
     }
   }
-  authPage(){
-    switch(widget.index){
-      case AuthIndex.LOGIN: return LoginForm(
-        changeMethod: _changeMethod,
-      );break;
-      case AuthIndex.FORGOT: return ForgotPasswordForm(
-        changeMethod: _changeMethod,
-      );break;
-      case AuthIndex.REGISTER: return RegisterForm(
-        changeMethod: _changeMethod,
-      );break;
+
+  authPage() {
+    switch (widget.index) {
+      case AuthIndex.LOGIN:
+        return LoginForm(
+          changeMethod: _changeMethod,
+        );
+        break;
+      case AuthIndex.FORGOT:
+        return ForgotPasswordForm(
+          changeMethod: _changeMethod,
+        );
+        break;
+      case AuthIndex.REGISTER:
+        return RegisterForm(
+          changeMethod: _changeMethod,
+        );
+        break;
     }
   }
 
@@ -69,20 +84,18 @@ class _AuthenticationState extends State<Authentication> {
             width: _size.width,
             height: _size.height * 0.5,
             decoration: BoxDecoration(
-              gradient: LinearGradient(
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-                colors: [
-                  Colors.orange[300],
-                  Colors.orange[500],
-                  Colors.orange[800],
-                ],
-              ),
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(50),
-                bottomRight: Radius.circular(50)
-              )
-            ),
+                gradient: LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [
+                    Color(0xFFFFCF40),
+                    Color(0xFFFFCF40).withOpacity(0.9),
+                    Color(0xFFFFCF40),
+                  ],
+                ),
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(50),
+                    bottomRight: Radius.circular(50))),
             child: Padding(
               padding: EdgeInsets.only(
                 top: _heightOne * 50,
@@ -94,20 +107,18 @@ class _AuthenticationState extends State<Authentication> {
                   Text(
                     topText(),
                     style: TextStyle(
-                      color: Colors.white,
-                      fontSize: widget.index == AuthIndex.FORGOT
-                          ?_fontOne *40
-                          :_fontOne * 50,
-                      fontWeight: FontWeight.w300
-                    ),
+                        color: Colors.white,
+                        fontSize: widget.index == AuthIndex.FORGOT
+                            ? _fontOne * 35
+                            : _fontOne * 50,
+                        fontWeight: FontWeight.normal),
                   ),
                   Text(
                     greetingText(),
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: _fontOne * 20,
-                        fontWeight: FontWeight.w300
-                    ),
+                        fontWeight: FontWeight.w300),
                   ),
                 ],
               ),
@@ -121,17 +132,17 @@ class _AuthenticationState extends State<Authentication> {
               height: _size.height * 0.7,
               width: _size.width * 0.9,
               decoration: BoxDecoration(
-                color: Colors.white,
-                boxShadow: [BoxShadow(
-                  color: Colors.purple[300].withOpacity(0.4),
-                  offset: Offset(0.0, -10.0), //(x,y)
-                  blurRadius: 15.0,
-                ),],
-                borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(50),
-                    topRight: Radius.circular(50)
-                )
-              ),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple[300].withOpacity(0.4),
+                      offset: Offset(0.0, -10.0), //(x,y)
+                      blurRadius: 15.0,
+                    ),
+                  ],
+                  borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50))),
               child: Center(
                 child: SingleChildScrollView(
                   child: authPage(),

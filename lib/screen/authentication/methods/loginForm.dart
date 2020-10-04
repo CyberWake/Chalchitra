@@ -1,4 +1,4 @@
-  import 'package:flutter/cupertino.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
@@ -43,7 +43,7 @@ class _LoginFormState extends State<LoginForm> {
     return _loginForm ? loginForm() : SocialRegisterUsername();
   }
 
-  Widget loginForm(){
+  Widget loginForm() {
     return Form(
       key: _formKey,
       child: Padding(
@@ -53,80 +53,84 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: _heightOne * 90,),
+            SizedBox(
+              height: _heightOne * 90,
+            ),
             _emailField(),
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             _passwordFiled(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 15,
+            ),
             _loginButton(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 15,
+            ),
             InkWell(
-              onTap: (){
+              onTap: () {
                 widget.changeMethod(AuthIndex.FORGOT);
               },
               child: Text(
                 "Forgot Password?\nReset it here",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
+                style: TextStyle(color: Colors.black, fontSize: _fontOne * 15),
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: _heightOne * 35,),
+            SizedBox(
+              height: _heightOne * 34.2,
+            ),
             Text(
               "Or Login With",
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: _fontOne * 15
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: _fontOne * 15),
             ),
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             AuthButtons.socialLogin(
-              newAccountCallback: (){
-                setState(() {
-                  _loginForm = false;
-                });
-              },
-              context: context,
-              size: _size
+                newAccountCallback: () {
+                  setState(() {
+                    _loginForm = false;
+                  });
+                },
+                context: context,
+                size: _size),
+            SizedBox(
+              height: _heightOne * 20,
             ),
-            SizedBox(height: _heightOne * 30,),
             InkWell(
-              onTap: (){
+              onTap: () {
                 widget.changeMethod(AuthIndex.REGISTER);
               },
               child: Text(
                 "Don't Have an account? \nTap here to register.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
+                style: TextStyle(color: Colors.black, fontSize: _fontOne * 15),
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: _heightOne * 30,),
+            SizedBox(
+              height: _heightOne * 30,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _emailField(){
+  Widget _emailField() {
     return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
         onChanged: (val) {
           _userDataModel.email = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Email",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Email", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -135,21 +139,19 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget _passwordFiled(){
+  Widget _passwordFiled() {
     return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
         validator: FormValidation.validateLoginPassword,
         onChanged: (val) {
           _userDataModel.password = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Password",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Password", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -158,38 +160,32 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget _loginButton(){
+  Widget _loginButton() {
     return FlatButton(
-        onPressed: () async{
-          if(_formKey.currentState.validate()){
-            await _userAuth.signInWithEmailAndPassword(
+        onPressed: () async {
+          if (_formKey.currentState.validate()) {
+            await _userAuth
+                .signInWithEmailAndPassword(
               email: _userDataModel.email,
               password: _userDataModel.password,
-            ).then((result){
-              if(result == null){
+            )
+                .then((result) {
+              if (result == null) {
                 Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Something went wrong try again')
-                    )
-                );
-              }else if(result == "success"){
+                    SnackBar(content: Text('Something went wrong try again')));
+              } else if (result == "success") {
                 Navigator.pushReplacement(
                     context,
                     MaterialPageRoute(
                         builder: (_) => MainScreenWrapper(
-                          index: 0,
-                        )
-                    )
-                );
-              }else{
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(result)
-                    )
-                );
+                              index: 0,
+                            )));
+              } else {
+                Scaffold.of(context)
+                    .showSnackBar(SnackBar(content: Text(result)));
               }
             });
-          }else{
+          } else {
             setState(() {
               _submitted = true;
             });
@@ -197,21 +193,14 @@ class _LoginFormState extends State<LoginForm> {
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(
-                color: Colors.orange.withOpacity(0.75),
-                width: _widthOne * 5
-            )
-        ),
+            side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
         splashColor: Colors.orange[100],
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.3
-        ),
+        padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
         child: Text(
           "Login",
           style: TextStyle(
-            color: Colors.orange.withOpacity(0.75),
+            color: Color(0xFFFFCF40),
           ),
-        )
-    );
+        ));
   }
 }

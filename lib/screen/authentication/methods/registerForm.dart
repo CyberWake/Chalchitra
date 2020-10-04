@@ -40,7 +40,7 @@ class _RegisterFormState extends State<RegisterForm> {
     return _registerForm ? registerForm() : SocialRegisterUsername();
   }
 
-  Widget registerForm(){
+  Widget registerForm() {
     return Form(
       key: _formKey,
       child: Padding(
@@ -50,71 +50,76 @@ class _RegisterFormState extends State<RegisterForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             _userNameField(),
-            SizedBox(height: _heightOne * 10,),
-           _emailField(),
-            SizedBox(height: _heightOne * 10,),
-           _passwordField(),
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
+            _emailField(),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
+            _passwordField(),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             _confirmPasswordField(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 15,
+            ),
             _registerButton(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 30,
+            ),
             Text(
               "Or Register With",
-              style: TextStyle(
-                  color: Colors.grey,
-                  fontSize: _fontOne * 15
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: _fontOne * 15),
             ),
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             AuthButtons.socialLogin(
-                newAccountCallback: (){
+                newAccountCallback: () {
                   setState(() {
                     _registerForm = false;
                   });
                 },
                 context: context,
-                size: _size
+                size: _size),
+            SizedBox(
+              height: _heightOne * 20,
             ),
-            SizedBox(height: _heightOne * 20,),
             InkWell(
-              onTap: (){
+              onTap: () {
                 widget.changeMethod(AuthIndex.LOGIN);
               },
               child: Text(
                 "Already Have an account? \nTap here to login.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
+                style: TextStyle(color: Colors.black, fontSize: _fontOne * 15),
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: _heightOne * 30,),
           ],
         ),
       ),
     );
   }
 
-  Widget _userNameField(){
+  Widget _userNameField() {
     return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
-        validator: (val) => val.isEmpty ? "Username Can't be Empty"
-            : null,
+        validator: (val) => val.isEmpty ? "Username Can't be Empty" : null,
         onChanged: (val) {
           _userDataModel.username = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Username",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Username", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -123,21 +128,19 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _emailField(){
-    return  FormFieldFormatting.formFieldContainer(
+  Widget _emailField() {
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
         onChanged: (val) {
           _userDataModel.email = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Email",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Email", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -146,8 +149,8 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _passwordField(){
-    return  FormFieldFormatting.formFieldContainer(
+  Widget _passwordField() {
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
         validator: FormValidation.validateRegisterPassword,
@@ -166,18 +169,16 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _confirmPasswordField(){
+  Widget _confirmPasswordField() {
     return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
-        validator: (val) => val == _userDataModel.password ? null
+        validator: (val) => val == _userDataModel.password
+            ? null
             : "Password in both fields should match",
-        onChanged: (val) {
-        },
+        onChanged: (val) {},
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Confirm Password",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Confirm Password", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -186,51 +187,40 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _registerButton(){
+  Widget _registerButton() {
     return FlatButton(
-        onPressed: () async{
-          if(_formKey.currentState.validate()){
+        onPressed: () async {
+          if (_formKey.currentState.validate()) {
             bool validUsername = await _userInfoStore.isUsernameNew(
-                username: _userDataModel.username
-            );
-            if(!validUsername){
+                username: _userDataModel.username);
+            if (!validUsername) {
               Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('Username already exists')
-                  )
-              );
-            }
-            else{
-              await _userAuth.registerUserWithEmail(
+                  SnackBar(content: Text('Username already exists')));
+            } else {
+              await _userAuth
+                  .registerUserWithEmail(
                 email: _userDataModel.email,
                 password: _userDataModel.password,
                 username: _userDataModel.username,
-              ).then((result){
-                if(result == null){
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Something went wrong try again')
-                      )
-                  );
-                }else if(result == "success"){
+              )
+                  .then((result) {
+                if (result == null) {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content: Text('Something went wrong try again')));
+                } else if (result == "success") {
                   Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
-                          builder: (_) =>  MainScreenWrapper(
-                            index: 0,
-                          )
-                      )
-                  );
-                }else{
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(result)
-                      )
-                  );
+                          builder: (_) => MainScreenWrapper(
+                                index: 0,
+                              )));
+                } else {
+                  Scaffold.of(context)
+                      .showSnackBar(SnackBar(content: Text(result)));
                 }
               });
             }
-          }else{
+          } else {
             setState(() {
               _submitted = true;
             });
@@ -238,21 +228,14 @@ class _RegisterFormState extends State<RegisterForm> {
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(
-                color: Colors.orange.withOpacity(0.75),
-                width: _widthOne * 5
-            )
-        ),
+            side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
         splashColor: Colors.orange[100],
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.29
-        ),
+        padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
         child: Text(
           "Register",
           style: TextStyle(
-            color: Colors.orange.withOpacity(0.75),
+            color: Color(0xFFFFCF40),
           ),
-        )
-    );
+        ));
   }
 }
