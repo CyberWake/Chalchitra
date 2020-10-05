@@ -222,4 +222,16 @@ class _VideoPreviewState extends State<VideoPreview> {
                   setState(() {
                     _controller.pause();
                     _encodingVideo = true;
-                 
+                  });
+                  await _processVideo(selectedVideo);
+                },
+                child: Text(_encodingVideo ? 'Encoding..' : 'Encode',
+                    style: TextStyle(color: Colors.white, fontSize: 20)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}

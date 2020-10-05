@@ -74,7 +74,6 @@ class _AuthenticationState extends State<Authentication> {
     _size = MediaQuery.of(context).size;
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
-
     return Scaffold(
       extendBodyBehindAppBar: true,
       backgroundColor: Colors.white,
