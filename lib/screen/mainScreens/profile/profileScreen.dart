@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -412,6 +414,7 @@ class _ProfilePageState extends State <ProfilePage> {
                             child: Text(
                               user.displayName != null ? user.displayName.length>19? getChoppedUsername(user.displayName):user.displayName : "WowTalent",
                               style: TextStyle(
+                                decoration: Platform.isIOS ? TextDecoration.none:null,
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -423,7 +426,9 @@ class _ProfilePageState extends State <ProfilePage> {
                               Text(
                                 '$_username',
                                 style: TextStyle(
+                                  decoration: Platform.isIOS ? TextDecoration.none:null,
                                   fontWeight: FontWeight.bold,
+                                  fontSize:Platform.isIOS ? 24:null,
                                   color: Colors.grey[400],
                                 ),
                               ),
@@ -467,7 +472,23 @@ class _ProfilePageState extends State <ProfilePage> {
   Container createButtonTitleORFunction({String title, Function function}) {
     return Container(
         padding: EdgeInsets.only(top: 5),
-        child: RaisedButton(
+        child: Platform.isIOS ? CupertinoButton(
+          borderRadius: BorderRadius.circular(30),
+          color: CupertinoTheme.of(context).primaryColor,
+            onPressed: () async{
+              await function();
+              await getFollowers();
+              setState(() {
+              });
+            },
+          child:Text(title,
+              style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 16
+              )
+          ),
+        ) :RaisedButton(
             color: Colors.orange ,
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(
@@ -507,7 +528,9 @@ class _ProfilePageState extends State <ProfilePage> {
               final video = _videos[index];
               return GestureDetector(
                 onTap: () {
-                  Navigator.push(context, MaterialPageRoute(
+                  Navigator.push(context, Platform.isIOS?CupertinoPageRoute(
+                    builder: (context) => Player(video: video,)
+                  ):MaterialPageRoute(
                     builder: (context) {
                       return Player(
                         video: video,

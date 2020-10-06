@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -45,7 +47,17 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
             SizedBox(height: _heightOne * 15,),
             _submitButton(),
             SizedBox(height: _heightOne * 15,),
-            InkWell(
+            Platform.isIOS ? CupertinoButton(
+              onPressed: (){ widget.changeMethod(AuthIndex.LOGIN);},
+              child: Text(
+                "Already Have an account? \nTap here to login.",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: _fontOne * 15
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ) : InkWell(
               onTap: (){
                 widget.changeMethod(AuthIndex.LOGIN);
               },
@@ -66,8 +78,25 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
   }
 
   Widget _emailField(){
-    return  FormFieldFormatting.formFieldContainer(
-      child: TextFormField(
+    return Platform.isIOS ? CupertinoTextField(
+      keyboardType: TextInputType.emailAddress,
+      onChanged: (val) {
+        _userDataModel.email = val;
+        if(_submitted){
+          _formKey.currentState.validate();
+        }
+      },
+      decoration:
+      BoxDecoration(
+          border: Border.all(
+              color: Colors.orange.withOpacity(0.75)
+          ),
+          borderRadius: BorderRadius.circular(15.0)
+      ),
+      placeholderStyle: TextStyle(fontSize: _fontOne*15, color: Colors.orange.withOpacity(0.75)),
+      placeholder: "Enter Email",
+    ) : FormFieldFormatting.formFieldContainer(
+      child:TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
         onChanged: (val) {
@@ -97,6 +126,20 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
     );
 
     // Create AlertDialog
+    CupertinoAlertDialog ios_alert = CupertinoAlertDialog(
+      title: Text("Message"),
+      content: Text(message),
+      actions: [
+        CupertinoDialogAction(
+          child: CupertinoButton(
+            child: Text("OK"),
+            onPressed: (){
+              Navigator.of(context).pop();
+            },
+          ),
+        )
+      ],
+    );
     AlertDialog alert = AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       title: Text("Message"),
@@ -105,9 +148,10 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
         okButton,
       ],
     );
-
     // show the dialog
-    showDialog(
+    Platform.isIOS? showCupertinoDialog(context: context, builder: (context){
+      return ios_alert;
+    }) : showDialog(
       context: context,
       builder: (BuildContext context) {
         return alert;
@@ -116,7 +160,35 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
   }
 
   Widget _submitButton(){
-    return FlatButton(
+    return Platform.isIOS ? CupertinoButton(
+      onPressed: () async{
+        if(_formKey.currentState.validate()){
+          bool validEmail = await _userInfoStore.emailExists(
+              email: _userDataModel.email
+          );
+          print(validEmail);
+          if (validEmail) {
+            final result = await _user.resetPassword(_userDataModel.email);
+            showAlertDialog(context, result,);
+          }else{
+            showAlertDialog(context, "Email does not exist!");
+          }
+        }else{
+          setState(() {
+            _submitted = true;
+          });
+        }
+      },
+        padding: EdgeInsets.symmetric(
+            horizontal: _size.width * 0.29
+        ),
+        child: Text(
+          "Submit",
+          style: TextStyle(
+            color: Colors.orange.withOpacity(0.75),
+          ),
+        )
+    ) :FlatButton(
         onPressed: () async{
           if(_formKey.currentState.validate()){
             bool validEmail = await _userInfoStore.emailExists(

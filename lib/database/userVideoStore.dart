@@ -302,6 +302,7 @@ class UserVideoStore {
         return 0.0;
       }
       else{
+        print(res.docs[0].data()['rating']);
         return res.docs[0].data()['rating'];
       }
     }catch(e){

@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
@@ -51,7 +54,80 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
-    return Scaffold(
+    return Platform.isIOS ? CupertinoPageScaffold(
+      child:Container(
+          padding: EdgeInsets.only(top: _heightOne * 20),
+          height: _size.height,
+          color: Colors.orange,
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(
+                  bottom: _heightOne * 20,
+                  top: _heightOne * 20,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(width: _widthOne * 50,),
+                    CupertinoButton(
+                        child: Icon(
+                          Icons.arrow_back_ios,
+                          color: Colors.white,
+                        ),
+                        onPressed: (){
+                          FocusScope.of(context).unfocus();
+                          Navigator.pop(context);
+                        }
+                    ),
+                    Expanded(child: Container()),
+                    Text(
+                      _loading ?  " " : _userDataModel.username,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _fontOne * 25,
+                        fontWeight: FontWeight.bold,
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                    Expanded(child: Container()),
+                    CircleAvatar(
+                      backgroundColor: Colors.grey,
+                      radius: _iconOne * 25,
+                      backgroundImage: CachedNetworkImageProvider(
+                          _userDataModel.photoUrl == null ?
+                          'https://via.placeholder.com/150' :
+                          _userDataModel.photoUrl
+                      ),
+                    ),
+                    SizedBox(width: _widthOne * 100,)
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: Container(
+                      padding: EdgeInsets.only(top: _heightOne * 20),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(25),
+                            topLeft: Radius.circular(25),
+                          )
+                      ),
+                      child: _loading ? Center(
+                        child: SpinKitCircle(
+                          color: Colors.orange,
+                          size: _fontOne * 60,
+                        ),
+                      ): messages()
+                  )
+              ),
+              sendMessageField()
+            ],
+          )
+      ) ,
+    ) :Scaffold(
       body: Container(
           padding: EdgeInsets.only(top: _heightOne * 20),
           height: _size.height,
@@ -73,7 +149,10 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         Icons.arrow_back_ios,
                         color: Colors.white,
                       ),
-                      onPressed: () => Navigator.pop(context),
+                      onPressed: (){
+                        FocusScope.of(context).unfocus();
+                        Navigator.pop(context);
+                      }
                     ),
                     Expanded(child: Container()),
                     Text(
@@ -161,14 +240,31 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       color: Colors.white,
       child: Row(
         children: <Widget>[
-          IconButton(
+          Platform.isIOS ? CupertinoButton(
+            child: Icon(Icons.photo,size: 25,color: Colors.orange,),
+
+      onPressed: () {},
+    )
+           : IconButton(
             icon: Icon(Icons.photo),
             iconSize: 25,
             color: Colors.orange,
             onPressed: () {},
           ),
           Expanded(
-            child: TextField(
+            child:Platform.isIOS ?
+            CupertinoTextField(
+              controller: controller,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(50),
+                border: Border.all(color: Colors.black),
+              ),
+              placeholder: "Send a Message",
+              onChanged: (val){
+                text = val;
+              },
+
+            ) : TextField(
               controller: controller,
               onChanged: (val){
                 text = val;
@@ -179,7 +275,38 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
               textCapitalization: TextCapitalization.sentences,
             ),
           ),
-          IconButton(
+          Platform.isIOS? CupertinoButton(
+            child: Icon(Icons.send, size: 25,color: Colors.orange,),
+            onPressed: () async{
+              if(text.isEmpty || text.replaceAll(" ", "").length == 0){
+                return;
+              }
+
+              if(_checkChatAlreadyAdded){
+                await _userInfoStore.checkChatExists(
+                    targetUID: widget.targetUID
+                ).then((value) async{
+                  print(value);
+                  if(value == false){
+                    await _userInfoStore.addChatSender(
+                        targetUID: widget.targetUID
+                    );
+                    await _userInfoStore.addChatReceiver(
+                        targetUID: widget.targetUID
+                    );
+                  }
+                });
+                _checkChatAlreadyAdded = false;
+              }
+
+              await _userInfoStore.sendMessage(
+                targetUID: widget.targetUID,
+                message: text,
+              );
+              controller.clear();
+              text = "";
+            },
+          ) : IconButton(
             icon: Icon(Icons.send),
             iconSize: 25,
             color:  Colors.orange,

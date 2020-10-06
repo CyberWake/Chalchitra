@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
@@ -65,7 +66,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 28,fontWeight: FontWeight.bold),
+            style: TextStyle(color: Colors.white, fontSize: 28,fontWeight: FontWeight.bold,decoration: Platform.isIOS ? TextDecoration.none:null),
           ),
         ),
         SizedBox(
@@ -74,7 +75,43 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
         Container(
           margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
           width: MediaQuery.of(context).size.width/2,
-          child: FlatButton(
+          child: Platform.isIOS ? CupertinoButton(
+            child: const Text(
+              'Next',
+              style: TextStyle(fontSize: 20,color: Colors.black),
+            ),
+            color: Colors.white,
+            onPressed: () {
+              if(text == "It's your time to Shine."){
+                text = "90 seconds to fame.";
+                _controller = VideoPlayerController.asset("assets/videos/video2.mp4");
+                _controller.initialize().then((_) {
+                  _controller.setLooping(true);
+                  Timer(Duration(milliseconds: 100), () {
+                    setState(() {
+                      _controller.play();
+                      _visible = true;
+                    });
+                  });
+                });
+              }else if(text == "90 seconds to fame."){
+                text = "Rehearse. Record. Rise.";
+                _controller = VideoPlayerController.asset("assets/videos/video3.mp4");
+                _controller.initialize().then((_) {
+                  _controller.setLooping(true);
+                  Timer(Duration(milliseconds: 100), () {
+                    setState(() {
+                      _controller.play();
+                      _visible = true;
+                    });
+                  });
+                });
+              }else if(text == "Rehearse. Record. Rise."){
+                Navigator.of(context).pushReplacement(CupertinoPageRoute(builder: (context) => MainScreenWrapper(index: 1,)));
+              }
+
+            },
+          ) : FlatButton(
             color: Colors.white,
             padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -122,7 +159,17 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
   }
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Platform.isIOS ?CupertinoPageScaffold(
+      child: Center(
+        child: Stack(
+          children: <Widget>[
+            _getVideoBackground(),
+            _getBackgroundColor(),
+            _getContent(),
+          ],
+        ),
+      ),
+    ) : Scaffold(
       body: Center(
         child: Stack(
           children: <Widget>[

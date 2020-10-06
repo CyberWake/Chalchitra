@@ -1,4 +1,6 @@
-  import 'package:flutter/cupertino.dart';
+  import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
@@ -53,14 +55,26 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: _heightOne * 90,),
+            SizedBox(height: Platform.isIOS ? _heightOne*60 :_heightOne * 90,),
             _emailField(),
             SizedBox(height: _heightOne * 10,),
             _passwordFiled(),
             SizedBox(height: _heightOne * 15,),
             _loginButton(),
             SizedBox(height: _heightOne * 15,),
-            InkWell(
+            Platform.isIOS ? CupertinoButton (
+              onPressed: (){
+                widget.changeMethod(AuthIndex.FORGOT);
+              },
+                child: Text(
+                  "Forgot Password?\nReset it here",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _fontOne * 15
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+            ):InkWell(
               onTap: (){
                 widget.changeMethod(AuthIndex.FORGOT);
               },
@@ -77,6 +91,7 @@ class _LoginFormState extends State<LoginForm> {
             Text(
               "Or Login With",
               style: TextStyle(
+                decoration: TextDecoration.none,
                   color: Colors.grey,
                   fontSize: _fontOne * 15
               ),
@@ -91,8 +106,20 @@ class _LoginFormState extends State<LoginForm> {
               context: context,
               size: _size
             ),
-            SizedBox(height: _heightOne * 30,),
-            InkWell(
+            Platform.isIOS ? Container() : SizedBox(height: _heightOne * 30,),
+            Platform.isIOS ? CupertinoButton(
+              onPressed: (){
+                widget.changeMethod(AuthIndex.REGISTER);
+              },
+                child: Text(
+                  "Don't Have an account? \nTap here to register.",
+                  style: TextStyle(
+                      color: Colors.black,
+                      fontSize: _fontOne * 15
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+            ) :InkWell(
               onTap: (){
                 widget.changeMethod(AuthIndex.REGISTER);
               },
@@ -111,9 +138,11 @@ class _LoginFormState extends State<LoginForm> {
       ),
     );
   }
-
+  bool _errorEmail = false;
+  bool _errorPass = false;
   Widget _emailField(){
-    return FormFieldFormatting.formFieldContainer(
+    return Material(
+        child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
@@ -132,11 +161,12 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _passwordFiled(){
-    return FormFieldFormatting.formFieldContainer(
+    return Material(
+        child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
         validator: FormValidation.validateLoginPassword,
@@ -155,11 +185,65 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _loginButton(){
-    return FlatButton(
+    return Platform.isIOS?CupertinoButton(
+      color: Colors.orange,
+      onPressed: () async{
+        if(_formKey.currentState.validate()){
+          await _userAuth.signInWithEmailAndPassword(
+            email: _userDataModel.email,
+            password: _userDataModel.password,
+          ).then((result){
+            if(result == null){
+              showCupertinoModalPopup(context: context, builder: (_){
+                return CupertinoActionSheet(
+                  cancelButton: CupertinoButton(
+                    child: Text("OK"),
+                    onPressed: (){Navigator.pop(context);},
+                  ),
+                  title: Text("Something went wrong try again later"),
+                );
+              });
+            }else if(result == "success"){
+              Navigator.pushReplacement(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (_) => MainScreenWrapper(
+                        index: 0,
+                      )
+                  )
+              );
+            }else{
+              showCupertinoModalPopup(context: context, builder: (_){
+                return CupertinoActionSheet(
+                  cancelButton: CupertinoButton(
+                    child: Text("OK"),
+                    onPressed: (){Navigator.pop(context);},
+                  ),
+                  title: Text("Something went wrong try again later"),
+                );
+              });
+            }
+          });
+        }else{
+          setState(() {
+            _submitted = true;
+          });
+        }
+      },
+        padding: EdgeInsets.symmetric(
+            horizontal: _size.width * 0.3
+        ),
+        child: Text(
+          "Login",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        )
+    ): FlatButton(
         onPressed: () async{
           if(_formKey.currentState.validate()){
             await _userAuth.signInWithEmailAndPassword(

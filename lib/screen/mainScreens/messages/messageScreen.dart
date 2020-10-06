@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -46,7 +48,92 @@ class _MessageState extends State<Message> {
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
 
-    return Scaffold(
+    return Platform.isIOS ?CupertinoPageScaffold(
+      child: SingleChildScrollView(
+        child: Container(
+          height: _size.height,
+          color: Colors.orange,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Spacer(),
+                    Text(
+                      "Messages",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: _fontOne * 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Spacer(),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  width: _size.width * 0.8,
+                  height: _heightOne * 42.5,
+                  margin: EdgeInsets.only(
+                    bottom: _heightOne * 20,
+                  ),
+                  padding: EdgeInsets.all(_iconOne * 5),
+                  decoration: BoxDecoration(
+                      color: Colors.white, borderRadius: BorderRadius.circular(15)),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: CupertinoTextField(
+                          placeholderStyle: TextStyle(color: Colors.black.withOpacity(0.3)),
+                          placeholder: "Search by username",
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.transparent)
+                          ),
+                          onTap: (){
+                            _updateIsSearch(true);
+                          },
+                          onSubmitted: (val){
+                            setState(() {
+                              _search = val;
+                            });
+                          },
+                        ),
+                      ),
+                      _isSearchActive ? IconButton(
+                        icon: Icon(
+                          Icons.cancel,
+                          color: Colors.orange,
+                        ),
+                        onPressed: (){
+                          _updateIsSearch(false);
+                        },
+                      ) : Container(),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                      padding: EdgeInsets.only(top: _heightOne * 20),
+                      decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(25),
+                            topLeft: Radius.circular(25),
+                          )),
+                      child: _isSearchActive ?
+                      SearchMessage(
+                        userName: _search,
+                      ) : getBody()),
+                ),
+              ]
+          ),
+        ),
+      )
+    ) : Scaffold(
       body: SingleChildScrollView(
         child: Container(
           height: _size.height,
@@ -136,6 +223,7 @@ class _MessageState extends State<Message> {
     return StreamBuilder(
       stream: _userInfoStore.getChats(),
       builder: (context, snapshot) {
+        print(snapshot.data);
         if (!snapshot.hasData) {
           return Center(
             child: SpinKitCircle(
@@ -185,7 +273,9 @@ class _MessageState extends State<Message> {
                  return InkWell(
                    onTap: () {
                      Navigator.push(
-                         context,
+                         context, Platform.isIOS ? CupertinoPageRoute(builder: (_) => ChatDetailPage(
+                       targetUID: values[index],
+                     )):
                          MaterialPageRoute(
                              builder: (_) => ChatDetailPage(
                                targetUID: values[index],

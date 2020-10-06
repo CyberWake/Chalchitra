@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animated_background/animated_background.dart';
 import 'package:animated_background/particles.dart';
 import 'package:flutter/cupertino.dart';
@@ -16,7 +18,7 @@ class VideoUploader extends StatefulWidget {
   _VideoUploaderState createState() => _VideoUploaderState();
 }
 
-class _VideoUploaderState extends State<VideoUploader> with SingleTickerProviderStateMixin {
+class _VideoUploaderState extends State<VideoUploader> with TickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
   MediaInfo videoInfo;
   bool _selected = false;
@@ -59,7 +61,17 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
         _videoCheckOK = true;
       });
     }else{
-      Scaffold.of(context).showSnackBar(
+      Platform.isIOS ? showCupertinoModalPopup(context: context, builder: (_){
+        return
+          CupertinoActionSheet(
+            cancelButton: CupertinoButton(child: Text("OK"),onPressed: (){Navigator.pop(context);},),
+            message:Text(
+              videoInfo.duration < 90000
+                  ?"Select a video greater than 90 seconds duration"
+                  :"Select a video less than 300 seconds duration",style: TextStyle(fontSize: 14),) ,
+
+          );
+      }) :Scaffold.of(context).showSnackBar(
           SnackBar(
               content: Text(
                   videoInfo.duration < 90000
@@ -72,7 +84,96 @@ class _VideoUploaderState extends State<VideoUploader> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Platform.isIOS ? CupertinoPageScaffold(
+      child:Stack(
+          children: [
+            AnimatedBackground(
+              behaviour: RandomParticleBehaviour(
+                options: particleOptions,
+                paint: particlePaint,
+              ),
+              vsync: this,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(50),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.purple.withOpacity(0.15),
+                          blurRadius: 20,
+                          offset: Offset(0, 10),
+                        )
+                      ]),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Showcase your Talent",
+                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      _selected
+                          ? SizedBox()
+                          : Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CupertinoButton(
+                            borderRadius: BorderRadius.circular(25),
+                              onPressed: () {
+                                _takeVideo(context, ImageSource.camera);
+                              },
+                              child: Text("Turn on Camera"),
+                            color: CupertinoTheme.of(context).primaryColor,
+                          ),
+                          SizedBox(height: 25,),
+                          CupertinoButton(
+                            borderRadius: BorderRadius.circular(25),
+                              onPressed: () {
+                                _takeVideo(context, ImageSource.gallery);
+                              },
+                              child: Text("Pick from Gallery"),
+                            color: CupertinoTheme.of(context).primaryColor,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      _videoCheckOK ? CupertinoButton(
+                        color: CupertinoTheme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(25),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        VideoPreview(
+                                          videoFile: videoFile,
+                                        )
+                                )
+                            );
+                            print("go to next screen");
+                            _videoCheckOK = false;
+                            _selected = false;
+                          },
+                          child: Text("Next")
+                      ): SizedBox()
+                    ],
+                  ),
+                ),
+                /*_encodingVideo
+                  ? _getProgressBar()
+                  : */
+              ),
+            ),
+          ]
+      ) ,
+    ) : Scaffold(
       key: _scaffoldGlobalKey,
         body: Stack(
           children: [

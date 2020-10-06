@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -61,13 +63,15 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(height: _heightOne * 15,),
             _registerButton(),
             SizedBox(height: _heightOne * 15,),
-            Text(
+            Container(
+                child: Text(
               "Or Register With",
               style: TextStyle(
+                decoration: TextDecoration.none,
                   color: Colors.grey,
                   fontSize: _fontOne * 15
               ),
-            ),
+            )),
             SizedBox(height: _heightOne * 10,),
             AuthButtons.socialLogin(
                 newAccountCallback: (){
@@ -79,7 +83,19 @@ class _RegisterFormState extends State<RegisterForm> {
                 size: _size
             ),
             SizedBox(height: _heightOne * 20,),
-            InkWell(
+            Platform.isIOS ? CupertinoButton(
+              onPressed: (){
+                widget.changeMethod(AuthIndex.LOGIN);
+              },
+              child:Text(
+                "Already Have an account? \nTap here to login.",
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: _fontOne * 15
+                ),
+                textAlign: TextAlign.center,
+              ) ,
+            ) : InkWell(
               onTap: (){
                 widget.changeMethod(AuthIndex.LOGIN);
               },
@@ -100,7 +116,8 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _userNameField(){
-    return FormFieldFormatting.formFieldContainer(
+    return Material(
+        child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: (val) => val.isEmpty ? "Username Can't be Empty"
@@ -120,11 +137,12 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _emailField(){
-    return  FormFieldFormatting.formFieldContainer(
+    return Material(
+        child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
@@ -143,11 +161,12 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _passwordField(){
-    return  FormFieldFormatting.formFieldContainer(
+    return Material(
+        child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
         validator: FormValidation.validateRegisterPassword,
@@ -163,11 +182,13 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _confirmPasswordField(){
-    return FormFieldFormatting.formFieldContainer(
+    String passCheck;
+    return Material(
+        child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
         validator: (val) => val == _userDataModel.password ? null
@@ -183,11 +204,76 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _registerButton(){
-    return FlatButton(
+    return Platform.isIOS? CupertinoButton(
+      color: Colors.orange,
+      onPressed: () async{
+        if(_formKey.currentState.validate()){
+          bool validUsername = await _userInfoStore.isUsernameNew(
+              username: _userDataModel.username
+          );
+          if(!validUsername){
+            showCupertinoModalPopup(context: context, builder: (_){return CupertinoActionSheet(
+              cancelButton: CupertinoButton(
+                child: Text("OK"),
+                onPressed: (){Navigator.pop(context);},
+              ),
+              title: Text("Username already exists"),
+            );});
+          }
+          else{
+            await _userAuth.registerUserWithEmail(
+              email: _userDataModel.email,
+              password: _userDataModel.password,
+              username: _userDataModel.username,
+            ).then((result){
+              if(result == null){
+                showCupertinoModalPopup(context: context, builder: (_){return CupertinoActionSheet(
+                  cancelButton: CupertinoButton(
+                    child: Text("OK"),
+                    onPressed: (){Navigator.pop(context);},
+                  ),
+                  title: Text("Something went wrong try again"),
+                );});
+              }else if(result == "success"){
+                Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (_) =>  MainScreenWrapper(
+                          index: 0,
+                        )
+                    )
+                );
+              }else{
+                showCupertinoModalPopup(context: context, builder: (_){return CupertinoActionSheet(
+                  cancelButton: CupertinoButton(
+                    child: Text("OK"),
+                    onPressed: (){Navigator.pop(context);},
+                  ),
+                  title: Text(result),
+                );});
+              }
+            });
+          }
+        }else{
+          setState(() {
+            _submitted = true;
+          });
+        }
+      },
+        padding: EdgeInsets.symmetric(
+            horizontal: _size.width * 0.29
+        ),
+        child: Text(
+          "Register",
+          style: TextStyle(
+            color: Colors.white,
+          ),
+        )
+    ) : FlatButton(
         onPressed: () async{
           if(_formKey.currentState.validate()){
             bool validUsername = await _userInfoStore.isUsernameNew(

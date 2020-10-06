@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
@@ -228,7 +230,7 @@ class _PostCardState extends State<PostCard> {
                   children: [
                     GestureDetector(
                       child: Icon(
-                        Icons.more_horiz,
+                        Platform.isIOS ? CupertinoIcons.ellipsis :Icons.more_horiz,
                         color: Colors.grey,
                         size: _iconOne * 20
                       ),
@@ -254,6 +256,17 @@ class _PostCardState extends State<PostCard> {
                 onTap: (){
                   Navigator.push(
                     context,
+                    Platform.isIOS ?
+                        CupertinoPageRoute(
+                          builder: (context) {
+                            VideoInfo video = VideoInfo.fromDocument(widget.video);
+                            video.videoId = widget.id;
+                            return Player(
+                              video: video,
+                            );
+                          },
+                        )
+                        :
                     MaterialPageRoute(
                       builder: (context) {
                         VideoInfo video = VideoInfo.fromDocument(widget.video);
@@ -350,7 +363,11 @@ class _PostCardState extends State<PostCard> {
                       IconButton(
                         onPressed: (){
                           Navigator.push(
-                            context,
+                            context, Platform.isIOS ? CupertinoPageRoute(
+                              builder: (context) => CommentsScreen(
+                                videoId: widget.id,
+                              )
+                          ) :
                             MaterialPageRoute(
                               builder: (context) => CommentsScreen(
                                 videoId: widget.id,
@@ -386,7 +403,30 @@ class _PostCardState extends State<PostCard> {
                         overlayColor: Colors.red.withAlpha(32),
                         overlayShape: RoundSliderOverlayShape(overlayRadius: 18.0),
                       ),
-                      child: Slider(
+                      child: Platform.isIOS?CupertinoSlider(
+                        onChangeEnd: (val) async {
+                          _sliderValue = val;
+                          bool success =
+                          await _userVideoStore.rateVideo(videoID:widget.id,rating: _sliderValue);
+                          if(success){
+                            print('done rating');
+                          }
+                          else{
+                            print('failure');
+                          }
+                        },
+                        onChanged: (val) {
+                          setState(() {
+                            _sliderValue = val;
+                          });
+                        },
+                        value: _sliderValue,
+                        max: 5,
+                        min: 0,
+                        divisions: 5,
+                        activeColor: Colors.orange[400],
+                        thumbColor: Colors.orange[100],
+                      ):Slider(
                         value: _sliderValue,
                         min: 0,
                         max: 5,

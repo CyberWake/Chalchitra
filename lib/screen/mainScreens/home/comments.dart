@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -51,7 +53,111 @@ class _CommentsScreenState extends State<CommentsScreen> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
-    return Scaffold(
+    return Platform.isIOS ?  CupertinoPageScaffold(
+      child: Container(
+          padding: EdgeInsets.only(top: _heightOne * 20),
+          height: _size.height,
+          color: Colors.orange,
+          child: Column(
+            children: [
+              Container(
+                padding: EdgeInsets.only(
+                  bottom: _heightOne * 20,
+                  top: _heightOne * 20,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    SizedBox(width: _widthOne * 50,),
+                    CupertinoButton(
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.white,
+                      ),
+                      onPressed: () => Navigator.pop(context),
+                    ),
+                    Expanded(
+                        child: Text(
+                          "Comments",
+                          style: TextStyle(
+                            decoration: TextDecoration.none,
+                            color: Colors.white,
+                            fontSize: _fontOne * 25,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        )
+                    ),
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(top: _heightOne * 20),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(25),
+                          topLeft: Radius.circular(25),
+                        )
+                    ),
+                    child: getComments(),
+                  )
+              ),
+        Container(
+                padding: EdgeInsets.zero,
+                margin: EdgeInsets.only(bottom: 0),
+                height: 70,
+                color: Colors.white,
+                child: Container(
+                  padding: EdgeInsets.only(bottom:20),
+                  child:Row(
+                  children: <Widget>[
+                    SizedBox(width: _widthOne * 15,),
+                    CircleAvatar(
+                      radius: _iconOne * 18,
+                      backgroundImage: NetworkImage(
+                        _userDataModel.photoUrl == null ?
+                        "https://via.placeholder.com/150" :
+                        _userDataModel.photoUrl,
+                      ),
+                    ),
+                    SizedBox(width: _widthOne * 25,),
+                     Expanded(child:CupertinoTextField(
+                       decoration: BoxDecoration(
+                         borderRadius: BorderRadius.circular(20),
+                       ),
+                        controller: controller,
+                        onChanged: (val){
+                          _comment = val;
+                        },
+                        placeholder: "Post a comment...",
+                        textCapitalization: TextCapitalization.sentences,
+                      ),),
+                    CupertinoButton(
+                      child: Icon(Icons.send,size: 30,color:  Colors.orange,),
+                      onPressed: () async{
+                        if(_comment.isEmpty || _comment.replaceAll(" ", "").length == 0){
+                          return;
+                        }
+                        await _userVideoStore.addVideoComments(
+                          videoID: widget.videoId,
+                          comment: _comment,
+                        );
+                        setState(() {
+                          controller.clear();
+                          _comment = "";
+                        });
+                      },
+                    ),
+                  ],
+                ),)
+              ),
+
+            ],
+          )
+      ),
+    ): Scaffold(
       body: Container(
           padding: EdgeInsets.only(top: _heightOne * 20),
           height: _size.height,
@@ -216,6 +322,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                           Text(
                             snapshot.data.data()["username"] + " \u2022 ",
                             style: TextStyle(
+                              decoration: Platform.isIOS ? TextDecoration.none: null,
                               color: Colors.grey,
                               fontSize: _fontOne * 10,
                               fontWeight: FontWeight.w500,
@@ -224,6 +331,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                           Text(
                             formatDateTime(timestamp),
                             style: TextStyle(
+                              decoration: Platform.isIOS ? TextDecoration.none: null,
                               color: Colors.grey,
                               fontSize: _fontOne * 10,
                               fontWeight: FontWeight.w500,
@@ -235,6 +343,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       Text(
                         comment,
                         style: TextStyle(
+                          decoration: Platform.isIOS ? TextDecoration.none: null,
                           color: Colors.black54,
                           fontSize: _fontOne * 13,
                           fontWeight: FontWeight.w500,

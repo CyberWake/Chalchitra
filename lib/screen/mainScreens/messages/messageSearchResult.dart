@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,9 @@ class MessageSearchResult extends StatelessWidget {
             children: <Widget>[
               GestureDetector(
                   onTap: () => Navigator.push(
-                      context,
+                      context, Platform.isIOS ? CupertinoPageRoute(builder: (context) => ChatDetailPage(
+                    targetUID: eachUser.id,
+                  )):
                       MaterialPageRoute(
                           builder: (context) => ChatDetailPage(
                             targetUID: eachUser.id,

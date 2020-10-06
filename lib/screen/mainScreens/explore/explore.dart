@@ -5,6 +5,7 @@ import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
 import 'package:wowtalent/widgets/categoryWidget.dart';
+import 'dart:io' show Platform;
 
 class Explore extends StatefulWidget {
   @override
@@ -222,7 +223,13 @@ class _ExploreState extends State<Explore> {
           dynamic video = _videos[index];
           return GestureDetector(
             onTap: () {
-              Navigator.push(context, MaterialPageRoute(
+              Navigator.push(context,Platform.isIOS? CupertinoPageRoute(
+                builder: (context){
+                  return Player(
+                    video: video,
+                  );
+                }
+              ) : MaterialPageRoute(
                 builder: (context) {
                   return Player(
                     video: video,

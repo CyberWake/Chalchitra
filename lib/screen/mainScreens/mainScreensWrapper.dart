@@ -30,8 +30,12 @@ class MainScreenWrapper extends StatefulWidget {
   _MainScreenWrapperState createState() => _MainScreenWrapperState();
 }
 
-class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindingObserver {
-  final GlobalKey<ScaffoldState> _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+class _MainScreenWrapperState extends State<MainScreenWrapper>
+    with WidgetsBindingObserver {
+  final GlobalKey<ScaffoldState> _scaffoldGlobalKey =
+      GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _cupertinoScaffoldGlobalKey =
+  GlobalKey<ScaffoldState>();
   List<Widget> _screens;
   int _currentIndex = 0;
   double _widthOne;
@@ -49,24 +53,23 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
 
   SharedPreferences prefs;
 
-  void setup() async{
-    if(_userAuth.user != null) {
+  void setup() async {
+    if (_userAuth.user != null) {
       print(_userAuth.user.uid);
-      _currentUserInfo = await _userInfoStore.getUserInfo(
-          uid: _userAuth.user.uid
-      );
+      _currentUserInfo =
+          await _userInfoStore.getUserInfo(uid: _userAuth.user.uid);
       user = UserDataModel.fromDocument(_currentUserInfo);
     }
     prefs = await SharedPreferences.getInstance();
-    if(!prefs.containsKey('onBoarded')){
+    if (!prefs.containsKey('onBoarded')) {
       prefs.setBool("onBoarded", true);
     }
     setState(() {});
   }
 
   _retrieveDynamicLink() async {
-    await links.handleDynamicLinks(context,false);
-    if(!links.isFromLink){
+    await links.handleDynamicLinks(context, false);
+    if (!links.isFromLink) {
       setup();
     }
   }
@@ -91,7 +94,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
   }
 
   @override
-  void initState(){
+  void initState() {
     WidgetsBinding.instance.addObserver(this);
     _retrieveDynamicLink();
     super.initState();
@@ -99,17 +102,62 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
   }
 
   _buildConfirmSignOut(context) {
-    return Dialog(
+    return Platform.isIOS ? CupertinoAlertDialog(
+      title: Text("Logout"),
+      content: Padding(
+        padding: EdgeInsets.only(top: 20.0, left: 10),
+        child: Text(
+          'Are you sure you want to log out?',
+          style: TextStyle(fontSize: 18),
+        ),
+      ),
+      actions: [
+        CupertinoDialogAction(
+          child: CupertinoButton(
+            child: Text(
+              "Yes",
+            ),
+            onPressed: () async {
+              await UserAuth().signOut().then((value) {
+                if (value) {
+                  Navigator.pop(context);
+                  Navigator.pushReplacement(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (_) =>
+                              Authentication(AuthIndex.LOGIN)));
+                } else {
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                      content:
+                      Text('Something went wrong try again')));
+                }
+              });
+            },
+          ),
+        ),
+        CupertinoDialogAction(
+          child: CupertinoButton(
+            child: Text(
+              "No",
+
+            ),
+            onPressed: (){
+              Navigator.pop(context);
+            },
+          ),
+        ),
+      ],
+      insetAnimationCurve: Curves.easeInExpo,
+      insetAnimationDuration: Duration(milliseconds: 1000),
+    ) : Dialog(
       shape: RoundedRectangleBorder(
-        borderRadius:
-        BorderRadius.circular(20.0),
+        borderRadius: BorderRadius.circular(20.0),
       ), //this right here
       child: Container(
         height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: Colors.orange, width: 3)
-        ),
+            border: Border.all(color: Colors.orange, width: 3)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -134,24 +182,20 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange, width: 2)
-                        ),
+                            side: BorderSide(color: Colors.orange, width: 2)),
                         onPressed: () async {
                           await UserAuth().signOut().then((value) {
                             if (value) {
+                              Navigator.pop(context);
                               Navigator.pushReplacement(
                                   context,
                                   CupertinoPageRoute(
-                                      builder: (_) => Authentication(AuthIndex.LOGIN)
-                                  )
-                              );
+                                      builder: (_) =>
+                                          Authentication(AuthIndex.LOGIN)));
                             } else {
-                              Scaffold.of(context).showSnackBar(
-                                  SnackBar(
-                                      content: Text(
-                                          'Something went wrong try again')
-                                  )
-                              );
+                              Scaffold.of(context).showSnackBar(SnackBar(
+                                  content:
+                                      Text('Something went wrong try again')));
                             }
                           });
                         },
@@ -167,8 +211,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
                       child: RaisedButton(
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(color: Colors.orange, width: 2)
-                        ),
+                            side: BorderSide(color: Colors.orange, width: 2)),
                         onPressed: () {
                           Navigator.pop(context);
                         },
@@ -194,7 +237,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
-    _heightOne = !Platform.isIOS?(_size.height * 0.007) / 5:(_size.height*0.009)/5;
+    _heightOne = !Platform.isIOS
+        ? (_size.height * 0.007) / 5
+        : (_size.height * 0.009) / 5;
     _iconOne = (_size.height * 0.066) / 50;
     _screens = [
       Home(),
@@ -204,130 +249,339 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
       _profilePage,
     ];
 
-    return Scaffold(
+    return Platform.isIOS ? CupertinoPageScaffold(
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        key: _cupertinoScaffoldGlobalKey,
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: _isMessagePage ? Colors.orange : Colors.transparent,
+          title: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            height: 55,
+            width: _size.width / 2.5,
+            child: Image.asset(
+              'assets/images/appBarLogo1.png',
+              fit: BoxFit.fitHeight,
+            ),
+          ),
+          actions: [
+            _currentIndex != 4
+                ? IconButton(
+              icon: Icon(
+                Icons.search,
+                color:
+                _isMessagePage ? Colors.black : Colors.orange.shade400,
+                size: _iconOne * 30,
+              ),
+              onPressed: () {
+                if (_userAuth.user != null) {
+                  Navigator.push(context,
+                      CupertinoPageRoute(builder: (_) => SearchUser()));
+                } else {
+                  Navigator.pushReplacement(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (_) =>
+                              Authentication(AuthIndex.REGISTER)));
+                }
+              },
+            )
+                : IconButton(
+              icon: Icon(
+                 CupertinoIcons.ellipsis,
+                color: Colors.orange.shade400,
+                size: _iconOne * 25,
+              ),
+              onPressed: () =>
+                  _cupertinoScaffoldGlobalKey.currentState.openEndDrawer(),
+              tooltip:
+              MaterialLocalizations.of(context).openAppDrawerTooltip,
+            ),
+            SizedBox(
+              width: _widthOne * 100,
+            )
+          ],
+        ),
+        endDrawer: Container(
+          width: _size.width * 0.5,
+          child: Drawer(
+              child: Container(
+                color: Colors.black87,
+                child: Column(
+                  children: [
+                    DrawerHeader(
+                      child: Center(
+                        child: Text(
+                          user == null ? " " : user.username,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.white,
+                      thickness: 0.5,
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.drafts, color: Colors.white),
+                      title:
+                      Text("Drafted Post", style: TextStyle(color: Colors.white)),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (BuildContext context) => Drafts()));
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.security, color: Colors.white),
+                      title: Text('Privacy', style: TextStyle(color: Colors.white)),
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context,
+                            CupertinoPageRoute(builder: (_) => PrivacyPage()));
+                      },
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.group_add, color: Colors.white),
+                      title: Text('Invite', style: TextStyle(color: Colors.white)),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        await FlutterShare.share(
+                            title: 'Join WowTalent',
+                            text: 'I am Loving the app. I invite you to join me' +
+                                ' in the journey to show your talent!!',
+                            linkUrl:
+                            'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                            chooserTitle: 'Invite');
+                      },
+                    ),
+                    Spacer(),
+                    Divider(
+                      color: Colors.white,
+                      thickness: 0.5,
+                    ),
+                    ListTile(
+                      leading: Icon(Icons.power_settings_new, color: Colors.white),
+                      title: Text('Signout', style: TextStyle(color: Colors.white)),
+                      onTap:() {
+                        Navigator.pop(context);
+                        showDialog(
+                          context: context,
+                          builder: (BuildContext context) =>
+                              _buildConfirmSignOut(context),
+                        );
+                      },
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(bottom: _heightOne * 10),
+                    )
+                  ],
+                ),
+              )),
+        ),
+        bottomNavigationBar: CurvedNavigationBar(
+          index: _currentIndex,
+          height: _heightOne * 45,
+          backgroundColor: Colors.transparent,
+          color: Colors.orange.shade400,
+          buttonBackgroundColor: Colors.orange.shade400,
+          items: <Widget>[
+            Icon(
+              Icons.home,
+              size: 25,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.explore,
+              size: 25,
+              color: Colors.white,
+            ),
+            Icon(
+              Icons.add,
+              size: 25,
+              color: Colors.white,
+            ),
+            Transform.rotate(
+              angle: 180 * pi / 100,
+              child: Icon(
+                Icons.send,
+                size: 25,
+                color: Colors.white,
+              ),
+            ),
+            Icon(
+               Icons.account_circle,
+              size: 25,
+              color: Colors.white,
+            ),
+          ],
+          onTap: (index) async {
+            if (_userAuth.user == null) {
+              Navigator.pushReplacement(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) => Authentication(AuthIndex.REGISTER)));
+            }
+            print(index);
+            if (index == 4) {
+              print(index);
+              UserAuth().account.listen((user) {
+                if (user != null) {
+                  _profilePage = ProfilePage(uid: user.uid);
+                }
+              });
+              _isMessagePage = false;
+              _currentIndex = index;
+            } else if (index == 3) {
+              _isMessagePage = true;
+              _currentIndex = index;
+            } else {
+              _isMessagePage = false;
+              _currentIndex = index;
+            }
+            setState(() {});
+          },
+        ),
+        body: Container(
+            margin: EdgeInsets.only(bottom: 10), child: _screens[_currentIndex]),
+      ),
+    ) : Scaffold(
       backgroundColor: Colors.white,
       key: _scaffoldGlobalKey,
       appBar: AppBar(
         elevation: 0.0,
-        backgroundColor: _isMessagePage ? Colors.orange:Colors.transparent,
+        backgroundColor: _isMessagePage ? Colors.orange : Colors.transparent,
         title: Container(
           padding: EdgeInsets.symmetric(
-              vertical: 10,
+            vertical: 10,
           ),
-            height: 55,
-            width: _size.width / 2.5,
-          child: Image.asset('assets/images/appBarLogo1.png',fit: BoxFit.fitHeight,),
+          height: 55,
+          width: _size.width / 2.5,
+          child: Image.asset(
+            'assets/images/appBarLogo1.png',
+            fit: BoxFit.fitHeight,
+          ),
         ),
         actions: [
-          _currentIndex != 4 ?
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              color: _isMessagePage? Colors.black: Colors.orange.shade400,
-              size: _iconOne * 30,
-            ),
-            onPressed: (){
-              if (_userAuth.user != null) {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => SearchUser()
-                  )
-                );
-              }else{
-                Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (_) => Authentication(AuthIndex.REGISTER)
-                    )
-                );
-              }
-            },
-          ):IconButton(
-            icon: Icon(
-              Icons.menu,
-              color: Colors.orange.shade400,
-              size: _iconOne * 25,
-            ),
-            onPressed: () => _scaffoldGlobalKey.currentState.openEndDrawer(),
-            tooltip: MaterialLocalizations.of(context).openAppDrawerTooltip,
-          ) ,
-          SizedBox(width: _widthOne * 100,)
+          _currentIndex != 4
+              ? IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color:
+                        _isMessagePage ? Colors.black : Colors.orange.shade400,
+                    size: _iconOne * 30,
+                  ),
+                  onPressed: () {
+                    if (_userAuth.user != null) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => SearchUser()));
+                    } else {
+                      Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) =>
+                                  Authentication(AuthIndex.REGISTER)));
+                    }
+                  },
+                )
+              : IconButton(
+                  icon: Icon(
+                    Platform.isIOS ? CupertinoIcons.ellipsis : Icons.menu,
+                    color: Colors.orange.shade400,
+                    size: _iconOne * 25,
+                  ),
+                  onPressed: () =>
+                      _scaffoldGlobalKey.currentState.openEndDrawer(),
+                  tooltip:
+                      MaterialLocalizations.of(context).openAppDrawerTooltip,
+                ),
+          SizedBox(
+            width: _widthOne * 100,
+          )
         ],
       ),
       endDrawer: Container(
-          width: _size.width * 0.5,
-          child: Drawer(
+        width: _size.width * 0.5,
+        child: Drawer(
             child: Container(
-              color: Colors.black87,
-              child: Column(
-                children: [
-                  DrawerHeader(
-                    child: Center(
-                      child: Text(user==null?" ": user.username, style: TextStyle(color: Colors.white),),
-                    ),
+          color: Colors.black87,
+          child: Column(
+            children: [
+              DrawerHeader(
+                child: Center(
+                  child: Text(
+                    user == null ? " " : user.username,
+                    style: TextStyle(color: Colors.white),
                   ),
-                  Divider(color: Colors.white,thickness: 0.5,),
-                  ListTile(
-                    leading: Icon(Icons.drafts,color: Colors.white),
-                    title: Text("Drafted Post",
-                        style:TextStyle(color: Colors.white)
-                    ),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                          CupertinoPageRoute(
-                              builder: (BuildContext context)=> Drafts()
-                          )
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.security,color: Colors.white),
-                    title: Text('Privacy',style:TextStyle(color: Colors.white)),
-                    onTap: (){
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (_) => PrivacyPage()
-                          )
-                      );
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.group_add,color: Colors.white),
-                    title: Text('Invite',style:TextStyle(color: Colors.white)),
-                    onTap: () async {
-                      Navigator.pop(context);
-                      await FlutterShare.share(
-                          title: 'Join WowTalent',
-                          text: 'I am Loving the app. I invite you to join me'+
-                                ' in the journey to show your talent!!',
-                          linkUrl: 'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
-                          chooserTitle: 'Invite'
-                      );
-                    },
-                  ),
-                  Spacer(),
-                  Divider(color: Colors.white,thickness: 0.5,),
-                  ListTile(
-                    leading: Icon(Icons.power_settings_new,color: Colors.white),
-                    title: Text('Signout',style:TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) => _buildConfirmSignOut(context),
-                      );
-                    },
-                  ),
-                  Padding(padding: EdgeInsets.only(bottom: _heightOne*10),)
-                ],
+                ),
               ),
-            )
+              Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+              ListTile(
+                leading: Icon(Icons.drafts, color: Colors.white),
+                title:
+                    Text("Drafted Post", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (BuildContext context) => Drafts()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.security, color: Colors.white),
+                title: Text('Privacy', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                      CupertinoPageRoute(builder: (_) => PrivacyPage()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.group_add, color: Colors.white),
+                title: Text('Invite', style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await FlutterShare.share(
+                      title: 'Join WowTalent',
+                      text: 'I am Loving the app. I invite you to join me' +
+                          ' in the journey to show your talent!!',
+                      linkUrl:
+                          'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                      chooserTitle: 'Invite');
+                },
+              ),
+              Spacer(),
+              Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+              ListTile(
+                leading: Icon(Icons.power_settings_new, color: Colors.white),
+                title: Text('Signout', style: TextStyle(color: Colors.white)),
+                onTap:() {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildConfirmSignOut(context),
+                  );
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: _heightOne * 10),
+              )
+            ],
           ),
-        ),
+        )),
+      ),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,
         height: _heightOne * 45,
@@ -364,25 +618,27 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
             color: Colors.white,
           ),
         ],
-        onTap: (index) async{
-          if(_userAuth.user == null){
-            Navigator.pushReplacement(context, CupertinoPageRoute(builder:
-                (context)=>Authentication(AuthIndex.REGISTER)));
+        onTap: (index) async {
+          if (_userAuth.user == null) {
+            Navigator.pushReplacement(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => Authentication(AuthIndex.REGISTER)));
           }
           print(index);
-          if(index == 4){
+          if (index == 4) {
             print(index);
-            UserAuth().account.listen((user){
-              if(user != null){
+            UserAuth().account.listen((user) {
+              if (user != null) {
                 _profilePage = ProfilePage(uid: user.uid);
               }
             });
             _isMessagePage = false;
             _currentIndex = index;
-          }else if(index == 3){
+          } else if (index == 3) {
             _isMessagePage = true;
             _currentIndex = index;
-          }else{
+          } else {
             _isMessagePage = false;
             _currentIndex = index;
           }
@@ -390,11 +646,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper> with WidgetsBindi
         },
       ),
       body: Container(
-          margin: EdgeInsets.only(
-            bottom: 10
-          ),
-          child: _screens[_currentIndex]
-      ),
+          margin: EdgeInsets.only(bottom: 10), child: _screens[_currentIndex]),
     );
   }
 }

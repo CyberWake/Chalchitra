@@ -211,6 +211,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "4.0.0"
+  flushbar:
+    dependency: "direct main"
+    description:
+      name: flushbar
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.10.4"
   flutter:
     dependency: "direct main"
     description: flutter
@@ -251,6 +258,18 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.4"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
+  flutter_platform_widgets:
+    dependency: "direct main"
+    description:
+      name: flutter_platform_widgets
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.70.1"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -366,13 +385,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.6.2"
-  like_button:
-    dependency: "direct main"
-    description:
-      name: like_button
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.1"
   line_icons:
     dependency: "direct main"
     description:
@@ -716,4 +728,4 @@ packages:
     version: "4.5.1"
 sdks:
   dart: ">=2.9.0 <3.0.0"
-  flutter: ">=1.20.0 <2.0.0"
+  flutter: ">=1.20.4 <2.0.0"

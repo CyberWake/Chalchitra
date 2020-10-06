@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -39,7 +41,7 @@ class ChatBubble extends StatelessWidget{
                   padding: const EdgeInsets.all(13.0),
                   child: Text(
                     message,
-                    style: TextStyle(color: Colors.white, fontSize: 17),
+                    style: TextStyle(color: Colors.white, fontSize: 17,decoration: Platform.isIOS ? TextDecoration.none:null),
                   ),
                 ),
               ),
@@ -81,7 +83,7 @@ class ChatBubble extends StatelessWidget{
                   padding: const EdgeInsets.all(13.0),
                   child: Text(
                     message,
-                    style: TextStyle(color: Colors.black, fontSize: 17),
+                    style: TextStyle(color: Colors.black, fontSize: 17,decoration: Platform.isIOS?TextDecoration.none:null),
                   ),
                 ),
               ),

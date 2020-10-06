@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/userDataModel.dart';
+import 'dart:io';
 
 class PrivacyPage extends StatefulWidget {
   @override
@@ -33,7 +34,49 @@ class _PrivacyPageState extends State<PrivacyPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Platform.isIOS?CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(),
+      child: Center(
+          child: GestureDetector(
+            onTap: (){},
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(Icons.security,color: Colors.black,),
+                Text("Privacy",style: TextStyle(decoration: TextDecoration.none,fontSize: 20,color: Colors.black),),
+            CupertinoSwitch(
+                      value: user == null? false: user.private,
+                      activeColor: Colors.orange,
+                      onChanged: (bool value) async {
+                        print("user.private" + user.private.toString());
+                        user.private = value;
+                        bool updated = await _userInfoStore.updatePrivacy(
+                            uid: user.id,
+                            privacy: user.private
+                        );
+                        setState(() {
+                        });
+                        if(updated){
+                          _scaffoldGlobalKey.currentState.showSnackBar(
+                              SnackBar(
+                                  content: Text('Privacy Updated')
+                              )
+                          );
+                        }else{
+                          _scaffoldGlobalKey.currentState.showSnackBar(
+                              SnackBar(
+                                  content: Text('Something went wrong try again')
+                              )
+                          );
+                        }
+                      },
+                    ),
+              ],
+            ),
+          ),
+      ),
+    ) : Scaffold(
       key: _scaffoldGlobalKey,
       appBar: AppBar(),
       body: ListView(

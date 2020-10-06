@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchResult.dart';
@@ -20,7 +23,66 @@ class _SearchUserState extends State<SearchUser> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return Platform.isIOS ?CupertinoPageScaffold(
+      child:  SafeArea(
+        child: Column(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border(
+                      bottom: BorderSide(color: Colors.orange.withOpacity(0.5))
+                  ),
+                  boxShadow: [BoxShadow(
+                      offset: Offset(0, 2),
+                      color: Colors.grey,
+                      blurRadius: 8
+                  )]
+              ),
+              child: Row(
+                children: [
+                  CupertinoButton(
+                      child: Icon(
+                        Icons.arrow_back_ios,
+                        color: Colors.orange.shade400,
+                      ),
+                      onPressed: () => Navigator.pop(context)
+                  ),
+                  Expanded(
+                    child: CupertinoTextField(
+                      style: TextStyle(fontSize: 18, color: Colors.black),
+                      controller: searchTextEditingController,
+                      decoration: BoxDecoration(border: Border.all(color: Colors.transparent)),
+                      placeholder: "Search By Username",
+                      placeholderStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
+                      suffix: CupertinoButton(
+                        child: Icon(Icons.clear, color: Colors.orange.shade400,),
+                        onPressed: () {
+                          searchTextEditingController.clear();
+                          search = "";
+                        }
+                      ),
+                      onSubmitted: (String username) {
+                        search = username;
+                        Future<QuerySnapshot> allUsers = ref
+                            .where("username", isGreaterThanOrEqualTo: username)
+                            .get();
+                        setState(() {
+                          futureSearchResult = allUsers;
+                        });
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: futureSearchResult == null ? resultNotFound() : foundUsers(),
+            )
+          ],
+        ),
+      ),
+    ) :Scaffold(
       extendBodyBehindAppBar: true,
       extendBody: true,
       body: SafeArea(
@@ -106,6 +168,7 @@ class _SearchUserState extends State<SearchUser> {
               "Search User",
               textAlign: TextAlign.center,
               style: TextStyle(
+                decoration: Platform.isIOS ? TextDecoration.none : null,
                   color: Colors.orange.shade300,
                   fontWeight: FontWeight.w500,
                   fontSize: 25

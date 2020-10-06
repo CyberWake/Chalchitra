@@ -1,3 +1,6 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -93,7 +96,194 @@ class _DraftsState extends State<Drafts> {
     _fontOne = (_size.height * 0.015) / 11;
     _widthOne = _size.width * 0.0008;
 
-    return Scaffold(
+    return Platform.isIOS ? CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        middle: Text("Drafts"),
+      ),
+      child: _videos.length>0?
+      Form(
+        key: _formKey,
+        child: Container(
+          child: ListView.builder(
+              itemCount: _videos.length,
+              itemBuilder: (BuildContext context,int index){
+                getCategory(_videos[index].category);
+                return Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20),
+                  child: Container(
+                    margin: EdgeInsets.only(top: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+                    decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(25),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.purple.withOpacity(0.15),
+                            blurRadius: 20,
+                            offset: Offset(0, 10),
+                          )
+                        ]),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        AspectRatio(
+                            aspectRatio: _videos[index].aspectRatio,
+                            child: Image.network(_videos[index].thumbUrl,fit: BoxFit.fitWidth,)
+                        ),
+                        CupertinoTextField(
+                          keyboardType: TextInputType.text,
+                          onChanged:(val) {
+                            videoName = val;
+                            if(_submitted){
+                              _formKey.currentState.validate();
+                            }
+                          },
+                          placeholder: "Enter Title",
+                          placeholderStyle: TextStyle(
+                            color: Colors.orange.withOpacity(0.75),
+                            fontSize: _fontOne * 15,
+                          ),
+                          style: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
+                          // padding: EdgeInsets.only(left:_widthOne*20),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors.orange.withOpacity(0.75)
+                              ),
+                              borderRadius: BorderRadius.circular(15.0)
+                          ),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.width * 0.05,
+                        ),
+                        CupertinoTextField(
+                          placeholder: "Enter Hastags",
+                          placeholderStyle: TextStyle(
+                            color: Colors.orange.withOpacity(0.75),
+                            fontSize: _fontOne * 15,
+                          ),
+                          style: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
+                          // padding: EdgeInsets.only(left: _widthOne*20),
+                          decoration: BoxDecoration(
+                              border: Border.all(
+                                  color: Colors.orange.withOpacity(0.75)
+                              ),
+                              borderRadius: BorderRadius.circular(15.0)
+                          ),
+                        ),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.width * 0.05,
+                        ),
+                        Container(
+                          width: double.infinity,
+                          decoration: BoxDecoration(
+                              border: Border.all(color: CupertinoTheme.of(context).primaryColor),
+                              borderRadius: BorderRadius.circular(15)
+                          ),
+                          child:CupertinoButton(
+                            child: Text(category==null ? "Select a category":category),
+                            onPressed: (){
+                              showCupertinoModalPopup(context: context, builder: (_){
+                                return Container(
+                                  // height: _heightOne*0.2,
+                                  child: CupertinoPicker(
+                                    backgroundColor: CupertinoColors.systemGrey,
+                                    itemExtent: 32,
+                                    children: [
+                                      Center(child:Text("Vocals")),
+                                      Center(child:Text("Dance")),
+                                      Center(child:Text("Instrumental")),
+                                      Center(child:Text("Standup Comedy")),
+                                      Center(child:Text("DJing")),
+                                      Center(child:Text("Acting")),
+                                    ],
+                                    onSelectedItemChanged: (index){
+                                      _selectedCategory = index;
+                                      switch(index){
+                                        case 0: category = "Vocals";break;
+                                        case 1: category = "Dance";break;
+                                        case 2: category = "Instrumental";break;
+                                        case 3: category = "Standup Comedy";break;
+                                        case 4: category = "DJing";break;
+                                        case 5: category = "Acting";break;
+                                      }
+                                      setState(() {
+                                      });
+                                    },
+                                  ),
+                                );
+                              });
+                            },
+                          ),),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.width/10,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Container(
+                              width: _size.width*0.30,
+                              decoration: BoxDecoration(
+                                color: Colors.orange,
+                                border:Border.all(color:CupertinoTheme.of(context).primaryColor,),
+                                borderRadius: BorderRadius.circular(20)
+                              ),
+                              child: CupertinoButton(
+                                  onPressed: (){
+                                    removeVideoFromDrafts(index);
+                                    setup();
+                                  },
+                                  child: _uploadingVideo
+                                      ? CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.purple),
+                                  )
+                                      : Text("Delete",style: TextStyle(color: Colors.white),)),
+                            ),
+                            Container(
+                              width: _size.width*0.30,
+                              decoration: BoxDecoration(
+                                color: Colors.orange,
+                                  border:Border.all(color:CupertinoTheme.of(context).primaryColor,),
+                                  borderRadius: BorderRadius.circular(20)
+                              ),
+                              child: CupertinoButton(
+                                  onPressed: (){
+                                    if(_formKey.currentState.validate()){
+                                      moveVideoToPost(index);
+                                      removeVideoFromDrafts(index);
+                                      setup();
+                                    }else{
+                                      setState(() {
+                                        _submitted = true;
+                                      });
+                                    }
+                                  },
+                                  child: _uploadingVideo
+                                      ? CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                        Colors.purple),
+                                  )
+                                      : Text("Upload",style: TextStyle(color: Colors.white),)),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              }
+          ),
+        ),
+      )
+          :Center(
+        child: Text("No saved drafts",style: TextStyle(fontSize: 18,decoration: TextDecoration.none),),
+      ),
+    ) : Scaffold(
       appBar: AppBar(
         centerTitle: true,
         title: Text('Drafts'),
@@ -336,7 +526,7 @@ class _DraftsState extends State<Drafts> {
         ),
       )
           :Center(
-        child: Text("No saved drafts",style: TextStyle(fontSize: 18),),
+        child: Text("No saved drafts",style: TextStyle(fontSize: 18,),),
       )
     );
   }
