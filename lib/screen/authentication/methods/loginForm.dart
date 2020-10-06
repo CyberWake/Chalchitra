@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
@@ -25,6 +26,7 @@ class _LoginFormState extends State<LoginForm> {
   double _fontOne;
   Size _size;
   bool _loginForm = true;
+  bool _hidePassword = true;
   String _message = 'Log in/out by pressing the buttons below.';
   bool _submitted = false;
 
@@ -54,7 +56,7 @@ class _LoginFormState extends State<LoginForm> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(
-              height: _heightOne * 90,
+              height: _heightOne * 83,
             ),
             _emailField(),
             SizedBox(
@@ -66,7 +68,7 @@ class _LoginFormState extends State<LoginForm> {
             ),
             _loginButton(),
             SizedBox(
-              height: _heightOne * 15,
+              height: _heightOne * 22,
             ),
             InkWell(
               onTap: () {
@@ -142,7 +144,7 @@ class _LoginFormState extends State<LoginForm> {
   Widget _passwordFiled() {
     return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
-        obscureText: true,
+        obscureText: _hidePassword,
         validator: FormValidation.validateLoginPassword,
         onChanged: (val) {
           _userDataModel.password = val;
@@ -151,10 +153,21 @@ class _LoginFormState extends State<LoginForm> {
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Password", fontSize: _fontOne * 15),
-        style: TextStyle(
+          suffixIcon: IconButton(
+            icon: Icon(
+              _hidePassword ? Icons.visibility : Icons.visibility_off,
+              color: AppTheme.primaryColor,
+            ),
+            onPressed: () {
+              setState(() {
+                _hidePassword = !_hidePassword;
+              });
+            },
+          ),
+          hintText: "Enter Password",
           fontSize: _fontOne * 15,
         ),
+        style: TextStyle(fontSize: _fontOne * 15),
       ),
       leftPadding: _widthOne * 20,
     );

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/UserInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
@@ -28,6 +29,7 @@ class _RegisterFormState extends State<RegisterForm> {
   double _fontOne;
   Size _size;
   bool _registerForm = true;
+  bool _hidePassword = true;
   bool _submitted = false;
   UserInfoStore _userInfoStore = UserInfoStore();
 
@@ -152,12 +154,23 @@ class _RegisterFormState extends State<RegisterForm> {
   Widget _passwordField() {
     return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
-        obscureText: true,
+        obscureText: _hidePassword,
         validator: FormValidation.validateRegisterPassword,
         onChanged: (val) {
           _userDataModel.password = val;
         },
         decoration: FormFieldFormatting.formFieldFormatting(
+          suffixIcon: IconButton(
+            icon: Icon(
+              _hidePassword ? Icons.visibility : Icons.visibility_off,
+              color: AppTheme.primaryColor,
+            ),
+            onPressed: () {
+              setState(() {
+                _hidePassword = !_hidePassword;
+              });
+            },
+          ),
           hintText: "Enter Password",
           fontSize: _fontOne * 15,
         ),

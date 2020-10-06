@@ -2,8 +2,10 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class FormFieldFormatting {
-  static formFieldFormatting({String hintText, double fontSize}) {
+  static formFieldFormatting(
+      {String hintText, double fontSize, Widget suffixIcon}) {
     return InputDecoration(
+      suffixIcon: suffixIcon,
       border: InputBorder.none,
       focusedBorder: InputBorder.none,
       enabledBorder: InputBorder.none,

@@ -41,11 +41,11 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             SizedBox(
-              height: _heightOne * 8,
+              height: _heightOne * 1,
             ),
             _emailField(),
             SizedBox(
-              height: _heightOne * 10,
+              height: _heightOne * 15,
             ),
             _submitButton(),
             SizedBox(
@@ -62,7 +62,7 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
               ),
             ),
             SizedBox(
-              height: _heightOne * 40,
+              height: _heightOne * 48,
             ),
           ],
         ),

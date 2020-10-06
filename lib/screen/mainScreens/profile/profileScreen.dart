@@ -10,6 +10,8 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
+import 'package:wowtalent/screen/mainScreens/profile/followersScreen.dart';
+import 'package:wowtalent/screen/mainScreens/profile/followingsScreen.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -41,6 +43,8 @@ class _ProfilePageState extends State<ProfilePage> {
   int totalPost = 0;
   bool following = false;
   bool isSecure = false;
+  bool seeFollowers = false;
+  bool seeFollowings = false;
   String currentUserImgUrl;
   String currentUserName;
 
@@ -65,7 +69,15 @@ class _ProfilePageState extends State<ProfilePage> {
     if (!isSecure) {
       print("private " + isSecure.toString());
       setup();
-      setState(() {});
+      setState(() {
+        seeFollowers = true;
+        seeFollowings = true;
+      });
+    } else if (widget.uid == _userAuth.user.uid) {
+      setState(() {
+        seeFollowers = true;
+        seeFollowings = true;
+      });
     }
   }
 
@@ -77,6 +89,7 @@ class _ProfilePageState extends State<ProfilePage> {
     if (following || widget.uid == _userAuth.user.uid) {
       print("called a");
       setup();
+      getPrivacy();
     } else {
       getPrivacy();
     }
@@ -189,15 +202,25 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   getFollowers() {
-    return new StreamBuilder(
+    return StreamBuilder(
         stream: _userInfoStore.getFollowers(uid: widget.uid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
-            return new SingleChildScrollView(
-                child: Column(
+          return GestureDetector(
+            onTap: () {
+              if (seeFollowers) {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (BuildContext context) =>
+                            FollowersPage(uid: widget.uid)));
+              }
+            },
+            child: Column(
               children: [
                 Text(
-                  '0',
+                  !snapshot.hasData
+                      ? "0"
+                      : snapshot.data.documents.length.toString(),
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -211,28 +234,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: AppTheme.elevationColor),
                 ),
               ],
-            ));
-          }
-
-          return new SingleChildScrollView(
-              child: Column(
-            children: [
-              Text(
-                snapshot.data.documents.length.toString(),
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.elevationColor),
-              ),
-              Text(
-                'Followers',
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.elevationColor),
-              ),
-            ],
-          ));
+            ),
+          );
         });
   }
 
@@ -240,12 +243,22 @@ class _ProfilePageState extends State<ProfilePage> {
     return new StreamBuilder(
         stream: _userInfoStore.getFollowing(uid: widget.uid),
         builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (!snapshot.hasData) {
-            return new SingleChildScrollView(
-                child: Column(
+          return GestureDetector(
+            onTap: () {
+              if (seeFollowings) {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (BuildContext context) =>
+                            FollowingsPage(uid: widget.uid)));
+              }
+            },
+            child: Column(
               children: [
                 Text(
-                  '0',
+                  !snapshot.hasData
+                      ? "0"
+                      : snapshot.data.documents.length.toString(),
                   style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
@@ -259,28 +272,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       color: AppTheme.elevationColor),
                 ),
               ],
-            ));
-          }
-
-          return new SingleChildScrollView(
-              child: Column(
-            children: [
-              Text(
-                snapshot.data.documents.length.toString(),
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.elevationColor),
-              ),
-              Text(
-                'Following',
-                style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                    color: AppTheme.elevationColor),
-              ),
-            ],
-          ));
+            ),
+          );
         });
   }
 
