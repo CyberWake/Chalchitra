@@ -5,6 +5,7 @@ import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'dart:io';
 
 class SocialRegisterUsername extends StatefulWidget {
   @override
@@ -46,25 +47,41 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
             SizedBox(
               height: _heightOne * 40,
             ),
-            FormFieldFormatting.formFieldContainer(
-              child: TextFormField(
-                keyboardType: TextInputType.emailAddress,
-                validator: (val) =>
-                    val.isEmpty ? "Username Can't be Empty" : null,
-                onChanged: (val) {
-                  _userDataModel.username = val;
-                  if (_submitted) {
-                    _formKey.currentState.validate();
-                  }
-                },
-                decoration: FormFieldFormatting.formFieldFormatting(
-                    hintText: "Enter Username", fontSize: _fontOne * 15),
-                style: TextStyle(
-                  fontSize: _fontOne * 15,
-                ),
-              ),
-              leftPadding: _widthOne * 20,
-            ),
+            Platform.isIOS
+                ? CupertinoTextField(
+                    keyboardType: TextInputType.emailAddress,
+                    onChanged: (val) {
+                      _userDataModel.username = val;
+                      if (_submitted) {
+                        _formKey.currentState.validate();
+                      }
+                    },
+                    placeholderStyle: TextStyle(fontSize: _fontOne * 15),
+                    placeholder: "Enter Username",
+                    decoration: BoxDecoration(
+                        border:
+                            Border.all(color: Colors.orange.withOpacity(0.75)),
+                        borderRadius: BorderRadius.circular(15.0)),
+                  )
+                : FormFieldFormatting.formFieldContainer(
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (val) =>
+                          val.isEmpty ? "Username Can't be Empty" : null,
+                      onChanged: (val) {
+                        _userDataModel.username = val;
+                        if (_submitted) {
+                          _formKey.currentState.validate();
+                        }
+                      },
+                      decoration: FormFieldFormatting.formFieldFormatting(
+                          hintText: "Enter Username", fontSize: _fontOne * 15),
+                      style: TextStyle(
+                        fontSize: _fontOne * 15,
+                      ),
+                    ),
+                    leftPadding: _widthOne * 20,
+                  ),
             SizedBox(
               height: _heightOne * 15,
             ),
@@ -79,48 +96,112 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
   }
 
   Widget _registerButton() {
-    return FlatButton(
-      onPressed: () async {
-        if (_formKey.currentState.validate()) {
-          bool validUsername = await _userInfoStore.isUsernameNew(
-              username: _userDataModel.username);
-          if (!validUsername) {
-            Scaffold.of(context).showSnackBar(
-                SnackBar(content: Text('Username already exists')));
-          } else {
-            await _userInfoStore
-                .createUserRecord(username: _userDataModel.username)
-                .then((result) {
-              if (!result) {
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('Something went wrong try again')));
+    return Platform.isIOS
+        ? CupertinoButton(
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                bool validUsername = await _userInfoStore.isUsernameNew(
+                    username: _userDataModel.username);
+                if (!validUsername) {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (_) {
+                        return CupertinoActionSheet(
+                          title: Text("Username already exists"),
+                          cancelButton: CupertinoButton(
+                            child: Text("OK"),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                        );
+                      });
+                } else {
+                  await _userInfoStore
+                      .createUserRecord(username: _userDataModel.username)
+                      .then((result) {
+                    if (!result) {
+                      showCupertinoModalPopup(
+                          context: context,
+                          builder: (_) {
+                            return CupertinoActionSheet(
+                              title:
+                                  Text("Something went wrong try again later"),
+                              cancelButton: CupertinoButton(
+                                child: Text("OK"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            );
+                          });
+                    } else {
+                      Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) => MainScreenWrapper(
+                                    index: 0,
+                                  )));
+                    }
+                  });
+                }
               } else {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => MainScreenWrapper(
-                              index: 0,
-                            )));
+                setState(() {
+                  _submitted = true;
+                });
               }
-            });
-          }
-        } else {
-          setState(() {
-            _submitted = true;
-          });
-        }
-      },
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5.0),
-          side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
-      splashColor: Colors.orange[100],
-      padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
-      child: Text(
-        "Register",
-        style: TextStyle(
-          color: Color(0xFFFFCF40),
-        ),
-      ),
-    );
+            },
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
+            child: Text(
+              "Register",
+              style: TextStyle(
+                color: Colors.orange.withOpacity(0.75),
+              ),
+            ),
+          )
+        : FlatButton(
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                bool validUsername = await _userInfoStore.isUsernameNew(
+                    username: _userDataModel.username);
+                if (!validUsername) {
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('Username already exists')));
+                } else {
+                  await _userInfoStore
+                      .createUserRecord(username: _userDataModel.username)
+                      .then((result) {
+                    if (!result) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text('Something went wrong try again')));
+                    } else {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => MainScreenWrapper(
+                                    index: 0,
+                                  )));
+                    }
+                  });
+                }
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
+              }
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                side:
+                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+            splashColor: Colors.orange[100],
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
+            child: Text(
+              "Register",
+              style: TextStyle(
+                color: Color(0xFFFFCF40),
+              ),
+            ),
+          );
   }
 }

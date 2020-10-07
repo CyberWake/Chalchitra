@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
@@ -13,6 +15,8 @@ import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/followersScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/followingsScreen.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+
+import '../../../model/theme.dart';
 
 class ProfilePage extends StatefulWidget {
   final String url =
@@ -450,25 +454,40 @@ class _ProfilePageState extends State<ProfilePage> {
   Container createButtonTitleORFunction({String title, Function function}) {
     return Container(
         padding: EdgeInsets.only(top: 5),
-        child: RaisedButton(
-            color: AppTheme.primaryColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15))),
-            onPressed: () async {
-              await function();
-              await getFollowers();
-              setState(() {});
-            },
-            child: Container(
-              width: 150,
-              height: 30,
-              child: Text(title,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.elevationColor,
-                      fontSize: 16)),
-              alignment: Alignment.center,
-            )));
+        child: Platform.isIOS
+            ? CupertinoButton(
+                borderRadius: BorderRadius.circular(30),
+                color: AppTheme.primaryColor,
+                onPressed: () async {
+                  await function();
+                  await getFollowers();
+                  setState(() {});
+                },
+                child: Text(title,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontSize: 16)),
+              )
+            : RaisedButton(
+                color: AppTheme.primaryColor,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                onPressed: () async {
+                  await function();
+                  await getFollowers();
+                  setState(() {});
+                },
+                child: Container(
+                  width: 150,
+                  height: 30,
+                  child: Text(title,
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.elevationColor,
+                          fontSize: 16)),
+                  alignment: Alignment.center,
+                )));
   }
 
   SingleChildScrollView buildPictureCard() {
@@ -486,13 +505,18 @@ class _ProfilePageState extends State<ProfilePage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (context) {
-                        return Player(
-                          video: video,
-                        );
-                      },
-                    ),
+                    Platform.isIOS
+                        ? CupertinoPageRoute(
+                            builder: (context) => Player(
+                                  video: video,
+                                ))
+                        : MaterialPageRoute(
+                            builder: (context) {
+                              return Player(
+                                video: video,
+                              );
+                            },
+                          ),
                   );
                 },
                 child: Container(
