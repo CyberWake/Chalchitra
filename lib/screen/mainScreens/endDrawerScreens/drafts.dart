@@ -117,6 +117,7 @@ class _DraftsState extends State<Drafts> {
         ? CupertinoPageScaffold(
             navigationBar: CupertinoNavigationBar(
               middle: Text("Drafts"),
+              backgroundColor: AppTheme.backgroundColor,
             ),
             child: _videos.length > 0
                 ? Form(
@@ -133,11 +134,11 @@ class _DraftsState extends State<Drafts> {
                                 padding: EdgeInsets.symmetric(
                                     horizontal: 10, vertical: 20),
                                 decoration: BoxDecoration(
-                                    color: Colors.white,
+                                    color: AppTheme.backgroundColor,
                                     borderRadius: BorderRadius.circular(25),
                                     boxShadow: [
                                       BoxShadow(
-                                        color: Colors.purple.withOpacity(0.15),
+                                        color: AppTheme.primaryColor,
                                         blurRadius: 20,
                                         offset: Offset(0, 10),
                                       )
@@ -152,52 +153,87 @@ class _DraftsState extends State<Drafts> {
                                           _videos[index].thumbUrl,
                                           fit: BoxFit.fitWidth,
                                         )),
-                                    CupertinoTextField(
-                                      keyboardType: TextInputType.text,
-                                      onChanged: (val) {
-                                        videoName = val;
-                                        if (_submitted) {
-                                          _formKey.currentState.validate();
-                                        }
-                                      },
-                                      placeholder: "Enter Title",
-                                      placeholderStyle: TextStyle(
-                                        color: Colors.orange.withOpacity(0.75),
-                                        fontSize: _fontOne * 15,
+                                    Material(color: AppTheme.backgroundColor,
+                                      child:FormFieldFormatting.formFieldContainer(
+                                      child: TextFormField(
+                                        initialValue:
+                                            _videos[index].videoHashtag,
+                                        keyboardType: TextInputType.text,
+                                        validator: (val) => val.isEmpty ||
+                                                val.replaceAll(" ", '').isEmpty
+                                            ? "Video Title can't be Empty"
+                                            : null,
+                                        onChanged: (val) {
+                                          videoName = val;
+                                          if (_submitted) {
+                                            _formKey.currentState.validate();
+                                          }
+                                        },
+                                        decoration: InputDecoration(
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "Enter Title",
+                                          hintStyle: TextStyle(
+                                            color: AppTheme.primaryColor,
+                                            fontSize: _fontOne * 15,
+                                          ),
+                                          errorStyle: TextStyle(
+                                            fontSize: _fontOne * 15,
+                                          ),
+                                        ),
+                                        style: TextStyle(
+                                          fontSize: _fontOne * 15,
+                                        ),
                                       ),
-                                      style: TextStyle(
-                                        fontSize: _fontOne * 15,
-                                      ),
-                                      // padding: EdgeInsets.only(left:_widthOne*20),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.orange
-                                                  .withOpacity(0.75)),
-                                          borderRadius:
-                                              BorderRadius.circular(15.0)),
-                                    ),
+                                      leftPadding: _widthOne * 20,
+                                    )),
                                     SizedBox(
                                       height:
                                           MediaQuery.of(context).size.width *
                                               0.05,
                                     ),
-                                    CupertinoTextField(
-                                      placeholder: "Enter Hastags",
-                                      placeholderStyle: TextStyle(
-                                        color: Colors.orange.withOpacity(0.75),
-                                        fontSize: _fontOne * 15,
+                                    Material(
+                                      color: AppTheme.backgroundColor,
+                                      child:FormFieldFormatting.formFieldContainer(
+                                      child: TextFormField(
+                                        initialValue:
+                                            _videos[index].videoHashtag,
+                                        keyboardType: TextInputType.text,
+                                        validator: (val) => val.isEmpty ||
+                                                val.replaceAll(" ", '').isEmpty
+                                            ? "Video Hashtag can't be Empty"
+                                            : null,
+                                        onChanged: (val) {
+                                          videoHashTag = val;
+                                          if (_submitted) {
+                                            _formKey.currentState.validate();
+                                          }
+                                        },
+                                        decoration: InputDecoration(
+                                          prefix: Text('#'),
+                                          border: InputBorder.none,
+                                          focusedBorder: InputBorder.none,
+                                          enabledBorder: InputBorder.none,
+                                          errorBorder: InputBorder.none,
+                                          disabledBorder: InputBorder.none,
+                                          hintText: "Enter hashtag",
+                                          hintStyle: TextStyle(
+                                            color: AppTheme.primaryColor,
+                                            fontSize: _fontOne * 15,
+                                          ),
+                                          errorStyle: TextStyle(
+                                            fontSize: _fontOne * 15,
+                                          ),
+                                        ),
+                                        style: TextStyle(
+                                          fontSize: _fontOne * 15,
+                                        ),
                                       ),
-                                      style: TextStyle(
-                                        fontSize: _fontOne * 15,
-                                      ),
-                                      // padding: EdgeInsets.only(left: _widthOne*20),
-                                      decoration: BoxDecoration(
-                                          border: Border.all(
-                                              color: Colors.orange
-                                                  .withOpacity(0.75)),
-                                          borderRadius:
-                                              BorderRadius.circular(15.0)),
-                                    ),
+                                      leftPadding: _widthOne * 20,
+                                    )),
                                     SizedBox(
                                       height:
                                           MediaQuery.of(context).size.width *
@@ -315,7 +351,7 @@ class _DraftsState extends State<Drafts> {
                                         Container(
                                           width: _size.width * 0.30,
                                           decoration: BoxDecoration(
-                                              color: Colors.orange,
+                                              color: AppTheme.primaryColor,
                                               border: Border.all(
                                                 color:
                                                     CupertinoTheme.of(context)
@@ -344,7 +380,7 @@ class _DraftsState extends State<Drafts> {
                                         Container(
                                           width: _size.width * 0.30,
                                           decoration: BoxDecoration(
-                                              color: Colors.orange,
+                                              color: AppTheme.primaryColor,
                                               border: Border.all(
                                                 color:
                                                     CupertinoTheme.of(context)

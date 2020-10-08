@@ -38,28 +38,33 @@ class _PrivacyPageState extends State<PrivacyPage> {
   Widget build(BuildContext context) {
     return Platform.isIOS
         ? CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(),
-            child: Center(
-              child: GestureDetector(
-                onTap: () {},
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Icon(
+            navigationBar: CupertinoNavigationBar(middle: Text("Privacy"), backgroundColor: AppTheme.backgroundColor,),
+            child: ListView(
+              padding: EdgeInsets.only(top:20),
+              children: [
+                Container(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Icon(
                       Icons.security,
-                      color: Colors.black,
+                      color: AppTheme.pureWhiteColor,
                     ),
-                    Text(
-                      "Privacy",
-                      style: TextStyle(
-                          decoration: TextDecoration.none,
-                          fontSize: 20,
-                          color: Colors.black),
+                    Column(
+                      children: [
+                        Text(
+                          "Privacy",
+                          style: TextStyle(
+                              decoration: TextDecoration.none,
+                              fontSize: 20,
+                              ),
+                        ),
+                        Text("Enable this to make your account private",style:TextStyle(fontSize: 12),)
+                      ],
                     ),
                     CupertinoSwitch(
                       value: user == null ? false : user.private,
-                      activeColor: Colors.orange,
+                      activeColor: AppTheme.primaryColor,
                       onChanged: (bool value) async {
                         print("user.private" + user.private.toString());
                         user.private = value;
@@ -99,10 +104,79 @@ class _PrivacyPageState extends State<PrivacyPage> {
                         }
                       },
                     ),
-                  ],
-                ),
-              ),
+                    ],
+                  ),
+                )
+              ],
             ),
+            // child: Center(
+            //   child: GestureDetector(
+            //     onTap: () {},
+            //     child: Row(
+            //       mainAxisAlignment: MainAxisAlignment.start,
+            //       children: [
+            //         Icon(
+            //           Icons.security,
+            //           color: Colors.white,
+            //         ),
+            //         Column(
+            //           children: [
+            //             Text(
+            //               "Privacy",
+            //               style: TextStyle(
+            //                   decoration: TextDecoration.none,
+            //                   fontSize: 20,
+            //                   ),
+            //             ),
+            //             Text("Enable this to make your account private")
+            //           ],
+            //         ),
+            //         CupertinoSwitch(
+            //           value: user == null ? false : user.private,
+            //           activeColor: AppTheme.primaryColor,
+            //           onChanged: (bool value) async {
+            //             print("user.private" + user.private.toString());
+            //             user.private = value;
+            //             bool updated = await _userInfoStore.updatePrivacy(
+            //                 uid: user.id, privacy: user.private);
+            //             setState(() {});
+            //             if (updated) {
+            //               Flushbar(
+            //                 maxWidth: MediaQuery.of(context).size.width * 0.4,
+            //                 messageText: Center(
+            //                   child: Text("Privacy Updated"),
+            //                 ),
+            //                 titleText: Icon(Icons.security),
+            //                 flushbarPosition: FlushbarPosition.BOTTOM,
+            //                 flushbarStyle: FlushbarStyle.FLOATING,
+            //                 duration: Duration(milliseconds: 500),
+            //                 animationDuration: Duration(milliseconds: 500),
+            //                 borderRadius: 20,
+            //                 padding: EdgeInsets.all(10),
+            //                 backgroundColor: CupertinoColors.systemGrey,
+            //               )..show(context);
+            //             } else {
+            //               Flushbar(
+            //                 maxWidth: MediaQuery.of(context).size.width * 0.7,
+            //                 messageText: Center(
+            //                   child: Text("Something Went Wrong"),
+            //                 ),
+            //                 titleText: Icon(Icons.error),
+            //                 flushbarPosition: FlushbarPosition.BOTTOM,
+            //                 flushbarStyle: FlushbarStyle.FLOATING,
+            //                 duration: Duration(milliseconds: 500),
+            //                 animationDuration: Duration(milliseconds: 500),
+            //                 borderRadius: 20,
+            //                 padding: EdgeInsets.all(10),
+            //                 backgroundColor: CupertinoColors.systemGrey,
+            //               )..show(context);
+            //             }
+            //           },
+            //         ),
+            //       ],
+            //     ),
+            //   ),
+            // ),
           )
         : Scaffold(
             key: _scaffoldGlobalKey,
