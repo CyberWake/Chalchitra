@@ -258,6 +258,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
             width: _widthOne * 100,
           )
         ],
+        automaticallyImplyLeading: false,
       ),
       endDrawer: Container(
         width: _size.width * 0.5,
