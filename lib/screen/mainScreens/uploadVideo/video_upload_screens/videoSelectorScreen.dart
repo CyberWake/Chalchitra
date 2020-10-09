@@ -80,96 +80,7 @@ class _VideoUploaderState extends State<VideoUploader>
 
   @override
   Widget build(BuildContext context) {
-    return Platform.isIOS ? CupertinoPageScaffold(
-      child:Stack(
-          children: [
-            AnimatedBackground(
-              behaviour: RandomParticleBehaviour(
-                options: particleOptions,
-                paint: particlePaint,
-              ),
-              vsync: this,
-              child: Center(
-                child: Container(
-                  padding: EdgeInsets.all(50),
-                  decoration: BoxDecoration(
-                      color: AppTheme.elevationColor,
-                      borderRadius: BorderRadius.circular(25),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.white.withOpacity(0.15),
-                        blurRadius: 20,
-                        offset: Offset(0, 10),
-                        )
-                      ]),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "Showcase your Talent",
-                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: AppTheme.pureWhiteColor),
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      _selected
-                          ? SizedBox()
-                          : Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          CupertinoButton(
-                            borderRadius: BorderRadius.circular(25),
-                              onPressed: () {
-                                _takeVideo(context, ImageSource.camera);
-                              },
-                              child: Text("Turn on Camera"),
-                            color: CupertinoTheme.of(context).primaryColor,
-                          ),
-                          SizedBox(height: 25,),
-                          CupertinoButton(
-                            borderRadius: BorderRadius.circular(25),
-                              onPressed: () {
-                                _takeVideo(context, ImageSource.gallery);
-                              },
-                              child: Text("Pick from Gallery"),
-                            color: CupertinoTheme.of(context).primaryColor,
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 10.0,
-                      ),
-                      _videoCheckOK ? CupertinoButton(
-                        color: CupertinoTheme.of(context).primaryColor,
-                          borderRadius: BorderRadius.circular(25),
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) =>
-                                        VideoPreview(
-                                          videoFile: videoFile,
-                                        )
-                                )
-                            );
-                            print("go to next screen");
-                            _videoCheckOK = false;
-                            _selected = false;
-                          },
-                          child: Text("Next")
-                      ): SizedBox()
-                    ],
-                  ),
-                ),
-                /*_encodingVideo
-                  ? _getProgressBar()
-                  : */
-              ),
-            ),
-          ]
-      ) ,
-    ) :  Scaffold(
+    return Platform.isIOS ? videoSelectoriOS() :  Scaffold(
         backgroundColor: AppTheme.backgroundColor,
         key: _scaffoldGlobalKey,
         body: Stack(children: [
@@ -268,5 +179,99 @@ class _VideoUploaderState extends State<VideoUploader>
             ),
           ),
         ]));
+  }
+
+//iOS Screen
+  Widget videoSelectoriOS(){
+    return CupertinoPageScaffold(
+      child:Stack(
+          children: [
+            AnimatedBackground(
+              behaviour: RandomParticleBehaviour(
+                options: particleOptions,
+                paint: particlePaint,
+              ),
+              vsync: this,
+              child: Center(
+                child: Container(
+                  padding: EdgeInsets.all(50),
+                  decoration: BoxDecoration(
+                      color: AppTheme.elevationColor,
+                      borderRadius: BorderRadius.circular(25),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.white.withOpacity(0.15),
+                        blurRadius: 20,
+                        offset: Offset(0, 10),
+                        )
+                      ]),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Showcase your Talent",
+                        style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: AppTheme.pureWhiteColor),
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      _selected
+                          ? SizedBox()
+                          : Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          CupertinoButton(
+                            borderRadius: BorderRadius.circular(25),
+                              onPressed: () {
+                                _takeVideo(context, ImageSource.camera);
+                              },
+                              child: Text("Turn on Camera"),
+                            color: CupertinoTheme.of(context).primaryColor,
+                          ),
+                          SizedBox(height: 25,),
+                          CupertinoButton(
+                            borderRadius: BorderRadius.circular(25),
+                              onPressed: () {
+                                _takeVideo(context, ImageSource.gallery);
+                              },
+                              child: Text("Pick from Gallery"),
+                            color: CupertinoTheme.of(context).primaryColor,
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10.0,
+                      ),
+                      _videoCheckOK ? CupertinoButton(
+                        color: CupertinoTheme.of(context).primaryColor,
+                          borderRadius: BorderRadius.circular(25),
+                          onPressed: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (context) =>
+                                        VideoPreview(
+                                          videoFile: videoFile,
+                                        )
+                                )
+                            );
+                            print("go to next screen");
+                            _videoCheckOK = false;
+                            _selected = false;
+                          },
+                          child: Text("Next")
+                      ): SizedBox()
+                    ],
+                  ),
+                ),
+                /*_encodingVideo
+                  ? _getProgressBar()
+                  : */
+              ),
+            ),
+          ]
+      ) ,
+    );
   }
 }

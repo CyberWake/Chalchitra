@@ -370,209 +370,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
     _fontOne = (_size.height * 0.015) / 11;
     _widthOne = _size.width * 0.0008;
     _iconOne = (_size.height * 0.066) / 50;
-    return Platform.isIOS ? CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: AppTheme.primaryColor,
-        middle: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 10,
-          ),
-          height: 55,
-          width: _size.width / 2.5,
-          child: Image.asset('assets/images/appBarLogo1.png',fit: BoxFit.fitHeight,),
-        ),
-        trailing: CupertinoButton(
-          padding: EdgeInsets.symmetric(vertical: 5),
-          child: Icon(
-            Icons.save,
-            color: Colors.black,
-            size: _iconOne * 30,
-          ),
-          onPressed: (){
-            _draftSaved = true;
-            uploadDraftToServer();
-          },
-        ),
-
-      ),
-      child: Padding(
-          padding: EdgeInsets.symmetric(horizontal: 20),
-          child: _uploadingVideo
-              ? Center(child: _getProgressBar())
-              : !_uploadSuccess
-              ? SingleChildScrollView(
-            child: Container(
-              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
-              decoration: BoxDecoration(
-                  color: AppTheme.backgroundColor,
-                  borderRadius: BorderRadius.circular(25),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.purple.withOpacity(0.15),
-                      blurRadius: 20,
-                      offset: Offset(0, 10),
-                    )
-                  ]),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    AspectRatio(
-                        aspectRatio: widget.aspectRatio,
-                        child: Image.file(file,fit: BoxFit.fitWidth,)
-                    ),
-                    Material(
-                      color: AppTheme.backgroundColor,
-                      child:FormFieldFormatting.formFieldContainer(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
-                            ? "Video Title can't be Empty"
-                            : null,
-                        onChanged: (val) {
-                          videoName = val;
-                          if(_submitted){
-                            _formKey.currentState.validate();
-                          }
-                        },
-                        decoration: InputDecoration(
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: "Enter Title",
-                          hintStyle: TextStyle(
-                            color: Colors.orange.withOpacity(0.75),
-                            fontSize: _fontOne * 15,
-                          ),
-                          errorStyle: TextStyle(
-                            fontSize: _fontOne * 15,
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontSize: _fontOne * 15,
-                        ),
-                      ),
-                      leftPadding: _widthOne * 20,
-                    ),),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    Material(
-                      color: AppTheme.backgroundColor,
-                      child:FormFieldFormatting.formFieldContainer(
-                      child: TextFormField(
-                        keyboardType: TextInputType.text,
-                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
-                            ? "Video Hashtag can't be Empty"
-                            : null,
-                        onChanged: (val) {
-                          videoHashTag = val;
-                          if(_submitted){
-                            _formKey.currentState.validate();
-                          }
-                        },
-                        decoration: InputDecoration(
-                          prefix: Text('#'),
-                          border: InputBorder.none,
-                          focusedBorder: InputBorder.none,
-                          enabledBorder: InputBorder.none,
-                          errorBorder: InputBorder.none,
-                          disabledBorder: InputBorder.none,
-                          hintText: "Enter hashtag",
-                          hintStyle: TextStyle(
-                            color: Colors.orange.withOpacity(0.75),
-                            fontSize: _fontOne * 15,
-                          ),
-                          errorStyle: TextStyle(
-                            fontSize: _fontOne * 15,
-                          ),
-                        ),
-                        style: TextStyle(
-                          fontSize: _fontOne * 15,
-                        ),
-                      ),
-                      leftPadding: _widthOne * 20,
-                    ),),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width * 0.05,
-                    ),
-                    Container(
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        border: Border.all(color: CupertinoTheme.of(context).primaryColor),
-                        borderRadius: BorderRadius.circular(15)
-                      ),
-                      child:CupertinoButton(
-                      child: Text(category==null ? "Select a category":category),
-                      onPressed: (){
-                        showCupertinoModalPopup(context: context, builder: (_){
-                          return Container(
-                            height: MediaQuery.of(context).size.height*0.2,
-                            child: CupertinoPicker(
-                              backgroundColor: CupertinoColors.systemGrey,
-                              itemExtent: 32,
-                              children: [
-                                Center(child:Text("Vocals")),
-                                Center(child:Text("Dance")),
-                                Center(child:Text("Instrumental")),
-                                Center(child:Text("Standup Comedy")),
-                                Center(child:Text("DJing")),
-                                Center(child:Text("Acting")),
-                              ],
-                              onSelectedItemChanged: (index){
-                                _selectedCategory = index;
-                                switch(index){
-                                  case 0: category = "Vocals";break;
-                                  case 1: category = "Dance";break;
-                                  case 2: category = "Instrumental";break;
-                                  case 3: category = "Standup Comedy";break;
-                                  case 4: category = "DJing";break;
-                                  case 5: category = "Acting";break;
-                                }
-                                setState(() {
-                                });
-                              },
-                            ),
-                          );
-                        });
-                      },
-                    ),),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.width/10,
-                    ),
-                    CupertinoButton(
-                      color: CupertinoTheme.of(context).primaryColor,
-                        borderRadius: BorderRadius.circular(25),
-                        onPressed: (){
-                          if(_formKey.currentState.validate()){
-                            uploadToServer();
-                            setState(() {
-                              _uploadSuccess = true;
-                            });
-                          }else{
-                            setState(() {
-                              _submitted = true;
-                            });
-                          }
-                        },
-                        child: _uploadingVideo
-                            ? CircularProgressIndicator(
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                              Colors.purple),
-                        )
-                            : Text("Upload")),
-                  ],
-                ),
-              ),
-            ),
-          )
-              :_buildUploadSuccess(context)
-      ),
-    ) : Scaffold(
+    return Platform.isIOS ? videoDataInputiOS() : Scaffold(
         appBar: AppBar(
           elevation: 0.0,
           backgroundColor: AppTheme.primaryColor,
@@ -851,5 +649,211 @@ class _VideoDataInputState extends State<VideoDataInput> {
                         ),
                       )
                     : _buildUploadSuccess(context)));
+  }
+
+  Widget videoDataInputiOS(){
+    return CupertinoPageScaffold(
+      navigationBar: CupertinoNavigationBar(
+        backgroundColor: AppTheme.primaryColor,
+        middle: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: 10,
+          ),
+          height: 55,
+          width: _size.width / 2.5,
+          child: Image.asset('assets/images/appBarLogo1.png',fit: BoxFit.fitHeight,),
+        ),
+        trailing: CupertinoButton(
+          padding: EdgeInsets.symmetric(vertical: 5),
+          child: Icon(
+            Icons.save,
+            color: Colors.black,
+            size: _iconOne * 30,
+          ),
+          onPressed: (){
+            _draftSaved = true;
+            uploadDraftToServer();
+          },
+        ),
+
+      ),
+      child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          child: _uploadingVideo
+              ? Center(child: _getProgressBar())
+              : !_uploadSuccess
+              ? SingleChildScrollView(
+            child: Container(
+              padding: EdgeInsets.symmetric(horizontal: 10,vertical: 20),
+              decoration: BoxDecoration(
+                  color: AppTheme.backgroundColor,
+                  borderRadius: BorderRadius.circular(25),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.purple.withOpacity(0.15),
+                      blurRadius: 20,
+                      offset: Offset(0, 10),
+                    )
+                  ]),
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    AspectRatio(
+                        aspectRatio: widget.aspectRatio,
+                        child: Image.file(file,fit: BoxFit.fitWidth,)
+                    ),
+                    Material(
+                      color: AppTheme.backgroundColor,
+                      child:FormFieldFormatting.formFieldContainer(
+                      child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                            ? "Video Title can't be Empty"
+                            : null,
+                        onChanged: (val) {
+                          videoName = val;
+                          if(_submitted){
+                            _formKey.currentState.validate();
+                          }
+                        },
+                        decoration: InputDecoration(
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: "Enter Title",
+                          hintStyle: TextStyle(
+                            color: Colors.orange.withOpacity(0.75),
+                            fontSize: _fontOne * 15,
+                          ),
+                          errorStyle: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
+                        ),
+                        style: TextStyle(
+                          fontSize: _fontOne * 15,
+                        ),
+                      ),
+                      leftPadding: _widthOne * 20,
+                    ),),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.width * 0.05,
+                    ),
+                    Material(
+                      color: AppTheme.backgroundColor,
+                      child:FormFieldFormatting.formFieldContainer(
+                      child: TextFormField(
+                        keyboardType: TextInputType.text,
+                        validator: (val) => val.isEmpty || val.replaceAll(" ", '').isEmpty
+                            ? "Video Hashtag can't be Empty"
+                            : null,
+                        onChanged: (val) {
+                          videoHashTag = val;
+                          if(_submitted){
+                            _formKey.currentState.validate();
+                          }
+                        },
+                        decoration: InputDecoration(
+                          prefix: Text('#'),
+                          border: InputBorder.none,
+                          focusedBorder: InputBorder.none,
+                          enabledBorder: InputBorder.none,
+                          errorBorder: InputBorder.none,
+                          disabledBorder: InputBorder.none,
+                          hintText: "Enter hashtag",
+                          hintStyle: TextStyle(
+                            color: Colors.orange.withOpacity(0.75),
+                            fontSize: _fontOne * 15,
+                          ),
+                          errorStyle: TextStyle(
+                            fontSize: _fontOne * 15,
+                          ),
+                        ),
+                        style: TextStyle(
+                          fontSize: _fontOne * 15,
+                        ),
+                      ),
+                      leftPadding: _widthOne * 20,
+                    ),),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.width * 0.05,
+                    ),
+                    Container(
+                      width: double.infinity,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: CupertinoTheme.of(context).primaryColor),
+                        borderRadius: BorderRadius.circular(15)
+                      ),
+                      child:CupertinoButton(
+                      child: Text(category==null ? "Select a category":category),
+                      onPressed: (){
+                        showCupertinoModalPopup(context: context, builder: (_){
+                          return Container(
+                            height: MediaQuery.of(context).size.height*0.2,
+                            child: CupertinoPicker(
+                              backgroundColor: CupertinoColors.systemGrey,
+                              itemExtent: 32,
+                              children: [
+                                Center(child:Text("Vocals")),
+                                Center(child:Text("Dance")),
+                                Center(child:Text("Instrumental")),
+                                Center(child:Text("Standup Comedy")),
+                                Center(child:Text("DJing")),
+                                Center(child:Text("Acting")),
+                              ],
+                              onSelectedItemChanged: (index){
+                                _selectedCategory = index;
+                                switch(index){
+                                  case 0: category = "Vocals";break;
+                                  case 1: category = "Dance";break;
+                                  case 2: category = "Instrumental";break;
+                                  case 3: category = "Standup Comedy";break;
+                                  case 4: category = "DJing";break;
+                                  case 5: category = "Acting";break;
+                                }
+                                setState(() {
+                                });
+                              },
+                            ),
+                          );
+                        });
+                      },
+                    ),),
+                    SizedBox(
+                      height: MediaQuery.of(context).size.width/10,
+                    ),
+                    CupertinoButton(
+                      color: CupertinoTheme.of(context).primaryColor,
+                        borderRadius: BorderRadius.circular(25),
+                        onPressed: (){
+                          if(_formKey.currentState.validate()){
+                            uploadToServer();
+                            setState(() {
+                              _uploadSuccess = true;
+                            });
+                          }else{
+                            setState(() {
+                              _submitted = true;
+                            });
+                          }
+                        },
+                        child: _uploadingVideo
+                            ? CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              Colors.purple),
+                        )
+                            : Text("Upload")),
+                  ],
+                ),
+              ),
+            ),
+          )
+              :_buildUploadSuccess(context)
+      ),
+    );
   }
 }

@@ -38,61 +38,7 @@ class _CategoryState extends State<Category> {
     _widthOne = _size.width * 0.0008;
     _iconOne = (_size.height * 0.066) / 50;
     return Platform.isIOS
-        ? CupertinoPageScaffold(
-            navigationBar: CupertinoNavigationBar(
-              backgroundColor: Colors.transparent,
-              middle: Text(widget.categoryName),
-              trailing: CupertinoButton(
-                padding:
-                    EdgeInsets.symmetric(vertical: 0, horizontal: _widthOne),
-                child: Icon(
-                  CupertinoIcons.search,
-                  size: _iconOne * 30,
-                ),
-                onPressed: () {
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (_) => SearchUser()));
-                },
-              ),
-            ),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Expanded(
-                    child: StaggeredGridView.countBuilder(
-                      crossAxisCount: 3,
-                      itemCount: _videos.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        dynamic video = _videos[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) {
-                                  return Player(
-                                    video: video,
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                                image: DecorationImage(
-                                    image: NetworkImage(video.thumbUrl),
-                                    fit: BoxFit.cover)),
-                          ),
-                        );
-                      },
-                      staggeredTileBuilder: (int index) => StaggeredTile.count(
-                          1, 1 / _videos[index].aspectRatio),
-                      mainAxisSpacing: 5.0,
-                      crossAxisSpacing: 5.0,
-                    ),
-                  ),
-                ]),
-          )
+        ? categoryiOS()
         : Scaffold(
             appBar: AppBar(
               elevation: 0.0,
@@ -156,6 +102,64 @@ class _CategoryState extends State<Category> {
                     ),
                   ]),
             ),
+          );
+  }
+
+  Widget categoryiOS(){
+    return CupertinoPageScaffold(
+            navigationBar: CupertinoNavigationBar(
+              backgroundColor: Colors.transparent,
+              middle: Text(widget.categoryName),
+              trailing: CupertinoButton(
+                padding:
+                    EdgeInsets.symmetric(vertical: 0, horizontal: _widthOne),
+                child: Icon(
+                  CupertinoIcons.search,
+                  size: _iconOne * 30,
+                ),
+                onPressed: () {
+                  Navigator.push(context,
+                      CupertinoPageRoute(builder: (_) => SearchUser()));
+                },
+              ),
+            ),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: StaggeredGridView.countBuilder(
+                      crossAxisCount: 3,
+                      itemCount: _videos.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        dynamic video = _videos[index];
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) {
+                                  return Player(
+                                    video: video,
+                                  );
+                                },
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: BoxDecoration(
+                                image: DecorationImage(
+                                    image: NetworkImage(video.thumbUrl),
+                                    fit: BoxFit.cover)),
+                          ),
+                        );
+                      },
+                      staggeredTileBuilder: (int index) => StaggeredTile.count(
+                          1, 1 / _videos[index].aspectRatio),
+                      mainAxisSpacing: 5.0,
+                      crossAxisSpacing: 5.0,
+                    ),
+                  ),
+                ]),
           );
   }
 }

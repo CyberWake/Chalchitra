@@ -32,7 +32,35 @@ class SearchResult extends StatelessWidget {
                                     uid: eachUser.id,
                                   ))),
                   child: Platform.isIOS
-                      ? Container(
+                      ? searchResultiOS()
+                      : ListTile(
+                          leading: CircleAvatar(
+                              backgroundColor: Colors.grey,
+                              backgroundImage: eachUser.photoUrl != null
+                                  ? CachedNetworkImageProvider(
+                                      eachUser.photoUrl)
+                                  : CachedNetworkImageProvider(
+                                      'https://via.placeholder.com/150')),
+                          title: Text(
+                              eachUser.displayName == null
+                                  ? eachUser.username
+                                  : eachUser.displayName,
+                              style: TextStyle(
+                                  color: AppTheme.pureWhiteColor,
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold)),
+                          subtitle: Text(
+                            eachUser.username == null ? '' : eachUser.username,
+                            style: TextStyle(color: Colors.grey, fontSize: 13),
+                          ),
+                        ))
+            ],
+          )),
+    );
+  }
+
+  Widget searchResultiOS(){
+    return Container(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -74,30 +102,6 @@ class SearchResult extends StatelessWidget {
                               )
                             ],
                           ),
-                        )
-                      : ListTile(
-                          leading: CircleAvatar(
-                              backgroundColor: Colors.grey,
-                              backgroundImage: eachUser.photoUrl != null
-                                  ? CachedNetworkImageProvider(
-                                      eachUser.photoUrl)
-                                  : CachedNetworkImageProvider(
-                                      'https://via.placeholder.com/150')),
-                          title: Text(
-                              eachUser.displayName == null
-                                  ? eachUser.username
-                                  : eachUser.displayName,
-                              style: TextStyle(
-                                  color: AppTheme.pureWhiteColor,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                            eachUser.username == null ? '' : eachUser.username,
-                            style: TextStyle(color: Colors.grey, fontSize: 13),
-                          ),
-                        ))
-            ],
-          )),
-    );
+                        );
   }
 }

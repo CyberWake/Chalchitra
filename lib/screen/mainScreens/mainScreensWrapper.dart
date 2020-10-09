@@ -259,7 +259,208 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       _profilePage,
     ];
 
-    return Platform.isIOS ? CupertinoPageScaffold(
+    return Platform.isIOS ? mainScreenWrapperiOS():  Scaffold(
+      backgroundColor: AppTheme.backgroundColor,
+      key: _scaffoldGlobalKey,
+      appBar: AppBar(
+        elevation: 0.0,
+        backgroundColor: AppTheme.primaryColor,
+        title: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: 10,
+          ),
+          height: 55,
+          width: _size.width / 2.5,
+          child: Image.asset(
+            'assets/images/appBarLogo1.png',
+            fit: BoxFit.fitHeight,
+          ),
+        ),
+        actions: [
+          _currentIndex != 4
+              ? IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: AppTheme.backgroundColor,
+                    size: _iconOne * 30,
+                  ),
+                  onPressed: () {
+                    if (_userAuth.user != null) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => SearchUser()));
+                    } else {
+                      Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) =>
+                                  Authentication(AuthIndex.REGISTER)));
+                    }
+                  },
+                )
+              : IconButton(
+                  icon: Icon(
+                    Icons.menu,
+                    color: AppTheme.elevationColor,
+                    size: _iconOne * 25,
+                  ),
+                  onPressed: () =>
+                      _scaffoldGlobalKey.currentState.openEndDrawer(),
+                  tooltip:
+                      MaterialLocalizations.of(context).openAppDrawerTooltip,
+                ),
+          SizedBox(
+            width: _widthOne * 100,
+          )
+        ],
+      ),
+      endDrawer: Container(
+        width: _size.width * 0.5,
+        child: Drawer(
+            child: Container(
+          color: AppTheme.backgroundColor,
+          child: Column(
+            children: [
+              DrawerHeader(
+                child: Center(
+                  child: Text(
+                    user == null ? " " : user.username,
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+              Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+              ListTile(
+                leading: Icon(Icons.drafts, color: Colors.white),
+                title:
+                    Text("Drafted Post", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (BuildContext context) => Drafts()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.security, color: Colors.white),
+                title: Text('Privacy', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                      CupertinoPageRoute(builder: (_) => PrivacyPage()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.group_add, color: Colors.white),
+                title: Text('Invite', style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await FlutterShare.share(
+                      title: 'Join WowTalent',
+                      text: 'I am Loving the app. I invite you to join me' +
+                          ' in the journey to show your talent!!',
+                      linkUrl:
+                          'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                      chooserTitle: 'Invite');
+                },
+              ),
+              Spacer(),
+              Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+              ListTile(
+                leading: Icon(Icons.power_settings_new, color: Colors.white),
+                title: Text('Signout', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildConfirmSignOut(context),
+                  );
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: _heightOne * 10),
+              )
+            ],
+          ),
+        )),
+      ),
+      bottomNavigationBar: CurvedNavigationBar(
+        index: _currentIndex,
+        height: _heightOne * 45,
+        backgroundColor: Colors.transparent,
+        color: AppTheme.primaryColor,
+        buttonBackgroundColor: AppTheme.primaryColor,
+        items: <Widget>[
+          Icon(
+            Icons.home,
+            size: 25,
+            color: AppTheme.backgroundColor,
+          ),
+          Icon(
+            Icons.explore,
+            size: 25,
+            color: AppTheme.backgroundColor,
+          ),
+          Icon(
+            Icons.add,
+            size: 25,
+            color: AppTheme.backgroundColor,
+          ),
+          Transform.rotate(
+            angle: 180 * pi / 100,
+            child: Icon(
+              Icons.send,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+          ),
+          Icon(
+            Icons.account_circle,
+            size: 25,
+            color: AppTheme.backgroundColor,
+          ),
+        ],
+        onTap: (index) async {
+          if (_userAuth.user == null) {
+            Navigator.pushReplacement(
+                context,
+                CupertinoPageRoute(
+                    builder: (context) => Authentication(AuthIndex.REGISTER)));
+          }
+          print(index);
+          if (index == 4) {
+            print(index);
+            UserAuth().account.listen((user) {
+              if (user != null) {
+                _profilePage = ProfilePage(uid: user.uid);
+              }
+            });
+            _isMessagePage = false;
+            _currentIndex = index;
+          } else if (index == 3) {
+            _isMessagePage = true;
+            _currentIndex = index;
+          } else {
+            _isMessagePage = false;
+            _currentIndex = index;
+          }
+          setState(() {});
+        },
+      ),
+      body: Container(
+          margin: EdgeInsets.only(bottom: 10), child: _screens[_currentIndex]),
+    );
+  }
+
+  Widget mainScreenWrapperiOS(){
+    return CupertinoPageScaffold(
       child: Scaffold(
         backgroundColor: AppTheme.backgroundColor,
         key: _cupertinoScaffoldGlobalKey,
@@ -459,203 +660,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           margin: EdgeInsets.only(bottom: 10),
              child: _screens[_currentIndex]),
       ),
-    ) :  Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      key: _scaffoldGlobalKey,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: AppTheme.primaryColor,
-        title: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 10,
-          ),
-          height: 55,
-          width: _size.width / 2.5,
-          child: Image.asset(
-            'assets/images/appBarLogo1.png',
-            fit: BoxFit.fitHeight,
-          ),
-        ),
-        actions: [
-          _currentIndex != 4
-              ? IconButton(
-                  icon: Icon(
-                    Icons.search,
-                    color: AppTheme.backgroundColor,
-                    size: _iconOne * 30,
-                  ),
-                  onPressed: () {
-                    if (_userAuth.user != null) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => SearchUser()));
-                    } else {
-                      Navigator.pushReplacement(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (_) =>
-                                  Authentication(AuthIndex.REGISTER)));
-                    }
-                  },
-                )
-              : IconButton(
-                  icon: Icon(
-                    Icons.menu,
-                    color: AppTheme.elevationColor,
-                    size: _iconOne * 25,
-                  ),
-                  onPressed: () =>
-                      _scaffoldGlobalKey.currentState.openEndDrawer(),
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
-                ),
-          SizedBox(
-            width: _widthOne * 100,
-          )
-        ],
-      ),
-      endDrawer: Container(
-        width: _size.width * 0.5,
-        child: Drawer(
-            child: Container(
-          color: AppTheme.backgroundColor,
-          child: Column(
-            children: [
-              DrawerHeader(
-                child: Center(
-                  child: Text(
-                    user == null ? " " : user.username,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              Divider(
-                color: Colors.white,
-                thickness: 0.5,
-              ),
-              ListTile(
-                leading: Icon(Icons.drafts, color: Colors.white),
-                title:
-                    Text("Drafted Post", style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (BuildContext context) => Drafts()));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.security, color: Colors.white),
-                title: Text('Privacy', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (_) => PrivacyPage()));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.group_add, color: Colors.white),
-                title: Text('Invite', style: TextStyle(color: Colors.white)),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await FlutterShare.share(
-                      title: 'Join WowTalent',
-                      text: 'I am Loving the app. I invite you to join me' +
-                          ' in the journey to show your talent!!',
-                      linkUrl:
-                          'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
-                      chooserTitle: 'Invite');
-                },
-              ),
-              Spacer(),
-              Divider(
-                color: Colors.white,
-                thickness: 0.5,
-              ),
-              ListTile(
-                leading: Icon(Icons.power_settings_new, color: Colors.white),
-                title: Text('Signout', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildConfirmSignOut(context),
-                  );
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: _heightOne * 10),
-              )
-            ],
-          ),
-        )),
-      ),
-      bottomNavigationBar: CurvedNavigationBar(
-        index: _currentIndex,
-        height: _heightOne * 45,
-        backgroundColor: Colors.transparent,
-        color: AppTheme.primaryColor,
-        buttonBackgroundColor: AppTheme.primaryColor,
-        items: <Widget>[
-          Icon(
-            Icons.home,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-          Icon(
-            Icons.explore,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-          Icon(
-            Icons.add,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-          Transform.rotate(
-            angle: 180 * pi / 100,
-            child: Icon(
-              Icons.send,
-              size: 25,
-              color: AppTheme.backgroundColor,
-            ),
-          ),
-          Icon(
-            Icons.account_circle,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-        ],
-        onTap: (index) async {
-          if (_userAuth.user == null) {
-            Navigator.pushReplacement(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => Authentication(AuthIndex.REGISTER)));
-          }
-          print(index);
-          if (index == 4) {
-            print(index);
-            UserAuth().account.listen((user) {
-              if (user != null) {
-                _profilePage = ProfilePage(uid: user.uid);
-              }
-            });
-            _isMessagePage = false;
-            _currentIndex = index;
-          } else if (index == 3) {
-            _isMessagePage = true;
-            _currentIndex = index;
-          } else {
-            _isMessagePage = false;
-            _currentIndex = index;
-          }
-          setState(() {});
-        },
-      ),
-      body: Container(
-          margin: EdgeInsets.only(bottom: 10), child: _screens[_currentIndex]),
     );
   }
 }

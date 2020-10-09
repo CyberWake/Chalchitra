@@ -32,6 +32,7 @@ class _VideoPreviewState extends State<VideoPreview> {
   String infoPath = ' ';
   String _processPhase = '';
   MediaInfo mediaInfo;
+  Size _size;
 
   Future<void> _processVideo(File rawVideoFile) async {
     print("processing");
@@ -114,7 +115,134 @@ class _VideoPreviewState extends State<VideoPreview> {
     Size _size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: _onBackPressed,
-      child: Platform.isIOS ? CupertinoPageScaffold(
+      child: Platform.isIOS ? videoPreviewiOS() :  Scaffold(
+        key: _scaffoldGlobalKey,
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          centerTitle: true,
+          title: Text('Video Preview'),
+        ),
+        body: _encodingVideo
+            ? _getProgressBar()
+            : _controller.value.initialized
+                ? Stack(
+                    children: [
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          AspectRatio(
+                            aspectRatio: _controller.value.aspectRatio,
+                            child: InkWell(
+                                onTap: () {
+                                  if (playing) {
+                                    print("running");
+                                    _scaffoldGlobalKey.currentState
+                                        .showSnackBar(SnackBar(
+                                      duration: Duration(milliseconds: 500),
+                                      content: Text('Audio Muted'),
+                                    ));
+                                    print("running");
+                                    playing = false;
+                                    _controller.setVolume(0.0);
+                                  } else {
+                                    _scaffoldGlobalKey.currentState
+                                        .showSnackBar(SnackBar(
+                                      duration: Duration(milliseconds: 500),
+                                      content: Text('Audio Unmuted'),
+                                    ));
+                                    playing = true;
+                                    _controller.setVolume(1.0);
+                                  }
+                                },
+                                child: VideoPlayer(_controller)),
+                          ),
+                          VideoProgressIndicator(
+                            _controller,
+                            allowScrubbing: true,
+                            colors: VideoProgressColors(
+                                playedColor: AppTheme.primaryColor,
+                                bufferedColor: Colors.grey,
+                                backgroundColor: Colors.white),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.68,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              Padding(
+                                padding:
+                                    EdgeInsets.only(right: 25.0, bottom: 10),
+                                child: FloatingActionButton(
+                                  onPressed: () {
+                                    setState(() {
+                                      _controller.value.isPlaying
+                                          ? _controller.pause()
+                                          : _controller.play();
+                                    });
+                                  },
+                                  child: Icon(
+                                    _controller.value.isPlaying
+                                        ? Icons.pause
+                                        : Icons.play_arrow,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                : SpinKitCircle(
+                    color: Colors.grey,
+                    size: 60,
+                  ),
+        bottomNavigationBar: Container(
+          padding: EdgeInsets.only(bottom: 10),
+          color: Colors.black,
+//        height: MediaQuery.of(context).size.height *0.08,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              FlatButton(
+                onPressed: () async {
+                  _controller.pause();
+                  Navigator.pop(context);
+                },
+                child: Text(
+                  'Get New Video',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
+              ),
+              FlatButton(
+                onPressed: () async {
+                  setState(() {
+                    _controller.pause();
+                    _encodingVideo = true;
+                  });
+                  await _processVideo(selectedVideo);
+                },
+                child: Text(_encodingVideo ? 'Encoding..' : 'Encode',
+                    style: TextStyle(color: Colors.white, fontSize: 20)),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+
+//iOS Screen
+  Widget videoPreviewiOS(){
+    return CupertinoPageScaffold(
       backgroundColor: Colors.black,
       navigationBar: CupertinoNavigationBar(
         middle: Text("Video Preview"),
@@ -246,127 +374,6 @@ class _VideoPreviewState extends State<VideoPreview> {
             ),
           ),
         ])
-    ):  Scaffold(
-        key: _scaffoldGlobalKey,
-        backgroundColor: Colors.black,
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text('Video Preview'),
-        ),
-        body: _encodingVideo
-            ? _getProgressBar()
-            : _controller.value.initialized
-                ? Stack(
-                    children: [
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          AspectRatio(
-                            aspectRatio: _controller.value.aspectRatio,
-                            child: InkWell(
-                                onTap: () {
-                                  if (playing) {
-                                    print("running");
-                                    _scaffoldGlobalKey.currentState
-                                        .showSnackBar(SnackBar(
-                                      duration: Duration(milliseconds: 500),
-                                      content: Text('Audio Muted'),
-                                    ));
-                                    print("running");
-                                    playing = false;
-                                    _controller.setVolume(0.0);
-                                  } else {
-                                    _scaffoldGlobalKey.currentState
-                                        .showSnackBar(SnackBar(
-                                      duration: Duration(milliseconds: 500),
-                                      content: Text('Audio Unmuted'),
-                                    ));
-                                    playing = true;
-                                    _controller.setVolume(1.0);
-                                  }
-                                },
-                                child: VideoPlayer(_controller)),
-                          ),
-                          VideoProgressIndicator(
-                            _controller,
-                            allowScrubbing: true,
-                            colors: VideoProgressColors(
-                                playedColor: AppTheme.primaryColor,
-                                bufferedColor: Colors.grey,
-                                backgroundColor: Colors.white),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.68,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              Padding(
-                                padding:
-                                    EdgeInsets.only(right: 25.0, bottom: 10),
-                                child: FloatingActionButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      _controller.value.isPlaying
-                                          ? _controller.pause()
-                                          : _controller.play();
-                                    });
-                                  },
-                                  child: Icon(
-                                    _controller.value.isPlaying
-                                        ? Icons.pause
-                                        : Icons.play_arrow,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      )
-                    ],
-                  )
-                : SpinKitCircle(
-                    color: Colors.grey,
-                    size: 60,
-                  ),
-        bottomNavigationBar: Container(
-          padding: EdgeInsets.only(bottom: 10),
-          color: Colors.black,
-//        height: MediaQuery.of(context).size.height *0.08,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              FlatButton(
-                onPressed: () async {
-                  _controller.pause();
-                  Navigator.pop(context);
-                },
-                child: Text(
-                  'Get New Video',
-                  style: TextStyle(color: Colors.white, fontSize: 20),
-                ),
-              ),
-              FlatButton(
-                onPressed: () async {
-                  setState(() {
-                    _controller.pause();
-                    _encodingVideo = true;
-                  });
-                  await _processVideo(selectedVideo);
-                },
-                child: Text(_encodingVideo ? 'Encoding..' : 'Encode',
-                    style: TextStyle(color: Colors.white, fontSize: 20)),
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

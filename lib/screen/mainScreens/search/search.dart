@@ -25,73 +25,7 @@ class _SearchUserState extends State<SearchUser> {
   @override
   Widget build(BuildContext context) {
     return Platform.isIOS
-        ? CupertinoPageScaffold(
-            child: SafeArea(
-              child: Column(
-                children: [
-                  Container(
-                    decoration: BoxDecoration(
-                        color: AppTheme.backgroundColor,
-                        border: Border(
-                            bottom: BorderSide(
-                                color: Colors.orange.withOpacity(0.5))),
-                        boxShadow: [
-                          BoxShadow(
-                              offset: Offset(0, 2),
-                              color: AppTheme.pureWhiteColor.withOpacity(0.2),
-                              blurRadius: 8)
-                        ]),
-                    child: Row(
-                      children: [
-                        CupertinoButton(
-                            child: Icon(
-                              Icons.arrow_back_ios,
-                              color: Colors.orange.shade400,
-                            ),
-                            onPressed: () => Navigator.pop(context)),
-                        Expanded(
-                          child: CupertinoTextField(
-                            style: TextStyle(
-                                fontSize: 18, color: AppTheme.pureWhiteColor),
-                            controller: searchTextEditingController,
-                            decoration: BoxDecoration(
-                                border: Border.all(color: Colors.transparent)),
-                            placeholder: "Search By Username",
-                            placeholderStyle:
-                                TextStyle(color: Colors.grey.withOpacity(0.5)),
-                            suffix: CupertinoButton(
-                                child: Icon(
-                                  Icons.clear,
-                                  color: Colors.orange.shade400,
-                                ),
-                                onPressed: () {
-                                  searchTextEditingController.clear();
-                                  search = "";
-                                }),
-                            onSubmitted: (String username) {
-                              search = username;
-                              Future<QuerySnapshot> allUsers = ref
-                                  .where("username",
-                                      isGreaterThanOrEqualTo: username)
-                                  .get();
-                              setState(() {
-                                futureSearchResult = allUsers;
-                              });
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: futureSearchResult == null
-                        ? resultNotFound()
-                        : foundUsers(),
-                  )
-                ],
-              ),
-            ),
-          )
+        ? searchiOS()
         : Scaffold(
             backgroundColor: AppTheme.backgroundColor,
             extendBody: true,
@@ -158,6 +92,76 @@ class _SearchUserState extends State<SearchUser> {
                 ],
               ),
             ));
+  }
+
+  Widget searchiOS(){
+    return CupertinoPageScaffold(
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                        color: AppTheme.backgroundColor,
+                        border: Border(
+                            bottom: BorderSide(
+                                color: Colors.orange.withOpacity(0.5))),
+                        boxShadow: [
+                          BoxShadow(
+                              offset: Offset(0, 2),
+                              color: AppTheme.pureWhiteColor.withOpacity(0.2),
+                              blurRadius: 8)
+                        ]),
+                    child: Row(
+                      children: [
+                        CupertinoButton(
+                            child: Icon(
+                              Icons.arrow_back_ios,
+                              color: Colors.orange.shade400,
+                            ),
+                            onPressed: () => Navigator.pop(context)),
+                        Expanded(
+                          child: CupertinoTextField(
+                            style: TextStyle(
+                                fontSize: 18, color: AppTheme.pureWhiteColor),
+                            controller: searchTextEditingController,
+                            decoration: BoxDecoration(
+                                border: Border.all(color: Colors.transparent)),
+                            placeholder: "Search By Username",
+                            placeholderStyle:
+                                TextStyle(color: Colors.grey.withOpacity(0.5)),
+                            suffix: CupertinoButton(
+                                child: Icon(
+                                  Icons.clear,
+                                  color: Colors.orange.shade400,
+                                ),
+                                onPressed: () {
+                                  searchTextEditingController.clear();
+                                  search = "";
+                                }),
+                            onSubmitted: (String username) {
+                              search = username;
+                              Future<QuerySnapshot> allUsers = ref
+                                  .where("username",
+                                      isGreaterThanOrEqualTo: username)
+                                  .get();
+                              setState(() {
+                                futureSearchResult = allUsers;
+                              });
+                            },
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Expanded(
+                    child: futureSearchResult == null
+                        ? resultNotFound()
+                        : foundUsers(),
+                  )
+                ],
+              ),
+            ),
+          );
   }
 
   Widget resultNotFound() {

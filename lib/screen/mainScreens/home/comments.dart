@@ -57,7 +57,120 @@ class _CommentsScreenState extends State<CommentsScreen> {
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
     return Platform.isIOS
-        ? CupertinoPageScaffold(
+        ? commentsScreeniOS()
+        : Scaffold(
+            body: Container(
+                padding: EdgeInsets.only(top: _heightOne * 20),
+                height: _size.height,
+                color: AppTheme.primaryColor,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                        bottom: _heightOne * 20,
+                        top: _heightOne * 20,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            width: _widthOne * 50,
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.arrow_back_ios,
+                                color: AppTheme.backgroundColor),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          Expanded(
+                              child: Text(
+                            "Comments",
+                            style: TextStyle(
+                              color: AppTheme.backgroundColor,
+                              fontSize: _fontOne * 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                        child: Container(
+                      padding: EdgeInsets.only(top: _heightOne * 20),
+                      decoration: BoxDecoration(
+                          color: AppTheme.backgroundColor,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(25),
+                            topLeft: Radius.circular(25),
+                          )),
+                      child: getComments(),
+                    )),
+                    Container(
+                      padding: EdgeInsets.zero,
+                      margin: EdgeInsets.only(bottom: 0),
+                      height: 70,
+                      color: AppTheme.backgroundColor,
+                      child: Row(
+                        children: <Widget>[
+                          SizedBox(
+                            width: _widthOne * 15,
+                          ),
+                          CircleAvatar(
+                            radius: _iconOne * 18,
+                            backgroundImage: NetworkImage(
+                              _userDataModel.photoUrl == null
+                                  ? "https://via.placeholder.com/150"
+                                  : _userDataModel.photoUrl,
+                            ),
+                          ),
+                          SizedBox(
+                            width: _widthOne * 25,
+                          ),
+                          Expanded(
+                            child: TextField(
+                              controller: controller,
+                              style: TextStyle(color: AppTheme.pureWhiteColor),
+                              onChanged: (val) {
+                                _comment = val;
+                              },
+                              decoration: InputDecoration.collapsed(
+                                hintText: 'Post a comment..',
+                                hintStyle:
+                                    TextStyle(color: AppTheme.pureWhiteColor),
+                              ),
+                              textCapitalization: TextCapitalization.sentences,
+                            ),
+                          ),
+                          IconButton(
+                            icon: Icon(Icons.send),
+                            iconSize: 25,
+                            color: AppTheme.primaryColor,
+                            onPressed: () async {
+                              if (_comment.isEmpty ||
+                                  _comment.replaceAll(" ", "").length == 0) {
+                                return;
+                              }
+                              await _userVideoStore.addVideoComments(
+                                videoID: widget.videoId,
+                                comment: _comment,
+                              );
+                              setState(() {
+                                controller.clear();
+                                _comment = "";
+                              });
+                            },
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                )),
+          );
+  }
+
+//iOS screen
+Widget commentsScreeniOS(){
+  return CupertinoPageScaffold(
             child: Container(
                 padding: EdgeInsets.only(top: _heightOne * 20),
                 height: _size.height,
@@ -171,116 +284,8 @@ class _CommentsScreenState extends State<CommentsScreen> {
                         )),
                   ],
                 )),
-          )
-        : Scaffold(
-            body: Container(
-                padding: EdgeInsets.only(top: _heightOne * 20),
-                height: _size.height,
-                color: AppTheme.primaryColor,
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(
-                        bottom: _heightOne * 20,
-                        top: _heightOne * 20,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            width: _widthOne * 50,
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.arrow_back_ios,
-                                color: AppTheme.backgroundColor),
-                            onPressed: () => Navigator.pop(context),
-                          ),
-                          Expanded(
-                              child: Text(
-                            "Comments",
-                            style: TextStyle(
-                              color: AppTheme.backgroundColor,
-                              fontSize: _fontOne * 25,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          )),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                        child: Container(
-                      padding: EdgeInsets.only(top: _heightOne * 20),
-                      decoration: BoxDecoration(
-                          color: AppTheme.backgroundColor,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(25),
-                            topLeft: Radius.circular(25),
-                          )),
-                      child: getComments(),
-                    )),
-                    Container(
-                      padding: EdgeInsets.zero,
-                      margin: EdgeInsets.only(bottom: 0),
-                      height: 70,
-                      color: AppTheme.backgroundColor,
-                      child: Row(
-                        children: <Widget>[
-                          SizedBox(
-                            width: _widthOne * 15,
-                          ),
-                          CircleAvatar(
-                            radius: _iconOne * 18,
-                            backgroundImage: NetworkImage(
-                              _userDataModel.photoUrl == null
-                                  ? "https://via.placeholder.com/150"
-                                  : _userDataModel.photoUrl,
-                            ),
-                          ),
-                          SizedBox(
-                            width: _widthOne * 25,
-                          ),
-                          Expanded(
-                            child: TextField(
-                              controller: controller,
-                              style: TextStyle(color: AppTheme.pureWhiteColor),
-                              onChanged: (val) {
-                                _comment = val;
-                              },
-                              decoration: InputDecoration.collapsed(
-                                hintText: 'Post a comment..',
-                                hintStyle:
-                                    TextStyle(color: AppTheme.pureWhiteColor),
-                              ),
-                              textCapitalization: TextCapitalization.sentences,
-                            ),
-                          ),
-                          IconButton(
-                            icon: Icon(Icons.send),
-                            iconSize: 25,
-                            color: AppTheme.primaryColor,
-                            onPressed: () async {
-                              if (_comment.isEmpty ||
-                                  _comment.replaceAll(" ", "").length == 0) {
-                                return;
-                              }
-                              await _userVideoStore.addVideoComments(
-                                videoID: widget.videoId,
-                                comment: _comment,
-                              );
-                              setState(() {
-                                controller.clear();
-                                _comment = "";
-                              });
-                            },
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                )),
           );
-  }
+}
 
   Widget getComments() {
     return StreamBuilder(

@@ -52,7 +52,98 @@ class _MessageState extends State<Message> {
     _iconOne = (_size.height * 0.066) / 50;
 
     return Platform.isIOS
-        ? CupertinoPageScaffold(
+        ? messagesScreeniOS()
+        : Scaffold(
+            body: SingleChildScrollView(
+              child: Container(
+                height: _size.height,
+                color: AppTheme.primaryColor,
+                child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Spacer(),
+                          Text(
+                            "Messages",
+                            style: TextStyle(
+                              color: AppTheme.backgroundColor,
+                              fontSize: _fontOne * 25,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Spacer(),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 5,
+                      ),
+                      Container(
+                        width: _size.width * 0.8,
+                        height: _heightOne * 42.5,
+                        margin: EdgeInsets.only(
+                          bottom: _heightOne * 20,
+                        ),
+                        padding: EdgeInsets.all(_iconOne * 5),
+                        decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15)),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                onTap: () {
+                                  _updateIsSearch(true);
+                                },
+                                onFieldSubmitted: (val) {
+                                  setState(() {
+                                    _search = val;
+                                  });
+                                },
+                                decoration: authInputFormatting.copyWith(
+                                  hintText: "Search By Username",
+                                ),
+                              ),
+                            ),
+                            _isSearchActive
+                                ? IconButton(
+                                    icon: Icon(
+                                      Icons.cancel,
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                    onPressed: () {
+                                      _updateIsSearch(false);
+                                    },
+                                  )
+                                : Container(),
+                          ],
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                            padding: EdgeInsets.only(top: _heightOne * 20),
+                            decoration: BoxDecoration(
+                                color: AppTheme.backgroundColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(25),
+                                  topLeft: Radius.circular(25),
+                                )),
+                            child: _isSearchActive
+                                ? SearchMessage(
+                                    userName: _search,
+                                  )
+                                : getBody()),
+                      ),
+                    ]),
+              ),
+            ),
+          );
+  }
+
+  Widget messagesScreeniOS(){
+    return CupertinoPageScaffold(
             child: SingleChildScrollView(
             child: Container(
               height: _size.height,
@@ -141,94 +232,7 @@ class _MessageState extends State<Message> {
                     ),
                   ]),
             ),
-          ))
-        : Scaffold(
-            body: SingleChildScrollView(
-              child: Container(
-                height: _size.height,
-                color: AppTheme.primaryColor,
-                child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          Spacer(),
-                          Text(
-                            "Messages",
-                            style: TextStyle(
-                              color: AppTheme.backgroundColor,
-                              fontSize: _fontOne * 25,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Spacer(),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 5,
-                      ),
-                      Container(
-                        width: _size.width * 0.8,
-                        height: _heightOne * 42.5,
-                        margin: EdgeInsets.only(
-                          bottom: _heightOne * 20,
-                        ),
-                        padding: EdgeInsets.all(_iconOne * 5),
-                        decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(15)),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: TextFormField(
-                                onTap: () {
-                                  _updateIsSearch(true);
-                                },
-                                onFieldSubmitted: (val) {
-                                  setState(() {
-                                    _search = val;
-                                  });
-                                },
-                                decoration: authInputFormatting.copyWith(
-                                  hintText: "Search By Username",
-                                ),
-                              ),
-                            ),
-                            _isSearchActive
-                                ? IconButton(
-                                    icon: Icon(
-                                      Icons.cancel,
-                                      color: AppTheme.primaryColor,
-                                    ),
-                                    onPressed: () {
-                                      _updateIsSearch(false);
-                                    },
-                                  )
-                                : Container(),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                            padding: EdgeInsets.only(top: _heightOne * 20),
-                            decoration: BoxDecoration(
-                                color: AppTheme.backgroundColor,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(25),
-                                  topLeft: Radius.circular(25),
-                                )),
-                            child: _isSearchActive
-                                ? SearchMessage(
-                                    userName: _search,
-                                  )
-                                : getBody()),
-                      ),
-                    ]),
-              ),
-            ),
-          );
+          ));
   }
 
   Widget getBody() {

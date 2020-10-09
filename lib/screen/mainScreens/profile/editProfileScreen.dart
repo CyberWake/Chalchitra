@@ -86,154 +86,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     return Platform.isIOS
-        ? CupertinoPageScaffold(
-            child: Container(
-              color: AppTheme.primaryColor,
-              child: Stack(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: _size.height * 0.1),
-                    decoration: BoxDecoration(
-                      color: AppTheme.backgroundColor,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20),
-                        topLeft: Radius.circular(20),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          offset: Offset(0.0, -10.0), //(x,y)
-                          blurRadius: 10.0,
-                        ),
-                      ],
-                    ),
-                    child: loading
-                        ? LinearProgressIndicator()
-                        : ListView(children: <Widget>[
-                            Container(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 15, vertical: 5),
-                                child: Column(
-                                  children: <Widget>[
-                                    Container(
-                                      color: AppTheme.backgroundColor,
-                                      padding: EdgeInsets.only(top: 40),
-                                      child: Column(children: <Widget>[
-                                        getFieldContainer([
-                                          createProfileNameField(),
-                                          createUsernameField(),
-                                          createBioField(),
-                                        ]),
-                                        SizedBox(
-                                          height: 20,
-                                        ),
-                                        getFieldContainer([
-                                          createCountryField(),
-                                          createGenderField(),
-                                          createDOBField(),
-                                        ]),
-                                        // createGenderField()
-                                      ]),
-                                    ),
-                                    SizedBox(
-                                      height: 20,
-                                    ),
-                                    CupertinoButton(
-                                      onPressed: _updateButton
-                                          ? updateUserProfile
-                                          : () => Navigator.pop(context),
-                                      child: Container(
-                                        height: 50,
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 10),
-                                        decoration: BoxDecoration(
-                                          borderRadius:
-                                              BorderRadius.circular(50),
-                                          color: AppTheme.primaryColor,
-                                        ),
-                                        child: Center(
-                                            child: _updateButton
-                                                ? Text(
-                                                    "Update",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        letterSpacing: 1.5,
-                                                        fontSize: 17),
-                                                  )
-                                                : Text(
-                                                    "Back",
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        letterSpacing: 1.5,
-                                                        fontSize: 17),
-                                                  )),
-                                      ),
-                                    ),
-                                  ],
-                                ))
-                          ]),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(
-                      top: _size.height * 0.05,
-                      left: _size.width * 0.5 - 50,
-                    ),
-                    child: CircleAvatar(
-                      backgroundImage: url == ""
-                          ? NetworkImage(onUrlNull)
-                          : NetworkImage(url),
-                      radius: 50.0,
-                    ),
-                  ),
-                  CupertinoButton(
-                    onPressed: () async {
-                      file = await FilePicker.getFile(type: FileType.image);
-                      fileName = path.basename(file.path);
-                      setState(() {
-                        fileName = path.basename(file.path);
-                      });
-                      StorageReference storageReference = FirebaseStorage
-                          .instance
-                          .ref()
-                          .child("images/" + user.id);
-                      StorageUploadTask uploadTask =
-                          storageReference.putFile(file);
-
-                      final StorageTaskSnapshot downloadUrl =
-                          (await uploadTask.onComplete);
-                      url = (await downloadUrl.ref.getDownloadURL());
-                      _scaffoldGlobalKey.currentState.showSnackBar(
-                          SnackBar(content: Text('Profile Picture Updated')));
-                      setState(() {
-                        print("setstate called");
-                      });
-                      await ref.doc(widget.uid).update({
-                        "photoUrl": url,
-                      });
-                    },
-                    child: Container(
-                      decoration: BoxDecoration(
-                          color: Colors.orange.shade800,
-                          borderRadius: BorderRadius.circular(50)),
-                      padding: EdgeInsets.all(2.5),
-                      margin: EdgeInsets.only(
-                        top: _size.height * 0.05,
-                        left: _size.width * 0.57,
-                      ),
-                      child: Icon(
-                        Icons.camera,
-                        color: Colors.white,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          )
+        ? editProfileiOS()
         : Scaffold(
             extendBodyBehindAppBar: true,
             key: _scaffoldGlobalKey,
@@ -342,6 +195,158 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   InkWell(
                     onTap: () async {
+                      file = await FilePicker.getFile(type: FileType.image);
+                      fileName = path.basename(file.path);
+                      setState(() {
+                        fileName = path.basename(file.path);
+                      });
+                      StorageReference storageReference = FirebaseStorage
+                          .instance
+                          .ref()
+                          .child("images/" + user.id);
+                      StorageUploadTask uploadTask =
+                          storageReference.putFile(file);
+
+                      final StorageTaskSnapshot downloadUrl =
+                          (await uploadTask.onComplete);
+                      url = (await downloadUrl.ref.getDownloadURL());
+                      _scaffoldGlobalKey.currentState.showSnackBar(
+                          SnackBar(content: Text('Profile Picture Updated')));
+                      setState(() {
+                        print("setstate called");
+                      });
+                      await ref.doc(widget.uid).update({
+                        "photoUrl": url,
+                      });
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                          color: Colors.orange.shade800,
+                          borderRadius: BorderRadius.circular(50)),
+                      padding: EdgeInsets.all(2.5),
+                      margin: EdgeInsets.only(
+                        top: _size.height * 0.05,
+                        left: _size.width * 0.57,
+                      ),
+                      child: Icon(
+                        Icons.camera,
+                        color: Colors.white,
+                      ),
+                    ),
+                  )
+                ],
+              ),
+            ),
+          );
+  }
+
+//iOS Screen
+  Widget editProfileiOS(){
+    return CupertinoPageScaffold(
+            child: Container(
+              color: AppTheme.primaryColor,
+              child: Stack(
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(top: _size.height * 0.1),
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundColor,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(20),
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          offset: Offset(0.0, -10.0), //(x,y)
+                          blurRadius: 10.0,
+                        ),
+                      ],
+                    ),
+                    child: loading
+                        ? LinearProgressIndicator()
+                        : ListView(children: <Widget>[
+                            Container(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 15, vertical: 5),
+                                child: Column(
+                                  children: <Widget>[
+                                    Container(
+                                      color: AppTheme.backgroundColor,
+                                      padding: EdgeInsets.only(top: 40),
+                                      child: Column(children: <Widget>[
+                                        getFieldContainer([
+                                          createProfileNameField(),
+                                          createUsernameField(),
+                                          createBioField(),
+                                        ]),
+                                        SizedBox(
+                                          height: 20,
+                                        ),
+                                        getFieldContainer([
+                                          createCountryField(),
+                                          createGenderField(),
+                                          createDOBField(),
+                                        ]),
+                                        // createGenderField()
+                                      ]),
+                                    ),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    CupertinoButton(
+                                      onPressed: _updateButton
+                                          ? updateUserProfile
+                                          : () => Navigator.pop(context),
+                                      child: Container(
+                                        height: 50,
+                                        margin: EdgeInsets.symmetric(
+                                            horizontal: 10),
+                                        decoration: BoxDecoration(
+                                          borderRadius:
+                                              BorderRadius.circular(50),
+                                          color: AppTheme.primaryColor,
+                                        ),
+                                        child: Center(
+                                            child: _updateButton
+                                                ? Text(
+                                                    "Update",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        letterSpacing: 1.5,
+                                                        fontSize: 17),
+                                                  )
+                                                : Text(
+                                                    "Back",
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        letterSpacing: 1.5,
+                                                        fontSize: 17),
+                                                  )),
+                                      ),
+                                    ),
+                                  ],
+                                ))
+                          ]),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: _size.height * 0.05,
+                      left: _size.width * 0.5 - 50,
+                    ),
+                    child: CircleAvatar(
+                      backgroundImage: url == ""
+                          ? NetworkImage(onUrlNull)
+                          : NetworkImage(url),
+                      radius: 50.0,
+                    ),
+                  ),
+                  CupertinoButton(
+                    onPressed: () async {
                       file = await FilePicker.getFile(type: FileType.image);
                       fileName = path.basename(file.path);
                       setState(() {

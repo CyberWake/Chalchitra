@@ -60,80 +60,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
     return Platform.isIOS
-        ? CupertinoPageScaffold(
-            child: Container(
-                padding: EdgeInsets.only(top: _heightOne * 20),
-                height: _size.height,
-                color: AppTheme.primaryColor,
-                child: Column(
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(
-                        bottom: _heightOne * 20,
-                        top: _heightOne * 20,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: <Widget>[
-                          SizedBox(
-                            width: _widthOne * 50,
-                          ),
-                          CupertinoButton(
-                              child: Icon(
-                                Icons.arrow_back_ios,
-                                color: Colors.white,
-                              ),
-                              onPressed: () {
-                                FocusScope.of(context).unfocus();
-                                Navigator.pop(context);
-                              }),
-                          Expanded(child: Container()),
-                          Text(
-                            _loading ? " " : _userDataModel.username,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: _fontOne * 25,
-                              fontWeight: FontWeight.bold,
-                              decoration: TextDecoration.none,
-                            ),
-                          ),
-                          Expanded(child: Container()),
-                          CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            radius: _iconOne * 25,
-                            backgroundImage: CachedNetworkImageProvider(
-                                _userDataModel.photoUrl == null
-                                    ? 'https://via.placeholder.com/150'
-                                    : _userDataModel.photoUrl),
-                          ),
-                          SizedBox(
-                            width: _widthOne * 100,
-                          )
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                        child: Container(
-                            padding: EdgeInsets.only(top: _heightOne * 20),
-                            decoration: BoxDecoration(
-                                color: AppTheme.backgroundColor,
-                                borderRadius: BorderRadius.only(
-                                  topRight: Radius.circular(25),
-                                  topLeft: Radius.circular(25),
-                                )),
-                            child: _loading
-                                ? Center(
-                                    child: SpinKitCircle(
-                                      color: Colors.orange,
-                                      size: _fontOne * 60,
-                                    ),
-                                  )
-                                : messages())),
-                    sendMessageField()
-                  ],
-                )),
-          )
+        ? messagesChatScreeniOS()
         : Scaffold(
             body: Container(
                 padding: EdgeInsets.only(top: _heightOne * 20),
@@ -199,6 +126,84 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                                 ? Center(
                                     child: SpinKitCircle(
                                       color: AppTheme.primaryColor,
+                                      size: _fontOne * 60,
+                                    ),
+                                  )
+                                : messages())),
+                    sendMessageField()
+                  ],
+                )),
+          );
+  }
+
+//iOS Screen
+  Widget messagesChatScreeniOS(){
+    return CupertinoPageScaffold(
+            child: Container(
+                padding: EdgeInsets.only(top: _heightOne * 20),
+                height: _size.height,
+                color: AppTheme.primaryColor,
+                child: Column(
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(
+                        bottom: _heightOne * 20,
+                        top: _heightOne * 20,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            width: _widthOne * 50,
+                          ),
+                          CupertinoButton(
+                              child: Icon(
+                                Icons.arrow_back_ios,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                FocusScope.of(context).unfocus();
+                                Navigator.pop(context);
+                              }),
+                          Expanded(child: Container()),
+                          Text(
+                            _loading ? " " : _userDataModel.username,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: _fontOne * 25,
+                              fontWeight: FontWeight.bold,
+                              decoration: TextDecoration.none,
+                            ),
+                          ),
+                          Expanded(child: Container()),
+                          CircleAvatar(
+                            backgroundColor: Colors.grey,
+                            radius: _iconOne * 25,
+                            backgroundImage: CachedNetworkImageProvider(
+                                _userDataModel.photoUrl == null
+                                    ? 'https://via.placeholder.com/150'
+                                    : _userDataModel.photoUrl),
+                          ),
+                          SizedBox(
+                            width: _widthOne * 100,
+                          )
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                        child: Container(
+                            padding: EdgeInsets.only(top: _heightOne * 20),
+                            decoration: BoxDecoration(
+                                color: AppTheme.backgroundColor,
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(25),
+                                  topLeft: Radius.circular(25),
+                                )),
+                            child: _loading
+                                ? Center(
+                                    child: SpinKitCircle(
+                                      color: Colors.orange,
                                       size: _fontOne * 60,
                                     ),
                                   )
