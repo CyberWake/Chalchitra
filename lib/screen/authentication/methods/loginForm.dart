@@ -9,6 +9,7 @@ import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
 import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'dart:io';
 
 class LoginForm extends StatefulWidget {
   final ValueChanged<AuthIndex> changeMethod;
@@ -70,16 +71,29 @@ class _LoginFormState extends State<LoginForm> {
             SizedBox(
               height: _heightOne * 22,
             ),
-            InkWell(
-              onTap: () {
-                widget.changeMethod(AuthIndex.FORGOT);
-              },
-              child: Text(
-                "Forgot Password?\nReset it here",
-                style: TextStyle(color: Colors.black, fontSize: _fontOne * 15),
-                textAlign: TextAlign.center,
-              ),
-            ),
+            Platform.isIOS
+                ? CupertinoButton(
+                    onPressed: () {
+                      widget.changeMethod(AuthIndex.FORGOT);
+                    },
+                    child: Text(
+                      "Forgot Password?\nReset it here",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : InkWell(
+                    onTap: () {
+                      widget.changeMethod(AuthIndex.FORGOT);
+                    },
+                    child: Text(
+                      "Forgot Password?\nReset it here",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
             SizedBox(
               height: _heightOne * 34.2,
             ),
@@ -98,19 +112,34 @@ class _LoginFormState extends State<LoginForm> {
                 },
                 context: context,
                 size: _size),
-            SizedBox(
-              height: _heightOne * 20,
-            ),
-            InkWell(
-              onTap: () {
-                widget.changeMethod(AuthIndex.REGISTER);
-              },
-              child: Text(
-                "Don't Have an account? \nTap here to register.",
-                style: TextStyle(color: Colors.black, fontSize: _fontOne * 15),
-                textAlign: TextAlign.center,
-              ),
-            ),
+            Platform.isIOS
+                ? Container()
+                : SizedBox(
+                    height: _heightOne * 30,
+                  ),
+            Platform.isIOS
+                ? CupertinoButton(
+                    onPressed: () {
+                      widget.changeMethod(AuthIndex.REGISTER);
+                    },
+                    child: Text(
+                      "Don't Have an account? \nTap here to register.",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : InkWell(
+                    onTap: () {
+                      widget.changeMethod(AuthIndex.REGISTER);
+                    },
+                    child: Text(
+                      "Don't Have an account? \nTap here to register.",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
             SizedBox(
               height: _heightOne * 30,
             ),
@@ -121,7 +150,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _emailField() {
-    return FormFieldFormatting.formFieldContainer(
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
@@ -138,11 +167,11 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _passwordFiled() {
-    return FormFieldFormatting.formFieldContainer(
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: _hidePassword,
         validator: FormValidation.validateLoginPassword,
@@ -170,50 +199,112 @@ class _LoginFormState extends State<LoginForm> {
         style: TextStyle(fontSize: _fontOne * 15),
       ),
       leftPadding: _widthOne * 20,
-    );
+    ));
   }
 
   Widget _loginButton() {
-    return FlatButton(
-        onPressed: () async {
-          if (_formKey.currentState.validate()) {
-            await _userAuth
-                .signInWithEmailAndPassword(
-              email: _userDataModel.email,
-              password: _userDataModel.password,
-            )
-                .then((result) {
-              if (result == null) {
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(content: Text('Something went wrong try again')));
-              } else if (result == "success") {
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => MainScreenWrapper(
-                              index: 0,
-                            )));
+    return Platform.isIOS
+        ? CupertinoButton(
+            color: Colors.orange,
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                await _userAuth
+                    .signInWithEmailAndPassword(
+                  email: _userDataModel.email,
+                  password: _userDataModel.password,
+                )
+                    .then((result) {
+                  if (result == null) {
+                    showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) {
+                          return CupertinoActionSheet(
+                            cancelButton: CupertinoButton(
+                              child: Text("OK"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            title: Text("Something went wrong try again later"),
+                          );
+                        });
+                  } else if (result == "success") {
+                    Navigator.pushReplacement(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )));
+                  } else {
+                    showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) {
+                          return CupertinoActionSheet(
+                            cancelButton: CupertinoButton(
+                              child: Text("OK"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            title: Text("Something went wrong try again later"),
+                          );
+                        });
+                  }
+                });
               } else {
-                Scaffold.of(context)
-                    .showSnackBar(SnackBar(content: Text(result)));
+                setState(() {
+                  _submitted = true;
+                });
               }
-            });
-          } else {
-            setState(() {
-              _submitted = true;
-            });
-          }
-        },
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
-        splashColor: Colors.orange[100],
-        padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
-        child: Text(
-          "Login",
-          style: TextStyle(
-            color: Color(0xFFFFCF40),
-          ),
-        ));
+            },
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.3),
+            child: Text(
+              "Login",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ))
+        : FlatButton(
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                await _userAuth
+                    .signInWithEmailAndPassword(
+                  email: _userDataModel.email,
+                  password: _userDataModel.password,
+                )
+                    .then((result) {
+                  if (result == null) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Something went wrong try again')));
+                  } else if (result == "success") {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )));
+                  } else {
+                    Scaffold.of(context)
+                        .showSnackBar(SnackBar(content: Text(result)));
+                  }
+                });
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
+              }
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                side:
+                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+            splashColor: Colors.orange[100],
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
+            child: Text(
+              "Login",
+              style: TextStyle(
+                color: Color(0xFFFFCF40),
+              ),
+            ));
   }
 }

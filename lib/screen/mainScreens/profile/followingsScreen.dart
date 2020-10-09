@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:animated_background/animated_background.dart';
+import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -44,183 +47,425 @@ class _FollowingsPageState extends State<FollowingsPage>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      appBar: AppBar(
-        centerTitle: true,
-        title: Text('Following'),
-        backgroundColor: AppTheme.primaryColor,
-      ),
-      body: StreamBuilder(
-          stream: _userInfoStore.getFollowing(uid: widget.uid),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: SpinKitCircle(
-                  color: AppTheme.primaryColor,
-                  size: 60,
-                ),
-              );
-            } else if (!snapshot.hasData) {
-              return Center(
-                  child: Text(
-                'Something went wrong',
-                style: TextStyle(color: AppTheme.pureWhiteColor),
-              ));
-            } else if (snapshot.data.documents.length == 0) {
-              return Container(
-                  color: Colors.transparent,
-                  child: AnimatedBackground(
-                      behaviour: RandomParticleBehaviour(
-                        options: particleOptions,
-                        paint: particlePaint,
+    return Platform.isIOS
+        ? followingScreeniOS()
+        : Scaffold(
+            backgroundColor: AppTheme.backgroundColor,
+            appBar: AppBar(
+              centerTitle: true,
+              title: Text('Following'),
+              backgroundColor: AppTheme.primaryColor,
+            ),
+            body: StreamBuilder(
+                stream: _userInfoStore.getFollowing(uid: widget.uid),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: SpinKitCircle(
+                        color: AppTheme.primaryColor,
+                        size: 60,
                       ),
-                      vsync: this,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 35),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text.rich(
-                                  TextSpan(text: '', children: <InlineSpan>[
-                                TextSpan(
-                                  text: 'Follow',
-                                  style: TextStyle(
-                                      fontSize: 56,
-                                      color: Colors.redAccent,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: '  Creators to see them here',
-                                  style: TextStyle(
-                                      fontSize: 38,
-                                      color: AppTheme.pureWhiteColor,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              ])),
-                            ],
-                          ),
-                        ),
-                      )));
-            } else {
-              return ListView.builder(
-                itemCount: snapshot.data.documents.length,
-                padding: EdgeInsets.symmetric(vertical: 10),
-                itemBuilder: (BuildContext context, int index) {
-                  return FutureBuilder(
-                      future: _userInfoStore.getUserInfo(
-                          uid: snapshot.data.documents[index].id),
-                      builder: (context, snap) {
-                        if (snap.connectionState == ConnectionState.done) {
-                          var _user = UserDataModel.fromDocument(snap.data);
-                          if (widget.uid == _userAuth.user.uid) {
-                            return Slidable(
-                              actionPane: SlidableDrawerActionPane(),
-                              actionExtentRatio: 0.25,
-                              actions: <Widget>[
-                                IconSlideAction(
-                                    caption: 'Show Profile',
-                                    color: AppTheme.primaryColor,
-                                    icon: Icons.account_circle,
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          CupertinoPageRoute(
-                                              builder: (BuildContext context) =>
-                                                  SearchProfile(
-                                                    uid: _user.id,
-                                                  )));
-                                    }),
-                              ],
-                              secondaryActions: <Widget>[
-                                IconSlideAction(
-                                    caption: 'Unfollow',
-                                    color: Colors.deepOrangeAccent,
-                                    icon: Icons.delete,
-                                    onTap: () async {
-                                      bool result = await _userInfoStore
-                                          .unFollowUser(uid: _user.id);
-                                      print("bool: $result");
-                                      if (!result) {
-                                        _scaffoldGlobalKey.currentState
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    'Unfollowed successfully')));
-                                      } else {
-                                        _scaffoldGlobalKey.currentState
-                                            .showSnackBar(SnackBar(
-                                                content: Text(
-                                                    'Something went wrong')));
-                                      }
-                                    })
-                              ],
-                              child: Container(
-                                margin: EdgeInsets.symmetric(vertical: 0.8),
-                                color: AppTheme.elevationColor,
-                                child: ListTile(
-                                  leading: CircleAvatar(
-                                    backgroundColor: Colors.indigoAccent,
-                                    backgroundImage: _user.photoUrl == null
-                                        ? NetworkImage(nullImageUrl)
-                                        : NetworkImage(_user.photoUrl),
-                                    foregroundColor: Colors.white,
-                                  ),
-                                  title: Text(
-                                      _user.displayName == null
-                                          ? "Wow Talent User"
-                                          : _user.displayName,
-                                      style: TextStyle(
-                                          color: AppTheme.primaryColor)),
-                                  subtitle: Text(_user.username,
-                                      style: TextStyle(
-                                          color: AppTheme.primaryColor)),
-                                ),
-                              ),
-                            );
-                          }
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (BuildContext context) =>
-                                          SearchProfile(
-                                            uid: _user.id,
-                                          )));
-                            },
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 0.8),
-                              color: AppTheme.elevationColor,
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.indigoAccent,
-                                  backgroundImage: _user.photoUrl == null
-                                      ? NetworkImage(nullImageUrl)
-                                      : NetworkImage(_user.photoUrl),
-                                  foregroundColor: Colors.white,
-                                ),
-                                title: Text(
-                                    _user.displayName == null
-                                        ? "Wow Talent User"
-                                        : _user.displayName,
-                                    style: TextStyle(
-                                        color: AppTheme.primaryColor)),
-                                subtitle: Text(_user.username,
-                                    style: TextStyle(
-                                        color: AppTheme.primaryColor)),
-                              ),
+                    );
+                  } else if (!snapshot.hasData) {
+                    return Center(
+                        child: Text(
+                      'Something went wrong',
+                      style: TextStyle(color: AppTheme.pureWhiteColor),
+                    ));
+                  } else if (snapshot.data.documents.length == 0) {
+                    return Container(
+                        color: Colors.transparent,
+                        child: AnimatedBackground(
+                            behaviour: RandomParticleBehaviour(
+                              options: particleOptions,
+                              paint: particlePaint,
                             ),
-                          );
-                        } else {
-                          return Container();
-                        }
-                      });
-                },
-              );
-            }
-          }),
-    );
+                            vsync: this,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 35),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text.rich(TextSpan(
+                                        text: '',
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: 'Follow',
+                                            style: TextStyle(
+                                                fontSize: 56,
+                                                color: Colors.redAccent,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text: '  Creators to see them here',
+                                            style: TextStyle(
+                                                fontSize: 38,
+                                                color: AppTheme.pureWhiteColor,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ])),
+                                  ],
+                                ),
+                              ),
+                            )));
+                  } else {
+                    return ListView.builder(
+                      itemCount: snapshot.data.documents.length,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      itemBuilder: (BuildContext context, int index) {
+                        return FutureBuilder(
+                            future: _userInfoStore.getUserInfo(
+                                uid: snapshot.data.documents[index].id),
+                            builder: (context, snap) {
+                              if (snap.connectionState ==
+                                  ConnectionState.done) {
+                                var _user =
+                                    UserDataModel.fromDocument(snap.data);
+                                if (widget.uid == _userAuth.user.uid) {
+                                  return Slidable(
+                                    actionPane: SlidableDrawerActionPane(),
+                                    actionExtentRatio: 0.25,
+                                    actions: <Widget>[
+                                      IconSlideAction(
+                                          caption: 'Show Profile',
+                                          color: AppTheme.primaryColor,
+                                          icon: Icons.account_circle,
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        SearchProfile(
+                                                          uid: _user.id,
+                                                        )));
+                                          }),
+                                    ],
+                                    secondaryActions: <Widget>[
+                                      IconSlideAction(
+                                          caption: 'Unfollow',
+                                          color: Colors.deepOrangeAccent,
+                                          icon: Icons.delete,
+                                          onTap: () async {
+                                            bool result = await _userInfoStore
+                                                .unFollowUser(uid: _user.id);
+                                            print("bool: $result");
+                                            if (!result) {
+                                              _scaffoldGlobalKey.currentState
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          'Unfollowed successfully')));
+                                            } else {
+                                              _scaffoldGlobalKey.currentState
+                                                  .showSnackBar(SnackBar(
+                                                      content: Text(
+                                                          'Something went wrong')));
+                                            }
+                                          })
+                                    ],
+                                    child: Container(
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 0.8),
+                                      color: AppTheme.elevationColor,
+                                      child: ListTile(
+                                        leading: CircleAvatar(
+                                          backgroundColor: Colors.indigoAccent,
+                                          backgroundImage: _user.photoUrl ==
+                                                  null
+                                              ? NetworkImage(nullImageUrl)
+                                              : NetworkImage(_user.photoUrl),
+                                          foregroundColor: Colors.white,
+                                        ),
+                                        title: Text(
+                                            _user.displayName == null
+                                                ? "Wow Talent User"
+                                                : _user.displayName,
+                                            style: TextStyle(
+                                                color: AppTheme.primaryColor)),
+                                        subtitle: Text(_user.username,
+                                            style: TextStyle(
+                                                color: AppTheme.primaryColor)),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (BuildContext context) =>
+                                                SearchProfile(
+                                                  uid: _user.id,
+                                                )));
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(vertical: 0.8),
+                                    color: AppTheme.elevationColor,
+                                    child: ListTile(
+                                      leading: CircleAvatar(
+                                        backgroundColor: Colors.indigoAccent,
+                                        backgroundImage: _user.photoUrl == null
+                                            ? NetworkImage(nullImageUrl)
+                                            : NetworkImage(_user.photoUrl),
+                                        foregroundColor: Colors.white,
+                                      ),
+                                      title: Text(
+                                          _user.displayName == null
+                                              ? "Wow Talent User"
+                                              : _user.displayName,
+                                          style: TextStyle(
+                                              color: AppTheme.primaryColor)),
+                                      subtitle: Text(_user.username,
+                                          style: TextStyle(
+                                              color: AppTheme.primaryColor)),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            });
+                      },
+                    );
+                  }
+                }),
+          );
+  }
+
+//iOS Screen
+  Widget followingScreeniOS(){
+    return CupertinoPageScaffold(
+            backgroundColor: AppTheme.backgroundColor,
+            navigationBar: CupertinoNavigationBar(
+              middle: Text('Following'),
+              backgroundColor: AppTheme.backgroundColor,
+            ),
+            child: StreamBuilder(
+                stream: _userInfoStore.getFollowing(uid: widget.uid),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Center(
+                      child: SpinKitCircle(
+                        color: AppTheme.primaryColor,
+                        size: 60,
+                      ),
+                    );
+                  } else if (!snapshot.hasData) {
+                    return Center(
+                        child: Text(
+                      'Something went wrong',
+                      style: TextStyle(color: AppTheme.pureWhiteColor),
+                    ));
+                  } else if (snapshot.data.documents.length == 0) {
+                    return Container(
+                        color: Colors.transparent,
+                        child: AnimatedBackground(
+                            behaviour: RandomParticleBehaviour(
+                              options: particleOptions,
+                              paint: particlePaint,
+                            ),
+                            vsync: this,
+                            child: Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 35),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text.rich(TextSpan(
+                                        text: '',
+                                        children: <InlineSpan>[
+                                          TextSpan(
+                                            text: 'Follow',
+                                            style: TextStyle(
+                                                fontSize: 56,
+                                                color: Colors.redAccent,
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                          TextSpan(
+                                            text: '  Creators to see them here',
+                                            style: TextStyle(
+                                                fontSize: 38,
+                                                color: AppTheme.pureWhiteColor,
+                                                fontWeight: FontWeight.bold),
+                                          )
+                                        ])),
+                                  ],
+                                ),
+                              ),
+                            )));
+                  } else {
+                    return ListView.builder(
+                      itemCount: snapshot.data.documents.length,
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                      itemBuilder: (BuildContext context, int index) {
+                        return FutureBuilder(
+                            future: _userInfoStore.getUserInfo(
+                                uid: snapshot.data.documents[index].id),
+                            builder: (context, snap) {
+                              if (snap.connectionState ==
+                                  ConnectionState.done) {
+                                var _user =
+                                    UserDataModel.fromDocument(snap.data);
+                                if (widget.uid == _userAuth.user.uid) {
+                                  return Slidable(
+                                    actionPane: SlidableDrawerActionPane(),
+                                    actionExtentRatio: 0.25,
+                                    actions: <Widget>[
+                                      IconSlideAction(
+                                          caption: 'Show Profile',
+                                          color: AppTheme.primaryColor,
+                                          icon: Icons.account_circle,
+                                          onTap: () {
+                                            Navigator.push(
+                                                context,
+                                                CupertinoPageRoute(
+                                                    builder: (BuildContext
+                                                            context) =>
+                                                        SearchProfile(
+                                                          uid: _user.id,
+                                                        )));
+                                          }),
+                                    ],
+                                    secondaryActions: <Widget>[
+                                      IconSlideAction(
+                                          caption: 'Unfollow',
+                                          color: Colors.deepOrangeAccent,
+                                          icon: Icons.delete,
+                                          onTap: () async {
+                                            bool result = await _userInfoStore
+                                                .unFollowUser(uid: _user.id);
+                                            print("bool: $result");
+                                            if (!result) {
+                                              Flushbar(
+                                                maxWidth: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.5,
+                                                borderRadius: 20,
+                                                messageText: Text(
+                                                  "Unfollowed Successfully",
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                animationDuration:
+                                                    Duration(milliseconds: 500),
+                                                flushbarPosition:
+                                                    FlushbarPosition.BOTTOM,
+                                                flushbarStyle:
+                                                    FlushbarStyle.FLOATING,
+                                                backgroundColor:
+                                                    CupertinoColors.systemGrey,
+                                                titleText:
+                                                    Icon(Icons.volume_up),
+                                                duration:
+                                                    Duration(milliseconds: 500),
+                                                padding: EdgeInsets.all(10),
+                                              )..show(context);
+                                            } else {
+                                              Flushbar(
+                                                maxWidth: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.5,
+                                                borderRadius: 20,
+                                                animationDuration:
+                                                    Duration(milliseconds: 500),
+                                                flushbarPosition:
+                                                    FlushbarPosition.BOTTOM,
+                                                flushbarStyle:
+                                                    FlushbarStyle.FLOATING,
+                                                backgroundColor:
+                                                    CupertinoColors.systemGrey,
+                                                messageText: Text(
+                                                  "Something Went Wrong",
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                                titleText: Container(
+                                                    child:
+                                                        Icon(Icons.volume_off)),
+                                                duration:
+                                                    Duration(milliseconds: 500),
+                                                padding: EdgeInsets.all(10),
+                                              )..show(context);
+                                            }
+                                          })
+                                    ],
+                                    child: Container(
+                                      margin:
+                                          EdgeInsets.symmetric(vertical: 0.8),
+                                      color: AppTheme.elevationColor,
+                                      child: Material(
+                                                                              child: ListTile(
+                                                                                tileColor: AppTheme.backgroundColor,
+                                          leading: CircleAvatar(
+                                            backgroundColor: Colors.indigoAccent,
+                                            backgroundImage: _user.photoUrl ==
+                                                    null
+                                                ? NetworkImage(nullImageUrl)
+                                                : NetworkImage(_user.photoUrl),
+                                            foregroundColor: Colors.white,
+                                          ),
+                                          title: Text(
+                                              _user.displayName == null
+                                                  ? "Wow Talent User"
+                                                  : _user.displayName,
+                                              style: TextStyle(
+                                                  color: AppTheme.primaryColor)),
+                                          subtitle: Text(_user.username,
+                                              style: TextStyle(
+                                                  color: AppTheme.primaryColor)),
+                                        ),
+                                      ),
+                                    ),
+                                  );
+                                }
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (BuildContext context) =>
+                                                SearchProfile(
+                                                  uid: _user.id,
+                                                )));
+                                  },
+                                  child: Container(
+                                    margin: EdgeInsets.symmetric(vertical: 0.8),
+                                    color: AppTheme.elevationColor,
+                                    child: Material(
+                                      child: ListTile(
+                                        tileColor: AppTheme.backgroundColor,
+                                        leading: CircleAvatar(
+                                          backgroundColor: Colors.indigoAccent,
+                                          backgroundImage: _user.photoUrl == null
+                                              ? NetworkImage(nullImageUrl)
+                                              : NetworkImage(_user.photoUrl),
+                                          foregroundColor: Colors.white,
+                                        ),
+                                        title: Text(
+                                            _user.displayName == null
+                                                ? "Wow Talent User"
+                                                : _user.displayName,
+                                            style: TextStyle(
+                                                color: AppTheme.primaryColor)),
+                                        subtitle: Text(_user.username,
+                                            style: TextStyle(
+                                                color: AppTheme.primaryColor)),
+                                      ),
+                                    ),
+                                  ),
+                                );
+                              } else {
+                                return Container();
+                              }
+                            });
+                      },
+                    );
+                  }
+                }),
+          );
   }
 }
