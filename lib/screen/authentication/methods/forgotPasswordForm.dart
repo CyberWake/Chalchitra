@@ -6,7 +6,6 @@ import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
-import 'dart:io';
 
 class ForgotPasswordForm extends StatefulWidget {
   final ValueChanged<AuthIndex> changeMethod;
@@ -72,41 +71,24 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
   }
 
   Widget _emailField() {
-    return Platform.isIOS
-        ? CupertinoTextField(
-            keyboardType: TextInputType.emailAddress,
-            onChanged: (val) {
-              _userDataModel.email = val;
-              if (_submitted) {
-                _formKey.currentState.validate();
-              }
-            },
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.orange.withOpacity(0.75)),
-                borderRadius: BorderRadius.circular(15.0)),
-            placeholderStyle: TextStyle(
-                fontSize: _fontOne * 15,
-                color: Colors.orange.withOpacity(0.75)),
-            placeholder: "Enter Email",
-          )
-        : FormFieldFormatting.formFieldContainer(
-            child: TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              validator: FormValidation.validateEmail,
-              onChanged: (val) {
-                _userDataModel.email = val;
-                if (_submitted) {
-                  _formKey.currentState.validate();
-                }
-              },
-              decoration: FormFieldFormatting.formFieldFormatting(
-                  hintText: "Enter Email", fontSize: _fontOne * 15),
-              style: TextStyle(
-                fontSize: _fontOne * 15,
-              ),
-            ),
-            leftPadding: _widthOne * 20,
-          );
+    return FormFieldFormatting.formFieldContainer(
+      child: TextFormField(
+        keyboardType: TextInputType.emailAddress,
+        validator: FormValidation.validateEmail,
+        onChanged: (val) {
+          _userDataModel.email = val;
+          if (_submitted) {
+            _formKey.currentState.validate();
+          }
+        },
+        decoration: FormFieldFormatting.formFieldFormatting(
+            hintText: "Enter Email", fontSize: _fontOne * 15),
+        style: TextStyle(
+          fontSize: _fontOne * 15,
+        ),
+      ),
+      leftPadding: _widthOne * 20,
+    );
   }
 
   showAlertDialog(BuildContext context, String message) {
@@ -116,21 +98,6 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
       onPressed: () {
         Navigator.of(context).pop();
       },
-    );
-
-    CupertinoAlertDialog ios_alert = CupertinoAlertDialog(
-      title: Text("Message"),
-      content: Text(message),
-      actions: [
-        CupertinoDialogAction(
-          child: CupertinoButton(
-            child: Text("OK"),
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-          ),
-        )
-      ],
     );
 
     // Create AlertDialog
@@ -144,83 +111,45 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
     );
 
     // show the dialog
-    Platform.isIOS
-        ? showCupertinoDialog(
-            context: context,
-            builder: (context) {
-              return ios_alert;
-            })
-        : showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return alert;
-            },
-          );
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
   }
 
   Widget _submitButton() {
-    return Platform.isIOS
-        ? CupertinoButton(
-            onPressed: () async {
-              if (_formKey.currentState.validate()) {
-                bool validEmail = await _userInfoStore.emailExists(
-                    email: _userDataModel.email);
-                print(validEmail);
-                if (validEmail) {
-                  final result =
-                      await _user.resetPassword(_userDataModel.email);
-                  showAlertDialog(
-                    context,
-                    result,
-                  );
-                } else {
-                  showAlertDialog(context, "Email does not exist!");
-                }
-              } else {
-                setState(() {
-                  _submitted = true;
-                });
-              }
-            },
-            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
-            child: Text(
-              "Submit",
-              style: TextStyle(
-                color: Colors.orange.withOpacity(0.75),
-              ),
-            ))
-        : FlatButton(
-            onPressed: () async {
-              if (_formKey.currentState.validate()) {
-                bool validEmail = await _userInfoStore.emailExists(
-                    email: _userDataModel.email);
-                if (validEmail) {
-                  final result =
-                      await _user.resetPassword(_userDataModel.email);
-                  showAlertDialog(
-                    context,
-                    result,
-                  );
-                } else {
-                  showAlertDialog(context, "Email does not exist!");
-                }
-              } else {
-                setState(() {
-                  _submitted = true;
-                });
-              }
-            },
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5.0),
-                side:
-                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
-            splashColor: Colors.orange[100],
-            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.277),
-            child: Text(
-              "Submit",
-              style: TextStyle(
-                color: Color(0xFFFFCF40),
-              ),
-            ));
+    return FlatButton(
+        onPressed: () async {
+          if (_formKey.currentState.validate()) {
+            bool validEmail =
+                await _userInfoStore.emailExists(email: _userDataModel.email);
+            if (validEmail) {
+              final result = await _user.resetPassword(_userDataModel.email);
+              showAlertDialog(
+                context,
+                result,
+              );
+            } else {
+              showAlertDialog(context, "Email does not exist!");
+            }
+          } else {
+            setState(() {
+              _submitted = true;
+            });
+          }
+        },
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(5.0),
+            side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+        splashColor: Colors.orange[100],
+        padding: EdgeInsets.symmetric(horizontal: _size.width * 0.277),
+        child: Text(
+          "Submit",
+          style: TextStyle(
+            color: Color(0xFFFFCF40),
+          ),
+        ));
   }
 }

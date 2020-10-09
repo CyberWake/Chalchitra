@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -16,8 +15,6 @@ import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
-
-import '../../../model/theme.dart';
 
 class PostCard extends StatefulWidget {
   final video;
@@ -307,27 +304,16 @@ class _PostCardState extends State<PostCard> {
                       onTap: () {
                         Navigator.push(
                           context,
-                          Platform.isIOS
-                              ? CupertinoPageRoute(
-                                  builder: (context) {
-                                    VideoInfo video =
-                                        VideoInfo.fromDocument(widget.video);
-                                    video.videoId = widget.id;
-                                    return Player(
-                                      video: video,
-                                    );
-                                  },
-                                )
-                              : MaterialPageRoute(
-                                  builder: (context) {
-                                    VideoInfo video =
-                                        VideoInfo.fromDocument(widget.video);
-                                    video.videoId = widget.id;
-                                    return Player(
-                                      video: video,
-                                    );
-                                  },
-                                ),
+                          MaterialPageRoute(
+                            builder: (context) {
+                              VideoInfo video =
+                                  VideoInfo.fromDocument(widget.video);
+                              video.videoId = widget.id;
+                              return Player(
+                                video: video,
+                              );
+                            },
+                          ),
                         );
                       },
                       child: Container(
@@ -420,17 +406,10 @@ class _PostCardState extends State<PostCard> {
                               onPressed: () {
                                 Navigator.push(
                                     context,
-                                    Platform.isIOS
-                                        ? CupertinoPageRoute(
-                                            builder: (context) =>
-                                                CommentsScreen(
-                                                  videoId: widget.id,
-                                                ))
-                                        : MaterialPageRoute(
-                                            builder: (context) =>
-                                                CommentsScreen(
-                                                  videoId: widget.id,
-                                                )));
+                                    MaterialPageRoute(
+                                        builder: (context) => CommentsScreen(
+                                              videoId: widget.id,
+                                            )));
                               },
                               icon: Icon(
                                 Icons.comment,
@@ -465,57 +444,29 @@ class _PostCardState extends State<PostCard> {
                               overlayShape:
                                   RoundSliderOverlayShape(overlayRadius: 18.0),
                             ),
-                            child: Platform.isIOS
-                                ? CupertinoSlider(
-                                    onChangeEnd: (val) async {
-                                      _sliderValue = val;
-                                      bool success =
-                                          await _userVideoStore.rateVideo(
-                                              videoID: widget.id,
-                                              rating: _sliderValue);
-                                      if (success) {
-                                        print('done rating');
-                                      } else {
-                                        print('failure');
-                                      }
-                                    },
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _sliderValue = val;
-                                      });
-                                    },
-                                    value: _sliderValue,
-                                    max: 5,
-                                    min: 0,
-                                    divisions: 5,
-                                    activeColor: AppTheme.primaryColor,
-                                    thumbColor: Colors.orange[100],
-                                  )
-                                : Slider(
-                                    value: _sliderValue,
-                                    min: 0,
-                                    max: 5,
-                                    divisions: 5,
-                                    onChangeEnd: (val) async {
-                                      _sliderValue = val;
-                                      bool success =
-                                          await _userVideoStore.rateVideo(
-                                              videoID: widget.id,
-                                              rating: _sliderValue);
-                                      if (success) {
-                                        print('done rating');
-                                      } else {
-                                        print('failure');
-                                      }
-                                    },
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _sliderValue = val;
-                                      });
-                                    },
-                                    inactiveColor: Colors.orange[100],
-                                    activeColor: AppTheme.primaryColor,
-                                  ),
+                            child: Slider(
+                              value: _sliderValue,
+                              min: 0,
+                              max: 5,
+                              divisions: 5,
+                              onChangeEnd: (val) async {
+                                _sliderValue = val;
+                                bool success = await _userVideoStore.rateVideo(
+                                    videoID: widget.id, rating: _sliderValue);
+                                if (success) {
+                                  print('done rating');
+                                } else {
+                                  print('failure');
+                                }
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  _sliderValue = val;
+                                });
+                              },
+                              inactiveColor: Colors.orange[100],
+                              activeColor: AppTheme.primaryColor,
+                            ),
                           ),
                         ),
                       ],

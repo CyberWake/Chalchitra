@@ -1,8 +1,6 @@
 
 import 'dart:core';
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/dynamicLinkService.dart';
@@ -68,7 +66,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
   @override
   Widget build(BuildContext context) {
-    return Platform.isIOS ? splashScreeniOS() : Scaffold(
+    return Scaffold(
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -85,61 +83,6 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                           backgroundColor: Colors.transparent,
                           child: Container(
                               child: Image.asset('assets/images/splash.png'),
-                          ),
-                          radius: 100.0,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                        ),
-                      ],
-                    )),
-              ),
-              Expanded(
-                flex: 1,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    SpinKitFadingCircle(
-                      itemBuilder: (BuildContext context, int index) {
-                        return DecoratedBox(
-                          decoration: BoxDecoration(
-                            color: index.isEven ? Colors.red : Colors.green,
-                          ),
-                        );
-                      },
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20.0),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-//iOS Screen
-  Widget splashScreeniOS(){
-    return CupertinoPageScaffold(
-      child:Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            children: <Widget>[
-              Expanded(
-                flex: 2,
-                child: Container(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          child: Container(
-                            child: Image.asset('assets/images/splash.png'),
                           ),
                           radius: 100.0,
                         ),

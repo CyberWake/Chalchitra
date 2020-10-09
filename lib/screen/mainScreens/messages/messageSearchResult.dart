@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -16,41 +14,41 @@ class MessageSearchResult extends StatelessWidget {
       padding: EdgeInsets.all(10),
       child: Container(
           child: Column(
-        children: <Widget>[
-          GestureDetector(
-              onTap: () => Navigator.push(
-                  context,
-                  Platform.isIOS
-                      ? CupertinoPageRoute(
+            children: <Widget>[
+              GestureDetector(
+                  onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
                           builder: (context) => ChatDetailPage(
-                                targetUID: eachUser.id,
-                              ))
-                      : MaterialPageRoute(
-                          builder: (context) => ChatDetailPage(
-                                targetUID: eachUser.id,
-                              ))),
-              child: ListTile(
-                leading: CircleAvatar(
-                    backgroundColor: Colors.grey,
-                    backgroundImage: eachUser.photoUrl != null
-                        ? CachedNetworkImageProvider(eachUser.photoUrl)
-                        : CachedNetworkImageProvider(
-                            'https://via.placeholder.com/150')),
-                title: Text(
-                    eachUser.displayName == null
-                        ? eachUser.username
-                        : eachUser.displayName,
-                    style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold)),
-                subtitle: Text(
-                  eachUser.username == null ? '' : eachUser.username,
-                  style: TextStyle(color: Colors.grey, fontSize: 13),
-                ),
-              ))
-        ],
-      )),
+                            targetUID: eachUser.id,
+                          )
+                      )
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                        backgroundColor: Colors.grey,
+                        backgroundImage: eachUser.photoUrl != null
+                            ? CachedNetworkImageProvider(
+                            eachUser.photoUrl
+                        ) : CachedNetworkImageProvider(
+                            'https://via.placeholder.com/150'
+                        )
+                    ),
+                    title: Text(
+                        eachUser.displayName == null ? eachUser.username : eachUser.displayName,
+                        style: TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold
+                        )
+                    ),
+                    subtitle: Text(
+                      eachUser.username == null ? '' : eachUser.username,
+                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                    ),
+                  ))
+            ],
+          )),
     );
   }
 }

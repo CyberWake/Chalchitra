@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -14,9 +12,6 @@ import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
-
-import '../../../model/theme.dart';
-import '../../../model/theme.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -74,7 +69,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           } else {
             if (data.data.documents.length == 0) {
               return Container(
-                color: Platform.isIOS ? AppTheme.backgroundColor :Colors.transparent,
+                color: Colors.transparent,
                 child: AnimatedBackground(
                   behaviour: RandomParticleBehaviour(
                     options: particleOptions,
@@ -105,43 +100,27 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                             )
                           ])),
                           SizedBox(height: 20),
-                          Platform.isIOS
-                              ? CupertinoButton(
-                                  color: AppTheme.primaryColor,
-                                  child: Text(
-                                    'Explore Content',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (_) => MainScreenWrapper(
-                                                  index: 1,
-                                                )));
-                                  },
-                                )
-                              : FlatButton(
-                                  color: AppTheme.primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (_) => MainScreenWrapper(
-                                                  index: 1,
-                                                )));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 2),
-                                    child: Text(
-                                      'Explore Content',
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                  ),
-                                )
+                          FlatButton(
+                            color: AppTheme.primaryColor,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8)),
+                            onPressed: () {
+                              Navigator.pushReplacement(
+                                  context,
+                                  CupertinoPageRoute(
+                                      builder: (_) => MainScreenWrapper(
+                                            index: 1,
+                                          )));
+                            },
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10.0, horizontal: 2),
+                              child: Text(
+                                'Explore Content',
+                                style: TextStyle(fontSize: 18),
+                              ),
+                            ),
+                          )
                         ],
                       ),
                     ),

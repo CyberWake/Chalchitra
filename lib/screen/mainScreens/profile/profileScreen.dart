@@ -16,8 +16,6 @@ import 'package:wowtalent/screen/mainScreens/profile/followersScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/followingsScreen.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 
-import '../../../model/theme.dart';
-
 class ProfilePage extends StatefulWidget {
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
@@ -490,6 +488,45 @@ class _ProfilePageState extends State<ProfilePage> {
                 )));
   }
 
+  removeVideoFromUserAccount(int index) async {
+    print("deleting video ${_videos[index].videoId}");
+    final videoInfo = VideoInfo(videoId: _videos[index].videoId);
+    await UserVideoStore.deleteUploadedVideo(videoInfo);
+  }
+
+  void _deleteButton(int index) async {
+    await showMenu(
+        context: context,
+        color: Colors.yellow[100],
+        position: RelativeRect.fromLTRB(125, 530, 125, 0),
+        items: [
+          PopupMenuItem(
+            child: InkWell(
+              onTap: () async {
+                await removeVideoFromUserAccount(index);
+                Navigator.pop(context);
+                Scaffold.of(context).showSnackBar(SnackBar(
+                  content: Text('Video Deleted Successfully'),
+                ));
+                setup();
+                setState(() {});
+              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Delete",
+                    style: TextStyle(color: AppTheme.backgroundColor),
+                  ),
+                  Icon(Icons.delete_rounded,
+                      size: 20, color: AppTheme.backgroundColor),
+                ],
+              ),
+            ),
+          )
+        ]);
+  }
+
   SingleChildScrollView buildPictureCard() {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
@@ -502,21 +539,21 @@ class _ProfilePageState extends State<ProfilePage> {
             children: List.generate(_videos.length, (index) {
               final video = _videos[index];
               return GestureDetector(
+                onLongPress: () {
+                  if (widget.uid == _userAuth.user.uid) {
+                    _deleteButton(index);
+                  }
+                },
                 onTap: () {
                   Navigator.push(
                     context,
-                    Platform.isIOS
-                        ? CupertinoPageRoute(
-                            builder: (context) => Player(
-                                  video: video,
-                                ))
-                        : MaterialPageRoute(
-                            builder: (context) {
-                              return Player(
-                                video: video,
-                              );
-                            },
-                          ),
+                    CupertinoPageRoute(
+                      builder: (context) {
+                        return Player(
+                          video: video,
+                        );
+                      },
+                    ),
                   );
                 },
                 child: Container(

@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
@@ -228,19 +226,13 @@ class _ExploreState extends State<Explore> {
             onTap: () {
               Navigator.push(
                 context,
-                Platform.isIOS
-                    ? CupertinoPageRoute(builder: (context) {
-                        return Player(
-                          video: video,
-                        );
-                      })
-                    : MaterialPageRoute(
-                        builder: (context) {
-                          return Player(
-                            video: video,
-                          );
-                        },
-                      ),
+                MaterialPageRoute(
+                  builder: (context) {
+                    return Player(
+                      video: video,
+                    );
+                  },
+                ),
               );
             },
             child: Container(

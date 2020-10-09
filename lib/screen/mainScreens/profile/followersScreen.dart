@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:animated_background/animated_background.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
@@ -47,393 +44,175 @@ class _FollowersPageState extends State<FollowersPage>
 
   @override
   Widget build(BuildContext context) {
-    return Platform.isIOS
-        ? followerScreeniOS()
-        : Scaffold(
-            key: _scaffoldGlobalKey,
-            backgroundColor: AppTheme.backgroundColor,
-            appBar: AppBar(
-              centerTitle: true,
-              title: Text('Followers'),
-              backgroundColor: AppTheme.primaryColor,
-            ),
-            body: StreamBuilder(
-                stream: _userInfoStore.getFollowers(uid: widget.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: SpinKitCircle(
-                        color: AppTheme.primaryColor,
-                        size: 60,
+    return Scaffold(
+      key: _scaffoldGlobalKey,
+      backgroundColor: AppTheme.backgroundColor,
+      appBar: AppBar(
+        centerTitle: true,
+        title: Text('Followers'),
+        backgroundColor: AppTheme.primaryColor,
+      ),
+      body: StreamBuilder(
+          stream: _userInfoStore.getFollowers(uid: widget.uid),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return Center(
+                child: SpinKitCircle(
+                  color: AppTheme.primaryColor,
+                  size: 60,
+                ),
+              );
+            } else if (!snapshot.hasData) {
+              return Center(child: Text('Something went wrong'));
+            } else if (snapshot.data.documents.length == 0) {
+              return Container(
+                  color: Colors.transparent,
+                  child: AnimatedBackground(
+                      behaviour: RandomParticleBehaviour(
+                        options: particleOptions,
+                        paint: particlePaint,
                       ),
-                    );
-                  } else if (!snapshot.hasData) {
-                    return Center(child: Text('Something went wrong'));
-                  } else if (snapshot.data.documents.length == 0) {
-                    return Container(
-                        color: Colors.transparent,
-                        child: AnimatedBackground(
-                            behaviour: RandomParticleBehaviour(
-                              options: particleOptions,
-                              paint: particlePaint,
-                            ),
-                            vsync: this,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 35),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text.rich(TextSpan(
-                                        text: '',
-                                        children: <InlineSpan>[
-                                          TextSpan(
-                                            text: 'Nice Content',
-                                            style: TextStyle(
-                                                fontSize: 56,
-                                                color: Colors.redAccent,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          TextSpan(
-                                            text: '  Attracts followers',
-                                            style: TextStyle(
-                                                fontSize: 38,
-                                                color: AppTheme.pureWhiteColor,
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ])),
-                                  ],
+                      vsync: this,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 35),
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text.rich(
+                                  TextSpan(text: '', children: <InlineSpan>[
+                                TextSpan(
+                                  text: 'Nice Content',
+                                  style: TextStyle(
+                                      fontSize: 56,
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.bold),
                                 ),
+                                TextSpan(
+                                  text: '  Attracts followers',
+                                  style: TextStyle(
+                                      fontSize: 38,
+                                      color: AppTheme.pureWhiteColor,
+                                      fontWeight: FontWeight.bold),
+                                )
+                              ])),
+                            ],
+                          ),
+                        ),
+                      )));
+            }
+            return ListView.builder(
+              itemCount: snapshot.data.documents.length,
+              padding: EdgeInsets.symmetric(vertical: 10),
+              itemBuilder: (BuildContext context, int index) {
+                return FutureBuilder(
+                    future: _userInfoStore.getUserInfo(
+                        uid: snapshot.data.documents[index].id),
+                    builder: (context, snap) {
+                      if (snap.connectionState == ConnectionState.done) {
+                        var _user = UserDataModel.fromDocument(snap.data);
+                        if (widget.uid == _userAuth.user.uid) {
+                          return Slidable(
+                            actionPane: SlidableDrawerActionPane(),
+                            actionExtentRatio: 0.25,
+                            actions: <Widget>[
+                              IconSlideAction(
+                                  caption: 'Show Profile',
+                                  color: AppTheme.primaryColor,
+                                  icon: Icons.account_circle,
+                                  onTap: () {
+                                    Navigator.push(
+                                        context,
+                                        CupertinoPageRoute(
+                                            builder: (BuildContext context) =>
+                                                SearchProfile(
+                                                  uid: _user.id,
+                                                )));
+                                  }),
+                            ],
+                            secondaryActions: <Widget>[
+                              IconSlideAction(
+                                  caption: 'Remove',
+                                  color: Colors.deepOrangeAccent,
+                                  icon: Icons.delete,
+                                  onTap: () async {
+                                    bool result = await _userInfoStore
+                                        .removeFollowingUser(uid: _user.id);
+                                    if (!result) {
+                                      _scaffoldGlobalKey.currentState
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Removed user from followers successfully')));
+                                    } else {
+                                      _scaffoldGlobalKey.currentState
+                                          .showSnackBar(SnackBar(
+                                              content: Text(
+                                                  'Something went wrong')));
+                                    }
+                                  })
+                            ],
+                            child: Container(
+                              margin: EdgeInsets.symmetric(vertical: 0.8),
+                              color: AppTheme.elevationColor,
+                              child: ListTile(
+                                leading: CircleAvatar(
+                                  backgroundColor: Colors.indigoAccent,
+                                  backgroundImage: _user.photoUrl == null
+                                      ? NetworkImage(nullImageUrl)
+                                      : NetworkImage(_user.photoUrl),
+                                  foregroundColor: Colors.white,
+                                ),
+                                title: Text(_user.displayName,
+                                    style: TextStyle(
+                                        color: AppTheme.primaryColor)),
+                                subtitle: Text(_user.username,
+                                    style: TextStyle(
+                                        color: AppTheme.primaryColor)),
                               ),
-                            )));
-                  }
-                  return ListView.builder(
-                    itemCount: snapshot.data.documents.length,
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    itemBuilder: (BuildContext context, int index) {
-                      return FutureBuilder(
-                          future: _userInfoStore.getUserInfo(
-                              uid: snapshot.data.documents[index].id),
-                          builder: (context, snap) {
-                            if (snap.connectionState == ConnectionState.done) {
-                              var _user = UserDataModel.fromDocument(snap.data);
-                              if (widget.uid == _userAuth.user.uid) {
-                                return Slidable(
-                                  actionPane: SlidableDrawerActionPane(),
-                                  actionExtentRatio: 0.25,
-                                  actions: <Widget>[
-                                    IconSlideAction(
-                                        caption: 'Show Profile',
-                                        color: AppTheme.primaryColor,
-                                        icon: Icons.account_circle,
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              CupertinoPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          SearchProfile(
-                                                            uid: _user.id,
-                                                          )));
-                                        }),
-                                  ],
-                                  secondaryActions: <Widget>[
-                                    IconSlideAction(
-                                        caption: 'Remove',
-                                        color: Colors.deepOrangeAccent,
-                                        icon: Icons.delete,
-                                        onTap: () async {
-                                          bool result = await _userInfoStore
-                                              .removeFollowingUser(
-                                                  uid: _user.id);
-                                          if (!result) {
-                                            _scaffoldGlobalKey.currentState
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        'Removed user from followers successfully')));
-                                          } else {
-                                            _scaffoldGlobalKey.currentState
-                                                .showSnackBar(SnackBar(
-                                                    content: Text(
-                                                        'Something went wrong')));
-                                          }
-                                        })
-                                  ],
-                                  child: Container(
-                                    margin: EdgeInsets.symmetric(vertical: 0.8),
-                                    color: AppTheme.elevationColor,
-                                    child: ListTile(
-                                      leading: CircleAvatar(
-                                        backgroundColor: Colors.indigoAccent,
-                                        backgroundImage: _user.photoUrl == null
-                                            ? NetworkImage(nullImageUrl)
-                                            : NetworkImage(_user.photoUrl),
-                                        foregroundColor: Colors.white,
-                                      ),
-                                      title: Text(_user.displayName,
-                                          style: TextStyle(
-                                              color: AppTheme.primaryColor)),
-                                      subtitle: Text(_user.username,
-                                          style: TextStyle(
-                                              color: AppTheme.primaryColor)),
-                                    ),
-                                  ),
-                                );
-                              }
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                          builder: (BuildContext context) =>
-                                              SearchProfile(
-                                                uid: _user.id,
-                                              )));
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.symmetric(vertical: 0.8),
-                                  color: AppTheme.elevationColor,
-                                  child: ListTile(
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.indigoAccent,
-                                      backgroundImage: _user.photoUrl == null
-                                          ? NetworkImage(nullImageUrl)
-                                          : NetworkImage(_user.photoUrl),
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    title: Text(
-                                        _user.displayName == null
-                                            ? "Wow Talent User"
-                                            : _user.displayName,
-                                        style: TextStyle(
-                                            color: AppTheme.primaryColor)),
-                                    subtitle: Text(_user.username,
-                                        style: TextStyle(
-                                            color: AppTheme.primaryColor)),
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return Container();
-                            }
-                          });
-                    },
-                  );
-                }),
-          );
-  }
-
-//iOS Screen
-  Widget followerScreeniOS(){
-    return CupertinoPageScaffold(
-            backgroundColor: AppTheme.backgroundColor,
-            navigationBar: CupertinoNavigationBar(
-              middle: Text('Followers'),
-              backgroundColor: AppTheme.backgroundColor,
-            ),
-            child: StreamBuilder(
-                stream: _userInfoStore.getFollowers(uid: widget.uid),
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return Center(
-                      child: SpinKitCircle(
-                        color: AppTheme.primaryColor,
-                        size: 60,
-                      ),
-                    );
-                  } else if (!snapshot.hasData) {
-                    return Center(child: Text('Something went wrong'));
-                  } else if (snapshot.data.documents.length == 0) {
-                    return Container(
-                        color: Colors.transparent,
-                        child: AnimatedBackground(
-                            behaviour: RandomParticleBehaviour(
-                              options: particleOptions,
-                              paint: particlePaint,
                             ),
-                            vsync: this,
-                            child: Padding(
-                              padding: EdgeInsets.symmetric(horizontal: 35),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text.rich(TextSpan(
-                                        text: '',
-                                        children: <InlineSpan>[
-                                          TextSpan(
-                                            text: 'Nice Content',
-                                            style: TextStyle(
-                                                fontSize: 56,
-                                                color: Colors.redAccent,
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                          TextSpan(
-                                            text: '  Attracts followers',
-                                            style: TextStyle(
-                                                fontSize: 38,
-                                                color: AppTheme.pureWhiteColor,
-                                                fontWeight: FontWeight.bold),
-                                          )
-                                        ])),
-                                  ],
-                                ),
+                          );
+                        }
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (BuildContext context) =>
+                                        SearchProfile(
+                                          uid: _user.id,
+                                        )));
+                          },
+                          child: Container(
+                            margin: EdgeInsets.symmetric(vertical: 0.8),
+                            color: AppTheme.elevationColor,
+                            child: ListTile(
+                              leading: CircleAvatar(
+                                backgroundColor: Colors.indigoAccent,
+                                backgroundImage: _user.photoUrl == null
+                                    ? NetworkImage(nullImageUrl)
+                                    : NetworkImage(_user.photoUrl),
+                                foregroundColor: Colors.white,
                               ),
-                            )));
-                  }
-                  return ListView.builder(
-                    itemCount: snapshot.data.documents.length,
-                    padding: EdgeInsets.symmetric(vertical: 10),
-                    itemBuilder: (BuildContext context, int index) {
-                      return FutureBuilder(
-                          future: _userInfoStore.getUserInfo(
-                              uid: snapshot.data.documents[index].id),
-                          builder: (context, snap) {
-                            if (snap.connectionState == ConnectionState.done) {
-                              var _user = UserDataModel.fromDocument(snap.data);
-                              if (widget.uid == _userAuth.user.uid) {
-                                return Slidable(
-                                  actionPane: SlidableDrawerActionPane(),
-                                  actionExtentRatio: 0.25,
-                                  actions: <Widget>[
-                                    IconSlideAction(
-                                        caption: 'Show Profile',
-                                        color: AppTheme.primaryColor,
-                                        icon: Icons.account_circle,
-                                        onTap: () {
-                                          Navigator.push(
-                                              context,
-                                              CupertinoPageRoute(
-                                                  builder:
-                                                      (BuildContext context) =>
-                                                          SearchProfile(
-                                                            uid: _user.id,
-                                                          )));
-                                        }),
-                                  ],
-                                  secondaryActions: <Widget>[
-                                    IconSlideAction(
-                                        caption: 'Remove',
-                                        color: Colors.deepOrangeAccent,
-                                        icon: Icons.delete,
-                                        onTap: () async {
-                                          bool result = await _userInfoStore
-                                              .removeFollowingUser(
-                                                  uid: _user.id);
-                                          if (!result) {
-                                            Flushbar(
-                                              maxWidth: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.8,
-                                              borderRadius: 20,
-                                              animationDuration:
-                                                  Duration(milliseconds: 500),
-                                              flushbarPosition:
-                                                  FlushbarPosition.BOTTOM,
-                                              flushbarStyle:
-                                                  FlushbarStyle.FLOATING,
-                                              backgroundColor:
-                                                  CupertinoColors.systemGrey,
-                                              messageText: Text(
-                                                "Removed User from Followers succesfully",
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              titleText: Container(
-                                                  child:
-                                                      Icon(Icons.volume_off)),
-                                              duration:
-                                                  Duration(milliseconds: 500),
-                                              padding: EdgeInsets.all(10),
-                                            )..show(context);
-                                          } else {
-                                            Flushbar(
-                                              maxWidth: MediaQuery.of(context)
-                                                      .size
-                                                      .width *
-                                                  0.5,
-                                              borderRadius: 20,
-                                              animationDuration:
-                                                  Duration(milliseconds: 500),
-                                              flushbarPosition:
-                                                  FlushbarPosition.BOTTOM,
-                                              flushbarStyle:
-                                                  FlushbarStyle.FLOATING,
-                                              backgroundColor:
-                                                  CupertinoColors.systemGrey,
-                                              messageText: Text(
-                                                "Something Went Wrong",
-                                                textAlign: TextAlign.center,
-                                              ),
-                                              titleText: Container(
-                                                  child:
-                                                      Icon(Icons.volume_off)),
-                                              duration:
-                                                  Duration(milliseconds: 500),
-                                              padding: EdgeInsets.all(10),
-                                            )..show(context);
-                                          }
-                                        })
-                                  ],
-                                  child: Material(child:ListTile(
-                                    tileColor: AppTheme.backgroundColor,
-                                      leading: CircleAvatar(
-                                        backgroundColor: Colors.indigoAccent,
-                                        backgroundImage: _user.photoUrl == null
-                                            ? NetworkImage(nullImageUrl)
-                                            : NetworkImage(_user.photoUrl),
-                                        foregroundColor: Colors.white,
-                                      ),
-                                      title: Text(_user.displayName,
-                                          style: TextStyle(
-                                              color: AppTheme.primaryColor)),
-                                      subtitle: Text(_user.username,
-                                          style: TextStyle(
-                                              color: AppTheme.primaryColor)),
-                                    ),
-                                  ),
-                                );
-                              }
-                              return GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      CupertinoPageRoute(
-                                          builder: (BuildContext context) =>
-                                              SearchProfile(
-                                                uid: _user.id,
-                                              )));
-                                },
-                                child: Material(child:ListTile(
-                                  tileColor: AppTheme.backgroundColor,
-                                    leading: CircleAvatar(
-                                      backgroundColor: Colors.indigoAccent,
-                                      backgroundImage: _user.photoUrl == null
-                                          ? NetworkImage(nullImageUrl)
-                                          : NetworkImage(_user.photoUrl),
-                                      foregroundColor: Colors.white,
-                                    ),
-                                    title: Text(
-                                        _user.displayName == null
-                                            ? "Wow Talent User"
-                                            : _user.displayName,
-                                        style: TextStyle(
-                                            color: AppTheme.primaryColor)),
-                                    subtitle: Text(_user.username,
-                                        style: TextStyle(
-                                            color: AppTheme.primaryColor)),
-                                  ),
-                                ),
-                              );
-                            } else {
-                              return Container();
-                            }
-                          });
-                    },
-                  );
-                }),
-          );
+                              title: Text(
+                                  _user.displayName == null
+                                      ? "Wow Talent User"
+                                      : _user.displayName,
+                                  style:
+                                      TextStyle(color: AppTheme.primaryColor)),
+                              subtitle: Text(_user.username,
+                                  style:
+                                      TextStyle(color: AppTheme.primaryColor)),
+                            ),
+                          ),
+                        );
+                      } else {
+                        return Container();
+                      }
+                    });
+              },
+            );
+          }),
+    );
   }
 }
