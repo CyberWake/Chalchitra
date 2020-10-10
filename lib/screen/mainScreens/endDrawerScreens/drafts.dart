@@ -69,32 +69,20 @@ class _DraftsState extends State<Drafts> {
       case "Vocal":
         _selectedCategory = 0;
         break;
-      case "Percussions":
+      case "Acting":
         _selectedCategory = 1;
         break;
-      case "Acting":
+      case "Instrumental":
         _selectedCategory = 2;
         break;
-      case "Instrumental":
+      case "Standup Comedy":
         _selectedCategory = 3;
         break;
-      case "Videography":
+      case "DJing":
         _selectedCategory = 4;
         break;
-      case "Standup Comedy":
-        _selectedCategory = 5;
-        break;
-      case "DIY":
-        _selectedCategory = 6;
-        break;
-      case "DJing":
-        _selectedCategory = 7;
-        break;
-      case "Story Telling":
-        _selectedCategory = 8;
-        break;
       case "Dance":
-        _selectedCategory = 9;
+        _selectedCategory = 5;
         break;
     }
   }
@@ -251,35 +239,43 @@ class _DraftsState extends State<Drafts> {
                                         dropdownColor: AppTheme.elevationColor,
                                         items: [
                                           DropdownMenuItem(
-                                            child: Text("Vocals"),
+                                            child: Text("Vocals",
+                                                style: TextStyle(
+                                                    color: AppTheme
+                                                        .pureWhiteColor)),
                                             value: 0,
                                           ),
                                           DropdownMenuItem(
-                                            child: Text("Percussions"),
-                                            value: 1,
+                                              child: Text("Acting",
+                                                  style: TextStyle(
+                                                      color: AppTheme
+                                                          .pureWhiteColor)),
+                                              value: 1),
+                                          DropdownMenuItem(
+                                            child: Text("Instrumental",
+                                                style: TextStyle(
+                                                    color: AppTheme
+                                                        .pureWhiteColor)),
+                                            value: 2,
                                           ),
                                           DropdownMenuItem(
-                                              child: Text("Acting"), value: 2),
+                                              child: Text("Standup Comedy",
+                                                  style: TextStyle(
+                                                      color: AppTheme
+                                                          .pureWhiteColor)),
+                                              value: 3),
                                           DropdownMenuItem(
-                                            child: Text("Instrumental"),
-                                            value: 3,
-                                          ),
+                                              child: Text("DJing",
+                                                  style: TextStyle(
+                                                      color: AppTheme
+                                                          .pureWhiteColor)),
+                                              value: 4),
                                           DropdownMenuItem(
-                                            child: Text("Videography"),
-                                            value: 4,
-                                          ),
-                                          DropdownMenuItem(
-                                              child: Text("Standup Comedy"),
+                                              child: Text("Dance",
+                                                  style: TextStyle(
+                                                      color: AppTheme
+                                                          .pureWhiteColor)),
                                               value: 5),
-                                          DropdownMenuItem(
-                                              child: Text("DIY"), value: 6),
-                                          DropdownMenuItem(
-                                              child: Text("DJing"), value: 7),
-                                          DropdownMenuItem(
-                                              child: Text("Story Telling"),
-                                              value: 8),
-                                          DropdownMenuItem(
-                                              child: Text("Dance"), value: 9),
                                         ],
                                         onChanged: (value) {
                                           _selectedCategory = value;
@@ -288,30 +284,18 @@ class _DraftsState extends State<Drafts> {
                                               category = "Vocals";
                                               break;
                                             case 1:
-                                              category = "Percussions";
-                                              break;
-                                            case 2:
                                               category = "Acting";
                                               break;
-                                            case 3:
+                                            case 2:
                                               category = "Instrumental";
                                               break;
-                                            case 4:
-                                              category = "Videography";
-                                              break;
-                                            case 5:
+                                            case 3:
                                               category = "Standup Comedy";
                                               break;
-                                            case 6:
-                                              category = "DIY";
-                                              break;
-                                            case 7:
+                                            case 4:
                                               category = "DJing";
                                               break;
-                                            case 8:
-                                              category = "Story Telling";
-                                              break;
-                                            case 9:
+                                            case 5:
                                               category = "Dance";
                                               break;
                                           }

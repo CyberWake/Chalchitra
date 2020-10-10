@@ -338,7 +338,7 @@ class _ProfilePageState extends State<ProfilePage> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(
               child: SpinKitCircle(
-                color: AppTheme.primaryColor,
+                color: AppTheme.elevationColor,
                 size: 60,
               ),
             );

@@ -345,7 +345,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
           leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: AppTheme.pureWhiteColor,
+                color: AppTheme.elevationColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -363,7 +363,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
             IconButton(
               icon: Icon(
                 Icons.save,
-                color: AppTheme.pureWhiteColor,
+                color: AppTheme.elevationColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -507,41 +507,41 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                           DropdownMenuItem(
                                             child: Text("Vocals",
                                                 style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryColor)),
+                                                    color: AppTheme
+                                                        .pureWhiteColor)),
                                             value: 0,
                                           ),
                                           DropdownMenuItem(
                                             child: Text("Dance",
                                                 style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryColor)),
+                                                    color: AppTheme
+                                                        .pureWhiteColor)),
                                             value: 1,
                                           ),
                                           DropdownMenuItem(
                                             child: Text("Instrumental",
                                                 style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryColor)),
+                                                    color: AppTheme
+                                                        .pureWhiteColor)),
                                             value: 2,
                                           ),
                                           DropdownMenuItem(
                                               child: Text("Standup Comedy",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .pureWhiteColor)),
                                               value: 3),
                                           DropdownMenuItem(
                                               child: Text("DJing",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .pureWhiteColor)),
                                               value: 4),
                                           DropdownMenuItem(
                                               child: Text("Acting",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .pureWhiteColor)),
                                               value: 5),
                                         ],
                                         onChanged: (value) {

@@ -73,6 +73,9 @@ class _SearchUserState extends State<SearchUser> {
           UserDataModel eachUser =
               UserDataModel.fromDocument(searchKeyQuery.docs[i]);
           searchUserResult.add(eachUser);
+          if (searchUserResult.length == 0) {
+            isFound = false;
+          }
           setState(() {});
         }
       }

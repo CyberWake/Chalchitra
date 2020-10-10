@@ -396,7 +396,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         controller: bioController,
         decoration: authInputFormatting.copyWith(
-          hintText: "Enter your Bio",
+          hintText: 'Hello World!',
           labelText: 'Your Bio',
           fillColor: AppTheme.backgroundColor,
           hintStyle: TextStyle(
@@ -603,7 +603,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: Text(
                   _dob == null ? "Please Provide your Date of Birth" : _dob,
                   style:
-                      TextStyle(fontSize: 16, color: AppTheme.pureWhiteColor),
+                      TextStyle(fontSize: 16, color: AppTheme.backgroundColor),
                 ),
               ),
             ),
