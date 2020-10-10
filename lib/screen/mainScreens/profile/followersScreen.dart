@@ -163,7 +163,10 @@ class _FollowersPageState extends State<FollowersPage>
                                       : NetworkImage(_user.photoUrl),
                                   foregroundColor: Colors.white,
                                 ),
-                                title: Text(_user.displayName,
+                                title: Text(
+                                    _user.displayName == null
+                                        ? "Wow Talent User"
+                                        : _user.displayName,
                                     style: TextStyle(
                                         color: AppTheme.primaryColor)),
                                 subtitle: Text(_user.username,

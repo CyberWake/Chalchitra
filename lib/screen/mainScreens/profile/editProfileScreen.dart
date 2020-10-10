@@ -236,7 +236,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     currentUserName = user.username;
     usernameController.text = user.username;
     nameController.text = user.displayName;
-    bioController.text = user.bio;
+    bioController.text = user.bio == "Hello World!" ? "" : user.bio;
     countryController.text = user.country;
     print(countryController.text);
     _dob = user.dob;
@@ -396,7 +396,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         ),
         controller: bioController,
         decoration: authInputFormatting.copyWith(
-          hintText: "Your Bio",
+          hintText: "Enter your Bio",
           labelText: 'Your Bio',
           fillColor: AppTheme.backgroundColor,
           hintStyle: TextStyle(
