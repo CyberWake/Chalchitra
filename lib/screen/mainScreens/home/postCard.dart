@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/menuConstants.dart';
@@ -51,6 +52,7 @@ class _PostCardState extends State<PostCard> {
   UserVideoStore _userVideoStore = UserVideoStore();
   UserDataModel _user = UserDataModel();
   UserInfoStore _userInfoStore = UserInfoStore();
+  UserAuth _userAuth = UserAuth();
   bool _isLiked;
   int likeCount;
   bool _processing = false;
@@ -301,7 +303,13 @@ class _PostCardState extends State<PostCard> {
                   ),
                   Expanded(
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
+                        bool isWatched = await UserVideoStore()
+                            .checkWatched(videoID: widget.id);
+                        if (!isWatched) {
+                          await UserVideoStore()
+                              .increaseVideoCount(videoID: widget.id);
+                        }
                         Navigator.push(
                           context,
                           MaterialPageRoute(

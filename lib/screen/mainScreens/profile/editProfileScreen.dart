@@ -125,9 +125,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 height: 20,
                               ),
                               InkWell(
-                                onTap: _updateButton
-                                    ? updateUserProfile
-                                    : () => Navigator.pop(context),
+                                onTap: updateUserProfile,
                                 child: Container(
                                   height: 50,
                                   margin: EdgeInsets.symmetric(horizontal: 10),
@@ -136,23 +134,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                     color: AppTheme.primaryColor,
                                   ),
                                   child: Center(
-                                      child: _updateButton
-                                          ? Text(
-                                              "Update",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  letterSpacing: 1.5,
-                                                  fontSize: 17),
-                                            )
-                                          : Text(
-                                              "Back",
-                                              style: TextStyle(
-                                                  color: Colors.white,
-                                                  fontWeight: FontWeight.bold,
-                                                  letterSpacing: 1.5,
-                                                  fontSize: 17),
-                                            )),
+                                      child: Text(
+                                    "Update",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.5,
+                                        fontSize: 17),
+                                  )),
                                 ),
                               ),
                             ],
@@ -303,10 +292,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       // showing a alert to the user
       SnackBar successSnackBar = SnackBar(
-        content: Text('Profile has update successfully!!'),
+        content: Text('Profile Saved!!'),
+        duration: Duration(milliseconds: 1000),
       );
       _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
       print('updated successfully');
+      await Future.delayed(Duration(milliseconds: 1500));
+      Navigator.pop(context);
     } else if (!validUsername) {
       SnackBar successSnackBar = SnackBar(
         content: Text('Username Already Taken!!'),
@@ -601,9 +593,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
               child: Padding(
                 padding: EdgeInsets.only(left: 4.0),
                 child: Text(
-                  _dob == null ? "Please Provide your Date of Birth" : _dob,
+                  _dob == null ? " " : _dob,
                   style:
-                      TextStyle(fontSize: 16, color: AppTheme.backgroundColor),
+                      TextStyle(fontSize: 16, color: AppTheme.pureWhiteColor),
                 ),
               ),
             ),

@@ -1,25 +1,29 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+
 import '../auth/userAuth.dart';
 import '../model/videoInfoModel.dart';
 
 class UserVideoStore {
   static final CollectionReference _feedVideos =
-  FirebaseFirestore.instance.collection('feedVideos');
+      FirebaseFirestore.instance.collection('feedVideos');
 
   static final CollectionReference _allVideos =
-  FirebaseFirestore.instance.collection('videos');
+      FirebaseFirestore.instance.collection('videos');
 
   static final CollectionReference _videoLikes =
-  FirebaseFirestore.instance.collection('videoLikes');
+      FirebaseFirestore.instance.collection('videoLikes');
+
+  static final CollectionReference _videoWatched =
+      FirebaseFirestore.instance.collection('videoWatched');
 
   static final CollectionReference _videoComments =
-  FirebaseFirestore.instance.collection('videoComments');
+      FirebaseFirestore.instance.collection('videoComments');
 
   static final CollectionReference _videoRating =
-  FirebaseFirestore.instance.collection('ratings');
+      FirebaseFirestore.instance.collection('ratings');
 
   static final CollectionReference _videoDrafts =
-  FirebaseFirestore.instance.collection('videoDrafts');
+      FirebaseFirestore.instance.collection('videoDrafts');
 
   static final UserAuth _userAuth = UserAuth();
 
@@ -93,7 +97,7 @@ class UserVideoStore {
   Future getDraftVideos({String uid}) async {
     try {
       QuerySnapshot qs =
-      await _videoDrafts.where('uploaderUid', isEqualTo: uid).get();
+          await _videoDrafts.where('uploaderUid', isEqualTo: uid).get();
       return mapQueryToVideoInfo(qs);
     } catch (e) {
       print(e.toString());
@@ -118,7 +122,7 @@ class UserVideoStore {
   Future getProfileVideos({String uid}) async {
     try {
       QuerySnapshot qs =
-      await _allVideos.where('uploaderUid', isEqualTo: uid).get();
+          await _allVideos.where('uploaderUid', isEqualTo: uid).get();
       return mapQueryToVideoInfo(qs);
     } catch (e) {
       print(e.toString());
@@ -143,9 +147,9 @@ class UserVideoStore {
   Stream getFollowingVideos({List<DocumentSnapshot> followings}) {
     return _allVideos
         .where('uploaderUid',
-        whereIn: List.generate(followings.length, (index) {
-          return followings[index].id;
-        }))
+            whereIn: List.generate(followings.length, (index) {
+              return followings[index].id;
+            }))
         .orderBy("uploadedAt", descending: true)
         .limit(100)
         .snapshots();
@@ -153,8 +157,22 @@ class UserVideoStore {
 
   static listenToAllVideos(callback) async {
     try {
+      _allVideos.orderBy("likes", descending: false).snapshots().listen((qs) {
+        final videos = mapQueryToVideoInfo(qs);
+        callback(videos);
+      });
+      return true;
+    } catch (e) {
+      print(e.toString());
+      return false;
+    }
+  }
+
+  static listenTopVideos(callback) async {
+    try {
       _allVideos
-          .orderBy("uploadedAt", descending: true)
+          .orderBy("views", descending: false)
+          .limit(10)
           .snapshots()
           .listen((qs) {
         final videos = mapQueryToVideoInfo(qs);
@@ -240,6 +258,20 @@ class UserVideoStore {
     }
   }
 
+  Future increaseVideoCount({String videoID}) async {
+    try {
+      await _allVideos.doc(videoID).update({"views": FieldValue.increment(1)});
+      await _videoWatched
+          .doc(_userAuth.user.uid)
+          .collection("viewedVideos")
+          .doc(videoID)
+          .set({"id": videoID});
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
   Future getLikeCount({String videoID}) async {
     try {
       await _allVideos.doc(videoID).update({"likes": FieldValue.increment(1)});
@@ -307,6 +339,20 @@ class UserVideoStore {
           .collection("likedVideos")
           .where("id", isEqualTo: videoID)
           .get();
+      return res.size == 1;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future checkWatched({String videoID}) async {
+    try {
+      QuerySnapshot res = await _videoWatched
+          .doc(_userAuth.user.uid)
+          .collection("viewedVideos")
+          .where("id", isEqualTo: videoID)
+          .get();
+      print("res.size: ${res.size}");
       return res.size == 1;
     } catch (e) {
       return false;

@@ -1,10 +1,10 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -329,19 +329,11 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   getProfileTopView(BuildContext context) {
-    return new StreamBuilder<DocumentSnapshot>(
-        stream: _userInfoStore.getUserInfoStream(uid: widget.uid),
+    return new FutureBuilder<DocumentSnapshot>(
+        future: _userInfoStore.getUserInfoFuture(uid: widget.uid),
         builder: (context, snapshot) {
           if (!snapshot.hasData) {
             return Center(child: Text('Something went wrong'));
-          }
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: SpinKitCircle(
-                color: AppTheme.elevationColor,
-                size: 60,
-              ),
-            );
           }
           print(snapshot.data.exists);
           user = UserDataModel.fromDocument(snapshot.data);
@@ -373,12 +365,30 @@ class _ProfilePageState extends State<ProfilePage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       CircleAvatar(
-                        backgroundImage: NetworkImage(
-                            user.photoUrl != null ? user.photoUrl : widget.url),
+                        child: CachedNetworkImage(
+                          imageUrl: snapshot.connectionState ==
+                                  ConnectionState.waiting
+                              ? "https://www.prairieskychamber.ca/wp-content/uploads/2016/10/person-placeholder-image-3.jpg"
+                              : user.photoUrl != null
+                                  ? user.photoUrl
+                                  : widget.url,
+                          imageBuilder: (context, imageProvider) => Container(
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(40),
+                              image: DecorationImage(
+                                image: imageProvider,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                        ),
                         radius: 40,
                       ),
                       SizedBox(
-                        width: 20,
+                        width:
+                            snapshot.connectionState == ConnectionState.waiting
+                                ? MediaQuery.of(context).size.width * 0.39
+                                : 20,
                       ),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -386,11 +396,14 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           FittedBox(
                             child: Text(
-                              user.displayName != null
-                                  ? user.displayName.length > 19
-                                      ? getChoppedUsername(user.displayName)
-                                      : user.displayName
-                                  : "WowTalent",
+                              snapshot.connectionState ==
+                                      ConnectionState.waiting
+                                  ? " "
+                                  : user.displayName != null
+                                      ? user.displayName.length > 19
+                                          ? getChoppedUsername(user.displayName)
+                                          : user.displayName
+                                      : "WowTalent",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
@@ -404,7 +417,10 @@ class _ProfilePageState extends State<ProfilePage> {
                           Row(
                             children: [
                               Text(
-                                '$_username',
+                                snapshot.connectionState ==
+                                        ConnectionState.waiting
+                                    ? " "
+                                    : '$_username',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color: Colors.grey[400],
@@ -544,7 +560,15 @@ class _ProfilePageState extends State<ProfilePage> {
                     _deleteButton(index);
                   }
                 },
-                onTap: () {
+                onTap: () async {
+                  bool isWatched = await UserVideoStore()
+                      .checkWatched(videoID: _videos[index].videoId);
+                  print(" isWatched: $isWatched");
+                  if (!isWatched) {
+                    bool result = await UserVideoStore()
+                        .increaseVideoCount(videoID: _videos[index].videoId);
+                    print(result);
+                  }
                   Navigator.push(
                     context,
                     CupertinoPageRoute(
