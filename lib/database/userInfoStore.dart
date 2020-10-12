@@ -248,6 +248,10 @@ class UserInfoStore {
     return _users.doc(uid).snapshots();
   }
 
+  Future<DocumentSnapshot> getUserInfoFuture({String uid}) {
+    return _users.doc(uid).get();
+  }
+
   getUserInfo({String uid}) {
     try {
       return _users.doc(uid).get();

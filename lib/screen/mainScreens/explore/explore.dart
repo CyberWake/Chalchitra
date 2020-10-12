@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
@@ -22,8 +23,10 @@ class _ExploreState extends State<Explore> {
   double heightIndex2;
   double heightIndex3;
   Size _size;
+  UserAuth _userAuth = UserAuth();
 
-  List<VideoInfo> _videos = <VideoInfo>[];
+  List<VideoInfo> _allVideos = <VideoInfo>[];
+  List<VideoInfo> _videosTrending = <VideoInfo>[];
   List searchCategories = [
     "Vocals",
     "Dance",
@@ -39,7 +42,14 @@ class _ExploreState extends State<Explore> {
     UserVideoStore.listenToAllVideos((newVideos) {
       if (this.mounted) {
         setState(() {
-          _videos = newVideos;
+          _allVideos = newVideos;
+        });
+      }
+    });
+    UserVideoStore.listenTopVideos((newVideos) {
+      if (this.mounted) {
+        setState(() {
+          _videosTrending = newVideos;
         });
       }
     });
@@ -128,10 +138,16 @@ class _ExploreState extends State<Explore> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
-        children: List.generate(_videos.length, (index) {
-          final video = _videos[index];
+        children: List.generate(_videosTrending.length, (index) {
+          final video = _videosTrending[index];
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
+              bool isWatched = await UserVideoStore()
+                  .checkWatched(videoID: _videosTrending[index].videoId);
+              if (!isWatched) {
+                await UserVideoStore().increaseVideoCount(
+                    videoID: _videosTrending[index].videoId);
+              }
               Navigator.push(
                 context,
                 CupertinoPageRoute(
@@ -174,10 +190,16 @@ class _ExploreState extends State<Explore> {
       child: ListView(
         scrollDirection: Axis.horizontal,
         shrinkWrap: true,
-        children: List.generate(_videos.length, (index) {
-          final video = _videos[index];
+        children: List.generate(_allVideos.length, (index) {
+          final video = _allVideos[index];
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
+              bool isWatched = await UserVideoStore()
+                  .checkWatched(videoID: _allVideos[index].videoId);
+              if (!isWatched) {
+                await UserVideoStore()
+                    .increaseVideoCount(videoID: _allVideos[index].videoId);
+              }
               Navigator.push(
                 context,
                 CupertinoPageRoute(
@@ -221,11 +243,17 @@ class _ExploreState extends State<Explore> {
         physics: NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         crossAxisCount: 3,
-        itemCount: _videos.length,
+        itemCount: _allVideos.length,
         itemBuilder: (BuildContext context, int index) {
-          dynamic video = _videos[index];
+          dynamic video = _allVideos[index];
           return GestureDetector(
-            onTap: () {
+            onTap: () async {
+              bool isWatched = await UserVideoStore()
+                  .checkWatched(videoID: _allVideos[index].videoId);
+              if (!isWatched) {
+                await UserVideoStore()
+                    .increaseVideoCount(videoID: _allVideos[index].videoId);
+              }
               Navigator.push(
                 context,
                 Platform.isIOS
@@ -252,7 +280,7 @@ class _ExploreState extends State<Explore> {
           );
         },
         staggeredTileBuilder: (int index) {
-          return StaggeredTile.count(1, 1 / _videos[index].aspectRatio);
+          return StaggeredTile.count(1, 1 / _allVideos[index].aspectRatio);
         },
         mainAxisSpacing: 5.0,
         crossAxisSpacing: 5.0,

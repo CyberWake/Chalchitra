@@ -113,6 +113,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   child: Column(
                     children: <Widget>[
                       Container(
+<<<<<<< HEAD
                         color: AppTheme.backgroundColor,
                         padding: EdgeInsets.only(top: 40),
                         child: Column(children: <Widget>[
@@ -218,6 +219,58 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ? NetworkImage(onUrlNull)
                   : NetworkImage(url),
               radius: 50.0,
+=======
+                          padding:
+                              EdgeInsets.symmetric(horizontal: 15, vertical: 5),
+                          child: Column(
+                            children: <Widget>[
+                              Container(
+                                color: AppTheme.backgroundColor,
+                                padding: EdgeInsets.only(top: 40),
+                                child: Column(children: <Widget>[
+                                  getFieldContainer([
+                                    createProfileNameField(),
+                                    createUsernameField(),
+                                    createBioField(),
+                                  ]),
+                                  SizedBox(
+                                    height: 20,
+                                  ),
+                                  getFieldContainer([
+                                    createCountryField(),
+                                    createGenderField(),
+                                    createDOBField(),
+                                  ]),
+                                  // createGenderField()
+                                ]),
+                              ),
+                              SizedBox(
+                                height: 20,
+                              ),
+                              InkWell(
+                                onTap: updateUserProfile,
+                                child: Container(
+                                  height: 50,
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(50),
+                                    color: AppTheme.primaryColor,
+                                  ),
+                                  child: Center(
+                                      child: Text(
+                                    "Update",
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                        letterSpacing: 1.5,
+                                        fontSize: 17),
+                                  )),
+                                ),
+                              ),
+                            ],
+                          ))
+                    ]),
+>>>>>>> bebb54c... Automatic navigation after profile updation
             ),
           ),
           Platform.isIOS ? CupertinoButton(
@@ -394,12 +447,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
       // showing a alert to the user
       SnackBar successSnackBar = SnackBar(
-        content: Text('Profile has update successfully!!'),
+        content: Text('Profile Saved!!'),
+        duration: Duration(milliseconds: 1000),
       );
       Platform.isIOS
           ? cupertinoSnackbar(context, "Profile Updated")
           : _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
       print('updated successfully');
+      await Future.delayed(Duration(milliseconds: 1500));
+      Navigator.pop(context);
     } else if (!validUsername) {
       SnackBar successSnackBar = SnackBar(
         content: Text('Username Already Taken!!'),
@@ -867,6 +923,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
             border: Border.all(color: AppTheme.pureWhiteColor, width: 1),
             borderRadius: BorderRadius.circular(5),
           ),
+<<<<<<< HEAD
           child: Platform.isIOS
               ? CupertinoButton(
                   onPressed: () => showCupertinoModalPopup(
@@ -923,6 +980,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       ),
                     ),
                   ),
+=======
+          child: InkWell(
+            onTap: () {
+              FocusScope.of(context).requestFocus(FocusNode());
+              _selectDate(context);
+            },
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Padding(
+                padding: EdgeInsets.only(left: 4.0),
+                child: Text(
+                  _dob == null ? " " : _dob,
+                  style:
+                      TextStyle(fontSize: 16, color: AppTheme.pureWhiteColor),
+>>>>>>> bebb54c... Automatic navigation after profile updation
                 ),
         ),
         Align(
