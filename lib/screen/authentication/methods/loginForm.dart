@@ -1,15 +1,15 @@
-  import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
 import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'dart:io';
 
 class LoginForm extends StatefulWidget {
   final ValueChanged<AuthIndex> changeMethod;
@@ -27,6 +27,7 @@ class _LoginFormState extends State<LoginForm> {
   double _fontOne;
   Size _size;
   bool _loginForm = true;
+  bool _hidePassword = true;
   String _message = 'Log in/out by pressing the buttons below.';
   bool _submitted = false;
 
@@ -45,7 +46,7 @@ class _LoginFormState extends State<LoginForm> {
     return _loginForm ? loginForm() : SocialRegisterUsername();
   }
 
-  Widget loginForm(){
+  Widget loginForm() {
     return Form(
       key: _formKey,
       child: Padding(
@@ -55,107 +56,112 @@ class _LoginFormState extends State<LoginForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: Platform.isIOS ? _heightOne*60 :_heightOne * 90,),
-            _emailField(),
-            SizedBox(height: _heightOne * 10,),
-            _passwordFiled(),
-            SizedBox(height: _heightOne * 15,),
-            _loginButton(),
-            SizedBox(height: _heightOne * 15,),
-            Platform.isIOS ? CupertinoButton (
-              onPressed: (){
-                widget.changeMethod(AuthIndex.FORGOT);
-              },
-                child: Text(
-                  "Forgot Password?\nReset it here",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _fontOne * 15
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-            ):InkWell(
-              onTap: (){
-                widget.changeMethod(AuthIndex.FORGOT);
-              },
-              child: Text(
-                "Forgot Password?\nReset it here",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
-                textAlign: TextAlign.center,
-              ),
+            SizedBox(
+              height: _heightOne * 83,
             ),
-            SizedBox(height: _heightOne * 35,),
+            _emailField(),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
+            _passwordFiled(),
+            SizedBox(
+              height: _heightOne * 15,
+            ),
+            _loginButton(),
+            SizedBox(
+              height: _heightOne * 22,
+            ),
+            Platform.isIOS
+                ? CupertinoButton(
+                    onPressed: () {
+                      widget.changeMethod(AuthIndex.FORGOT);
+                    },
+                    child: Text(
+                      "Forgot Password?\nReset it here",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : InkWell(
+                    onTap: () {
+                      widget.changeMethod(AuthIndex.FORGOT);
+                    },
+                    child: Text(
+                      "Forgot Password?\nReset it here",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+            SizedBox(
+              height: _heightOne * 34.2,
+            ),
             Text(
               "Or Login With",
-              style: TextStyle(
-                decoration: TextDecoration.none,
-                  color: Colors.grey,
-                  fontSize: _fontOne * 15
-              ),
+              style: TextStyle(color: Colors.grey, fontSize: _fontOne * 15),
             ),
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             AuthButtons.socialLogin(
-              newAccountCallback: (){
-                setState(() {
-                  _loginForm = false;
-                });
-              },
-              context: context,
-              size: _size
-            ),
-            Platform.isIOS ? Container() : SizedBox(height: _heightOne * 30,),
-            Platform.isIOS ? CupertinoButton(
-              onPressed: (){
-                widget.changeMethod(AuthIndex.REGISTER);
-              },
-                child: Text(
-                  "Don't Have an account? \nTap here to register.",
-                  style: TextStyle(
-                      color: Colors.black,
-                      fontSize: _fontOne * 15
+                newAccountCallback: () {
+                  setState(() {
+                    _loginForm = false;
+                  });
+                },
+                context: context,
+                size: _size),
+            Platform.isIOS
+                ? Container()
+                : SizedBox(
+                    height: _heightOne * 30,
                   ),
-                  textAlign: TextAlign.center,
-                ),
-            ) :InkWell(
-              onTap: (){
-                widget.changeMethod(AuthIndex.REGISTER);
-              },
-              child: Text(
-                "Don't Have an account? \nTap here to register.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
-                textAlign: TextAlign.center,
-              ),
+            Platform.isIOS
+                ? CupertinoButton(
+                    onPressed: () {
+                      widget.changeMethod(AuthIndex.REGISTER);
+                    },
+                    child: Text(
+                      "Don't Have an account? \nTap here to register.",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : InkWell(
+                    onTap: () {
+                      widget.changeMethod(AuthIndex.REGISTER);
+                    },
+                    child: Text(
+                      "Don't Have an account? \nTap here to register.",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+            SizedBox(
+              height: _heightOne * 30,
             ),
-            SizedBox(height: _heightOne * 30,),
           ],
         ),
       ),
     );
   }
-  bool _errorEmail = false;
-  bool _errorPass = false;
-  Widget _emailField(){
-    return Material(
-        child:FormFieldFormatting.formFieldContainer(
+
+  Widget _emailField() {
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
         onChanged: (val) {
           _userDataModel.email = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Email",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Email", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -164,138 +170,141 @@ class _LoginFormState extends State<LoginForm> {
     ));
   }
 
-  Widget _passwordFiled(){
-    return Material(
-        child:FormFieldFormatting.formFieldContainer(
+  Widget _passwordFiled() {
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
-        obscureText: true,
+        obscureText: _hidePassword,
         validator: FormValidation.validateLoginPassword,
         onChanged: (val) {
           _userDataModel.password = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Password",
-            fontSize: _fontOne * 15
-        ),
-        style: TextStyle(
+          suffixIcon: IconButton(
+            icon: Icon(
+              _hidePassword ? Icons.visibility : Icons.visibility_off,
+              color: AppTheme.primaryColor,
+            ),
+            onPressed: () {
+              setState(() {
+                _hidePassword = !_hidePassword;
+              });
+            },
+          ),
+          hintText: "Enter Password",
           fontSize: _fontOne * 15,
         ),
+        style: TextStyle(fontSize: _fontOne * 15),
       ),
       leftPadding: _widthOne * 20,
     ));
   }
 
-  Widget _loginButton(){
-    return Platform.isIOS?CupertinoButton(
-      color: Colors.orange,
-      onPressed: () async{
-        if(_formKey.currentState.validate()){
-          await _userAuth.signInWithEmailAndPassword(
-            email: _userDataModel.email,
-            password: _userDataModel.password,
-          ).then((result){
-            if(result == null){
-              showCupertinoModalPopup(context: context, builder: (_){
-                return CupertinoActionSheet(
-                  cancelButton: CupertinoButton(
-                    child: Text("OK"),
-                    onPressed: (){Navigator.pop(context);},
-                  ),
-                  title: Text("Something went wrong try again later"),
-                );
-              });
-            }else if(result == "success"){
-              Navigator.pushReplacement(
-                  context,
-                  CupertinoPageRoute(
-                      builder: (_) => MainScreenWrapper(
-                        index: 0,
-                      )
-                  )
-              );
-            }else{
-              showCupertinoModalPopup(context: context, builder: (_){
-                return CupertinoActionSheet(
-                  cancelButton: CupertinoButton(
-                    child: Text("OK"),
-                    onPressed: (){Navigator.pop(context);},
-                  ),
-                  title: Text("Something went wrong try again later"),
-                );
-              });
-            }
-          });
-        }else{
-          setState(() {
-            _submitted = true;
-          });
-        }
-      },
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.3
-        ),
-        child: Text(
-          "Login",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        )
-    ): FlatButton(
-        onPressed: () async{
-          if(_formKey.currentState.validate()){
-            await _userAuth.signInWithEmailAndPassword(
-              email: _userDataModel.email,
-              password: _userDataModel.password,
-            ).then((result){
-              if(result == null){
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text('Something went wrong try again')
-                    )
-                );
-              }else if(result == "success"){
-                Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (_) => MainScreenWrapper(
-                          index: 0,
-                        )
-                    )
-                );
-              }else{
-                Scaffold.of(context).showSnackBar(
-                    SnackBar(
-                        content: Text(result)
-                    )
-                );
+  Widget _loginButton() {
+    return Platform.isIOS
+        ? CupertinoButton(
+            color: Colors.orange,
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                await _userAuth
+                    .signInWithEmailAndPassword(
+                  email: _userDataModel.email,
+                  password: _userDataModel.password,
+                )
+                    .then((result) {
+                  if (result == null) {
+                    showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) {
+                          return CupertinoActionSheet(
+                            cancelButton: CupertinoButton(
+                              child: Text("OK"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            title: Text("Something went wrong try again later"),
+                          );
+                        });
+                  } else if (result == "success") {
+                    Navigator.pushReplacement(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )));
+                  } else {
+                    showCupertinoModalPopup(
+                        context: context,
+                        builder: (_) {
+                          return CupertinoActionSheet(
+                            cancelButton: CupertinoButton(
+                              child: Text("OK"),
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                            ),
+                            title: Text("Something went wrong try again later"),
+                          );
+                        });
+                  }
+                });
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
               }
-            });
-          }else{
-            setState(() {
-              _submitted = true;
-            });
-          }
-        },
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(
-                color: Colors.orange.withOpacity(0.75),
-                width: _widthOne * 5
-            )
-        ),
-        splashColor: Colors.orange[100],
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.3
-        ),
-        child: Text(
-          "Login",
-          style: TextStyle(
-            color: Colors.orange.withOpacity(0.75),
-          ),
-        )
-    );
+            },
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.3),
+            child: Text(
+              "Login",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ))
+        : FlatButton(
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                await _userAuth
+                    .signInWithEmailAndPassword(
+                  email: _userDataModel.email,
+                  password: _userDataModel.password,
+                )
+                    .then((result) {
+                  if (result == null) {
+                    Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Something went wrong try again')));
+                  } else if (result == "success") {
+                    Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (_) => MainScreenWrapper(
+                                  index: 0,
+                                )));
+                  } else {
+                    Scaffold.of(context)
+                        .showSnackBar(SnackBar(content: Text(result)));
+                  }
+                });
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
+              }
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                side:
+                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+            splashColor: Colors.orange[100],
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
+            child: Text(
+              "Login",
+              style: TextStyle(
+                color: Color(0xFFFFCF40),
+              ),
+            ));
   }
 }

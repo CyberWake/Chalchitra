@@ -1,11 +1,13 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 import 'package:wowtalent/widgets/categoryWidget.dart';
-import 'dart:io' show Platform;
 
 class Explore extends StatefulWidget {
   @override
@@ -13,7 +15,6 @@ class Explore extends StatefulWidget {
 }
 
 class _ExploreState extends State<Explore> {
-
   final thumbWidth = 100;
   final thumbHeight = 150;
   double staggeredHeight = 200.0;
@@ -21,7 +22,6 @@ class _ExploreState extends State<Explore> {
   double heightIndex2;
   double heightIndex3;
   Size _size;
-
 
   List<VideoInfo> _videos = <VideoInfo>[];
   List searchCategories = [
@@ -37,7 +37,7 @@ class _ExploreState extends State<Explore> {
   void initState() {
     super.initState();
     UserVideoStore.listenToAllVideos((newVideos) {
-      if(this.mounted){
+      if (this.mounted) {
         setState(() {
           _videos = newVideos;
         });
@@ -49,6 +49,7 @@ class _ExploreState extends State<Explore> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     return Container(
+      padding: EdgeInsets.only(top: 10),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -59,7 +60,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#Trending",
                 style: TextStyle(
-                    color: Colors.orange.shade400,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -72,7 +73,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#StaffPicks",
                 style: TextStyle(
-                    color: Colors.orange.shade400,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -85,7 +86,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#LatestVideos",
                 style: TextStyle(
-                    color: Colors.orange.shade400,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -98,7 +99,7 @@ class _ExploreState extends State<Explore> {
     );
   }
 
-  Widget _categories(){
+  Widget _categories() {
     return Container(
       width: _size.width,
       height: _size.height * 0.07,
@@ -120,7 +121,7 @@ class _ExploreState extends State<Explore> {
     );
   }
 
-  Widget _trendingVideos(){
+  Widget _trendingVideos() {
     return Container(
       width: _size.width,
       height: _size.height * 0.25,
@@ -131,13 +132,16 @@ class _ExploreState extends State<Explore> {
           final video = _videos[index];
           return GestureDetector(
             onTap: () {
-              Navigator.push(context, CupertinoPageRoute(
-                builder: (context) {
-                  return Player(
-                    video: video,
-                  );
-                },
-              ),);
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) {
+                    return Player(
+                      video: video,
+                    );
+                  },
+                ),
+              );
             },
             child: Container(
               width: _size.width * 0.25,
@@ -146,9 +150,7 @@ class _ExploreState extends State<Explore> {
               decoration: BoxDecoration(
                 color: Colors.black,
                 image: DecorationImage(
-                    image: NetworkImage(video.thumbUrl),
-                    fit: BoxFit.fitWidth
-                ),
+                    image: NetworkImage(video.thumbUrl), fit: BoxFit.fitWidth),
                 borderRadius: BorderRadius.circular(10.5),
                 boxShadow: [
                   BoxShadow(
@@ -165,7 +167,7 @@ class _ExploreState extends State<Explore> {
     );
   }
 
-  Widget _staffPicks(){
+  Widget _staffPicks() {
     return Container(
       width: _size.width,
       height: _size.height * 0.25,
@@ -176,13 +178,16 @@ class _ExploreState extends State<Explore> {
           final video = _videos[index];
           return GestureDetector(
             onTap: () {
-              Navigator.push(context, CupertinoPageRoute(
-                builder: (context) {
-                  return Player(
-                    video: video,
-                  );
-                },
-              ),);
+              Navigator.push(
+                context,
+                CupertinoPageRoute(
+                  builder: (context) {
+                    return Player(
+                      video: video,
+                    );
+                  },
+                ),
+              );
             },
             child: Container(
               width: _size.width * 0.25,
@@ -191,9 +196,7 @@ class _ExploreState extends State<Explore> {
               decoration: BoxDecoration(
                 color: Colors.black,
                 image: DecorationImage(
-                    image: NetworkImage(video.thumbUrl),
-                    fit: BoxFit.fitWidth
-                ),
+                    image: NetworkImage(video.thumbUrl), fit: BoxFit.fitWidth),
                 borderRadius: BorderRadius.circular(10.5),
                 boxShadow: [
                   BoxShadow(
@@ -210,7 +213,7 @@ class _ExploreState extends State<Explore> {
     );
   }
 
-  Widget _latestVideos(){
+  Widget _latestVideos() {
     return Container(
       width: _size.width,
       padding: EdgeInsets.symmetric(horizontal: 5),
@@ -219,32 +222,32 @@ class _ExploreState extends State<Explore> {
         shrinkWrap: true,
         crossAxisCount: 3,
         itemCount: _videos.length,
-        itemBuilder: (BuildContext context, int index){
+        itemBuilder: (BuildContext context, int index) {
           dynamic video = _videos[index];
           return GestureDetector(
             onTap: () {
-              Navigator.push(context,Platform.isIOS? CupertinoPageRoute(
-                builder: (context){
-                  return Player(
-                    video: video,
-                  );
-                }
-              ) : MaterialPageRoute(
-                builder: (context) {
-                  return Player(
-                    video: video,
-                  );
-                },
-              ),);
+              Navigator.push(
+                context,
+                Platform.isIOS
+                    ? CupertinoPageRoute(builder: (context) {
+                        return Player(
+                          video: video,
+                        );
+                      })
+                    : MaterialPageRoute(
+                        builder: (context) {
+                          return Player(
+                            video: video,
+                          );
+                        },
+                      ),
+              );
             },
             child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: Colors.grey,width: 1),
+                  border: Border.all(color: Colors.grey, width: 1),
                   image: DecorationImage(
-                      image: NetworkImage(video.thumbUrl),
-                      fit: BoxFit.cover
-                  )
-              ),
+                      image: NetworkImage(video.thumbUrl), fit: BoxFit.cover)),
             ),
           );
         },

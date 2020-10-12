@@ -36,7 +36,6 @@
                 <string>com.googleusercontent.apps.107639817018-mle5l2h2bh7isrsi63l742jbof8p6fe6</string>
             </array>
         </dict>
-<<<<<<< HEAD
         <dict>
             <key>CFBundleURLSchemes</key>
               <array>
@@ -48,9 +47,6 @@
     <string>325238728592487</string>
     <key>FacebookDisplayName</key>
     <string>WowTalent</string>
-=======
-    </array>
->>>>>>> f690762fc7e6f7e652710f21afc16cfd5f0b0aa9
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -74,7 +70,6 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-    
     <key>LSApplicationQueriesSchemes</key>
     <array>
       <string>fbapi</string>

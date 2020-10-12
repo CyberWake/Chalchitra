@@ -1,9 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class FormFieldFormatting{
-  static formFieldFormatting({String hintText, double fontSize}){
+class FormFieldFormatting {
+  static formFieldFormatting(
+      {String hintText, double fontSize, Widget suffixIcon}) {
     return InputDecoration(
+      suffixIcon: suffixIcon,
       border: InputBorder.none,
       focusedBorder: InputBorder.none,
       enabledBorder: InputBorder.none,
@@ -11,27 +13,17 @@ class FormFieldFormatting{
       disabledBorder: InputBorder.none,
       hintText: hintText,
       errorMaxLines: 3,
-      hintStyle: TextStyle(
-          color: Colors.orange.withOpacity(0.75),
-          fontSize: fontSize
-      ),
-      errorStyle: TextStyle(
-          fontSize: fontSize
-      ),
+      hintStyle: TextStyle(color: Color(0xFFFFCF40), fontSize: fontSize),
+      errorStyle: TextStyle(fontSize: fontSize, color: Colors.deepOrangeAccent),
     );
   }
 
-  static formFieldContainer({Widget child, double leftPadding}){
+  static formFieldContainer({Widget child, double leftPadding}) {
     return Container(
-      padding: EdgeInsets.only(
-          left: leftPadding
-      ),
+      padding: EdgeInsets.only(left: leftPadding),
       decoration: BoxDecoration(
-          border: Border.all(
-              color: Colors.orange.withOpacity(0.75)
-          ),
-          borderRadius: BorderRadius.circular(15.0)
-      ),
+          border: Border.all(color: Color(0xFFFFCF40)),
+          borderRadius: BorderRadius.circular(15.0)),
       child: child,
     );
   }

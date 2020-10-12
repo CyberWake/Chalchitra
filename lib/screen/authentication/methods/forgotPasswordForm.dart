@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -8,6 +6,7 @@ import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
+import 'dart:io';
 
 class ForgotPasswordForm extends StatefulWidget {
   final ValueChanged<AuthIndex> changeMethod;
@@ -40,82 +39,76 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
           horizontal: _widthOne * 100,
         ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 1,
+            ),
             _emailField(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 15,
+            ),
             _submitButton(),
-            SizedBox(height: _heightOne * 15,),
-            Platform.isIOS ? CupertinoButton(
-              onPressed: (){ widget.changeMethod(AuthIndex.LOGIN);},
-              child: Text(
-                "Already Have an account? \nTap here to login.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ) : InkWell(
-              onTap: (){
+            SizedBox(
+              height: _heightOne * 15,
+            ),
+            InkWell(
+              onTap: () {
                 widget.changeMethod(AuthIndex.LOGIN);
               },
               child: Text(
                 "Already Have an account? \nTap here to login.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
+                style: TextStyle(color: Colors.black, fontSize: _fontOne * 15),
                 textAlign: TextAlign.center,
               ),
             ),
-            SizedBox(height: _heightOne * 30,),
+            SizedBox(
+              height: _heightOne * 48,
+            ),
           ],
         ),
       ),
     );
   }
 
-  Widget _emailField(){
-    return Platform.isIOS ? CupertinoTextField(
-      keyboardType: TextInputType.emailAddress,
-      onChanged: (val) {
-        _userDataModel.email = val;
-        if(_submitted){
-          _formKey.currentState.validate();
-        }
-      },
-      decoration:
-      BoxDecoration(
-          border: Border.all(
-              color: Colors.orange.withOpacity(0.75)
-          ),
-          borderRadius: BorderRadius.circular(15.0)
-      ),
-      placeholderStyle: TextStyle(fontSize: _fontOne*15, color: Colors.orange.withOpacity(0.75)),
-      placeholder: "Enter Email",
-    ) : FormFieldFormatting.formFieldContainer(
-      child:TextFormField(
-        keyboardType: TextInputType.emailAddress,
-        validator: FormValidation.validateEmail,
-        onChanged: (val) {
-          _userDataModel.email = val;
-          if(_submitted){
-            _formKey.currentState.validate();
-          }
-        },
-        decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Email",
-            fontSize: _fontOne * 15
-        ),
-        style: TextStyle(
-          fontSize: _fontOne * 15,
-        ),
-      ),
-      leftPadding: _widthOne * 20,
-    );
+  Widget _emailField() {
+    return Platform.isIOS
+        ? CupertinoTextField(
+            keyboardType: TextInputType.emailAddress,
+            onChanged: (val) {
+              _userDataModel.email = val;
+              if (_submitted) {
+                _formKey.currentState.validate();
+              }
+            },
+            decoration: BoxDecoration(
+                border: Border.all(color: Colors.orange.withOpacity(0.75)),
+                borderRadius: BorderRadius.circular(15.0)),
+            placeholderStyle: TextStyle(
+                fontSize: _fontOne * 15,
+                color: Colors.orange.withOpacity(0.75)),
+            placeholder: "Enter Email",
+          )
+        : FormFieldFormatting.formFieldContainer(
+            child: TextFormField(
+              keyboardType: TextInputType.emailAddress,
+              validator: FormValidation.validateEmail,
+              onChanged: (val) {
+                _userDataModel.email = val;
+                if (_submitted) {
+                  _formKey.currentState.validate();
+                }
+              },
+              decoration: FormFieldFormatting.formFieldFormatting(
+                  hintText: "Enter Email", fontSize: _fontOne * 15),
+              style: TextStyle(
+                fontSize: _fontOne * 15,
+              ),
+            ),
+            leftPadding: _widthOne * 20,
+          );
   }
+
   showAlertDialog(BuildContext context, String message) {
     // Create button
     Widget okButton = FlatButton(
@@ -125,7 +118,6 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
       },
     );
 
-    // Create AlertDialog
     CupertinoAlertDialog ios_alert = CupertinoAlertDialog(
       title: Text("Message"),
       content: Text(message),
@@ -133,13 +125,15 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
         CupertinoDialogAction(
           child: CupertinoButton(
             child: Text("OK"),
-            onPressed: (){
+            onPressed: () {
               Navigator.of(context).pop();
             },
           ),
         )
       ],
     );
+
+    // Create AlertDialog
     AlertDialog alert = AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(5)),
       title: Text("Message"),
@@ -148,81 +142,85 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
         okButton,
       ],
     );
+
     // show the dialog
-    Platform.isIOS? showCupertinoDialog(context: context, builder: (context){
-      return ios_alert;
-    }) : showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return alert;
-      },
-    );
+    Platform.isIOS
+        ? showCupertinoDialog(
+            context: context,
+            builder: (context) {
+              return ios_alert;
+            })
+        : showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return alert;
+            },
+          );
   }
 
-  Widget _submitButton(){
-    return Platform.isIOS ? CupertinoButton(
-      onPressed: () async{
-        if(_formKey.currentState.validate()){
-          bool validEmail = await _userInfoStore.emailExists(
-              email: _userDataModel.email
-          );
-          print(validEmail);
-          if (validEmail) {
-            final result = await _user.resetPassword(_userDataModel.email);
-            showAlertDialog(context, result,);
-          }else{
-            showAlertDialog(context, "Email does not exist!");
-          }
-        }else{
-          setState(() {
-            _submitted = true;
-          });
-        }
-      },
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.29
-        ),
-        child: Text(
-          "Submit",
-          style: TextStyle(
-            color: Colors.orange.withOpacity(0.75),
-          ),
-        )
-    ) :FlatButton(
-        onPressed: () async{
-          if(_formKey.currentState.validate()){
-            bool validEmail = await _userInfoStore.emailExists(
-                email: _userDataModel.email
-            );
-            if (validEmail) {
-              final result = await _user.resetPassword(_userDataModel.email);
-              showAlertDialog(context, result,);
-            }else{
-              showAlertDialog(context, "Email does not exist!");
-            }
-          }else{
-            setState(() {
-              _submitted = true;
-            });
-          }
-        },
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(
+  Widget _submitButton() {
+    return Platform.isIOS
+        ? CupertinoButton(
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                bool validEmail = await _userInfoStore.emailExists(
+                    email: _userDataModel.email);
+                print(validEmail);
+                if (validEmail) {
+                  final result =
+                      await _user.resetPassword(_userDataModel.email);
+                  showAlertDialog(
+                    context,
+                    result,
+                  );
+                } else {
+                  showAlertDialog(context, "Email does not exist!");
+                }
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
+              }
+            },
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
+            child: Text(
+              "Submit",
+              style: TextStyle(
                 color: Colors.orange.withOpacity(0.75),
-                width: _widthOne * 5
-            )
-        ),
-        splashColor: Colors.orange[100],
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.29
-        ),
-        child: Text(
-          "Submit",
-          style: TextStyle(
-            color: Colors.orange.withOpacity(0.75),
-          ),
-        )
-    );
+              ),
+            ))
+        : FlatButton(
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                bool validEmail = await _userInfoStore.emailExists(
+                    email: _userDataModel.email);
+                if (validEmail) {
+                  final result =
+                      await _user.resetPassword(_userDataModel.email);
+                  showAlertDialog(
+                    context,
+                    result,
+                  );
+                } else {
+                  showAlertDialog(context, "Email does not exist!");
+                }
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
+              }
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                side:
+                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+            splashColor: Colors.orange[100],
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.277),
+            child: Text(
+              "Submit",
+              style: TextStyle(
+                color: Color(0xFFFFCF40),
+              ),
+            ));
   }
 }

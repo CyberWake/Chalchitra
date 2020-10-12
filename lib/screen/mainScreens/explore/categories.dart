@@ -1,12 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
+import 'package:wowtalent/screen/ios_Screens/explore/categoryIOS.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_uploader_widget/player.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'dart:io';
 
 class Category extends StatefulWidget {
   String categoryName;
@@ -25,34 +25,50 @@ class _CategoryState extends State<Category> {
   void initState() {
     super.initState();
     UserVideoStore.listenToCategoryVideos((newVideos) {
-          if(this.mounted){
-            setState(() {
-              _videos = newVideos;
-            });
-          }
-        },
-        widget.categoryName
-    );
+      if (this.mounted) {
+        setState(() {
+          _videos = newVideos;
+        });
+      }
+    }, widget.categoryName);
   }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
     _iconOne = (_size.height * 0.066) / 50;
-    return Platform.isIOS ? CupertinoPageScaffold(
-      navigationBar: CupertinoNavigationBar(
-        backgroundColor: Colors.transparent,
-        middle: Text(widget.categoryName),
-        trailing: CupertinoButton(
-          padding: EdgeInsets.symmetric(vertical: 0,horizontal: _widthOne),
-          child:Icon(
-            CupertinoIcons.search,
-              color: Colors.orange.shade400,
-            size: _iconOne*30,
-          ),
-          onPressed: (){Navigator.push(context, CupertinoPageRoute(builder:(_)=>SearchUser()));},
-        ),
-      ),
+    return Platform.isIOS
+        ? CategoryIOS(categoryBody: categoryBody(),categoryName: widget.categoryName,)
+        : Scaffold(
+            appBar: AppBar(
+              elevation: 0.0,
+              centerTitle: true,
+              title: Text(widget.categoryName),
+              actions: [
+                IconButton(
+                  icon: Icon(
+                    Icons.search,
+                    color: Colors.orange.shade400,
+                    size: _iconOne * 30,
+                  ),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (_) => SearchUser()));
+                  },
+                ),
+                SizedBox(
+                  width: _widthOne * 100,
+                )
+              ],
+            ),
+            body: categoryBody(),
+          );
+  }
+
+  Widget categoryBody(){
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
       child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -60,98 +76,37 @@ class _CategoryState extends State<Category> {
               child: StaggeredGridView.countBuilder(
                 crossAxisCount: 3,
                 itemCount: _videos.length,
-                itemBuilder: (BuildContext context, int index){
+                itemBuilder: (BuildContext context, int index) {
                   dynamic video = _videos[index];
                   return GestureDetector(
                     onTap: () {
-                      Navigator.push(context, MaterialPageRoute(
-                        builder: (context) {
-                          return Player(
-                            video: video,
-                          );
-                        },
-                      ),);
+                      Navigator.push(
+                        context, Platform.isIOS ? CupertinoPageRoute(builder: (_) => Player(video: video,)) :
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return Player(
+                              video: video,
+                            );
+                          },
+                        ),
+                      );
                     },
                     child: Container(
                       decoration: BoxDecoration(
                           image: DecorationImage(
                               image: NetworkImage(video.thumbUrl),
-                              fit: BoxFit.cover
-                          )
-                      ),
+                              fit: BoxFit.cover)),
                     ),
                   );
                 },
                 staggeredTileBuilder: (int index) =>
-                    StaggeredTile.count(1, 1/_videos[index].aspectRatio),
+                    StaggeredTile.count(
+                        1, 1 / _videos[index].aspectRatio),
                 mainAxisSpacing: 5.0,
                 crossAxisSpacing: 5.0,
               ),
             ),
-          ]
-      ),)
-    : Scaffold(
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: Colors.transparent,
-        centerTitle: true,
-        title: Text(widget.categoryName),
-        actions: [
-          IconButton(
-            icon: Icon(
-              Icons.search,
-              color: Colors.orange.shade400,
-              size: _iconOne * 30,
-            ),
-            onPressed: (){
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => SearchUser()
-                  )
-              );
-            },
-          ),
-          SizedBox(width: _widthOne * 100,)
-        ],
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Expanded(
-            child: StaggeredGridView.countBuilder(
-              crossAxisCount: 3,
-              itemCount: _videos.length,
-              itemBuilder: (BuildContext context, int index){
-                dynamic video = _videos[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(context, MaterialPageRoute(
-                      builder: (context) {
-                        return Player(
-                          video: video,
-                        );
-                      },
-                    ),);
-                  },
-                  child: Container(
-                    decoration: BoxDecoration(
-                        image: DecorationImage(
-                            image: NetworkImage(video.thumbUrl),
-                            fit: BoxFit.cover
-                        )
-                    ),
-                  ),
-                );
-              },
-              staggeredTileBuilder: (int index) =>
-                  StaggeredTile.count(1, 1/_videos[index].aspectRatio),
-              mainAxisSpacing: 5.0,
-              crossAxisSpacing: 5.0,
-            ),
-          ),
-        ]
-      ),
+          ]),
     );
   }
 }

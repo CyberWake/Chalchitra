@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "107639817018-vs3gkjtngpqsrla2gfhk0b4knuo4gris.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wowtalent",
+            "certificate_hash": "ff0679d21805cd6fdb626d17fab4c6fe25d81283"
+          }
+        },
+        {
           "client_id": "107639817018-f9f2efcgk33ba8gfk4nsj6f2k5t4ma4b.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -62,6 +70,13 @@
             {
               "client_id": "107639817018-fhc02kr191t8fvgietlej763322053nr.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "107639817018-mle5l2h2bh7isrsi63l742jbof8p6fe6.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.wowtalent"
+              }
             }
           ]
         }

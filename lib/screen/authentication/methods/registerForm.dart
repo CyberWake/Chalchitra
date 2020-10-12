@@ -1,17 +1,17 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/UserInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
 import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'dart:io';
 
 class RegisterForm extends StatefulWidget {
   final ValueChanged<AuthIndex> changeMethod;
@@ -30,6 +30,7 @@ class _RegisterFormState extends State<RegisterForm> {
   double _fontOne;
   Size _size;
   bool _registerForm = true;
+  bool _hidePassword = true;
   bool _submitted = false;
   UserInfoStore _userInfoStore = UserInfoStore();
 
@@ -42,7 +43,7 @@ class _RegisterFormState extends State<RegisterForm> {
     return _registerForm ? registerForm() : SocialRegisterUsername();
   }
 
-  Widget registerForm(){
+  Widget registerForm() {
     return Form(
       key: _formKey,
       child: Padding(
@@ -52,86 +53,89 @@ class _RegisterFormState extends State<RegisterForm> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             _userNameField(),
-            SizedBox(height: _heightOne * 10,),
-           _emailField(),
-            SizedBox(height: _heightOne * 10,),
-           _passwordField(),
-            SizedBox(height: _heightOne * 10,),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
+            _emailField(),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
+            _passwordField(),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             _confirmPasswordField(),
-            SizedBox(height: _heightOne * 15,),
+            SizedBox(
+              height: _heightOne * 15,
+            ),
             _registerButton(),
-            SizedBox(height: _heightOne * 15,),
-            Container(
-                child: Text(
+            SizedBox(
+              height: _heightOne * 30,
+            ),
+            Text(
               "Or Register With",
-              style: TextStyle(
-                decoration: TextDecoration.none,
-                  color: Colors.grey,
-                  fontSize: _fontOne * 15
-              ),
-            )),
-            SizedBox(height: _heightOne * 10,),
+              style: TextStyle(color: Colors.grey, fontSize: _fontOne * 15),
+            ),
+            SizedBox(
+              height: _heightOne * 10,
+            ),
             AuthButtons.socialLogin(
-                newAccountCallback: (){
+                newAccountCallback: () {
                   setState(() {
                     _registerForm = false;
                   });
                 },
                 context: context,
-                size: _size
+                size: _size),
+            SizedBox(
+              height: _heightOne * 20,
             ),
-            SizedBox(height: _heightOne * 20,),
-            Platform.isIOS ? CupertinoButton(
-              onPressed: (){
-                widget.changeMethod(AuthIndex.LOGIN);
-              },
-              child:Text(
-                "Already Have an account? \nTap here to login.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
-                textAlign: TextAlign.center,
-              ) ,
-            ) : InkWell(
-              onTap: (){
-                widget.changeMethod(AuthIndex.LOGIN);
-              },
-              child: Text(
-                "Already Have an account? \nTap here to login.",
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: _fontOne * 15
-                ),
-                textAlign: TextAlign.center,
-              ),
-            ),
-            SizedBox(height: _heightOne * 30,),
+            Platform.isIOS
+                ? CupertinoButton(
+                    onPressed: () {
+                      widget.changeMethod(AuthIndex.LOGIN);
+                    },
+                    child: Text(
+                      "Already Have an account? \nTap here to login.",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  )
+                : InkWell(
+                    onTap: () {
+                      widget.changeMethod(AuthIndex.LOGIN);
+                    },
+                    child: Text(
+                      "Already Have an account? \nTap here to login.",
+                      style: TextStyle(
+                          color: Colors.black, fontSize: _fontOne * 15),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
           ],
         ),
       ),
     );
   }
 
-  Widget _userNameField(){
-    return Material(
-        child:FormFieldFormatting.formFieldContainer(
+  Widget _userNameField() {
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
-        validator: (val) => val.isEmpty ? "Username Can't be Empty"
-            : null,
+        validator: (val) => val.isEmpty ? "Username Can't be Empty" : null,
         onChanged: (val) {
           _userDataModel.username = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Username",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Username", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -140,22 +144,19 @@ class _RegisterFormState extends State<RegisterForm> {
     ));
   }
 
-  Widget _emailField(){
-    return Material(
-        child:FormFieldFormatting.formFieldContainer(
+  Widget _emailField() {
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
         onChanged: (val) {
           _userDataModel.email = val;
-          if(_submitted){
+          if (_submitted) {
             _formKey.currentState.validate();
           }
         },
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Enter Email",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Enter Email", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -164,16 +165,26 @@ class _RegisterFormState extends State<RegisterForm> {
     ));
   }
 
-  Widget _passwordField(){
-    return Material(
-        child:FormFieldFormatting.formFieldContainer(
+  Widget _passwordField() {
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
-        obscureText: true,
+        obscureText: _hidePassword,
         validator: FormValidation.validateRegisterPassword,
         onChanged: (val) {
           _userDataModel.password = val;
         },
         decoration: FormFieldFormatting.formFieldFormatting(
+          suffixIcon: IconButton(
+            icon: Icon(
+              _hidePassword ? Icons.visibility : Icons.visibility_off,
+              color: AppTheme.primaryColor,
+            ),
+            onPressed: () {
+              setState(() {
+                _hidePassword = !_hidePassword;
+              });
+            },
+          ),
           hintText: "Enter Password",
           fontSize: _fontOne * 15,
         ),
@@ -185,20 +196,16 @@ class _RegisterFormState extends State<RegisterForm> {
     ));
   }
 
-  Widget _confirmPasswordField(){
-    String passCheck;
-    return Material(
-        child:FormFieldFormatting.formFieldContainer(
+  Widget _confirmPasswordField() {
+    return Material(child:FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
-        validator: (val) => val == _userDataModel.password ? null
+        validator: (val) => val == _userDataModel.password
+            ? null
             : "Password in both fields should match",
-        onChanged: (val) {
-        },
+        onChanged: (val) {},
         decoration: FormFieldFormatting.formFieldFormatting(
-            hintText: "Confirm Password",
-            fontSize: _fontOne * 15
-        ),
+            hintText: "Confirm Password", fontSize: _fontOne * 15),
         style: TextStyle(
           fontSize: _fontOne * 15,
         ),
@@ -207,138 +214,136 @@ class _RegisterFormState extends State<RegisterForm> {
     ));
   }
 
-  Widget _registerButton(){
-    return Platform.isIOS? CupertinoButton(
-      color: Colors.orange,
-      onPressed: () async{
-        if(_formKey.currentState.validate()){
-          bool validUsername = await _userInfoStore.isUsernameNew(
-              username: _userDataModel.username
-          );
-          if(!validUsername){
-            showCupertinoModalPopup(context: context, builder: (_){return CupertinoActionSheet(
-              cancelButton: CupertinoButton(
-                child: Text("OK"),
-                onPressed: (){Navigator.pop(context);},
-              ),
-              title: Text("Username already exists"),
-            );});
-          }
-          else{
-            await _userAuth.registerUserWithEmail(
-              email: _userDataModel.email,
-              password: _userDataModel.password,
-              username: _userDataModel.username,
-            ).then((result){
-              if(result == null){
-                showCupertinoModalPopup(context: context, builder: (_){return CupertinoActionSheet(
-                  cancelButton: CupertinoButton(
-                    child: Text("OK"),
-                    onPressed: (){Navigator.pop(context);},
-                  ),
-                  title: Text("Something went wrong try again"),
-                );});
-              }else if(result == "success"){
-                Navigator.pushReplacement(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (_) =>  MainScreenWrapper(
-                          index: 0,
-                        )
-                    )
-                );
-              }else{
-                showCupertinoModalPopup(context: context, builder: (_){return CupertinoActionSheet(
-                  cancelButton: CupertinoButton(
-                    child: Text("OK"),
-                    onPressed: (){Navigator.pop(context);},
-                  ),
-                  title: Text(result),
-                );});
-              }
-            });
-          }
-        }else{
-          setState(() {
-            _submitted = true;
-          });
-        }
-      },
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.29
-        ),
-        child: Text(
-          "Register",
-          style: TextStyle(
-            color: Colors.white,
-          ),
-        )
-    ) : FlatButton(
-        onPressed: () async{
-          if(_formKey.currentState.validate()){
-            bool validUsername = await _userInfoStore.isUsernameNew(
-                username: _userDataModel.username
-            );
-            if(!validUsername){
-              Scaffold.of(context).showSnackBar(
-                  SnackBar(
-                      content: Text('Username already exists')
+  Widget _registerButton() {
+    return Platform.isIOS
+        ? CupertinoButton(
+            color: Colors.orange,
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                bool validUsername = await _userInfoStore.isUsernameNew(
+                    username: _userDataModel.username);
+                if (!validUsername) {
+                  showCupertinoModalPopup(
+                      context: context,
+                      builder: (_) {
+                        return CupertinoActionSheet(
+                          cancelButton: CupertinoButton(
+                            child: Text("OK"),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                          ),
+                          title: Text("Username already exists"),
+                        );
+                      });
+                } else {
+                  await _userAuth
+                      .registerUserWithEmail(
+                    email: _userDataModel.email,
+                    password: _userDataModel.password,
+                    username: _userDataModel.username,
                   )
-              );
-            }
-            else{
-              await _userAuth.registerUserWithEmail(
-                email: _userDataModel.email,
-                password: _userDataModel.password,
-                username: _userDataModel.username,
-              ).then((result){
-                if(result == null){
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text('Something went wrong try again')
-                      )
-                  );
-                }else if(result == "success"){
-                  Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) =>  MainScreenWrapper(
-                            index: 0,
-                          )
-                      )
-                  );
-                }else{
-                  Scaffold.of(context).showSnackBar(
-                      SnackBar(
-                          content: Text(result)
-                      )
-                  );
+                      .then((result) {
+                    if (result == null) {
+                      showCupertinoModalPopup(
+                          context: context,
+                          builder: (_) {
+                            return CupertinoActionSheet(
+                              cancelButton: CupertinoButton(
+                                child: Text("OK"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              title: Text("Something went wrong try again"),
+                            );
+                          });
+                    } else if (result == "success") {
+                      Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) => MainScreenWrapper(
+                                    index: 0,
+                                  )));
+                    } else {
+                      showCupertinoModalPopup(
+                          context: context,
+                          builder: (_) {
+                            return CupertinoActionSheet(
+                              cancelButton: CupertinoButton(
+                                child: Text("OK"),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              title: Text(result),
+                            );
+                          });
+                    }
+                  });
                 }
-              });
-            }
-          }else{
-            setState(() {
-              _submitted = true;
-            });
-          }
-        },
-        shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(
-                color: Colors.orange.withOpacity(0.75),
-                width: _widthOne * 5
-            )
-        ),
-        splashColor: Colors.orange[100],
-        padding: EdgeInsets.symmetric(
-            horizontal: _size.width * 0.29
-        ),
-        child: Text(
-          "Register",
-          style: TextStyle(
-            color: Colors.orange.withOpacity(0.75),
-          ),
-        )
-    );
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
+              }
+            },
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
+            child: Text(
+              "Register",
+              style: TextStyle(
+                color: Colors.white,
+              ),
+            ))
+        : FlatButton(
+            onPressed: () async {
+              if (_formKey.currentState.validate()) {
+                bool validUsername = await _userInfoStore.isUsernameNew(
+                    username: _userDataModel.username);
+                if (!validUsername) {
+                  Scaffold.of(context).showSnackBar(
+                      SnackBar(content: Text('Username already exists')));
+                } else {
+                  await _userAuth
+                      .registerUserWithEmail(
+                    email: _userDataModel.email,
+                    password: _userDataModel.password,
+                    username: _userDataModel.username,
+                  )
+                      .then((result) {
+                    if (result == null) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text('Something went wrong try again')));
+                    } else if (result == "success") {
+                      Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => MainScreenWrapper(
+                                    index: 0,
+                                  )));
+                    } else {
+                      Scaffold.of(context)
+                          .showSnackBar(SnackBar(content: Text(result)));
+                    }
+                  });
+                }
+              } else {
+                setState(() {
+                  _submitted = true;
+                });
+              }
+            },
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5.0),
+                side:
+                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+            splashColor: Colors.orange[100],
+            padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
+            child: Text(
+              "Register",
+              style: TextStyle(
+                color: Color(0xFFFFCF40),
+              ),
+            ));
   }
 }

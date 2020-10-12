@@ -68,8 +68,8 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
 
   @override
   Widget build(BuildContext context) {
-    return Platform.isIOS ? CupertinoPageScaffold(
-      child:Stack(
+    return Platform.isIOS ? splashScreeniOS() : Scaffold(
+      body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
           Column(
@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                         CircleAvatar(
                           backgroundColor: Colors.transparent,
                           child: Container(
-                            child: Image.asset('assets/images/splash.png'),
+                              child: Image.asset('assets/images/splash.png'),
                           ),
                           radius: 100.0,
                         ),
@@ -118,8 +118,13 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
           ),
         ],
       ),
-    ) : Scaffold(
-      body: Stack(
+    );
+  }
+
+//iOS Screen
+  Widget splashScreeniOS(){
+    return CupertinoPageScaffold(
+      child:Stack(
         fit: StackFit.expand,
         children: <Widget>[
           Column(
@@ -134,7 +139,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                         CircleAvatar(
                           backgroundColor: Colors.transparent,
                           child: Container(
-                              child: Image.asset('assets/images/splash.png'),
+                            child: Image.asset('assets/images/splash.png'),
                           ),
                           radius: 100.0,
                         ),

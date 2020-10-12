@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/services.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class OnBoardScreen1 extends StatefulWidget {
@@ -66,7 +67,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
           child: Text(
             text,
             textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white, fontSize: 28,fontWeight: FontWeight.bold,decoration: Platform.isIOS ? TextDecoration.none:null),
+            style: TextStyle(color: Colors.white, fontSize: 28,fontWeight: FontWeight.bold),
           ),
         ),
         SizedBox(
@@ -117,7 +118,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: const Text(
               'Next',
-              style: TextStyle(fontSize: 20,color: Colors.black),
+              style: TextStyle(fontSize: 20,color: AppTheme.backgroundColor),
             ),
             onPressed: () {
               if(text == "It's your time to Shine."){

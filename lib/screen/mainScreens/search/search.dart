@@ -3,7 +3,9 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/screen/ios_Screens/search/searchIOS.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchResult.dart';
 
 class SearchUser extends StatefulWidget {
@@ -23,133 +25,111 @@ class _SearchUserState extends State<SearchUser> {
 
   @override
   Widget build(BuildContext context) {
-    return Platform.isIOS ?CupertinoPageScaffold(
-      child:  SafeArea(
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  border: Border(
-                      bottom: BorderSide(color: Colors.orange.withOpacity(0.5))
-                  ),
-                  boxShadow: [BoxShadow(
+    return Platform.isIOS
+        ? SearchIOS(searchBody: searchBody(),)
+        : Scaffold(
+            backgroundColor: AppTheme.backgroundColor,
+            extendBody: true,
+            body:searchBody(),
+    );
+  }
+
+  Widget searchBody(){
+    return SafeArea(
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+                color: AppTheme.backgroundColor,
+                border: Border(
+                    bottom: BorderSide(
+                        color: Colors.orange.withOpacity(0.5))),
+                boxShadow: [
+                  BoxShadow(
                       offset: Offset(0, 2),
-                      color: Colors.grey,
-                      blurRadius: 8
-                  )]
-              ),
-              child: Row(
-                children: [
-                  CupertinoButton(
-                      child: Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.orange.shade400,
-                      ),
-                      onPressed: () => Navigator.pop(context)
-                  ),
-                  Expanded(
-                    child: CupertinoTextField(
-                      style: TextStyle(fontSize: 18, color: Colors.black),
-                      controller: searchTextEditingController,
-                      decoration: BoxDecoration(border: Border.all(color: Colors.transparent)),
-                      placeholder: "Search By Username",
-                      placeholderStyle: TextStyle(color: Colors.grey.withOpacity(0.5)),
-                      suffix: CupertinoButton(
-                        child: Icon(Icons.clear, color: Colors.orange.shade400,),
+                      color: AppTheme.pureWhiteColor.withOpacity(0.2),
+                      blurRadius: 8)
+                ]),
+            child: Row(
+              children: [
+                Platform.isIOS ?CupertinoButton(
+            child: Icon(
+              Icons.arrow_back_ios,
+              color: Colors.orange.shade400,
+            ),
+        onPressed: () => Navigator.pop(context)) :IconButton(
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: Colors.orange.shade400,
+                    ),
+                    onPressed: () => Navigator.pop(context)),
+                Expanded(
+                  child: Platform.isIOS ? CupertinoTextField(
+                    style: TextStyle(
+                        fontSize: 18, color: AppTheme.pureWhiteColor),
+                    controller: searchTextEditingController,
+                    decoration: BoxDecoration(
+                        border: Border.all(color: Colors.transparent)),
+                    placeholder: "Search By Username",
+                    placeholderStyle:
+                    TextStyle(color: Colors.grey.withOpacity(0.5)),
+                    suffix: CupertinoButton(
+                        child: Icon(
+                          Icons.clear,
+                          color: Colors.orange.shade400,
+                        ),
                         onPressed: () {
                           searchTextEditingController.clear();
                           search = "";
-                        }
-                      ),
-                      onSubmitted: (String username) {
-                        search = username;
-                        Future<QuerySnapshot> allUsers = ref
-                            .where("username", isGreaterThanOrEqualTo: username)
-                            .get();
-                        setState(() {
-                          futureSearchResult = allUsers;
-                        });
-                      },
-                    ),
+                        }),
+                    onSubmitted: (String username) {
+                      search = username;
+                      Future<QuerySnapshot> allUsers = ref
+                          .where("username",
+                          isGreaterThanOrEqualTo: username)
+                          .get();
+                      setState(() {
+                        futureSearchResult = allUsers;
+                      });
+                    },
+                  ) :TextFormField(
+                    style: TextStyle(
+                        fontSize: 18, color: AppTheme.pureWhiteColor),
+                    controller: searchTextEditingController,
+                    decoration: InputDecoration(
+                        hintText: "Search By Username",
+                        hintStyle:
+                        TextStyle(color: AppTheme.pureWhiteColor),
+                        border: InputBorder.none,
+                        suffixIcon: IconButton(
+                            icon: Icon(Icons.clear,
+                                color: Colors.orange.shade400),
+                            onPressed: () {
+                              searchTextEditingController.clear();
+                              search = "";
+                            })),
+                    onFieldSubmitted: (String username) {
+                      search = username;
+                      Future<QuerySnapshot> allUsers = ref
+                          .where("username",
+                          isGreaterThanOrEqualTo: username)
+                          .get();
+                      setState(() {
+                        futureSearchResult = allUsers;
+                      });
+                    },
                   ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: futureSearchResult == null ? resultNotFound() : foundUsers(),
-            )
-          ],
-        ),
-      ),
-    ) :Scaffold(
-      extendBodyBehindAppBar: true,
-      extendBody: true,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border(
-                  bottom: BorderSide(color: Colors.orange.withOpacity(0.5))
                 ),
-                boxShadow: [BoxShadow(
-                  offset: Offset(0, 2),
-                  color: Colors.grey,
-                  blurRadius: 8
-                )]
-              ),
-              child: Row(
-                children: [
-                  IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: Colors.orange.shade400,
-                      ),
-                      onPressed: () => Navigator.pop(context)
-                  ),
-                  Expanded(
-                    child: TextFormField(
-                      style: TextStyle(fontSize: 18, color: Colors.black),
-                      controller: searchTextEditingController,
-                      decoration: InputDecoration(
-                          hintText: "Search By Username",
-                          hintStyle: TextStyle(
-                              color: Colors.grey.withOpacity(0.5)
-                          ),
-                          border: InputBorder.none,
-                          suffixIcon: IconButton(
-                              icon: Icon(
-                                  Icons.clear,
-                                  color: Colors.orange.shade400
-                              ),
-                              onPressed: () {
-                                searchTextEditingController.clear();
-                                search = "";
-                              }
-                          )
-                      ),
-                      onFieldSubmitted: (String username) {
-                        search = username;
-                        Future<QuerySnapshot> allUsers = ref
-                            .where("username", isGreaterThanOrEqualTo: username)
-                            .get();
-                        setState(() {
-                          futureSearchResult = allUsers;
-                        });
-                      },
-                    ),
-                  ),
-                ],
-              ),
+              ],
             ),
-            Expanded(
-                child: futureSearchResult == null ? resultNotFound() : foundUsers(),
-            )
-          ],
-        ),
-      )
+          ),
+          Expanded(
+            child: futureSearchResult == null
+                ? resultNotFound()
+                : foundUsers(),
+          )
+        ],
+      ),
     );
   }
 
@@ -159,23 +139,22 @@ class _SearchUserState extends State<SearchUser> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Icon(
-              Icons.group,
-              color: Colors.orange.shade300,
-              size: 40,
+            Icons.group,
+            color: Colors.orange.shade300,
+            size: 40,
           ),
-          SizedBox(width: 20,),
+          SizedBox(
+            width: 20,
+          ),
           Text(
-              "Search User",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                decoration: Platform.isIOS ? TextDecoration.none : null,
-                  color: Colors.orange.shade300,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 25
-              ),
+            "Search User",
+            textAlign: TextAlign.center,
+            style: TextStyle(
+                color: Colors.orange.shade300,
+                fontWeight: FontWeight.w500,
+                fontSize: 25),
           )
-        ]
-    );
+        ]);
   }
 
   FutureBuilder foundUsers() {
