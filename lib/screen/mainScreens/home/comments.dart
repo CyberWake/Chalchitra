@@ -239,68 +239,66 @@ class _CommentsScreenState extends State<CommentsScreen> {
         });
   }
 
-  Widget showComment({String userID, int timestamp, String comment}) {
+  Widget showComment({String userID, int timestamp, String comment}){
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder(
-        future: _userInfoStore.getUserInfo(uid: userID),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Container();
-          } else {
-            return Row(
-              children: [
-                CircleAvatar(
-                  radius: _iconOne * 20,
-                  backgroundImage: NetworkImage(
-                    snapshot.data.data()["photoUrl"] == null
-                        ? "https://via.placeholder.com/150"
-                        : snapshot.data.data()["photoUrl"],
+          future: _userInfoStore.getUserInfo(
+            uid: userID
+          ),
+        builder: (context, snapshot){
+            if(!snapshot.hasData){
+              return Container();
+            }else{
+              return Row(
+                children: [
+                  CircleAvatar(
+                    radius: _iconOne * 20,
+                    backgroundImage: NetworkImage(
+                        snapshot.data.data()["photoUrl"] == null ?
+                        "https://via.placeholder.com/150" :
+                        snapshot.data.data()["photoUrl"],
+                    ),
                   ),
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        Text(
-                          snapshot.data.data()["username"] + " \u2022 ",
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: _fontOne * 10,
-                            fontWeight: FontWeight.w500,
+                  SizedBox(width: 10,),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            snapshot.data.data()["username"] + " \u2022 ",
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: _fontOne * 10,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                        Text(
-                          formatDateTime(timestamp),
-                          style: TextStyle(
-                            color: Colors.grey,
-                            fontSize: _fontOne * 10,
-                            fontWeight: FontWeight.w500,
+                          Text(
+                            formatDateTime(timestamp),
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: _fontOne * 10,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: _heightOne * 5,
-                    ),
-                    Text(
-                      comment,
-                      style: TextStyle(
-                        color: AppTheme.pureWhiteColor,
-                        fontSize: _fontOne * 13,
-                        fontWeight: FontWeight.w500,
+                        ],
                       ),
-                    ),
-                  ],
-                )
-              ],
-            );
-          }
+                      SizedBox(height: _heightOne * 5,),
+                      Text(
+                        comment,
+                        style: TextStyle(
+                          color: AppTheme.pureWhiteColor,
+                          fontSize: _fontOne * 13,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              );
+            }
         },
       ),
     );

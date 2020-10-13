@@ -89,7 +89,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   Platform.isIOS ? CupertinoButton(
                       child: Icon(
                         Icons.arrow_back_ios,
-                        color: Colors.white,
+                        color: AppTheme.backgroundColor,
                       ),
                       onPressed: () {
                         FocusScope.of(context).unfocus();

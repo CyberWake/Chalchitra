@@ -390,7 +390,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
           leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: AppTheme.pureWhiteColor,
+                color: AppTheme.elevationColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -408,7 +408,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
             IconButton(
               icon: Icon(
                 Icons.save,
-                color: AppTheme.pureWhiteColor,
+                color: AppTheme.elevationColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -489,6 +489,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                         ),
                         style: TextStyle(
                           fontSize: _fontOne * 15,
+                          color: AppTheme.pureWhiteColor,
                         ),
                       ),
                       leftPadding: _widthOne * 20,
@@ -563,6 +564,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                         ),
                         style: TextStyle(
                           fontSize: _fontOne * 15,
+                          color: AppTheme.pureWhiteColor
                         ),
                       ),
                       leftPadding: _widthOne * 20,

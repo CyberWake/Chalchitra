@@ -279,117 +279,118 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         actions: [
           _currentIndex != 4
               ? IconButton(
-            icon: Icon(
-              Icons.search,
-              color: AppTheme.backgroundColor,
-              size: _iconOne * 30,
-            ),
-            onPressed: () {
-              if (_userAuth.user != null) {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (_) => SearchUser()));
-              } else {
-                Navigator.pushReplacement(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (_) =>
-                            Authentication(AuthIndex.REGISTER)));
-              }
-            },
-          )
+                  icon: Icon(
+                    Icons.search,
+                    color: AppTheme.backgroundColor,
+                    size: _iconOne * 30,
+                  ),
+                  onPressed: () {
+                    if (_userAuth.user != null) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (_) => SearchUser()));
+                    } else {
+                      Navigator.pushReplacement(
+                          context,
+                          CupertinoPageRoute(
+                              builder: (_) =>
+                                  Authentication(AuthIndex.REGISTER)));
+                    }
+                  },
+                )
               : IconButton(
-            icon: Icon(
-              Icons.menu,
-              color: AppTheme.elevationColor,
-              size: _iconOne * 25,
-            ),
-            onPressed: () =>
-                _scaffoldGlobalKey.currentState.openEndDrawer(),
-            tooltip:
-            MaterialLocalizations.of(context).openAppDrawerTooltip,
-          ),
+                  icon: Icon(
+                    Icons.menu,
+                    color: AppTheme.elevationColor,
+                    size: _iconOne * 25,
+                  ),
+                  onPressed: () =>
+                      _scaffoldGlobalKey.currentState.openEndDrawer(),
+                  tooltip:
+                      MaterialLocalizations.of(context).openAppDrawerTooltip,
+                ),
           SizedBox(
             width: _widthOne * 100,
           )
         ],
+        automaticallyImplyLeading: false,
       ),
       endDrawer: Container(
         width: _size.width * 0.5,
         child: Drawer(
             child: Container(
-              color: AppTheme.backgroundColor,
-              child: Column(
-                children: [
-                  DrawerHeader(
-                    child: Center(
-                      child: Text(
-                        user == null ? " " : user.username,
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
+          color: AppTheme.backgroundColor,
+          child: Column(
+            children: [
+              DrawerHeader(
+                child: Center(
+                  child: Text(
+                    user == null ? " " : user.username,
+                    style: TextStyle(color: Colors.white),
                   ),
-                  Divider(
-                    color: Colors.white,
-                    thickness: 0.5,
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.drafts, color: Colors.white),
-                    title:
-                    Text("Drafted Post", style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (BuildContext context) => Drafts()));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.security, color: Colors.white),
-                    title: Text('Privacy', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                          CupertinoPageRoute(builder: (_) => PrivacyPage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.group_add, color: Colors.white),
-                    title: Text('Invite', style: TextStyle(color: Colors.white)),
-                    onTap: () async {
-                      Navigator.pop(context);
-                      await FlutterShare.share(
-                          title: 'Join WowTalent',
-                          text: 'I am Loving the app. I invite you to join me' +
-                              ' in the journey to show your talent!!',
-                          linkUrl:
-                          'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
-                          chooserTitle: 'Invite');
-                    },
-                  ),
-                  Spacer(),
-                  Divider(
-                    color: Colors.white,
-                    thickness: 0.5,
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.power_settings_new, color: Colors.white),
-                    title: Text('Signout', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildConfirmSignOut(context),
-                      );
-                    },
-                  ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: _heightOne * 10),
-                  )
-                ],
+                ),
               ),
-            )),
+              Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+              ListTile(
+                leading: Icon(Icons.drafts, color: Colors.white),
+                title:
+                    Text("Drafted Post", style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (BuildContext context) => Drafts()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.security, color: Colors.white),
+                title: Text('Privacy', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  Navigator.push(context,
+                      CupertinoPageRoute(builder: (_) => PrivacyPage()));
+                },
+              ),
+              ListTile(
+                leading: Icon(Icons.group_add, color: Colors.white),
+                title: Text('Invite', style: TextStyle(color: Colors.white)),
+                onTap: () async {
+                  Navigator.pop(context);
+                  await FlutterShare.share(
+                      title: 'Join WowTalent',
+                      text: 'I am Loving the app. I invite you to join me' +
+                          ' in the journey to show your talent!!',
+                      linkUrl:
+                          'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                      chooserTitle: 'Invite');
+                },
+              ),
+              Spacer(),
+              Divider(
+                color: Colors.white,
+                thickness: 0.5,
+              ),
+              ListTile(
+                leading: Icon(Icons.power_settings_new, color: Colors.white),
+                title: Text('Signout', style: TextStyle(color: Colors.white)),
+                onTap: () {
+                  Navigator.pop(context);
+                  showDialog(
+                    context: context,
+                    builder: (BuildContext context) =>
+                        _buildConfirmSignOut(context),
+                  );
+                },
+              ),
+              Padding(
+                padding: EdgeInsets.only(bottom: _heightOne * 10),
+              )
+            ],
+          ),
+        )),
       ),
       bottomNavigationBar: CurvedNavigationBar(
         index: _currentIndex,

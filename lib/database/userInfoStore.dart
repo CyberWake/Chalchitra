@@ -26,8 +26,9 @@ class UserInfoStore {
             "email": _userAuth.user.email,
             "photoUrl": _userAuth.user.photoURL,
             "username": username,
-            "bio": "Welcome To My Profile",
+            "bio": "Hello World!",
             "private": false,
+            "searchKey": username.substring(0, 1).toUpperCase(),
           };
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
@@ -106,6 +107,14 @@ class UserInfoStore {
     } catch (e) {
       return false;
     }
+  }
+
+  searchByUserName(String searchIndex) {
+    print('here');
+    return _users
+        .where('searchKey',
+            isEqualTo: searchIndex.substring(0, 1).toUpperCase())
+        .get();
   }
 
   Stream getFollowers({String uid}) {

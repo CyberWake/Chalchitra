@@ -73,32 +73,20 @@ class _DraftsState extends State<Drafts> {
       case "Vocal":
         _selectedCategory = 0;
         break;
-      case "Percussions":
+      case "Acting":
         _selectedCategory = 1;
         break;
-      case "Acting":
+      case "Instrumental":
         _selectedCategory = 2;
         break;
-      case "Instrumental":
+      case "Standup Comedy":
         _selectedCategory = 3;
         break;
-      case "Videography":
+      case "DJing":
         _selectedCategory = 4;
         break;
-      case "Standup Comedy":
-        _selectedCategory = 5;
-        break;
-      case "DIY":
-        _selectedCategory = 6;
-        break;
-      case "DJing":
-        _selectedCategory = 7;
-        break;
-      case "Story Telling":
-        _selectedCategory = 8;
-        break;
       case "Dance":
-        _selectedCategory = 9;
+        _selectedCategory = 5;
         break;
     }
   }
@@ -354,28 +342,19 @@ class _DraftsState extends State<Drafts> {
                                             Text("Vocals")),
                                         Center(
                                             child: Text(
-                                                "Percussions")),
+                                                "Acting")),
                                         Center(
                                             child:
-                                            Text("Acting")),
-                                        Center(
-                                            child: Text(
-                                                "Instrumental")),
-                                        Center(
-                                            child: Text(
-                                                "Videography")),
+                                            Text("Instrumental")),
                                         Center(
                                             child: Text(
                                                 "Standup Comedy")),
                                         Center(
-                                            child: Text("DIY")),
-                                        Center(
-                                            child: Text("DJing")),
+                                            child: Text(
+                                                "DJing")),
                                         Center(
                                             child: Text(
-                                                "Story Telling")),
-                                        Center(
-                                            child: Text("Dance")),
+                                                "Dance")),
                                       ],
                                       onSelectedItemChanged:
                                           (index) {
@@ -386,36 +365,24 @@ class _DraftsState extends State<Drafts> {
                                             break;
                                           case 1:
                                             category =
-                                            "Percussions";
+                                            "Acting";
                                             break;
                                           case 2:
-                                            category = "Acting";
+                                            category = "Instrumental";
                                             break;
                                           case 3:
                                             category =
-                                            "Instrumental";
+                                            "Standup Comedy";
                                             break;
                                           case 4:
                                             category =
-                                            "Videography";
+                                            "DJing";
                                             break;
                                           case 5:
                                             category =
-                                            "Standup Comedy";
+                                            "Dance";
                                             break;
-                                          case 6:
-                                            category = "DIY";
-                                            break;
-                                          case 7:
-                                            category = "DJing";
-                                            break;
-                                          case 8:
-                                            category =
-                                            "Story Telling";
-                                            break;
-                                          case 9:
-                                            category = "Dance";
-                                            break;
+                                          
                                         }
                                         setState(() {});
                                       },
@@ -434,68 +401,49 @@ class _DraftsState extends State<Drafts> {
                                   value: 0,
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("Percussions"),
+                                  child: Text("Acting"),
                                   value: 1,
                                 ),
                                 DropdownMenuItem(
-                                    child: Text("Acting"),
+                                    child: Text("Instrumental"),
                                     value: 2),
                                 DropdownMenuItem(
-                                  child: Text("Instrumental"),
+                                  child: Text("Standup Comedy"),
                                   value: 3,
                                 ),
                                 DropdownMenuItem(
-                                  child: Text("Videography"),
+                                  child: Text("DJing"),
                                   value: 4,
                                 ),
                                 DropdownMenuItem(
-                                    child: Text("Standup Comedy"),
-                                    value: 5),
-                                DropdownMenuItem(
-                                    child: Text("DIY"), value: 6),
-                                DropdownMenuItem(
-                                    child: Text("DJing"),
-                                    value: 7),
-                                DropdownMenuItem(
-                                    child: Text("Story Telling"),
-                                    value: 8),
-                                DropdownMenuItem(
                                     child: Text("Dance"),
-                                    value: 9),
+                                    value: 5),
                               ],
                               onChanged: (value) {
                                 _selectedCategory = value;
                                 switch (value) {
                                   case 0:
-                                    category = "Vocals";
-                                    break;
-                                  case 1:
-                                    category = "Percussions";
-                                    break;
-                                  case 2:
-                                    category = "Acting";
-                                    break;
-                                  case 3:
-                                    category = "Instrumental";
-                                    break;
-                                  case 4:
-                                    category = "Videography";
-                                    break;
-                                  case 5:
-                                    category = "Standup Comedy";
-                                    break;
-                                  case 6:
-                                    category = "DIY";
-                                    break;
-                                  case 7:
-                                    category = "DJing";
-                                    break;
-                                  case 8:
-                                    category = "Story Telling";
-                                    break;
-                                  case 9:
-                                    category = "Dance";
-                                    break;
+                                            category = "Vocals";
+                                            break;
+                                          case 1:
+                                            category =
+                                            "Acting";
+                                            break;
+                                          case 2:
+                                            category = "Instrumental";
+                                            break;
+                                          case 3:
+                                            category =
+                                            "Standup Comedy";
+                                            break;
+                                          case 4:
+                                            category =
+                                            "DJing";
+                                            break;
+                                          case 5:
+                                            category =
+                                            "Dance";
+                                            break;
                                 }
                                 setState(() {});
                               }),

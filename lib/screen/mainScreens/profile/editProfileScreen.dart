@@ -245,7 +245,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 "photoUrl": url,
               });
             },
-            child: Container(
+            child:Container(
               decoration: BoxDecoration(
                   color: Colors.orange.shade800,
                   borderRadius: BorderRadius.circular(50)),
@@ -327,7 +327,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     currentUserName = user.username;
     usernameController.text = user.username;
     nameController.text = user.displayName;
-    bioController.text = user.bio;
+    bioController.text = user.bio == "Hello World!" ? "" : user.bio;
     countryController.text = user.country;
     print(countryController.text);
     _dob = user.dob;
@@ -643,9 +643,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Stack(
       children: <Widget>[
         Container(
-          width: double.infinity,
           margin: EdgeInsets.all(10),
-          padding: const EdgeInsets.all(5),
+          padding: const EdgeInsets.only(left: 5, top: 5, bottom: 5),
+          alignment: Alignment.centerLeft,
+          width: double.infinity,
           decoration: BoxDecoration(
             color: AppTheme.backgroundColor,
             border: Border.all(color: AppTheme.pureWhiteColor, width: 1),

@@ -97,7 +97,13 @@ class _VideoPreviewState extends State<VideoPreview> {
               style: TextStyle(color: Colors.white),
             ),
           ),
-          Platform.isIOS ? LinearProgressIndicator(backgroundColor: AppTheme.primaryColor.withOpacity(0.3),valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),) :LinearProgressIndicator(),
+          Platform.isIOS
+              ? LinearProgressIndicator(
+                  backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+                )
+              : LinearProgressIndicator(),
         ],
       ),
     );
@@ -130,11 +136,14 @@ class _VideoPreviewState extends State<VideoPreview> {
     );
   }
 
-  currPos(){
+  currPos() {
     return ValueListenableBuilder(
       valueListenable: _controller,
-      builder: (context,VideoPlayerValue value,child){
-        return Text(value.position == null ? "":trimDuration(value.position),style: TextStyle(color: AppTheme.pureWhiteColor),);
+      builder: (context, VideoPlayerValue value, child) {
+        return Text(
+          value.position == null ? "" : trimDuration(value.position),
+          style: TextStyle(color: AppTheme.pureWhiteColor),
+        );
       },
     );
   }

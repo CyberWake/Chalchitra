@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/ios_Screens/explore/categoryIOS.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
