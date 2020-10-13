@@ -30,7 +30,7 @@ class UserVideoStore {
   static saveVideo(VideoInfo video) async {
     try {
       // Get Current User
-      String uid = _userAuth.user.uid;
+      //String uid = _userAuth.user.uid;
       // Map of video data to be added ot firestore
       Map<String, dynamic> videoData = {
         'videoUrl': video.videoUrl,
