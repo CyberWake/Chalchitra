@@ -151,7 +151,8 @@ class _ExploreState extends State<Explore> {
                 CupertinoPageRoute(
                   builder: (context) {
                     return Player(
-                      video: video,
+                      videos: _videosTrending,
+                      index: index,
                     );
                   },
                 ),
@@ -203,7 +204,8 @@ class _ExploreState extends State<Explore> {
                 CupertinoPageRoute(
                   builder: (context) {
                     return Player(
-                      video: video,
+                      videos: _allVideos,
+                      index: index,
                     );
                   },
                 ),
@@ -257,7 +259,8 @@ class _ExploreState extends State<Explore> {
                 MaterialPageRoute(
                   builder: (context) {
                     return Player(
-                      video: video,
+                      videos: _allVideos,
+                      index: index,
                     );
                   },
                 ),

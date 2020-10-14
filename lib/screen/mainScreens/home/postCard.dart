@@ -13,9 +13,8 @@ import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/menuConstants.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:wowtalent/widgets/customSliderThumb.dart';
 
 class PostCard extends StatefulWidget {
   final video;
@@ -310,7 +309,7 @@ class _PostCardState extends State<PostCard> {
                           await UserVideoStore()
                               .increaseVideoCount(videoID: widget.id);
                         }
-                        Navigator.push(
+                        /*Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) {
@@ -322,7 +321,7 @@ class _PostCardState extends State<PostCard> {
                               );
                             },
                           ),
-                        );
+                        );*/
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -446,9 +445,8 @@ class _PostCardState extends State<PostCard> {
                               trackShape: RectangularSliderTrackShape(),
                               trackHeight: 4.0,
                               thumbColor: Colors.orange[600],
-                              thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: 8.0),
-                              overlayColor: Colors.red.withAlpha(32),
+                              thumbShape: StarThumb(thumbRadius: 20),
+                              overlayColor: AppTheme.elevationColor,
                               overlayShape:
                                   RoundSliderOverlayShape(overlayRadius: 18.0),
                             ),
@@ -456,7 +454,6 @@ class _PostCardState extends State<PostCard> {
                               value: _sliderValue,
                               min: 0,
                               max: 5,
-                              divisions: 5,
                               onChangeEnd: (val) async {
                                 _sliderValue = val;
                                 bool success = await _userVideoStore.rateVideo(

@@ -32,19 +32,23 @@ class DynamicLinkService {
       video = await getVideoInfo.getSharedLinkVideo(
           videoId: linkVideoInfo['videoId']);
       print("DeepLink data " + video.videoUrl);
+      List<VideoInfo> _videos;
+      _videos.add(video);
       if (replacement) {
         Navigator.pushReplacement(
             context,
             CupertinoPageRoute(
                 builder: (context) => Player(
-                      video: video,
+                      videos: _videos,
+                      index: 0,
                     )));
       } else {
         Navigator.push(
             context,
             CupertinoPageRoute(
                 builder: (context) => Player(
-                      video: video,
+                      videos: _videos,
+                      index: 0,
                     )));
       }
       print("push done");

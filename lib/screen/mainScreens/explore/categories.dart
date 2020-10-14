@@ -81,7 +81,8 @@ class _CategoryState extends State<Category> {
                             MaterialPageRoute(
                               builder: (context) {
                                 return Player(
-                                  video: video,
+                                  videos: _videos,
+                                  index: index,
                                 );
                               },
                             ),

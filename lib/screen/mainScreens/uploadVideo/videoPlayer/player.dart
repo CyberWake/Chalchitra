@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:screen/screen.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
@@ -16,16 +17,19 @@ import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
+import 'package:wowtalent/widgets/customSliderThumb.dart';
 
 class Player extends StatefulWidget {
-  final VideoInfo video;
   final UserDataModel user;
-  Player({Key key, @required this.video, this.user}) : super(key: key);
+  final List<VideoInfo> videos;
+  final int index;
+  Player({Key key, this.user, this.videos, this.index}) : super(key: key);
   @override
   _PlayerState createState() => _PlayerState();
 }
 
 class _PlayerState extends State<Player> {
+  final _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
   UserAuth _userAuth = UserAuth();
   VideoPlayerController _controller;
   double _widthOne;
@@ -36,7 +40,9 @@ class _PlayerState extends State<Player> {
   UserVideoStore _userVideoStore = UserVideoStore();
   int likeCount = 0;
   int commentCount = 0;
+  int currentPos;
   bool _isLiked = false;
+  bool unmute;
   bool playing;
   bool loading = true;
   UserDataModel _user = UserDataModel();
@@ -50,14 +56,14 @@ class _PlayerState extends State<Player> {
       try {
         if (_userAuth.user != null) {
           _following = await _userInfoStore.checkIfAlreadyFollowing(
-              uid: widget.video.uploaderUid);
+              uid: widget.videos[currentPos].uploaderUid);
         }
-        likeCount = widget.video.likes;
-        _sliderValue =
-            await _userVideoStore.checkRated(videoID: widget.video.videoId);
+        likeCount = widget.videos[currentPos].likes;
+        _sliderValue = await _userVideoStore.checkRated(
+            videoID: widget.videos[currentPos].videoId);
         print(_sliderValue);
-        _isLiked =
-            await _userVideoStore.checkLiked(videoID: widget.video.videoId);
+        _isLiked = await _userVideoStore.checkLiked(
+            videoID: widget.videos[currentPos].videoId);
         _boolFutureCalled = true;
         setState(() {});
         return true;
@@ -71,26 +77,33 @@ class _PlayerState extends State<Player> {
   }
 
   getUserInfo() async {
-    DocumentSnapshot user =
-        await _userInfoStore.getUserInfo(uid: widget.video.uploaderUid);
+    DocumentSnapshot user = await _userInfoStore.getUserInfo(
+        uid: widget.videos[currentPos].uploaderUid);
     _user = UserDataModel.fromDocument(user);
     setState(() {
       loading = false;
     });
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _controller = VideoPlayerController.network(widget.video.videoUrl)
-      ..initialize().then((_) {
-        setState(() {});
-      });
-    _controller.setLooping(true);
+  mySetup() {
+    _controller =
+        VideoPlayerController.network(widget.videos[currentPos].videoUrl)
+          ..initialize().then((_) {
+            setState(() {});
+          });
     setup();
     getUserInfo();
     _controller.play();
-    playing = true;
+    playing = _controller.value.isPlaying;
+    unmute = true;
+  }
+
+  @override
+  void initState() {
+    currentPos = widget.index;
+    super.initState();
+    Screen.keepOn(true);
+    mySetup();
   }
 
   Future<bool> button(bool isLiked) async {
@@ -106,27 +119,27 @@ class _PlayerState extends State<Player> {
       );
     } else if (_isLiked == false) {
       _isLiked = await _userVideoStore.likeVideo(
-        videoID: widget.video.videoId,
+        videoID: widget.videos[currentPos].videoId,
       );
     } else if (_isLiked == true) {
       _isLiked = await _userVideoStore.dislikeVideo(
-        videoID: widget.video.videoId,
+        videoID: widget.videos[currentPos].videoId,
       );
     }
     return _isLiked;
   }
 
-  String getChoppedUsername(String currentDiscription) {
-    String choppedDiscription = '';
-    var subDisplayName = currentDiscription.split(' ');
+  String getChoppedUsername(String currentDescription) {
+    String choppedDescription = '';
+    var subDisplayName = currentDescription.split(' ');
     for (var i in subDisplayName) {
-      if (choppedDiscription.length + i.length < 36) {
-        choppedDiscription += ' ' + i;
+      if (choppedDescription.length + i.length < 36) {
+        choppedDescription += ' ' + i;
       } else {
-        return choppedDiscription + ' ...';
+        return choppedDescription + ' ...';
       }
     }
-    return choppedDiscription + ' ...';
+    return choppedDescription + ' ...';
   }
 
   Future<bool> _onBackPressed() {
@@ -147,9 +160,31 @@ class _PlayerState extends State<Player> {
     return WillPopScope(
       onWillPop: _onBackPressed,
       child: Scaffold(
+        key: _scaffoldGlobalKey,
         body: playerBody(),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppTheme.primaryColor,
+          onPressed: () {
+            playing ? _controller.pause() : _controller.play();
+            playing = _controller.value.isPlaying;
+            setState(() {});
+          },
+          child: Icon(
+            playing ? Icons.pause : Icons.play_arrow,
+            color: AppTheme.backgroundColor,
+          ),
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       ),
     );
+  }
+
+  updateVideo() {
+    _controller.pause();
+    playing = _controller.value.isPlaying;
+    loading = true;
+    setState(() {});
+    mySetup();
   }
 
   currPos() {
@@ -188,28 +223,7 @@ class _PlayerState extends State<Player> {
                         AspectRatio(
                             aspectRatio: _controller.value.aspectRatio,
                             child: _controller.value.initialized
-                                ? InkWell(
-                                    onTap: () {
-                                      if (playing) {
-                                        Scaffold.of(context)
-                                            .showSnackBar(SnackBar(
-                                          duration: Duration(milliseconds: 500),
-                                          content: Text('Audio Muted'),
-                                        ));
-                                        playing = false;
-                                        _controller.setVolume(0.0);
-                                      } else {
-                                        Scaffold.of(context)
-                                            .showSnackBar(SnackBar(
-                                          duration: Duration(milliseconds: 500),
-                                          content: Text('Audio Unmuted'),
-                                        ));
-                                        print("unmuted");
-                                        playing = true;
-                                        _controller.setVolume(1.0);
-                                      }
-                                    },
-                                    child: VideoPlayer(_controller))
+                                ? VideoPlayer(_controller)
                                 : SpinKitCircle(
                                     color: AppTheme.primaryColor,
                                     size: 60,
@@ -244,37 +258,48 @@ class _PlayerState extends State<Player> {
                   );
                 },
               ),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: 15.0),
-                        child: FloatingActionButton(
-                          backgroundColor: AppTheme.primaryColor,
-                          onPressed: () {
-                            setState(() {
-                              _controller.value.isPlaying
-                                  ? _controller.pause()
-                                  : _controller.play();
-                            });
-                          },
-                          child: Icon(
-                            _controller.value.isPlaying
-                                ? Icons.pause
-                                : Icons.play_arrow,
-                            color: AppTheme.backgroundColor,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.15,
-                  ),
-                ],
+              Container(
+                height: double.infinity,
+                width: double.infinity,
+                child: GestureDetector(
+                  onTap: () {
+                    if (unmute) {
+                      _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
+                        duration: Duration(milliseconds: 500),
+                        content: Text('Audio Muted'),
+                      ));
+                      unmute = false;
+                      _controller.setVolume(0.0);
+                    } else {
+                      _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
+                        duration: Duration(milliseconds: 500),
+                        content: Text('Audio Unmuted'),
+                      ));
+                      print("unmuted");
+                      unmute = true;
+                      _controller.setVolume(1.0);
+                    }
+                  },
+                  onHorizontalDragEnd: (DragEndDetails details) {
+                    Offset offset = details.velocity.pixelsPerSecond;
+                    print(offset);
+                    if (offset.dx < 0) {
+                      print(offset.dx);
+                      if (currentPos + 1 < widget.videos.length) {
+                        print("going forward");
+                        currentPos += 1;
+                        updateVideo();
+                      }
+                    } else if (offset.dx > 0) {
+                      print(offset.dx);
+                      if (currentPos - 1 >= 0) {
+                        print("going backward");
+                        currentPos -= 1;
+                        updateVideo();
+                      }
+                    }
+                  },
+                ),
               ),
               Builder(builder: (context) {
                 return Column(
@@ -316,7 +341,8 @@ class _PlayerState extends State<Player> {
                                 try {
                                   print(_following);
                                   _following = await _userInfoStore.followUser(
-                                      uid: widget.video.uploaderUid);
+                                      uid: widget
+                                          .videos[currentPos].uploaderUid);
                                   print(_following);
                                   print('pressed');
                                   setState(() {});
@@ -329,7 +355,7 @@ class _PlayerState extends State<Player> {
                               _userAuth.user == null
                                   ? "Follow"
                                   : _userAuth.user.uid ==
-                                          widget.video.uploaderUid
+                                          widget.videos[currentPos].uploaderUid
                                       ? ' '
                                       : !_following
                                           ? ' Follow'
@@ -344,14 +370,15 @@ class _PlayerState extends State<Player> {
                         padding:
                             EdgeInsets.symmetric(horizontal: 23, vertical: 4),
                         child: Text(
-                          widget.video.videoName != null
-                              ? widget.video.videoName.length > 37
+                          widget.videos[currentPos].videoName != null
+                              ? widget.videos[currentPos].videoName.length > 37
                                   ? "Title" +
                                       ' \u2022 ' +
-                                      getChoppedUsername(widget.video.videoName)
+                                      getChoppedUsername(
+                                          widget.videos[currentPos].videoName)
                                   : "Title" +
                                       ' \u2022 ' +
-                                      widget.video.videoName +
+                                      widget.videos[currentPos].videoName +
                                       ' \u2022 '
                               : "Title" + ' \u2022 ',
                           style: TextStyle(color: Colors.white),
@@ -365,7 +392,8 @@ class _PlayerState extends State<Player> {
                             color: Colors.white,
                           ),
                           Text(
-                            ' \u2022 ' + widget.video.category ?? "Category",
+                            ' \u2022 ' + widget.videos[currentPos].category ??
+                                "Category",
                             style: TextStyle(color: Colors.white),
                           )
                         ],
@@ -407,7 +435,8 @@ class _PlayerState extends State<Player> {
                                             if (!_isLiked) {
                                               _isLiked = await _userVideoStore
                                                   .likeVideo(
-                                                videoID: widget.video.videoId,
+                                                videoID: widget
+                                                    .videos[currentPos].videoId,
                                               );
                                               if (_isLiked) {
                                                 likeCount += 1;
@@ -416,7 +445,8 @@ class _PlayerState extends State<Player> {
                                             } else {
                                               await _userVideoStore
                                                   .dislikeVideo(
-                                                videoID: widget.video.videoId,
+                                                videoID: widget
+                                                    .videos[currentPos].videoId,
                                               )
                                                   .then((value) {
                                                 if (value) {
@@ -460,7 +490,8 @@ class _PlayerState extends State<Player> {
                                             if (!_isLiked) {
                                               _isLiked = await _userVideoStore
                                                   .likeVideo(
-                                                videoID: widget.video.videoId,
+                                                videoID: widget
+                                                    .videos[currentPos].videoId,
                                               );
                                               if (_isLiked) {
                                                 likeCount += 1;
@@ -469,7 +500,8 @@ class _PlayerState extends State<Player> {
                                             } else {
                                               await _userVideoStore
                                                   .dislikeVideo(
-                                                videoID: widget.video.videoId,
+                                                videoID: widget
+                                                    .videos[currentPos].videoId,
                                               )
                                                   .then((value) {
                                                 if (value) {
@@ -521,7 +553,8 @@ class _PlayerState extends State<Player> {
                                             ),
                                           );
                                         } else {
-                                          print(widget.video.uploaderUid);
+                                          print(widget
+                                              .videos[currentPos].uploaderUid);
                                           _controller.pause();
                                           Navigator.push(
                                               context,
@@ -529,7 +562,8 @@ class _PlayerState extends State<Player> {
                                                   builder: (context) =>
                                                       CommentsScreen(
                                                         videoId: widget
-                                                            .video.videoId,
+                                                            .videos[currentPos]
+                                                            .videoId,
                                                       )));
                                         }
                                       },
@@ -552,7 +586,8 @@ class _PlayerState extends State<Player> {
                                             ),
                                           );
                                         } else {
-                                          print(widget.video.uploaderUid);
+                                          print(widget
+                                              .videos[currentPos].uploaderUid);
                                           _controller.pause();
                                           Navigator.push(
                                               context,
@@ -560,7 +595,8 @@ class _PlayerState extends State<Player> {
                                                   builder: (context) =>
                                                       CommentsScreen(
                                                         videoId: widget
-                                                            .video.videoId,
+                                                            .videos[currentPos]
+                                                            .videoId,
                                                       )));
                                         }
                                       },
@@ -574,9 +610,11 @@ class _PlayerState extends State<Player> {
                                 width: _widthOne * 20,
                               ),
                               Text(
-                                widget.video.comments.toString() == "null"
+                                widget.videos[currentPos].comments.toString() ==
+                                        "null"
                                     ? "0"
-                                    : widget.video.comments.toString(),
+                                    : widget.videos[currentPos].comments
+                                        .toString(),
                                 style: TextStyle(
                                     fontWeight: FontWeight.w500,
                                     fontSize: _fontOne * 14,
@@ -594,9 +632,8 @@ class _PlayerState extends State<Player> {
                                 trackShape: RectangularSliderTrackShape(),
                                 trackHeight: 2.0,
                                 thumbColor: AppTheme.primaryColor,
-                                thumbShape: RoundSliderThumbShape(
-                                    enabledThumbRadius: 8.0),
-                                overlayColor: Colors.red.withAlpha(32),
+                                thumbShape: StarThumb(thumbRadius: 20),
+                                overlayColor: AppTheme.elevationColor,
                                 overlayShape: RoundSliderOverlayShape(
                                     overlayRadius: 30.0),
                               ),
@@ -620,7 +657,9 @@ class _PlayerState extends State<Player> {
                                         } else {
                                           bool success =
                                               await _userVideoStore.rateVideo(
-                                                  videoID: widget.video.videoId,
+                                                  videoID: widget
+                                                      .videos[currentPos]
+                                                      .videoId,
                                                   rating: _sliderValue);
                                           if (!success) {
                                             setState(() {
@@ -655,7 +694,9 @@ class _PlayerState extends State<Player> {
                                         } else {
                                           bool success =
                                               await _userVideoStore.rateVideo(
-                                                  videoID: widget.video.videoId,
+                                                  videoID: widget
+                                                      .videos[currentPos]
+                                                      .videoId,
                                                   rating: _sliderValue);
                                           if (!success) {
                                             setState(() {

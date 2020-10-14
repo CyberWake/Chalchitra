@@ -553,7 +553,6 @@ class _ProfilePageState extends State<ProfilePage> {
             spacing: 1,
             runSpacing: 1,
             children: List.generate(_videos.length, (index) {
-              final video = _videos[index];
               return GestureDetector(
                 onLongPress: () {
                   if (widget.uid == _userAuth.user.uid) {
@@ -574,7 +573,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     CupertinoPageRoute(
                       builder: (context) {
                         return Player(
-                          video: video,
+                          videos: _videos,
+                          index: index,
                         );
                       },
                     ),
@@ -587,7 +587,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   decoration: BoxDecoration(
                     color: Colors.black,
                     image: DecorationImage(
-                        image: NetworkImage(video.thumbUrl),
+                        image: NetworkImage(_videos[index].thumbUrl),
                         fit: BoxFit.fitWidth),
                     borderRadius: BorderRadius.circular(10.5),
                     boxShadow: [
