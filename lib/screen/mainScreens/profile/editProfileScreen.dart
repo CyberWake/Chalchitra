@@ -994,7 +994,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   _dob == null ? " " : _dob,
                   style:
                       TextStyle(fontSize: 16, color: AppTheme.pureWhiteColor),
+<<<<<<< HEAD
 >>>>>>> bebb54c... Automatic navigation after profile updation
+=======
+>>>>>>> origin/ak_backend
                 ),
         ),
         Align(
