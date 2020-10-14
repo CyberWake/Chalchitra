@@ -56,19 +56,19 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(
               height: _heightOne * 10,
             ),
-            _userNameField(),
+            Platform.isIOS? Material(child: _userNameField(),):_userNameField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            _emailField(),
+            Platform.isIOS?Material(child: _emailField(),):_emailField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            _passwordField(),
+            Platform.isIOS?Material(child: _passwordField(),):_passwordField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            _confirmPasswordField(),
+            Platform.isIOS?Material(child: _confirmPasswordField(),):_confirmPasswordField(),
             SizedBox(
               height: _heightOne * 15,
             ),
@@ -124,7 +124,7 @@ class _RegisterFormState extends State<RegisterForm> {
   }
 
   Widget _userNameField() {
-    return Material(child:FormFieldFormatting.formFieldContainer(
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: (val) => val.isEmpty ? "Username Can't be Empty" : null,
@@ -141,11 +141,11 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    ));
+    );
   }
 
   Widget _emailField() {
-    return Material(child:FormFieldFormatting.formFieldContainer(
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
@@ -162,11 +162,11 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    ));
+    );
   }
 
   Widget _passwordField() {
-    return Material(child:FormFieldFormatting.formFieldContainer(
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: _hidePassword,
         validator: FormValidation.validateRegisterPassword,
@@ -193,11 +193,11 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    ));
+    );
   }
 
   Widget _confirmPasswordField() {
-    return Material(child:FormFieldFormatting.formFieldContainer(
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: true,
         validator: (val) => val == _userDataModel.password
@@ -211,7 +211,7 @@ class _RegisterFormState extends State<RegisterForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    ));
+    );
   }
 
   Widget _registerButton() {

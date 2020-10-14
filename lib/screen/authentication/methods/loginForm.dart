@@ -59,11 +59,11 @@ class _LoginFormState extends State<LoginForm> {
             SizedBox(
               height: _heightOne * 83,
             ),
-            _emailField(),
+            Platform.isIOS ?Material(child: _emailField(),) :_emailField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            _passwordFiled(),
+            Platform.isIOS? Material(child: _passwordFiled(),) :_passwordFiled(),
             SizedBox(
               height: _heightOne * 15,
             ),
@@ -150,7 +150,7 @@ class _LoginFormState extends State<LoginForm> {
   }
 
   Widget _emailField() {
-    return Material(child:FormFieldFormatting.formFieldContainer(
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         keyboardType: TextInputType.emailAddress,
         validator: FormValidation.validateEmail,
@@ -167,11 +167,11 @@ class _LoginFormState extends State<LoginForm> {
         ),
       ),
       leftPadding: _widthOne * 20,
-    ));
+    );
   }
 
   Widget _passwordFiled() {
-    return Material(child:FormFieldFormatting.formFieldContainer(
+    return FormFieldFormatting.formFieldContainer(
       child: TextFormField(
         obscureText: _hidePassword,
         validator: FormValidation.validateLoginPassword,
@@ -199,7 +199,7 @@ class _LoginFormState extends State<LoginForm> {
         style: TextStyle(fontSize: _fontOne * 15),
       ),
       leftPadding: _widthOne * 20,
-    ));
+    );
   }
 
   Widget _loginButton() {

@@ -44,7 +44,7 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
             SizedBox(
               height: _heightOne * 1,
             ),
-            _emailField(),
+            Platform.isIOS ? Material(child: _emailField(),):_emailField(),
             SizedBox(
               height: _heightOne * 15,
             ),
@@ -72,24 +72,7 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
   }
 
   Widget _emailField() {
-    return Platform.isIOS
-        ? CupertinoTextField(
-            keyboardType: TextInputType.emailAddress,
-            onChanged: (val) {
-              _userDataModel.email = val;
-              if (_submitted) {
-                _formKey.currentState.validate();
-              }
-            },
-            decoration: BoxDecoration(
-                border: Border.all(color: Colors.orange.withOpacity(0.75)),
-                borderRadius: BorderRadius.circular(15.0)),
-            placeholderStyle: TextStyle(
-                fontSize: _fontOne * 15,
-                color: Colors.orange.withOpacity(0.75)),
-            placeholder: "Enter Email",
-          )
-        : FormFieldFormatting.formFieldContainer(
+    return FormFieldFormatting.formFieldContainer(
             child: TextFormField(
               keyboardType: TextInputType.emailAddress,
               validator: FormValidation.validateEmail,
