@@ -337,20 +337,6 @@ class _ProfilePageState extends State<ProfilePage> {
           if (!snapshot.hasData) {
             return Center(child: Text('Something went wrong'));
           }
-<<<<<<< HEAD
-<<<<<<< HEAD
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(
-              child: SpinKitCircle(
-                color: AppTheme.primaryColor,
-                size: 60,
-              ),
-            );
-          }
-=======
->>>>>>> bebb54c... Automatic navigation after profile updation
-=======
->>>>>>> origin/ak_backend
           print(snapshot.data.exists);
           user = UserDataModel.fromDocument(snapshot.data);
 
