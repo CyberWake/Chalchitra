@@ -13,28 +13,21 @@ import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/menuConstants.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
+import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/widgets/customSliderThumb.dart';
 
 class PostCard extends StatefulWidget {
-  final video;
-  final String title, uploadTime, thumbnail, profileImg, uploader, id, videoUrl;
-  final int commentCount, likeCount, viewCount;
-  final int rating;
+  final VideoInfo video;
+  final String profileImg, uploader;
+  final Function navigate;
 
   PostCard({
     this.video,
-    this.id,
-    this.videoUrl,
-    this.title,
-    this.commentCount,
-    this.likeCount,
-    this.uploadTime,
-    this.thumbnail,
+    this.navigate,
     this.profileImg,
     this.uploader,
-    this.viewCount,
-    this.rating,
   });
 
   @override
@@ -139,7 +132,8 @@ class _PostCardState extends State<PostCard> {
       Navigator.pop(context);
       final DynamicLinkParameters parameters = DynamicLinkParameters(
         uriPrefix: 'https://wowtalent.page.link',
-        link: Uri.parse('https://wowtalent.com/player?videoId=${widget.id}'),
+        link: Uri.parse(
+            'https://wowtalent.com/player?videoId=${widget.video.videoId}'),
         androidParameters: AndroidParameters(
           packageName: 'com.example.wowtalant',
           minimumVersion: 125,
@@ -164,7 +158,7 @@ class _PostCardState extends State<PostCard> {
       String time = DateTime.now().toString();
       try {
         Navigator.pop(context);
-        await dio.download(widget.videoUrl,
+        await dio.download(widget.video.videoUrl,
             '${directory[0].path}/${time.substring(0, time.lastIndexOf("."))}/video.mp4',
             onReceiveProgress: (received, total) {
           if (total == received) {
@@ -184,12 +178,13 @@ class _PostCardState extends State<PostCard> {
   }
 
   void setup() async {
-    DocumentSnapshot user = await _userInfoStore.getUserInfo(
-        uid: widget.video.data()['uploaderUid']);
+    DocumentSnapshot user =
+        await _userInfoStore.getUserInfo(uid: widget.video.uploaderUid);
     _user = UserDataModel.fromDocument(user);
-    _sliderValue = await _userVideoStore.checkRated(videoID: widget.id);
-    _isLiked = await _userVideoStore.checkLiked(videoID: widget.id);
-    likeCount = widget.likeCount;
+    _sliderValue =
+        await _userVideoStore.checkRated(videoID: widget.video.videoId);
+    _isLiked = await _userVideoStore.checkLiked(videoID: widget.video.videoId);
+    likeCount = widget.video.likes;
     if (this.mounted) {
       setState(() {});
     }
@@ -252,7 +247,7 @@ class _PostCardState extends State<PostCard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.title,
+                              widget.video.videoName,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 14,
@@ -287,7 +282,9 @@ class _PostCardState extends State<PostCard> {
                             },
                           ),
                           Text(
-                            widget.uploadTime,
+                            formatDateTime(
+                                millisecondsSinceEpoch:
+                                    widget.video.uploadedAt),
                             style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 10,
@@ -302,26 +299,15 @@ class _PostCardState extends State<PostCard> {
                   ),
                   Expanded(
                     child: InkWell(
+                      // onTap: widget.navigate,
                       onTap: () async {
                         bool isWatched = await UserVideoStore()
-                            .checkWatched(videoID: widget.id);
+                            .checkWatched(videoID: widget.video.videoId);
                         if (!isWatched) {
-                          await UserVideoStore()
-                              .increaseVideoCount(videoID: widget.id);
+                          await UserVideoStore().increaseVideoCount(
+                              videoID: widget.video.videoId);
                         }
-                        /*Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) {
-                              VideoInfo video =
-                                  VideoInfo.fromDocument(widget.video);
-                              video.videoId = widget.id;
-                              return Player(
-                                video: video,
-                              );
-                            },
-                          ),
-                        );*/
+                        widget.navigate();
                       },
                       child: Container(
                         decoration: BoxDecoration(
@@ -332,7 +318,7 @@ class _PostCardState extends State<PostCard> {
                             color: AppTheme.backgroundColor,
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(widget.thumbnail))),
+                                image: NetworkImage(widget.video.thumbUrl))),
                       ),
                     ),
                   ),
@@ -366,7 +352,7 @@ class _PostCardState extends State<PostCard> {
                                   _processing = true;
                                   if (!_isLiked) {
                                     _isLiked = await _userVideoStore.likeVideo(
-                                      videoID: widget.id,
+                                      videoID: widget.video.videoId,
                                     );
                                     if (_isLiked) {
                                       likeCount += 1;
@@ -374,7 +360,7 @@ class _PostCardState extends State<PostCard> {
                                   } else {
                                     await _userVideoStore
                                         .dislikeVideo(
-                                      videoID: widget.id,
+                                      videoID: widget.video.videoId,
                                     )
                                         .then((value) {
                                       if (value) {
@@ -415,7 +401,7 @@ class _PostCardState extends State<PostCard> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => CommentsScreen(
-                                              videoId: widget.id,
+                                              videoId: widget.video.videoId,
                                             )));
                               },
                               icon: Icon(
@@ -428,7 +414,7 @@ class _PostCardState extends State<PostCard> {
                               width: _widthOne * 20,
                             ),
                             Text(
-                              widget.commentCount.toString(),
+                              widget.video.comments.toString(),
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: _fontOne * 14,
@@ -457,7 +443,8 @@ class _PostCardState extends State<PostCard> {
                               onChangeEnd: (val) async {
                                 _sliderValue = val;
                                 bool success = await _userVideoStore.rateVideo(
-                                    videoID: widget.id, rating: _sliderValue);
+                                    videoID: widget.video.videoId,
+                                    rating: _sliderValue);
                                 if (success) {
                                   print('done rating');
                                 } else {

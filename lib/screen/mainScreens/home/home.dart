@@ -9,9 +9,9 @@ import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -149,6 +149,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           ),
                         );
                       } else {
+                        List<VideoInfo> videoList = [];
+                        snapshot.data.documents.forEach(
+                            (ds) => videoList.add(VideoInfo.fromDocument(ds)));
                         if (snapshot.data.documents.length == 0) {
                           return Center(
                             child: Text(
@@ -179,29 +182,27 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                         horizontal: _widthOne * 50,
                                         vertical: _heightOne * 20),
                                     child: PostCard(
-                                        video: snapshot.data.documents[index],
-                                        id: snapshot.data.documents[index].id,
-                                        thumbnail: snapshot.data.documents[index]
-                                            .data()['thumbUrl'],
-                                        videoUrl: snapshot.data.documents[index]
-                                            .data()['videoUrl'],
-                                        profileImg:
-                                            snap.data.data()['photoUrl'] == null
-                                                ? "https://via.placeholder.com/150"
-                                                : snap.data.data()['photoUrl'],
-                                        title: snapshot.data.documents[index]
-                                            .data()['videoName'],
-                                        uploader: snap.data.data()['username'],
-                                        likeCount: snapshot.data.documents[index]
-                                            .data()['likes'],
-                                        commentCount: snapshot.data.documents[index]
-                                            .data()['comments'],
-                                        uploadTime: formatDateTime(
-                                            millisecondsSinceEpoch: snapshot
-                                                .data.documents[index]
-                                                .data()['uploadedAt']),
-                                        viewCount: snapshot.data.documents[index].data()['views'],
-                                        rating: snapshot.data.documents[index].data()['rating']),
+                                      video: videoList[index],
+                                      uploader: snap.data.data()['username'],
+                                      profileImg: snap.data
+                                                  .data()['photoUrl'] ==
+                                              null
+                                          ? "https://via.placeholder.com/150"
+                                          : snap.data.data()['photoUrl'],
+                                      navigate: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) {
+                                              return Player(
+                                                videos: videoList,
+                                                index: index,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    ),
                                   );
                                 },
                               );
