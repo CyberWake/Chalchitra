@@ -1,7 +1,6 @@
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
@@ -112,70 +111,6 @@ class _FollowersPageState extends State<FollowersPage>
                     builder: (context, snap) {
                       if (snap.connectionState == ConnectionState.done) {
                         var _user = UserDataModel.fromDocument(snap.data);
-                        if (widget.uid == _userAuth.user.uid) {
-                          return Slidable(
-                            actionPane: SlidableDrawerActionPane(),
-                            actionExtentRatio: 0.25,
-                            actions: <Widget>[
-                              IconSlideAction(
-                                  caption: 'Show Profile',
-                                  color: AppTheme.primaryColor,
-                                  icon: Icons.account_circle,
-                                  onTap: () {
-                                    Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (BuildContext context) =>
-                                                SearchProfile(
-                                                  uid: _user.id,
-                                                )));
-                                  }),
-                            ],
-                            secondaryActions: <Widget>[
-                              IconSlideAction(
-                                  caption: 'Remove',
-                                  color: Colors.deepOrangeAccent,
-                                  icon: Icons.delete,
-                                  onTap: () async {
-                                    bool result = await _userInfoStore
-                                        .removeFollowingUser(uid: _user.id);
-                                    if (!result) {
-                                      _scaffoldGlobalKey.currentState
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Removed user from followers successfully')));
-                                    } else {
-                                      _scaffoldGlobalKey.currentState
-                                          .showSnackBar(SnackBar(
-                                              content: Text(
-                                                  'Something went wrong')));
-                                    }
-                                  })
-                            ],
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 0.8),
-                              color: AppTheme.elevationColor,
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: Colors.indigoAccent,
-                                  backgroundImage: _user.photoUrl == null
-                                      ? NetworkImage(nullImageUrl)
-                                      : NetworkImage(_user.photoUrl),
-                                  foregroundColor: Colors.white,
-                                ),
-                                title: Text(
-                                    _user.displayName == null
-                                        ? "Wow Talent User"
-                                        : _user.displayName,
-                                    style: TextStyle(
-                                        color: AppTheme.primaryColor)),
-                                subtitle: Text(_user.username,
-                                    style: TextStyle(
-                                        color: AppTheme.primaryColor)),
-                              ),
-                            ),
-                          );
-                        }
                         return GestureDetector(
                           onTap: () {
                             Navigator.push(

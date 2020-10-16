@@ -7,6 +7,7 @@ import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/dynamicLinkService.dart';
@@ -15,6 +16,7 @@ import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
+import 'package:wowtalent/screen/mainScreens/endDrawerScreens/drafts.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/privacyPage.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
@@ -23,11 +25,8 @@ import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoSelectorScreen.dart';
 
-import 'endDrawerScreens/drafts.dart';
-
-// ignore: must_be_immutable
 class MainScreenWrapper extends StatefulWidget {
-  int index;
+  final int index;
   MainScreenWrapper({@required this.index});
   @override
   _MainScreenWrapperState createState() => _MainScreenWrapperState();
@@ -44,6 +43,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   double _iconOne;
   Size _size;
   bool _isMessagePage = false;
+  DateTime currentBackPressTime;
   Widget _profilePage = Container();
   UserAuth _userAuth = UserAuth();
   UserInfoStore _userInfoStore = UserInfoStore();
@@ -189,6 +189,17 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     );
   }
 
+  Future<bool> onWillPop() {
+    DateTime now = DateTime.now();
+    if (currentBackPressTime == null ||
+        now.difference(currentBackPressTime) > Duration(seconds: 2)) {
+      currentBackPressTime = now;
+      return Future.value(false);
+    }
+    Fluttertoast.showToast(msg: "Double tap to exit");
+    return Future.value(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -205,204 +216,209 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       _profilePage,
     ];
 
-    return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
-      key: _scaffoldGlobalKey,
-      appBar: AppBar(
-        elevation: 0.0,
-        backgroundColor: AppTheme.primaryColor,
-        title: Container(
-          padding: EdgeInsets.symmetric(
-            vertical: 10,
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        key: _scaffoldGlobalKey,
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: AppTheme.primaryColor,
+          title: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            height: 55,
+            width: _size.width / 2.5,
+            child: Image.asset(
+              'assets/images/appBarLogo1.png',
+              fit: BoxFit.fitHeight,
+            ),
           ),
-          height: 55,
-          width: _size.width / 2.5,
-          child: Image.asset(
-            'assets/images/appBarLogo1.png',
-            fit: BoxFit.fitHeight,
-          ),
+          actions: [
+            _currentIndex != 4
+                ? IconButton(
+                    icon: Icon(
+                      Icons.search,
+                      color: AppTheme.backgroundColor,
+                      size: _iconOne * 30,
+                    ),
+                    onPressed: () {
+                      if (_userAuth.user != null) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => SearchUser()));
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (_) =>
+                                    Authentication(AuthIndex.REGISTER)));
+                      }
+                    },
+                  )
+                : IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                      color: AppTheme.elevationColor,
+                      size: _iconOne * 25,
+                    ),
+                    onPressed: () =>
+                        _scaffoldGlobalKey.currentState.openEndDrawer(),
+                    tooltip:
+                        MaterialLocalizations.of(context).openAppDrawerTooltip,
+                  ),
+            SizedBox(
+              width: _widthOne * 100,
+            )
+          ],
+          automaticallyImplyLeading: false,
         ),
-        actions: [
-          _currentIndex != 4
-              ? IconButton(
-                  icon: Icon(
-                    Icons.search,
-                    color: AppTheme.backgroundColor,
-                    size: _iconOne * 30,
+        endDrawer: Container(
+          width: _size.width * 0.5,
+          child: Drawer(
+              child: Container(
+            color: AppTheme.backgroundColor,
+            child: Column(
+              children: [
+                DrawerHeader(
+                  child: Center(
+                    child: Text(
+                      user == null ? " " : user.username,
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                  onPressed: () {
-                    if (_userAuth.user != null) {
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (_) => SearchUser()));
-                    } else {
-                      Navigator.pushReplacement(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (_) =>
-                                  Authentication(AuthIndex.REGISTER)));
-                    }
+                ),
+                Divider(
+                  color: Colors.white,
+                  thickness: 0.5,
+                ),
+                ListTile(
+                  leading: Icon(Icons.drafts, color: Colors.white),
+                  title: Text("Drafted Post",
+                      style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (BuildContext context) => Drafts()));
                   },
+                ),
+                ListTile(
+                  leading: Icon(Icons.security, color: Colors.white),
+                  title: Text('Privacy', style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        CupertinoPageRoute(builder: (_) => PrivacyPage()));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.group_add, color: Colors.white),
+                  title: Text('Invite', style: TextStyle(color: Colors.white)),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await FlutterShare.share(
+                        title: 'Join WowTalent',
+                        text: 'I am Loving the app. I invite you to join me' +
+                            ' in the journey to show your talent!!',
+                        linkUrl:
+                            'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                        chooserTitle: 'Invite');
+                  },
+                ),
+                Spacer(),
+                Divider(
+                  color: Colors.white,
+                  thickness: 0.5,
+                ),
+                ListTile(
+                  leading: Icon(Icons.power_settings_new, color: Colors.white),
+                  title: Text('Signout', style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildConfirmSignOut(context),
+                    );
+                  },
+                ),
+                Padding(
+                  padding: EdgeInsets.only(bottom: _heightOne * 10),
                 )
-              : IconButton(
-                  icon: Icon(
-                    Icons.menu,
-                    color: AppTheme.elevationColor,
-                    size: _iconOne * 25,
-                  ),
-                  onPressed: () =>
-                      _scaffoldGlobalKey.currentState.openEndDrawer(),
-                  tooltip:
-                      MaterialLocalizations.of(context).openAppDrawerTooltip,
-                ),
-          SizedBox(
-            width: _widthOne * 100,
-          )
-        ],
-        automaticallyImplyLeading: false,
-      ),
-      endDrawer: Container(
-        width: _size.width * 0.5,
-        child: Drawer(
-            child: Container(
-          color: AppTheme.backgroundColor,
-          child: Column(
-            children: [
-              DrawerHeader(
-                child: Center(
-                  child: Text(
-                    user == null ? " " : user.username,
-                    style: TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              Divider(
-                color: Colors.white,
-                thickness: 0.5,
-              ),
-              ListTile(
-                leading: Icon(Icons.drafts, color: Colors.white),
-                title:
-                    Text("Drafted Post", style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(
-                      context,
-                      CupertinoPageRoute(
-                          builder: (BuildContext context) => Drafts()));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.security, color: Colors.white),
-                title: Text('Privacy', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(context);
-                  Navigator.push(context,
-                      CupertinoPageRoute(builder: (_) => PrivacyPage()));
-                },
-              ),
-              ListTile(
-                leading: Icon(Icons.group_add, color: Colors.white),
-                title: Text('Invite', style: TextStyle(color: Colors.white)),
-                onTap: () async {
-                  Navigator.pop(context);
-                  await FlutterShare.share(
-                      title: 'Join WowTalent',
-                      text: 'I am Loving the app. I invite you to join me' +
-                          ' in the journey to show your talent!!',
-                      linkUrl:
-                          'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
-                      chooserTitle: 'Invite');
-                },
-              ),
-              Spacer(),
-              Divider(
-                color: Colors.white,
-                thickness: 0.5,
-              ),
-              ListTile(
-                leading: Icon(Icons.power_settings_new, color: Colors.white),
-                title: Text('Signout', style: TextStyle(color: Colors.white)),
-                onTap: () {
-                  Navigator.pop(context);
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildConfirmSignOut(context),
-                  );
-                },
-              ),
-              Padding(
-                padding: EdgeInsets.only(bottom: _heightOne * 10),
-              )
-            ],
-          ),
-        )),
-      ),
-      bottomNavigationBar: CurvedNavigationBar(
-        index: _currentIndex,
-        height: _heightOne * 45,
-        backgroundColor: Colors.transparent,
-        color: AppTheme.primaryColor,
-        buttonBackgroundColor: AppTheme.primaryColor,
-        items: <Widget>[
-          Icon(
-            Icons.home,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-          Icon(
-            Icons.explore,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-          Icon(
-            Icons.add,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-          Transform.rotate(
-            angle: 180 * pi / 100,
-            child: Icon(
-              Icons.send,
+              ],
+            ),
+          )),
+        ),
+        bottomNavigationBar: CurvedNavigationBar(
+          index: _currentIndex,
+          height: _heightOne * 45,
+          backgroundColor: Colors.transparent,
+          color: AppTheme.primaryColor,
+          buttonBackgroundColor: AppTheme.primaryColor,
+          items: <Widget>[
+            Icon(
+              Icons.home,
               size: 25,
               color: AppTheme.backgroundColor,
             ),
-          ),
-          Icon(
-            Icons.account_circle,
-            size: 25,
-            color: AppTheme.backgroundColor,
-          ),
-        ],
-        onTap: (index) async {
-          if (_userAuth.user == null) {
-            Navigator.pushReplacement(
-                context,
-                CupertinoPageRoute(
-                    builder: (context) => Authentication(AuthIndex.REGISTER)));
-          }
-          print(index);
-          if (index == 4) {
+            Icon(
+              Icons.explore,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+            Icon(
+              Icons.add,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+            Transform.rotate(
+              angle: 180 * pi / 100,
+              child: Icon(
+                Icons.send,
+                size: 25,
+                color: AppTheme.backgroundColor,
+              ),
+            ),
+            Icon(
+              Icons.account_circle,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+          ],
+          onTap: (index) async {
+            if (_userAuth.user == null) {
+              Navigator.pushReplacement(
+                  context,
+                  CupertinoPageRoute(
+                      builder: (context) =>
+                          Authentication(AuthIndex.REGISTER)));
+            }
             print(index);
-            UserAuth().account.listen((user) {
-              if (user != null) {
-                _profilePage = ProfilePage(uid: user.uid);
-              }
-            });
-            _isMessagePage = false;
-            _currentIndex = index;
-          } else if (index == 3) {
-            _isMessagePage = true;
-            _currentIndex = index;
-          } else {
-            _isMessagePage = false;
-            _currentIndex = index;
-          }
-          setState(() {});
-        },
+            if (index == 4) {
+              print(index);
+              UserAuth().account.listen((user) {
+                if (user != null) {
+                  _profilePage = ProfilePage(uid: user.uid);
+                }
+              });
+              _isMessagePage = false;
+              _currentIndex = index;
+            } else if (index == 3) {
+              _isMessagePage = true;
+              _currentIndex = index;
+            } else {
+              _isMessagePage = false;
+              _currentIndex = index;
+            }
+            setState(() {});
+          },
+        ),
+        body: Container(
+            margin: EdgeInsets.only(bottom: 10),
+            child: _screens[_currentIndex]),
       ),
-      body: Container(
-          margin: EdgeInsets.only(bottom: 10), child: _screens[_currentIndex]),
     );
   }
 }

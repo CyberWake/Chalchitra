@@ -17,6 +17,7 @@ import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
+import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 import 'package:wowtalent/widgets/customSliderThumb.dart';
 
 class Player extends StatefulWidget {
@@ -183,6 +184,7 @@ class _PlayerState extends State<Player> {
     _controller.pause();
     playing = _controller.value.isPlaying;
     loading = true;
+    _boolFutureCalled = false;
     setState(() {});
     mySetup();
   }
@@ -313,17 +315,33 @@ class _PlayerState extends State<Player> {
                       padding: EdgeInsets.only(left: 20),
                       child: Row(
                         children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(_user.photoUrl == null
-                                ? "https://via.placeholder.com/150"
-                                : _user.photoUrl),
-                            radius: 13,
-                          ),
-                          Text(
-                            '  ${_user.username} \u2022',
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white),
+                          GestureDetector(
+                            onTap: () {
+                              _controller.pause();
+                              Navigator.push(
+                                context,
+                                CupertinoPageRoute(
+                                  builder: (context) {
+                                    return SearchProfile(uid: _user.id);
+                                  },
+                                ),
+                              );
+                            },
+                            child: Row(children: [
+                              CircleAvatar(
+                                backgroundImage: NetworkImage(
+                                    _user.photoUrl == null
+                                        ? "https://via.placeholder.com/150"
+                                        : _user.photoUrl),
+                                radius: 13,
+                              ),
+                              Text(
+                                '  ${_user.username} \u2022',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white),
+                              ),
+                            ]),
                           ),
                           GestureDetector(
                             onTap: () async {
@@ -331,7 +349,7 @@ class _PlayerState extends State<Player> {
                                 Navigator.pop(context);
                                 Navigator.pushReplacement(
                                   context,
-                                  MaterialPageRoute(
+                                  CupertinoPageRoute(
                                     builder: (context) {
                                       return Authentication(AuthIndex.REGISTER);
                                     },
