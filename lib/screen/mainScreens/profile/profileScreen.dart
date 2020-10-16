@@ -319,7 +319,7 @@ class _ProfilePageState extends State<ProfilePage> {
     String choppedUsername = '';
     var subDisplayName = currentDisplayName.split(' ');
     for (var i in subDisplayName) {
-      if (choppedUsername.length + i.length < 14) {
+      if (choppedUsername.length + i.length < 18) {
         choppedUsername += ' ' + i;
       } else {
         return choppedUsername;
@@ -362,11 +362,8 @@ class _ProfilePageState extends State<ProfilePage> {
                 Hero(
                   tag: widget.url,
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.1,
-                      ),
                       CircleAvatar(
                         child: CachedNetworkImage(
                           imageUrl: snapshot.connectionState ==
@@ -390,7 +387,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       SizedBox(
                         width:
                             snapshot.connectionState == ConnectionState.waiting
-                                ? MediaQuery.of(context).size.width * 0.39
+                                ? MediaQuery.of(context).size.width * 0.35
                                 : 20,
                       ),
                       Column(
@@ -403,7 +400,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                       ConnectionState.waiting
                                   ? " "
                                   : user.displayName != null
-                                      ? user.displayName.length > 15
+                                      ? user.displayName.length > 19
                                           ? getChoppedUsername(user.displayName)
                                           : user.displayName
                                       : "WowTalent",
@@ -432,9 +429,6 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                         ],
-                      ),
-                      SizedBox(
-                        width: MediaQuery.of(context).size.width * 0.1,
                       ),
                     ],
                   ),

@@ -14,34 +14,34 @@ class SearchResult extends StatelessWidget {
     return Padding(
       padding: EdgeInsets.all(10),
       child: Container(
-        color: AppTheme.backgroundColor,
+          color: AppTheme.backgroundColor,
           child: Column(
             children: <Widget>[
               GestureDetector(
-                  onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => SearchProfile(
-                            uid: eachUser.id,
-                          ))),
+                  onTap: () {
+                    FocusScope.of(context).requestFocus(FocusNode());
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (_) => SearchProfile(
+                                  uid: eachUser.id,
+                                )));
+                  },
                   child: ListTile(
                     leading: CircleAvatar(
                         backgroundColor: Colors.grey,
                         backgroundImage: eachUser.photoUrl != null
-                            ? CachedNetworkImageProvider(
-                            eachUser.photoUrl
-                        ) : CachedNetworkImageProvider(
-                            'https://via.placeholder.com/150'
-                        )
-                    ),
+                            ? CachedNetworkImageProvider(eachUser.photoUrl)
+                            : CachedNetworkImageProvider(
+                                'https://via.placeholder.com/150')),
                     title: Text(
-                        eachUser.displayName == null ? eachUser.username : eachUser.displayName,
+                        eachUser.displayName == null
+                            ? eachUser.username
+                            : eachUser.displayName,
                         style: TextStyle(
                             color: AppTheme.pureWhiteColor,
                             fontSize: 16,
-                            fontWeight: FontWeight.bold
-                        )
-                    ),
+                            fontWeight: FontWeight.bold)),
                     subtitle: Text(
                       eachUser.username == null ? '' : eachUser.username,
                       style: TextStyle(color: Colors.grey, fontSize: 13),

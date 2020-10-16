@@ -26,46 +26,52 @@ class _SearchProfileState extends State<SearchProfile> {
     _iconOne = (_size.height * 0.066) / 50;
     return Scaffold(
       backgroundColor: AppTheme.backgroundColor,
-      body: Column(
-        children: [
-          Container(
-            padding: EdgeInsets.only(
-              bottom: _heightOne * 20,
-              top: _heightOne * 40,
+      body: Container(
+        height: double.infinity,
+        child: Column(
+          mainAxisSize: MainAxisSize.max,
+          children: [
+            Container(
+              padding: EdgeInsets.only(
+                bottom: _heightOne * 20,
+                top: _heightOne * 40,
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(
+                    width: _widthOne * 50,
+                  ),
+                  IconButton(
+                    icon: Icon(
+                      Icons.arrow_back_ios,
+                      color: AppTheme.pureWhiteColor,
+                    ),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                  Expanded(child: Container()),
+                  IconButton(
+                    icon: Icon(
+                      Icons.message,
+                      color: AppTheme.pureWhiteColor,
+                    ),
+                    onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => ChatDetailPage(
+                                  targetUID: widget.uid,
+                                ))),
+                  ),
+                  SizedBox(
+                    width: _widthOne * 50,
+                  )
+                ],
+              ),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                SizedBox(width: _widthOne * 50,),
-                IconButton(
-                  icon: Icon(
-                    Icons.arrow_back_ios,
-                    color: AppTheme.pureWhiteColor,
-                  ),
-                  onPressed: () => Navigator.pop(context),
-                ),
-                Expanded(child: Container()),
-                IconButton(
-                  icon: Icon(
-                    Icons.message,
-                    color: AppTheme.pureWhiteColor,
-                  ),
-                  onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => ChatDetailPage(
-                        targetUID: widget.uid,
-                      )
-                    )
-                  ),
-                ),
-                SizedBox(width: _widthOne * 50,)
-              ],
-            ),
-          ),
-          ProfilePage(uid: widget.uid),
-        ],
+            ProfilePage(uid: widget.uid),
+          ],
+        ),
       ),
     );
   }
