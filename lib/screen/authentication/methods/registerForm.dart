@@ -242,13 +242,14 @@ class _RegisterFormState extends State<RegisterForm> {
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+            side:
+                BorderSide(color: AppTheme.primaryColor, width: _widthOne * 5)),
         splashColor: Colors.orange[100],
         padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
         child: Text(
           "Register",
           style: TextStyle(
-            color: Color(0xFFFFCF40),
+            color: AppTheme.primaryColor,
           ),
         ));
   }

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
@@ -142,13 +143,14 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
         },
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5.0),
-            side: BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+            side:
+                BorderSide(color: AppTheme.primaryColor, width: _widthOne * 5)),
         splashColor: Colors.orange[100],
         padding: EdgeInsets.symmetric(horizontal: _size.width * 0.277),
         child: Text(
           "Submit",
           style: TextStyle(
-            color: Color(0xFFFFCF40),
+            color: AppTheme.primaryColor,
           ),
         ));
   }

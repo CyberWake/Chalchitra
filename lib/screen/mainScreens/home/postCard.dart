@@ -318,7 +318,9 @@ class _PostCardState extends State<PostCard> {
                             color: AppTheme.backgroundColor,
                             image: DecorationImage(
                                 fit: BoxFit.cover,
-                                image: NetworkImage(widget.video.thumbUrl))),
+                                image: NetworkImage(
+                                  widget.video.thumbUrl,
+                                ))),
                       ),
                     ),
                   ),

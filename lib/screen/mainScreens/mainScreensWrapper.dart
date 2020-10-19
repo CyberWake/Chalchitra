@@ -72,10 +72,12 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   }
 
   _retrieveDynamicLink() async {
-    UserDataModel userData =
-        await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
-    Provider.of<CurrentUser>(context, listen: false)
-        .updateCurrentUser(userData);
+    if (_userAuth.user != null) {
+      UserDataModel userData =
+          await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
+      Provider.of<CurrentUser>(context, listen: false)
+          .updateCurrentUser(userData);
+    }
     await links.handleDynamicLinks(context, false);
     if (!links.isFromLink) {
       setup();

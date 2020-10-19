@@ -136,11 +136,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         if (!snapshot.hasData) {
           return Center(
               child: SpinKitCircle(
-                color: AppTheme.primaryColor,
+                color: AppTheme.backgroundColor,
                 size: _fontOne * 60,
               ),
           );
-        } else {
+        }else {
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => ChatBubble(

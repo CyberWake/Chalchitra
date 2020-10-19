@@ -125,6 +125,7 @@ class _VideoPreviewState extends State<VideoPreview> {
         backgroundColor: Colors.black,
         appBar: AppBar(
           centerTitle: true,
+          backgroundColor: AppTheme.primaryColor,
           title: Text('Video Preview'),
         ),
         body: previewBody(),

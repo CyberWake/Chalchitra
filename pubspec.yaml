@@ -56,8 +56,8 @@ dependencies:
   popup_menu: ^1.0.5
   flutter_colored_progress_indicators: ^1.2.0
   animated_background: ^1.0.5
-  flutter_slidable: ^0.5.7
   swipe_stack: ^1.0.0
+  shimmer: ^1.1.2
   # Misc
   flutter_dotenv: ^2.0.3
 

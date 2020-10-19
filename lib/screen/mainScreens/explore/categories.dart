@@ -41,6 +41,7 @@ class _CategoryState extends State<Category> {
       appBar: AppBar(
         elevation: 0.0,
         centerTitle: true,
+        backgroundColor: AppTheme.primaryColor,
         title: Text(widget.categoryName),
         actions: [
           IconButton(
