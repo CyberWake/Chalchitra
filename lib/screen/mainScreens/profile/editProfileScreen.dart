@@ -6,7 +6,9 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:path/path.dart' as path;
+import 'package:provider/provider.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
@@ -34,12 +36,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
   // Global key for snack bar
 
   final _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
-  UserDataModel _userDataModel = UserDataModel();
+  UserDataModel _userDataModel;
   UserInfoStore _userInfoStore = UserInfoStore();
   // Some Attributes for text field
   DateTime pickedDate;
   bool loading = false;
-  UserDataModel user;
+  UserDataModel user = UserDataModel();
   bool _usernameValid = true;
   bool validUsername;
   bool _nameValid = true;
@@ -297,6 +299,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
       );
       _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
       print('updated successfully');
+      UserDataModel userData = UserDataModel(
+        id: user.id,
+        displayName: nameController.text,
+        username: usernameController.text,
+        bio: bioController.text,
+        dob: _dob,
+        country: countryController.text,
+        photoUrl: url,
+        gender: gender,
+        followers: user.followers,
+        following: user.following,
+        videoCount: user.videoCount,
+      );
+      Provider.of<CurrentUser>(context, listen: false)
+          .updateCurrentUser(userData);
       await Future.delayed(Duration(milliseconds: 1500));
       Navigator.pop(context);
     } else if (!validUsername) {

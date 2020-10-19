@@ -1,4 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 import '../auth/userAuth.dart';
@@ -15,7 +18,8 @@ class UserInfoStore {
 
   static final UserAuth _userAuth = UserAuth();
 
-  Future<bool> createUserRecord({String username = ""}) async {
+  Future<bool> createUserRecord(
+      {String username = "", BuildContext context}) async {
     try {
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
       if (_userAuth.user != null) {
@@ -29,11 +33,16 @@ class UserInfoStore {
             "bio": "Hello World!",
             "private": false,
             "searchKey": username.substring(0, 1).toUpperCase(),
+            "followers": 0,
+            "following": 0,
+            "videoCount": 0,
           };
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
         }
         _currentUserModel = UserDataModel.fromDocument(userRecord);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(_currentUserModel);
       }
 
       return true;
@@ -139,6 +148,16 @@ class UserInfoStore {
     }
   }
 
+  Future<UserDataModel> getUserInformation({String uid}) async {
+    try {
+      DocumentSnapshot ds = await _users.doc(uid).get();
+      return UserDataModel.fromDocument(ds);
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
   Future<bool> followUser({String uid}) async {
     try {
       await _followers
@@ -146,12 +165,16 @@ class UserInfoStore {
           .collection('userFollowers')
           .doc(_userAuth.user.uid)
           .set({});
+      await _users.doc(uid).update({"followers": FieldValue.increment(1)});
 
       await _followings
           .doc(_userAuth.user.uid)
           .collection('userFollowing')
           .doc(uid)
           .set({});
+      await _users
+          .doc(_userAuth.user.uid)
+          .update({"following": FieldValue.increment(1)});
 
       await _activity
           .doc(uid)
@@ -182,6 +205,7 @@ class UserInfoStore {
           .then((document) async => {
                 if (document.exists) {await document.reference.delete()}
               });
+      await _users.doc(uid).update({"followers": FieldValue.increment(-1)});
 
       await _followings
           .doc(_userAuth.user.uid)
@@ -191,6 +215,9 @@ class UserInfoStore {
           .then((document) async => {
                 if (document.exists) {await document.reference.delete()}
               });
+      await _users
+          .doc(_userAuth.user.uid)
+          .update({"following": FieldValue.increment(-1)});
 
       await _activity
           .doc(uid)

@@ -71,7 +71,7 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(
               height: _heightOne * 15,
             ),
-            _registerButton(),
+            _registerButton(context),
             SizedBox(
               height: _heightOne * 30,
             ),
@@ -200,7 +200,7 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _registerButton() {
+  Widget _registerButton(BuildContext context) {
     return FlatButton(
         onPressed: () async {
           if (_formKey.currentState.validate()) {
@@ -212,6 +212,7 @@ class _RegisterFormState extends State<RegisterForm> {
             } else {
               await _userAuth
                   .registerUserWithEmail(
+                context: context,
                 email: _userDataModel.email,
                 password: _userDataModel.password,
                 username: _userDataModel.username,

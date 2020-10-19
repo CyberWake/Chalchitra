@@ -4,10 +4,14 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:provider/provider.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/theme.dart';
+import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 
@@ -119,6 +123,9 @@ class _VideoDataInputState extends State<VideoDataInput> {
       _uploadingVideo = false;
       _uploadSuccess = true;
     });
+    UserDataModel user =
+        await UserInfoStore().getUserInformation(uid: _userAuth.user.uid);
+    Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
     await VideoCompress.deleteAllCache();
   }
 
@@ -557,7 +564,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                               category = "Instrumental";
                                               break;
                                             case 3:
-                                              category = "Story Telling";
+                                              category = "Standup Comedy";
                                               break;
                                             case 4:
                                               category = "DJing";

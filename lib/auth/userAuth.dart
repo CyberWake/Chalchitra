@@ -1,8 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 class UserAuth {
@@ -20,13 +23,17 @@ class UserAuth {
     return _auth.currentUser;
   }
 
-  Future signInWithEmailAndPassword({String email, String password}) async {
+  Future signInWithEmailAndPassword(
+      {String email, String password, BuildContext context}) async {
     try {
       userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await _usersCollection.doc(userCredential.user.uid).get();
+      DocumentSnapshot userSnapshot =
+          await _usersCollection.doc(userCredential.user.uid).get();
+      UserDataModel user = UserDataModel.fromDocument(userSnapshot);
+      Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
       return "success";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -41,7 +48,10 @@ class UserAuth {
   }
 
   Future registerUserWithEmail(
-      {String email, String password, String username}) async {
+      {String email,
+      String password,
+      String username,
+      BuildContext context}) async {
     try {
       userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -59,6 +69,8 @@ class UserAuth {
             userRecord =
                 await _usersCollection.doc(userCredential.user.uid).get();
             currentUserModel = UserDataModel.fromDocument(userRecord);
+            Provider.of<CurrentUser>(context, listen: false)
+                .updateCurrentUser(currentUserModel);
           }
         });
       }
@@ -75,7 +87,7 @@ class UserAuth {
     }
   }
 
-  Future signInWithFacebook() async {
+  Future signInWithFacebook(BuildContext context) async {
     AccessToken userToken;
     try {
       final LoginResult result = await FacebookAuth.instance.login();
@@ -97,6 +109,9 @@ class UserAuth {
           if (!userRecord.exists) {
             return "newUser";
           }
+          UserDataModel user = UserDataModel.fromDocument(userRecord);
+          Provider.of<CurrentUser>(context, listen: false)
+              .updateCurrentUser(user);
           return true;
           break;
         case FacebookAuthLoginResponse.cancelled:
@@ -104,12 +119,13 @@ class UserAuth {
           return false;
       }
     } catch (e) {
+      await FacebookAuth.instance.logOut();
       print("facebook login error: " + e.toString());
       return false;
     }
   }
 
-  Future signInWithGoogle() async {
+  Future signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication googleAuth =
@@ -124,8 +140,11 @@ class UserAuth {
       if (!userRecord.exists) {
         return "newUser";
       }
+      UserDataModel user = UserDataModel.fromDocument(userRecord);
+      Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
       return true;
     } catch (e) {
+      await GoogleSignIn().signOut();
       print("google login error: " + e.toString());
       return false;
     }

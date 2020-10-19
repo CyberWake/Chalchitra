@@ -66,7 +66,7 @@ class _LoginFormState extends State<LoginForm> {
             SizedBox(
               height: _heightOne * 15,
             ),
-            _loginButton(),
+            _loginButton(context),
             SizedBox(
               height: _heightOne * 22,
             ),
@@ -173,7 +173,7 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget _loginButton() {
+  Widget _loginButton(BuildContext context) {
     return FlatButton(
         onPressed: () async {
           if (_formKey.currentState.validate()) {
@@ -189,7 +189,7 @@ class _LoginFormState extends State<LoginForm> {
               } else if (result == "success") {
                 Navigator.pushReplacement(
                     context,
-                    MaterialPageRoute(
+                    CupertinoPageRoute(
                         builder: (_) => MainScreenWrapper(
                               index: 0,
                             )));

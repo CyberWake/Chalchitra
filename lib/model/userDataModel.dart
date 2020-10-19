@@ -13,25 +13,26 @@ class UserDataModel {
   String country;
   String gender;
   bool private;
-  Map followers;
-  Map following;
+  int followers;
+  int following;
+  int videoCount;
 
-  UserDataModel({
-    this.displayName,
-    this.email,
-    this.password,
-    this.id,
-    this.photoUrl,
-    this.bio,
-    this.username,
-    this.age,
-    this.dob,
-    this.country,
-    this.gender,
-    this.private = false,
-    this.followers,
-    this.following
-  });
+  UserDataModel(
+      {this.displayName,
+      this.email,
+      this.password,
+      this.id,
+      this.photoUrl,
+      this.bio,
+      this.username,
+      this.age,
+      this.dob,
+      this.country,
+      this.gender,
+      this.private = false,
+      this.followers,
+      this.following,
+      this.videoCount});
 
   factory UserDataModel.fromDocument(DocumentSnapshot document) {
     return UserDataModel(
@@ -47,6 +48,7 @@ class UserDataModel {
         gender: document.data()['gender'],
         private: document.data()['private'],
         followers: document.data()['followers'],
-        following: document.data()['following']);
+        following: document.data()['following'],
+        videoCount: document.data()['videoCount']);
   }
 }

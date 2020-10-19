@@ -89,7 +89,8 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
                 SnackBar(content: Text('Username already exists')));
           } else {
             await _userInfoStore
-                .createUserRecord(username: _userDataModel.username)
+                .createUserRecord(
+                    username: _userDataModel.username, context: context)
                 .then((result) {
               if (!result) {
                 Scaffold.of(context).showSnackBar(

@@ -2,10 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/introScreen.dart';
-import 'package:provider/provider.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 import 'package:wowtalent/splashScreen.dart';
@@ -26,19 +27,22 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     UserAuth _userAuth = UserAuth();
-    return StreamProvider<User>.value(
-      value: UserAuth().account,
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'WowTalent',
-        theme: ThemeData(
-          backgroundColor: Color(0xFF181818),
-          primaryColor: Color(0xFFFFCF40),
-        ),
-        home: SplashScreen(
-          navigateAfterSeconds: prefs.containsKey('onBoarded')
-              ? MainScreenWrapper(index: _userAuth.user != null ? 0 : 1,)
-              : OnBoardScreen1(),
+    return ChangeNotifierProvider(
+      create: (_) => CurrentUser(),
+      child: StreamProvider<User>.value(
+        value: UserAuth().account,
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'WowTalent',
+          theme: ThemeData(
+            backgroundColor: Color(0xFF181818),
+            primaryColor: Color(0xFFFFCF40),
+          ),
+          home: SplashScreen(
+            navigateAfterSeconds: prefs.containsKey('onBoarded')
+                ? MainScreenWrapper(index: _userAuth.user != null ? 0 : 1,)
+                : OnBoardScreen1(),
+          ),
         ),
       ),
     );

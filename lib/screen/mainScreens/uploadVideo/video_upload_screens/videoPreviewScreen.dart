@@ -290,6 +290,8 @@ class _VideoPreviewState extends State<VideoPreview> {
                 FlatButton(
                   onPressed: () async {
                     _controller.pause();
+                    VideoCompress.cancelCompression();
+                    await VideoCompress.deleteAllCache();
                     Navigator.pop(context);
                   },
                   child: Text(

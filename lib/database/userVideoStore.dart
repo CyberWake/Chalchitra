@@ -7,6 +7,9 @@ class UserVideoStore {
   static final CollectionReference _feedVideos =
       FirebaseFirestore.instance.collection('feedVideos');
 
+  static final CollectionReference _users =
+      FirebaseFirestore.instance.collection('WowUsers');
+
   static final CollectionReference _allVideos =
       FirebaseFirestore.instance.collection('videos');
 
@@ -48,6 +51,9 @@ class UserVideoStore {
         'rating': video.rating,
       };
       await _allVideos.doc().set(videoData);
+      await _users
+          .doc(_userAuth.user.uid)
+          .update({"videoCount": FieldValue.increment(1)});
     } catch (e) {
       print(e.toString());
     }
@@ -89,6 +95,9 @@ class UserVideoStore {
   static deleteUploadedVideo(VideoInfo video) async {
     try {
       await _allVideos.doc(video.videoId).delete();
+      await _users
+          .doc(_userAuth.user.uid)
+          .update({"videoCount": FieldValue.increment(-1)});
     } catch (e) {
       print(e.toString());
     }

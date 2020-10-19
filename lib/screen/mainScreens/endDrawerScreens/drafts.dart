@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/theme.dart';
+import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 
@@ -13,6 +17,7 @@ class Drafts extends StatefulWidget {
 class _DraftsState extends State<Drafts> {
   List<VideoInfo> _videos = <VideoInfo>[];
   final _formKey = GlobalKey<FormState>();
+  UserAuth _userAuth = UserAuth();
   String videoHashTag = "";
   String videoName = "";
   bool _uploadingVideo = false;
@@ -62,6 +67,9 @@ class _DraftsState extends State<Drafts> {
       comments: 0,
     );
     await UserVideoStore.saveVideo(videoInfo);
+    UserDataModel user =
+        await UserInfoStore().getUserInformation(uid: _userAuth.user.uid);
+    Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
   }
 
   getCategory(String draftCategory) {
