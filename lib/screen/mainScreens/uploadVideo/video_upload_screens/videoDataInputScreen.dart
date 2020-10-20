@@ -391,7 +391,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 10, vertical: 20),
                           decoration: BoxDecoration(
-                              color: AppTheme.backgroundColor,
+                              color: AppTheme.selectorTileColor,
                               borderRadius: BorderRadius.circular(25),
                               boxShadow: [
                                 BoxShadow(
