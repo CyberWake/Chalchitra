@@ -232,7 +232,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           },
                           child: Text(
                             "No",
-                            style: TextStyle(color: AppTheme.pureWhiteColor),
+                            style: TextStyle(color: AppTheme.backgroundColor),
                           ),
                           color: AppTheme.primaryColor),
                     ),
@@ -250,7 +250,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                         },
                         child: Text(
                           "Yes",
-                          style: TextStyle(color: AppTheme.pureWhiteColor),
+                          style: TextStyle(color: AppTheme.backgroundColor),
                         ),
                         color: AppTheme.primaryColor,
                       ),
@@ -309,7 +309,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                       },
                       child: Text(
                         "OK",
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
+                        style: TextStyle(color: AppTheme.backgroundColor),
                       ),
                       color: AppTheme.primaryColor),
                 ),

@@ -165,7 +165,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                         },
                         child: Text(
                           "Yes",
-                          style: TextStyle(color: AppTheme.pureWhiteColor),
+                          style: TextStyle(color: AppTheme.backgroundColor),
                         ),
                         color: AppTheme.primaryColor,
                       ),
@@ -182,7 +182,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                         },
                         child: Text(
                           "No",
-                          style: TextStyle(color: AppTheme.pureWhiteColor),
+                          style: TextStyle(color: AppTheme.backgroundColor),
                         ),
                         color: AppTheme.primaryColor,
                       ),
