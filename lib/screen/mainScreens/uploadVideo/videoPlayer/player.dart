@@ -217,7 +217,7 @@ class _PlayerState extends State<Player> {
                       size: 60,
                     ));
         } else {
-          _swiperStack.currentState.swipeRight();
+          _swiperStack.currentState.swipeLeft();
           return Container();
         }
       },
@@ -273,7 +273,17 @@ class _PlayerState extends State<Player> {
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                autoPlay(),
+                                currentPos == widget.videos.length - 1
+                                    ? AspectRatio(
+                                        aspectRatio:
+                                            _controller.value.aspectRatio,
+                                        child: _controller.value.initialized
+                                            ? VideoPlayer(_controller)
+                                            : SpinKitCircle(
+                                                color: AppTheme.primaryColor,
+                                                size: 60,
+                                              ))
+                                    : autoPlay(),
                                 VideoProgressIndicator(
                                   _controller,
                                   allowScrubbing: true,
@@ -529,8 +539,7 @@ class _PlayerState extends State<Player> {
                                                 _isLiked
                                                     ? "assets/images/loved_icon.svg"
                                                     : "assets/images/love_icon.svg",
-                                                color:
-                                                    AppTheme.backgroundColor,
+                                                color: AppTheme.backgroundColor,
                                                 width: 20,
                                               ),
                                               onTap: () async {
