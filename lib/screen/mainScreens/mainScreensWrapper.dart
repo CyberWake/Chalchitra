@@ -120,7 +120,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: AppTheme.primaryColor, width: 3)),
+            border: Border.all(color: AppTheme.selectorTileColor, width: 3)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -217,7 +217,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
               builder: (context) => Authentication(AuthIndex.REGISTER)));
     }
     print(index);
-    if (index == 4) {
+    if (index == 5) {
+      _scaffoldGlobalKey.currentState.openEndDrawer();
+    } else if (index == 4) {
       print(index);
       UserAuth().account.listen((user) {
         if (user != null) {
@@ -320,9 +322,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                     alignment: Alignment.centerLeft,
                     margin: EdgeInsets.only(top: _size.height * 0.039),
                     padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    child: Text(
-                      user == null ? " " : user.username,
-                      style: TextStyle(color: Colors.white, fontSize: 24),
+                    child: FittedBox(
+                      child: Text(
+                        user == null ? " " : user.username,
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold),
+                      ),
                     ),
                   ),
                   Divider(
@@ -342,9 +349,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                     },
                   ),
                   ListTile(
-                    leading: Icon(Icons.security, color: Colors.white),
+                    leading: Icon(Icons.settings, color: Colors.white),
                     title:
-                        Text('Privacy', style: TextStyle(color: Colors.white)),
+                        Text('Settings', style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(context,
@@ -367,10 +374,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                     },
                   ),
                   Spacer(),
-                  Divider(
-                    color: Colors.white,
-                    thickness: 0.5,
-                  ),
                   ListTile(
                     leading:
                         Icon(Icons.power_settings_new, color: Colors.white),
@@ -385,9 +388,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       );
                     },
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(bottom: _heightOne * 10),
-                  )
                 ],
               ),
             )),
@@ -395,7 +395,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           bottomNavigationBar: CurvedNavigationBar(
             index: _currentIndex,
             height: _heightOne * 55,
-            backgroundColor: AppTheme.backgroundColor,
+            backgroundColor: _currentIndex == 4
+                ? AppTheme.backColor
+                : AppTheme.backgroundColor,
             color: AppTheme.primaryColor,
             buttonBackgroundColor: AppTheme.primaryColor,
             items: <Widget>[
@@ -438,6 +440,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
               print(offset);
               if (offset.dx < 0) {
                 print(offset.dx);
+                if (_currentIndex + 1 == 5) {
+                  changePage(5);
+                }
                 if (_currentIndex + 1 < 5) {
                   print("going forward");
                   _currentIndex += 1;

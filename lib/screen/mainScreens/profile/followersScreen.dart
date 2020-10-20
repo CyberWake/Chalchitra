@@ -48,8 +48,15 @@ class _FollowersPageState extends State<FollowersPage>
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Followers'),
+        title: Text('Followers',
+            style: TextStyle(color: AppTheme.backgroundColor)),
         backgroundColor: AppTheme.primaryColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppTheme.backgroundColor),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: StreamBuilder(
           stream: _userInfoStore.getFollowers(uid: widget.uid),
@@ -123,7 +130,7 @@ class _FollowersPageState extends State<FollowersPage>
                           },
                           child: Container(
                             margin: EdgeInsets.symmetric(vertical: 0.8),
-                            color: AppTheme.pureBlackColor,
+                            color: Colors.white,
                             child: ListTile(
                               leading: CircleAvatar(
                                 backgroundColor: Colors.indigoAccent,

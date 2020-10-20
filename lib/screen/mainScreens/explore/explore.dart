@@ -169,7 +169,7 @@ class _ExploreState extends State<Explore> {
                 borderRadius: BorderRadius.circular(10.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: AppTheme.primaryColor.withOpacity(0.2),
                     offset: Offset(0.0, 10.0), //(x,y)
                     blurRadius: 10.0,
                   ),
@@ -222,7 +222,7 @@ class _ExploreState extends State<Explore> {
                 borderRadius: BorderRadius.circular(10.5),
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.grey.withOpacity(0.2),
+                    color: AppTheme.primaryColor.withOpacity(0.2),
                     offset: Offset(0.0, 10.0), //(x,y)
                     blurRadius: 10.0,
                   ),

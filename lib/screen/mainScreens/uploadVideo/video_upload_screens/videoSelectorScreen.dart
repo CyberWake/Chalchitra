@@ -82,6 +82,7 @@ class _VideoUploaderState extends State<VideoUploader>
                 padding: EdgeInsets.all(50),
                 decoration: BoxDecoration(
                     color: AppTheme.selectorTileColor,
+                    border: Border.all(color: AppTheme.primaryColor, width: 2),
                     borderRadius: BorderRadius.circular(25),
                     boxShadow: [
                       BoxShadow(
@@ -140,7 +141,7 @@ class _VideoUploaderState extends State<VideoUploader>
                                             .textColorVideoSelectorScreen,
                                       ),
                                       borderRadius: BorderRadius.circular(5)),
-                                  child: Text("Turn on Camera",
+                                  child: Text(" Turn on Camera ",
                                       style: TextStyle(
                                         color: AppTheme
                                             .textColorVideoSelectorScreen,

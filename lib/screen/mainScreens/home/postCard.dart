@@ -251,7 +251,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 14,
-                                color: AppTheme.pureWhiteColor,
+                                color: AppTheme.backgroundColor,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -263,7 +263,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: _fontOne * 12,
-                                  color: Colors.grey),
+                                  color: AppTheme.backgroundColor),
                             ),
                           ],
                         ),
@@ -342,12 +342,12 @@ class _PostCardState extends State<PostCard> {
                                   ? SvgPicture.asset(
                                       "assets/images/love_icon.svg",
                                       width: 20,
-                                      color: Colors.red,
+                                      color: AppTheme.backgroundColor,
                                     )
                                   : SvgPicture.asset(
                                       "assets/images/loved_icon.svg",
                                       width: 20,
-                                      color: Colors.red,
+                                      color: AppTheme.selectorTileColor,
                                     ),
                               onTap: () async {
                                 if (!_processing) {
@@ -408,7 +408,7 @@ class _PostCardState extends State<PostCard> {
                               },
                               icon: Icon(
                                 Icons.comment,
-                                color: Colors.yellow[900],
+                                color: AppTheme.selectorTileColor,
                                 size: _iconOne * 23,
                               ),
                             ),
@@ -458,8 +458,8 @@ class _PostCardState extends State<PostCard> {
                                   _sliderValue = val;
                                 });
                               },
-                              inactiveColor: Colors.orange[100],
-                              activeColor: AppTheme.primaryColor,
+                              inactiveColor: AppTheme.primaryColor,
+                              activeColor: AppTheme.selectorTileColor,
                             ),
                           ),
                         ),

@@ -40,6 +40,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool seeFollowers = false;
   bool seeFollowings = false;
   bool refreshVideos = false;
+  bool processing = false;
 
   //UserData
   String currentUserID;
@@ -165,7 +166,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  height: size.height * 0.4423,
+                  height: size.height * 0.4557247,
                   width: size.width,
                   margin: EdgeInsets.only(top: size.height * 0.35),
                   padding: EdgeInsets.only(
@@ -279,10 +280,14 @@ class _ProfilePageState extends State<ProfilePage> {
               mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.08,
+                ),
                 CircleAvatar(
                   child: CachedNetworkImage(
-                    imageUrl:
-                        currentUserImgUrl != null ? user.photoUrl : widget.url,
+                    imageUrl: currentUserImgUrl != null
+                        ? currentUserImgUrl
+                        : widget.url,
                     imageBuilder: (context, imageProvider) => Container(
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(40),
@@ -334,6 +339,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ],
                 ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.08,
+                ),
               ],
             ),
           ),
@@ -370,30 +378,48 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   controlUnFollowUsers() async {
-    bool result = await _userInfoStore.unFollowUser(uid: widget.uid);
-    if (!result) {
-      user = await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
-      Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
-      totalFollowers -= 1;
+    if (!processing) {
+      setState(() {
+        processing = true;
+      });
+      bool result = await _userInfoStore.unFollowUser(uid: widget.uid);
+      if (!result) {
+        user = await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(user);
+        totalFollowers -= 1;
+        setState(() {
+          processing = false;
+        });
+      }
+      _videos = [];
+      getPrivacy();
+      setState(() {
+        following = result;
+      });
     }
-    _videos = [];
-    getPrivacy();
-    setState(() {
-      following = result;
-    });
   }
 
   controlFollowUsers() async {
-    bool result = await _userInfoStore.followUser(uid: widget.uid);
-    if (result) {
-      user = await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
-      Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
-      totalFollowers += 1;
+    if (!processing) {
+      setState(() {
+        processing = true;
+      });
+      bool result = await _userInfoStore.followUser(uid: widget.uid);
+      if (result) {
+        user = await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(user);
+        totalFollowers += 1;
+        setState(() {
+          processing = false;
+        });
+      }
+      mySuper();
+      setState(() {
+        following = result;
+      });
     }
-    mySuper();
-    setState(() {
-      following = result;
-    });
   }
 
   Container createButtonTitleORFunction({String title, Function function}) {

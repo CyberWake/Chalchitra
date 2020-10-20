@@ -47,8 +47,15 @@ class _FollowingsPageState extends State<FollowingsPage>
       backgroundColor: AppTheme.backgroundColor,
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Following'),
+        title: Text('Following',
+            style: TextStyle(color: AppTheme.backgroundColor)),
         backgroundColor: AppTheme.primaryColor,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppTheme.backgroundColor),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
       ),
       body: StreamBuilder(
           stream: _userInfoStore.getFollowing(uid: widget.uid),
@@ -126,7 +133,7 @@ class _FollowingsPageState extends State<FollowingsPage>
                             },
                             child: Container(
                               margin: EdgeInsets.symmetric(vertical: 0.8),
-                              color: AppTheme.pureBlackColor,
+                              color: Colors.white,
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: Colors.indigoAccent,
