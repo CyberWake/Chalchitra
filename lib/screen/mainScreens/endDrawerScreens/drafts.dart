@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -8,6 +9,7 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
+import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class Drafts extends StatefulWidget {
   @override
@@ -101,282 +103,304 @@ class _DraftsState extends State<Drafts> {
     setup();
   }
 
+  Future<bool> onWillPop() {
+    Navigator.pushReplacement(context,
+        CupertinoPageRoute(builder: (context) => MainScreenWrapper(index: 0)));
+    return Future.value(true);
+  }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _fontOne = (_size.height * 0.015) / 11;
     _widthOne = _size.width * 0.0008;
 
-    return Scaffold(
-        backgroundColor: AppTheme.backgroundColor,
-        appBar: AppBar(
-          centerTitle: true,
-          title: Text('Drafts'),
-          backgroundColor: AppTheme.primaryColor,
-        ),
-        body: _videos.length > 0
-            ? Form(
-                key: _formKey,
-                child: Container(
-                  child: ListView.builder(
-                      itemCount: _videos.length,
-                      itemBuilder: (BuildContext context, int index) {
-                        getCategory(_videos[index].category);
-                        return Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 20),
-                          child: Container(
-                            margin: EdgeInsets.only(top: 20),
-                            padding: EdgeInsets.symmetric(
-                                horizontal: 10, vertical: 20),
-                            decoration: BoxDecoration(
-                                color: AppTheme.backgroundColor,
-                                borderRadius: BorderRadius.circular(25),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: AppTheme.primaryColor,
-                                    blurRadius: 20,
-                                    offset: Offset(0, 10),
-                                  )
-                                ]),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                AspectRatio(
-                                    aspectRatio: _videos[index].aspectRatio,
-                                    child: Image.network(
-                                      _videos[index].thumbUrl,
-                                      fit: BoxFit.fitWidth,
-                                    )),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.05,
-                                ),
-                                FormFieldFormatting.formFieldContainer(
-                                  child: TextFormField(
-                                    initialValue: _videos[index].videoHashtag,
-                                    keyboardType: TextInputType.text,
-                                    validator: (val) => val.isEmpty ||
-                                            val.replaceAll(" ", '').isEmpty
-                                        ? "Video Title can't be Empty"
-                                        : null,
-                                    onChanged: (val) {
-                                      videoName = val;
-                                      if (_submitted) {
-                                        _formKey.currentState.validate();
-                                      }
-                                    },
-                                    decoration: InputDecoration(
-                                      border: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      disabledBorder: InputBorder.none,
-                                      hintText: "Enter Title",
-                                      hintStyle: TextStyle(
-                                        color: AppTheme.primaryColor,
-                                        fontSize: _fontOne * 15,
-                                      ),
-                                      errorStyle: TextStyle(
-                                        fontSize: _fontOne * 15,
-                                      ),
-                                    ),
-                                    style: TextStyle(
-                                      fontSize: _fontOne * 15,
-                                    ),
+    return WillPopScope(
+      onWillPop: onWillPop,
+      child: Scaffold(
+          backgroundColor: AppTheme.backgroundColor,
+          appBar: AppBar(
+            centerTitle: true,
+            title: Text('Drafts'),
+            backgroundColor: AppTheme.primaryColor,
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back, color: AppTheme.backgroundColor),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (context) => MainScreenWrapper(index: 0)));
+              },
+            ),
+          ),
+          body: _videos.length > 0
+              ? Form(
+                  key: _formKey,
+                  child: Container(
+                    child: ListView.builder(
+                        itemCount: _videos.length,
+                        itemBuilder: (BuildContext context, int index) {
+                          getCategory(_videos[index].category);
+                          return Padding(
+                            padding: EdgeInsets.symmetric(horizontal: 20),
+                            child: Container(
+                              margin: EdgeInsets.only(top: 20),
+                              padding: EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 20),
+                              decoration: BoxDecoration(
+                                  color: AppTheme.backgroundColor,
+                                  borderRadius: BorderRadius.circular(25),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: AppTheme.primaryColor,
+                                      blurRadius: 20,
+                                      offset: Offset(0, 10),
+                                    )
+                                  ]),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  AspectRatio(
+                                      aspectRatio: _videos[index].aspectRatio,
+                                      child: Image.network(
+                                        _videos[index].thumbUrl,
+                                        fit: BoxFit.fitWidth,
+                                      )),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.width *
+                                        0.05,
                                   ),
-                                  leftPadding: _widthOne * 20,
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.05,
-                                ),
-                                FormFieldFormatting.formFieldContainer(
-                                  child: TextFormField(
-                                    initialValue: _videos[index].videoHashtag,
-                                    keyboardType: TextInputType.text,
-                                    validator: (val) => val.isEmpty ||
-                                            val.replaceAll(" ", '').isEmpty
-                                        ? "Video Hashtag can't be Empty"
-                                        : null,
-                                    onChanged: (val) {
-                                      videoHashTag = val;
-                                      if (_submitted) {
-                                        _formKey.currentState.validate();
-                                      }
-                                    },
-                                    decoration: InputDecoration(
-                                      prefix: Text('#'),
-                                      border: InputBorder.none,
-                                      focusedBorder: InputBorder.none,
-                                      enabledBorder: InputBorder.none,
-                                      errorBorder: InputBorder.none,
-                                      disabledBorder: InputBorder.none,
-                                      hintText: "Enter hashtag",
-                                      hintStyle: TextStyle(
-                                        color: AppTheme.primaryColor,
-                                        fontSize: _fontOne * 15,
+                                  FormFieldFormatting.formFieldContainer(
+                                    child: TextFormField(
+                                      initialValue: _videos[index].videoHashtag,
+                                      keyboardType: TextInputType.text,
+                                      validator: (val) => val.isEmpty ||
+                                              val.replaceAll(" ", '').isEmpty
+                                          ? "Video Title can't be Empty"
+                                          : null,
+                                      onChanged: (val) {
+                                        videoName = val;
+                                        if (_submitted) {
+                                          _formKey.currentState.validate();
+                                        }
+                                      },
+                                      decoration: InputDecoration(
+                                        border: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                        hintText: "Enter Title",
+                                        hintStyle: TextStyle(
+                                          color: AppTheme.primaryColor,
+                                          fontSize: _fontOne * 15,
+                                        ),
+                                        errorStyle: TextStyle(
+                                          fontSize: _fontOne * 15,
+                                        ),
                                       ),
-                                      errorStyle: TextStyle(
+                                      style: TextStyle(
                                         fontSize: _fontOne * 15,
                                       ),
                                     ),
-                                    style: TextStyle(
-                                      fontSize: _fontOne * 15,
+                                    leftPadding: _widthOne * 20,
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.width *
+                                        0.05,
+                                  ),
+                                  FormFieldFormatting.formFieldContainer(
+                                    child: TextFormField(
+                                      initialValue: _videos[index].videoHashtag,
+                                      keyboardType: TextInputType.text,
+                                      validator: (val) => val.isEmpty ||
+                                              val.replaceAll(" ", '').isEmpty
+                                          ? "Video Hashtag can't be Empty"
+                                          : null,
+                                      onChanged: (val) {
+                                        videoHashTag = val;
+                                        if (_submitted) {
+                                          _formKey.currentState.validate();
+                                        }
+                                      },
+                                      decoration: InputDecoration(
+                                        prefix: Text('#'),
+                                        border: InputBorder.none,
+                                        focusedBorder: InputBorder.none,
+                                        enabledBorder: InputBorder.none,
+                                        errorBorder: InputBorder.none,
+                                        disabledBorder: InputBorder.none,
+                                        hintText: "Enter hashtag",
+                                        hintStyle: TextStyle(
+                                          color: AppTheme.primaryColor,
+                                          fontSize: _fontOne * 15,
+                                        ),
+                                        errorStyle: TextStyle(
+                                          fontSize: _fontOne * 15,
+                                        ),
+                                      ),
+                                      style: TextStyle(
+                                        fontSize: _fontOne * 15,
+                                      ),
+                                    ),
+                                    leftPadding: _widthOne * 20,
+                                  ),
+                                  SizedBox(
+                                    height: MediaQuery.of(context).size.width *
+                                        0.05,
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.only(
+                                      left: _widthOne * 20,
+                                    ),
+                                    width: _size.width * 0.87,
+                                    decoration: BoxDecoration(
+                                        border: Border.all(
+                                            color: AppTheme.primaryColor),
+                                        borderRadius:
+                                            BorderRadius.circular(15.0)),
+                                    child: DropdownButtonHideUnderline(
+                                      child: DropdownButton(
+                                          value: _selectedCategory,
+                                          dropdownColor:
+                                              AppTheme.pureBlackColor,
+                                          items: [
+                                            DropdownMenuItem(
+                                              child: Text("Vocals",
+                                                  style: TextStyle(
+                                                      color: AppTheme
+                                                          .pureWhiteColor)),
+                                              value: 0,
+                                            ),
+                                            DropdownMenuItem(
+                                                child: Text("Acting",
+                                                    style: TextStyle(
+                                                        color: AppTheme
+                                                            .pureWhiteColor)),
+                                                value: 1),
+                                            DropdownMenuItem(
+                                              child: Text("Instrumental",
+                                                  style: TextStyle(
+                                                      color: AppTheme
+                                                          .pureWhiteColor)),
+                                              value: 2,
+                                            ),
+                                            DropdownMenuItem(
+                                                child: Text("Standup Comedy",
+                                                    style: TextStyle(
+                                                        color: AppTheme
+                                                            .pureWhiteColor)),
+                                                value: 3),
+                                            DropdownMenuItem(
+                                                child: Text("DJing",
+                                                    style: TextStyle(
+                                                        color: AppTheme
+                                                            .pureWhiteColor)),
+                                                value: 4),
+                                            DropdownMenuItem(
+                                                child: Text("Dance",
+                                                    style: TextStyle(
+                                                        color: AppTheme
+                                                            .pureWhiteColor)),
+                                                value: 5),
+                                          ],
+                                          onChanged: (value) {
+                                            _selectedCategory = value;
+                                            switch (value) {
+                                              case 0:
+                                                category = "Vocals";
+                                                break;
+                                              case 1:
+                                                category = "Acting";
+                                                break;
+                                              case 2:
+                                                category = "Instrumental";
+                                                break;
+                                              case 3:
+                                                category = "Standup Comedy";
+                                                break;
+                                              case 4:
+                                                category = "DJing";
+                                                break;
+                                              case 5:
+                                                category = "Dance";
+                                                break;
+                                            }
+                                            setState(() {});
+                                          }),
                                     ),
                                   ),
-                                  leftPadding: _widthOne * 20,
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.width * 0.05,
-                                ),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                    left: _widthOne * 20,
+                                  SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.width / 10,
                                   ),
-                                  width: _size.width * 0.87,
-                                  decoration: BoxDecoration(
-                                      border: Border.all(
-                                          color: AppTheme.primaryColor),
-                                      borderRadius:
-                                          BorderRadius.circular(15.0)),
-                                  child: DropdownButtonHideUnderline(
-                                    child: DropdownButton(
-                                        value: _selectedCategory,
-                                        dropdownColor: AppTheme.elevationColor,
-                                        items: [
-                                          DropdownMenuItem(
-                                            child: Text("Vocals",
-                                                style: TextStyle(
-                                                    color: AppTheme
-                                                        .pureWhiteColor)),
-                                            value: 0,
-                                          ),
-                                          DropdownMenuItem(
-                                              child: Text("Acting",
-                                                  style: TextStyle(
-                                                      color: AppTheme
-                                                          .pureWhiteColor)),
-                                              value: 1),
-                                          DropdownMenuItem(
-                                            child: Text("Instrumental",
-                                                style: TextStyle(
-                                                    color: AppTheme
-                                                        .pureWhiteColor)),
-                                            value: 2,
-                                          ),
-                                          DropdownMenuItem(
-                                              child: Text("Standup Comedy",
-                                                  style: TextStyle(
-                                                      color: AppTheme
-                                                          .pureWhiteColor)),
-                                              value: 3),
-                                          DropdownMenuItem(
-                                              child: Text("DJing",
-                                                  style: TextStyle(
-                                                      color: AppTheme
-                                                          .pureWhiteColor)),
-                                              value: 4),
-                                          DropdownMenuItem(
-                                              child: Text("Dance",
-                                                  style: TextStyle(
-                                                      color: AppTheme
-                                                          .pureWhiteColor)),
-                                              value: 5),
-                                        ],
-                                        onChanged: (value) {
-                                          _selectedCategory = value;
-                                          switch (value) {
-                                            case 0:
-                                              category = "Vocals";
-                                              break;
-                                            case 1:
-                                              category = "Acting";
-                                              break;
-                                            case 2:
-                                              category = "Instrumental";
-                                              break;
-                                            case 3:
-                                              category = "Standup Comedy";
-                                              break;
-                                            case 4:
-                                              category = "DJing";
-                                              break;
-                                            case 5:
-                                              category = "Dance";
-                                              break;
-                                          }
-                                          setState(() {});
-                                        }),
-                                  ),
-                                ),
-                                SizedBox(
-                                  height:
-                                      MediaQuery.of(context).size.width / 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    FlatButton(
-                                        onPressed: () {
-                                          removeVideoFromDrafts(index);
-                                          setup();
-                                        },
-                                        shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                                color: AppTheme.primaryColor),
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        child: _uploadingVideo
-                                            ? CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        AppTheme.primaryColor),
-                                              )
-                                            : Text("Delete")),
-                                    FlatButton(
-                                        onPressed: () {
-                                          if (_formKey.currentState
-                                              .validate()) {
-                                            moveVideoToPost(index);
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      FlatButton(
+                                          onPressed: () {
                                             removeVideoFromDrafts(index);
                                             setup();
-                                          } else {
-                                            setState(() {
-                                              _submitted = true;
-                                            });
-                                          }
-                                        },
-                                        shape: RoundedRectangleBorder(
-                                            side: BorderSide(
-                                                color: AppTheme.primaryColor),
-                                            borderRadius:
-                                                BorderRadius.circular(5)),
-                                        child: _uploadingVideo
-                                            ? CircularProgressIndicator(
-                                                valueColor:
-                                                    AlwaysStoppedAnimation<
-                                                            Color>(
-                                                        AppTheme.primaryColor),
-                                              )
-                                            : Text("Upload")),
-                                  ],
-                                ),
-                              ],
+                                          },
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  color: AppTheme.primaryColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          child: _uploadingVideo
+                                              ? CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                              Color>(
+                                                          AppTheme
+                                                              .primaryColor),
+                                                )
+                                              : Text("Delete")),
+                                      FlatButton(
+                                          onPressed: () {
+                                            if (_formKey.currentState
+                                                .validate()) {
+                                              moveVideoToPost(index);
+                                              removeVideoFromDrafts(index);
+                                              setup();
+                                            } else {
+                                              setState(() {
+                                                _submitted = true;
+                                              });
+                                            }
+                                          },
+                                          shape: RoundedRectangleBorder(
+                                              side: BorderSide(
+                                                  color: AppTheme.primaryColor),
+                                              borderRadius:
+                                                  BorderRadius.circular(5)),
+                                          child: _uploadingVideo
+                                              ? CircularProgressIndicator(
+                                                  valueColor:
+                                                      AlwaysStoppedAnimation<
+                                                              Color>(
+                                                          AppTheme
+                                                              .primaryColor),
+                                                )
+                                              : Text("Upload")),
+                                    ],
+                                  ),
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      }),
-                ),
-              )
-            : Center(
-                child: Text(
-                  "No saved drafts",
-                  style: TextStyle(fontSize: 18, color: AppTheme.primaryColor),
-                ),
-              ));
+                          );
+                        }),
+                  ),
+                )
+              : Center(
+                  child: Text(
+                    "No saved drafts",
+                    style:
+                        TextStyle(fontSize: 18, color: AppTheme.primaryColor),
+                  ),
+                )),
+    );
   }
 }

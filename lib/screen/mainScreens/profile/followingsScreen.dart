@@ -126,7 +126,7 @@ class _FollowingsPageState extends State<FollowingsPage>
                             },
                             child: Container(
                               margin: EdgeInsets.symmetric(vertical: 0.8),
-                              color: AppTheme.elevationColor,
+                              color: AppTheme.pureBlackColor,
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: Colors.indigoAccent,

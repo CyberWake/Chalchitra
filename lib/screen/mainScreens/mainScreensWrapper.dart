@@ -209,6 +209,33 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     return Future.value(true);
   }
 
+  changePage(int index) {
+    if (_userAuth.user == null) {
+      Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => Authentication(AuthIndex.REGISTER)));
+    }
+    print(index);
+    if (index == 4) {
+      print(index);
+      UserAuth().account.listen((user) {
+        if (user != null) {
+          _profilePage = ProfilePage(uid: user.uid);
+        }
+      });
+      _isMessagePage = false;
+      _currentIndex = index;
+    } else if (index == 3) {
+      _isMessagePage = true;
+      _currentIndex = index;
+    } else {
+      _isMessagePage = false;
+      _currentIndex = index;
+    }
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
@@ -268,7 +295,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                   : IconButton(
                       icon: Icon(
                         Icons.menu,
-                        color: AppTheme.elevationColor,
+                        color: AppTheme.backgroundColor,
                         size: _iconOne * 25,
                       ),
                       onPressed: () =>
@@ -286,15 +313,16 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
             width: _size.width * 0.5,
             child: Drawer(
                 child: Container(
-              color: AppTheme.backgroundColor,
+              color: AppTheme.primaryColor,
               child: Column(
                 children: [
-                  DrawerHeader(
-                    child: Center(
-                      child: Text(
-                        user == null ? " " : user.username,
-                        style: TextStyle(color: Colors.white),
-                      ),
+                  Container(
+                    alignment: Alignment.centerLeft,
+                    margin: EdgeInsets.only(top: _size.height * 0.039),
+                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                    child: Text(
+                      user == null ? " " : user.username,
+                      style: TextStyle(color: Colors.white, fontSize: 24),
                     ),
                   ),
                   Divider(
@@ -303,8 +331,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                   ),
                   ListTile(
                     leading: Icon(Icons.drafts, color: Colors.white),
-                    title: Text("Drafted Post",
-                        style: TextStyle(color: Colors.white)),
+                    title:
+                        Text("Drafts", style: TextStyle(color: Colors.white)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(
@@ -366,8 +394,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           ),
           bottomNavigationBar: CurvedNavigationBar(
             index: _currentIndex,
-            height: _heightOne * 45,
-            backgroundColor: Colors.transparent,
+            height: _heightOne * 55,
+            backgroundColor: AppTheme.backgroundColor,
             color: AppTheme.primaryColor,
             buttonBackgroundColor: AppTheme.primaryColor,
             items: <Widget>[
@@ -401,31 +429,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
               ),
             ],
             onTap: (index) async {
-              if (_userAuth.user == null) {
-                Navigator.pushReplacement(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) =>
-                            Authentication(AuthIndex.REGISTER)));
-              }
-              print(index);
-              if (index == 4) {
-                print(index);
-                UserAuth().account.listen((user) {
-                  if (user != null) {
-                    _profilePage = ProfilePage(uid: user.uid);
-                  }
-                });
-                _isMessagePage = false;
-                _currentIndex = index;
-              } else if (index == 3) {
-                _isMessagePage = true;
-                _currentIndex = index;
-              } else {
-                _isMessagePage = false;
-                _currentIndex = index;
-              }
-              setState(() {});
+              changePage(index);
             },
           ),
           body: GestureDetector(
@@ -437,41 +441,18 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                 if (_currentIndex + 1 < 5) {
                   print("going forward");
                   _currentIndex += 1;
-                  setState(() {});
+                  changePage(_currentIndex);
                 }
               } else if (offset.dx > 0) {
                 print(offset.dx);
                 if (_currentIndex - 1 >= 0) {
                   print("going backward");
                   _currentIndex -= 1;
-                  setState(() {});
+                  changePage(_currentIndex);
                 }
               }
             },
-            child: GestureDetector(
-              onHorizontalDragEnd: (DragEndDetails details) {
-                Offset offset = details.velocity.pixelsPerSecond;
-                print(offset);
-                if (offset.dx < 0) {
-                  print(offset.dx);
-                  if (_currentIndex + 1 < 5) {
-                    print("going forward");
-                    _currentIndex += 1;
-                    setState(() {});
-                  }
-                } else if (offset.dx > 0) {
-                  print(offset.dx);
-                  if (_currentIndex - 1 >= 0) {
-                    print("going backward");
-                    _currentIndex -= 1;
-                    setState(() {});
-                  }
-                }
-              },
-              child: Container(
-                  margin: EdgeInsets.only(bottom: 10),
-                  child: _screens[_currentIndex]),
-            ),
+            child: Container(child: _screens[_currentIndex]),
           )),
     );
   }

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/authentication/methods/forgotPasswordForm.dart';
 import 'package:wowtalent/screen/authentication/methods/loginForm.dart';
 import 'package:wowtalent/screen/authentication/methods/registerForm.dart';
@@ -87,9 +88,9 @@ class _AuthenticationState extends State<Authentication> {
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                   colors: [
-                    Color(0xFFFC9132),
-                    Color(0xFFFC9132).withOpacity(0.9),
-                    Color(0xFFFC9132),
+                    AppTheme.primaryColor,
+                    AppTheme.primaryColor.withOpacity(0.9),
+                    AppTheme.primaryColor,
                   ],
                 ),
                 borderRadius: BorderRadius.only(
@@ -106,7 +107,7 @@ class _AuthenticationState extends State<Authentication> {
                   Text(
                     topText(),
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.backgroundColor,
                         fontSize: widget.index == AuthIndex.FORGOT
                             ? _fontOne * 35
                             : _fontOne * 50,
@@ -115,7 +116,7 @@ class _AuthenticationState extends State<Authentication> {
                   Text(
                     greetingText(),
                     style: TextStyle(
-                        color: Colors.white,
+                        color: AppTheme.backgroundColor,
                         fontSize: _fontOne * 20,
                         fontWeight: FontWeight.w300),
                   ),
@@ -131,10 +132,10 @@ class _AuthenticationState extends State<Authentication> {
               height: _size.height * 0.7,
               width: _size.width * 0.9,
               decoration: BoxDecoration(
-                  color: Colors.white,
+                  color: AppTheme.backgroundColor,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.purple[300].withOpacity(0.4),
+                      color: AppTheme.selectorTileColor.withOpacity(0.4),
                       offset: Offset(0.0, -10.0), //(x,y)
                       blurRadius: 15.0,
                     ),

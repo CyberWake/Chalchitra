@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -41,6 +39,7 @@ class _ProfilePageState extends State<ProfilePage> {
   bool isSecure = false;
   bool seeFollowers = false;
   bool seeFollowings = false;
+  bool refreshVideos = false;
 
   //UserData
   String currentUserID;
@@ -141,116 +140,102 @@ class _ProfilePageState extends State<ProfilePage> {
       currentUserBio = user.bio;
       currentUserImgUrl = user.photoUrl;
       print("totalFollowings: $totalFollowings");
-      setup();
     }
     Size size = MediaQuery.of(context).size;
     return Container(
-      color: AppTheme.elevationColor,
-      child: RefreshIndicator(
-        color: AppTheme.backgroundColor,
-        backgroundColor: AppTheme.primaryColor,
-        onRefresh: () async {
-          if (widget.uid != _userAuth.user.uid) {
-            mySuper();
-          } else {
-            setup();
-            getPrivacy();
-          }
-        },
-        child: Column(
-          children: [
-            Stack(
-              children: [
-                getProfileTopView(context),
-                SingleChildScrollView(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppTheme.backgroundColor,
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(20),
-                        topLeft: Radius.circular(20),
-                      ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.grey.withOpacity(0.5),
-                          offset: Offset(0.0, -10.0), //(x,y)
-                          blurRadius: 10.0,
-                        ),
-                      ],
+      color: AppTheme.backgroundColor,
+      child: Column(
+        children: [
+          Stack(
+            children: [
+              getProfileTopView(context),
+              SingleChildScrollView(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: AppTheme.backColor,
+                    borderRadius: BorderRadius.only(
+                      topRight: Radius.circular(20),
+                      topLeft: Radius.circular(20),
                     ),
-                    height: size.height * 0.4423,
-                    width: size.width,
-                    margin: EdgeInsets.only(top: size.height * 0.35),
-                    padding: EdgeInsets.only(
-                        top: size.height * 0.1,
-                        left: size.width * 0.05,
-                        right: size.width * 0.05),
-                    child: buildPictureCard(),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.grey.withOpacity(0.5),
+                        offset: Offset(0.0, -10.0), //(x,y)
+                        blurRadius: 10.0,
+                      ),
+                    ],
                   ),
+                  height: size.height * 0.4423,
+                  width: size.width,
+                  margin: EdgeInsets.only(top: size.height * 0.35),
+                  padding: EdgeInsets.only(
+                      top: size.height * 0.1,
+                      left: size.width * 0.05,
+                      right: size.width * 0.05),
+                  child: buildPictureCard(),
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      color: Colors.transparent,
-                      margin: EdgeInsets.only(top: size.height * 0.16),
-                      width: size.width * 0.9,
-                      child: Card(
-                        elevation: 20,
-                        color: Colors.yellow[100],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(10.0),
-                          child: Column(
-                            children: [
-                              SizedBox(
-                                height: 15,
-                              ),
-                              user != null
-                                  ? Text(
-                                      currentUserBio == null
-                                          ? " Hello World!"
-                                          : currentUserBio,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        color: AppTheme.elevationColor,
-                                        fontSize: 14,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    )
-                                  : Container(),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              createButton(),
-                              SizedBox(
-                                height: 15,
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  buildPostStat(),
-                                  getFollowers(),
-                                  getFollowings()
-                                ],
-                              ),
-                              SizedBox(
-                                height: 15,
-                              ),
-                            ],
-                          ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    color: Colors.transparent,
+                    margin: EdgeInsets.only(top: size.height * 0.16),
+                    width: size.width * 0.9,
+                    child: Card(
+                      elevation: 20,
+                      color: Colors.yellow[100],
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(Radius.circular(10)),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: Column(
+                          children: [
+                            SizedBox(
+                              height: 15,
+                            ),
+                            user != null
+                                ? Text(
+                                    currentUserBio == null
+                                        ? " Hello World!"
+                                        : currentUserBio,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      color: AppTheme.pureBlackColor,
+                                      fontSize: 14,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  )
+                                : Container(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            createButton(),
+                            SizedBox(
+                              height: 15,
+                            ),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                buildPostStat(),
+                                getFollowers(),
+                                getFollowings()
+                              ],
+                            ),
+                            SizedBox(
+                              height: 15,
+                            ),
+                          ],
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -271,7 +256,7 @@ class _ProfilePageState extends State<ProfilePage> {
   getProfileTopView(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.backgroundColor,
+        color: AppTheme.backColor,
         borderRadius: BorderRadius.only(
           bottomRight: Radius.circular(20),
           bottomLeft: Radius.circular(20),
@@ -291,6 +276,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Hero(
             tag: widget.url,
             child: Row(
+              mainAxisSize: MainAxisSize.max,
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 CircleAvatar(
@@ -326,7 +312,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.pureWhiteColor,
+                          color: AppTheme.backgroundColor,
                         ),
                       ),
                     ),
@@ -413,38 +399,24 @@ class _ProfilePageState extends State<ProfilePage> {
   Container createButtonTitleORFunction({String title, Function function}) {
     return Container(
         padding: EdgeInsets.only(top: 5),
-        child: Platform.isIOS
-            ? CupertinoButton(
-                borderRadius: BorderRadius.circular(30),
-                color: AppTheme.primaryColor,
-                onPressed: () async {
-                  await function();
-                  setState(() {});
-                },
-                child: Text(title,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 16)),
-              )
-            : RaisedButton(
-                color: AppTheme.primaryColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
-                onPressed: () async {
-                  await function();
-                  setState(() {});
-                },
-                child: Container(
-                  width: 150,
-                  height: 30,
-                  child: Text(title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.elevationColor,
-                          fontSize: 16)),
-                  alignment: Alignment.center,
-                )));
+        child: RaisedButton(
+            color: AppTheme.primaryColor,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(15))),
+            onPressed: () async {
+              await function();
+              setState(() {});
+            },
+            child: Container(
+              width: 150,
+              height: 30,
+              child: Text(title,
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      color: AppTheme.backgroundColor,
+                      fontSize: 16)),
+              alignment: Alignment.center,
+            )));
   }
 
   removeVideoFromUserAccount(int index) async {
@@ -479,10 +451,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     "Delete",
-                    style: TextStyle(color: AppTheme.backgroundColor),
+                    style: TextStyle(color: AppTheme.backColor),
                   ),
                   Icon(Icons.delete_rounded,
-                      size: 20, color: AppTheme.backgroundColor),
+                      size: 20, color: AppTheme.backColor),
                 ],
               ),
             ),
@@ -562,7 +534,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppTheme.elevationColor,
+            color: AppTheme.pureBlackColor,
           ),
         ),
         Text(
@@ -570,7 +542,7 @@ class _ProfilePageState extends State<ProfilePage> {
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: AppTheme.elevationColor,
+            color: AppTheme.pureBlackColor,
           ),
         ),
       ],
@@ -595,14 +567,14 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.elevationColor),
+                color: AppTheme.pureBlackColor),
           ),
           Text(
             'Followers',
             style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.elevationColor),
+                color: AppTheme.pureBlackColor),
           ),
         ],
       ),
@@ -627,14 +599,14 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.elevationColor),
+                color: AppTheme.pureBlackColor),
           ),
           Text(
             'Following',
             style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.bold,
-                color: AppTheme.elevationColor),
+                color: AppTheme.pureBlackColor),
           ),
         ],
       ),

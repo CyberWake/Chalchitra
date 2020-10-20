@@ -106,7 +106,7 @@ class _SearchUserState extends State<SearchUser> {
                         color: AppTheme.backgroundColor,
                         border: Border(
                             bottom: BorderSide(
-                                color: Colors.orange.withOpacity(0.5))),
+                                color: AppTheme.primaryColor.withOpacity(0.5))),
                         boxShadow: [
                           BoxShadow(
                               offset: Offset(0, 2),
@@ -118,7 +118,7 @@ class _SearchUserState extends State<SearchUser> {
                         IconButton(
                             icon: Icon(
                               Icons.arrow_back_ios,
-                              color: Colors.orange.shade400,
+                              color: AppTheme.primaryColor,
                             ),
                             onPressed: () => Navigator.pop(context)),
                         Expanded(
@@ -133,7 +133,7 @@ class _SearchUserState extends State<SearchUser> {
                                 border: InputBorder.none,
                                 suffixIcon: IconButton(
                                     icon: Icon(Icons.clear,
-                                        color: Colors.orange.shade400),
+                                        color: AppTheme.primaryColor),
                                     onPressed: () {
                                       searchTextEditingController.clear();
                                       searchUserResult = [];
@@ -178,7 +178,7 @@ class _SearchUserState extends State<SearchUser> {
         children: [
           Icon(
             Icons.group,
-            color: Colors.orange.shade300,
+            color: AppTheme.primaryColor,
             size: 40,
           ),
           SizedBox(
@@ -188,7 +188,7 @@ class _SearchUserState extends State<SearchUser> {
             "Search User",
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.orange.shade300,
+                color: AppTheme.primaryColor,
                 fontWeight: FontWeight.w500,
                 fontSize: 25),
           )

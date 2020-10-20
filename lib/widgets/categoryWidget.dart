@@ -13,8 +13,11 @@ class CategoryStoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: (){
-        Navigator.of(context).push(CupertinoPageRoute(builder: (context) => Category(categoryName: name,)));
+      onTap: () {
+        Navigator.of(context).push(CupertinoPageRoute(
+            builder: (context) => Category(
+                  categoryName: name,
+                )));
       },
       child: Padding(
         padding: const EdgeInsets.only(right: 10),
@@ -24,7 +27,7 @@ class CategoryStoryItem extends StatelessWidget {
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: AppTheme.backgroundColor,
-                border: Border.all(color: AppTheme.primaryColor)),
+                border: Border.all(color: AppTheme.primaryColor, width: 2)),
             child: Text(
               name,
               style: TextStyle(

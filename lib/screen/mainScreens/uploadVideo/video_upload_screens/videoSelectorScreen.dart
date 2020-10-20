@@ -81,7 +81,7 @@ class _VideoUploaderState extends State<VideoUploader>
               child: Container(
                 padding: EdgeInsets.all(50),
                 decoration: BoxDecoration(
-                    color: AppTheme.elevationColor,
+                    color: AppTheme.selectorTileColor,
                     borderRadius: BorderRadius.circular(25),
                     boxShadow: [
                       BoxShadow(
@@ -98,7 +98,8 @@ class _VideoUploaderState extends State<VideoUploader>
                       "Showcase your Talent",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: AppTheme.pureWhiteColor),
+                          fontSize: 18,
+                          color: AppTheme.textColorVideoSelectorScreen),
                     ),
                     SizedBox(
                       height: 10.0,
@@ -119,12 +120,12 @@ class _VideoUploaderState extends State<VideoUploader>
                             },
                             shape: RoundedRectangleBorder(
                                 side: BorderSide(
-                                  color: AppTheme.primaryColor,
+                                  color: AppTheme.textColorVideoSelectorScreen,
                                 ),
                                 borderRadius: BorderRadius.circular(5)),
                             child: Text("Next",
                                 style: TextStyle(
-                                  color: AppTheme.pureWhiteColor,
+                                  color: AppTheme.textColorVideoSelectorScreen,
                                 )))
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -135,12 +136,14 @@ class _VideoUploaderState extends State<VideoUploader>
                                   },
                                   shape: RoundedRectangleBorder(
                                       side: BorderSide(
-                                        color: AppTheme.primaryColor,
+                                        color: AppTheme
+                                            .textColorVideoSelectorScreen,
                                       ),
                                       borderRadius: BorderRadius.circular(5)),
                                   child: Text("Turn on Camera",
                                       style: TextStyle(
-                                        color: AppTheme.pureWhiteColor,
+                                        color: AppTheme
+                                            .textColorVideoSelectorScreen,
                                       ))),
                               FlatButton(
                                   onPressed: () {
@@ -148,12 +151,14 @@ class _VideoUploaderState extends State<VideoUploader>
                                   },
                                   shape: RoundedRectangleBorder(
                                       side: BorderSide(
-                                        color: AppTheme.primaryColor,
+                                        color: AppTheme
+                                            .textColorVideoSelectorScreen,
                                       ),
                                       borderRadius: BorderRadius.circular(5)),
                                   child: Text("Pick from Gallery",
                                       style: TextStyle(
-                                        color: AppTheme.pureWhiteColor,
+                                        color: AppTheme
+                                            .textColorVideoSelectorScreen,
                                       ))),
                             ],
                           ),

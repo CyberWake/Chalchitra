@@ -47,10 +47,11 @@ class _VideoPreviewState extends State<VideoPreview> {
     setState(() {
       _processPhase = "Generating Thumbnail";
     });
-    thumbnailFile = await VideoCompress.getFileThumbnail(rawVideoFile.path,
-        quality: 100, // default(100)
-        position: -1 // default(-1)
-        );
+    thumbnailFile = await VideoCompress.getFileThumbnail(
+      rawVideoFile.path,
+      quality: 100, // default(100)
+      position: _controller.value.position.inSeconds - 1, // default(-1)
+    );
     aspectRatio = mediaInfo.height / mediaInfo.width;
     mediaInfoPath = mediaInfo.path;
     thumbnailInfoPath = thumbnailFile.path;
@@ -165,6 +166,14 @@ class _VideoPreviewState extends State<VideoPreview> {
                   Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
+                      Container(
+                        padding: EdgeInsets.symmetric(vertical: 10),
+                        child: Text(
+                          "Custom Thumbnail",
+                          style: TextStyle(
+                              color: AppTheme.pureWhiteColor, fontSize: 20),
+                        ),
+                      ),
                       AspectRatio(
                         aspectRatio: _controller.value.aspectRatio,
                         child: InkWell(
@@ -229,6 +238,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                           Padding(
                             padding: EdgeInsets.only(right: 25.0, bottom: 10),
                             child: FloatingActionButton(
+                              backgroundColor: AppTheme.primaryColor,
                               onPressed: () {
                                 setState(() {
                                   _controller.value.isPlaying

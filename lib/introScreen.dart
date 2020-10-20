@@ -73,7 +73,9 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
             text,
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.white, fontSize: 28, fontWeight: FontWeight.bold),
+                color: AppTheme.backgroundColor,
+                fontSize: 28,
+                fontWeight: FontWeight.bold),
           ),
         ),
         SizedBox(
@@ -89,7 +91,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             child: const Text(
               'Next',
-              style: TextStyle(fontSize: 20, color: AppTheme.backgroundColor),
+              style: TextStyle(fontSize: 20, color: AppTheme.primaryColor),
             ),
             onPressed: () {
               _controller.pause();

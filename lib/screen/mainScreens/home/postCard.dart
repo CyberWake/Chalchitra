@@ -207,7 +207,7 @@ class _PostCardState extends State<PostCard> {
       height: _size.height * 0.4,
       width: _size.width * 0.9,
       decoration: BoxDecoration(
-        color: AppTheme.elevationColor,
+        color: AppTheme.pureBlackColor,
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(25),
           bottomLeft: Radius.circular(25),
@@ -434,7 +434,7 @@ class _PostCardState extends State<PostCard> {
                               trackHeight: 4.0,
                               thumbColor: Colors.orange[600],
                               thumbShape: StarThumb(thumbRadius: 20),
-                              overlayColor: AppTheme.elevationColor,
+                              overlayColor: AppTheme.pureBlackColor,
                               overlayShape:
                                   RoundSliderOverlayShape(overlayRadius: 18.0),
                             ),

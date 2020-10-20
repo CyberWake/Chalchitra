@@ -352,7 +352,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
           leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: AppTheme.elevationColor,
+                color: AppTheme.pureBlackColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -370,7 +370,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
             IconButton(
               icon: Icon(
                 Icons.save,
-                color: AppTheme.elevationColor,
+                color: AppTheme.pureBlackColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -509,7 +509,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton(
                                         value: _selectedCategory,
-                                        dropdownColor: AppTheme.elevationColor,
+                                        dropdownColor: AppTheme.pureBlackColor,
                                         items: [
                                           DropdownMenuItem(
                                             child: Text("Vocals",

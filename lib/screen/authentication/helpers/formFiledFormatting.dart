@@ -23,7 +23,7 @@ class FormFieldFormatting {
     return Container(
       padding: EdgeInsets.only(left: leftPadding),
       decoration: BoxDecoration(
-          border: Border.all(color: Color(0xFFFC9132)),
+          border: Border.all(color: AppTheme.primaryColor),
           borderRadius: BorderRadius.circular(15.0)),
       child: child,
     );

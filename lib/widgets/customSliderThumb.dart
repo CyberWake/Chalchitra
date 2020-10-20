@@ -46,7 +46,7 @@ class StarThumb extends SliderComponentShape {
       style: TextStyle(
         fontSize: thumbRadius * .6,
         fontWeight: FontWeight.w700,
-        color: AppTheme.elevationColor,
+        color: AppTheme.pureBlackColor,
       ),
       text: getValue(value),
     );

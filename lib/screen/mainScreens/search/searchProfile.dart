@@ -14,27 +14,23 @@ class SearchProfile extends StatefulWidget {
 class _SearchProfileState extends State<SearchProfile> {
   double _heightOne;
   double _widthOne;
-  double _fontOne;
-  double _iconOne;
   Size _size;
   @override
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
     _heightOne = (_size.height * 0.007) / 5;
-    _fontOne = (_size.height * 0.015) / 11;
-    _iconOne = (_size.height * 0.066) / 50;
     return Scaffold(
-      backgroundColor: AppTheme.backgroundColor,
+      backgroundColor: AppTheme.backColor,
       body: Container(
-        height: double.infinity,
+        color: AppTheme.backColor,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [
             Container(
+              color: AppTheme.primaryColor,
               padding: EdgeInsets.only(
-                bottom: _heightOne * 20,
-                top: _heightOne * 40,
+                top: _heightOne * 35,
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -46,15 +42,15 @@ class _SearchProfileState extends State<SearchProfile> {
                   IconButton(
                     icon: Icon(
                       Icons.arrow_back_ios,
-                      color: AppTheme.pureWhiteColor,
+                      color: AppTheme.backgroundColor,
                     ),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  Expanded(child: Container()),
+                  Spacer(),
                   IconButton(
                     icon: Icon(
                       Icons.message,
-                      color: AppTheme.pureWhiteColor,
+                      color: AppTheme.backgroundColor,
                     ),
                     onPressed: () => Navigator.push(
                         context,

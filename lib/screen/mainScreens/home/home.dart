@@ -153,12 +153,15 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         snapshot.data.documents.forEach(
                             (ds) => videoList.add(VideoInfo.fromDocument(ds)));
                         if (snapshot.data.documents.length == 0) {
-                          return Center(
-                            child: Text(
-                              "No videos to show",
-                              style: TextStyle(
-                                color: AppTheme.primaryColor,
-                                fontSize: 16,
+                          return Container(
+                            color: AppTheme.backgroundColor,
+                            child: Center(
+                              child: Text(
+                                "No videos to show",
+                                style: TextStyle(
+                                  color: AppTheme.primaryColor,
+                                  fontSize: 16,
+                                ),
                               ),
                             ),
                           );
