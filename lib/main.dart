@@ -12,13 +12,15 @@ import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 import 'package:wowtalent/splashScreen.dart';
 
 SharedPreferences prefs;
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   prefs = await SharedPreferences.getInstance();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: Colors.black, // navigation bar color
-    statusBarColor: AppTheme.primaryColor, // status bar color
+    systemNavigationBarColor: AppTheme.backColor,
+    statusBarBrightness: Brightness.light, // navigation bar color
+    statusBarColor: AppTheme.primaryColor,
+    // status bar color
   ));
   runApp(MyApp());
 }
@@ -35,12 +37,14 @@ class MyApp extends StatelessWidget {
           debugShowCheckedModeBanner: false,
           title: 'WowTalent',
           theme: ThemeData(
-            backgroundColor: Color(0xFF181818),
-            primaryColor: Color(0xFFFFCF40),
+            backgroundColor: Color(0xFFEBEBEB),
+            primaryColor: Color(0xFF253A52),
           ),
           home: SplashScreen(
             navigateAfterSeconds: prefs.containsKey('onBoarded')
-                ? MainScreenWrapper(index: _userAuth.user != null ? 0 : 1,)
+                ? MainScreenWrapper(
+                    index: _userAuth.user != null ? 0 : 1,
+                  )
                 : OnBoardScreen1(),
           ),
         ),

@@ -144,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     Size size = MediaQuery.of(context).size;
     return Container(
-      color: AppTheme.backgroundColor,
+      color: AppTheme.backColor,
       child: Column(
         children: [
           Stack(
@@ -526,8 +526,8 @@ class _ProfilePageState extends State<ProfilePage> {
                   );
                 },
                 child: Container(
-                  width: size.width * 0.22,
-                  height: size.height * 0.22,
+                  width: size.width * 0.24,
+                  height: size.height * 0.24,
                   margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
                     color: Colors.black,
@@ -537,8 +537,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     borderRadius: BorderRadius.circular(10.5),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        offset: Offset(0.0, 10.0), //(x,y)
+                        color: Colors.grey.withOpacity(0.4),
+                        offset: Offset(0.5, 10.0), //(x,y)
                         blurRadius: 10.0,
                       ),
                     ],

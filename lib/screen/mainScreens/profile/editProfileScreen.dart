@@ -450,26 +450,26 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: DropdownButtonHideUnderline(
               child: DropdownButton(
                   value: _selectedGender,
-                  dropdownColor: AppTheme.pureBlackColor,
+                  dropdownColor: Colors.white,
                   isExpanded: true,
                   items: [
                     DropdownMenuItem(
                       child: Text("Male",
-                          style: TextStyle(color: AppTheme.pureWhiteColor)),
+                          style: TextStyle(color: AppTheme.primaryColor)),
                       value: 0,
                     ),
                     DropdownMenuItem(
                       child: Text("Female",
-                          style: TextStyle(color: AppTheme.pureWhiteColor)),
+                          style: TextStyle(color: AppTheme.primaryColor)),
                       value: 1,
                     ),
                     DropdownMenuItem(
                         child: Text("Others",
-                            style: TextStyle(color: AppTheme.pureWhiteColor)),
+                            style: TextStyle(color: AppTheme.primaryColor)),
                         value: 2),
                     DropdownMenuItem(
                         child: Text("Prefer not to say",
-                            style: TextStyle(color: AppTheme.pureWhiteColor)),
+                            style: TextStyle(color: AppTheme.primaryColor)),
                         value: 3),
                   ],
                   onChanged: (value) {

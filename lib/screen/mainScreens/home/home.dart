@@ -144,7 +144,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                       if (!snapshot.hasData) {
                         return Center(
                           child: SpinKitCircle(
-                            color: AppTheme.primaryColor,
+                            color: AppTheme.backgroundColor,
                             size: 60,
                           ),
                         );

@@ -143,7 +143,7 @@ class _MessageState extends State<Message> {
         if (!snapshot.hasData) {
           return Center(
             child: SpinKitCircle(
-              color: AppTheme.primaryColor,
+              color: AppTheme.backgroundColor,
               size: _fontOne * 60,
             ),
           );
@@ -175,7 +175,7 @@ class _MessageState extends State<Message> {
           } else if (_usersDetails.length < keys.length) {
             return Center(
               child: SpinKitCircle(
-                color: AppTheme.primaryColor,
+                color: AppTheme.backgroundColor,
                 size: _fontOne * 60,
               ),
             );
@@ -203,6 +203,7 @@ class _MessageState extends State<Message> {
                       ),
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 15),
+                      margin: EdgeInsets.symmetric(vertical: 2),
                       child: Row(children: <Widget>[
                         Container(
                           decoration: BoxDecoration(

@@ -95,6 +95,10 @@ class UserVideoStore {
   static deleteUploadedVideo(VideoInfo video) async {
     try {
       await _allVideos.doc(video.videoId).delete();
+      await _videoComments.doc(video.videoId).delete();
+      //await _videoLikes.doc(video.videoId).delete();   #todo
+      //await _videoRating.doc(video.videoId).delete();  #todo
+      //await _videoWatched.doc(video.videoId).delete(); #todo
       await _users
           .doc(_userAuth.user.uid)
           .update({"videoCount": FieldValue.increment(-1)});

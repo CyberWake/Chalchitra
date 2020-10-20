@@ -366,8 +366,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       Navigator.pop(context);
                       await FlutterShare.share(
                           title: 'Join WowTalent',
-                          text: 'I am Loving the app. I invite you to join me' +
-                              ' in the journey to show your talent!!',
+                          text:
+                              "I'm loving this app, WowTalent, world's largest talent discovery platform. Download Here:",
                           linkUrl:
                               'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
                           chooserTitle: 'Invite');

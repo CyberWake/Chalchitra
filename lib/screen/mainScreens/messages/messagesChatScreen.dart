@@ -114,7 +114,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       ),
                       child: _loading ? Center(
                         child: SpinKitCircle(
-                          color: AppTheme.primaryColor,
+                          color: AppTheme.backgroundColor,
                           size: _fontOne * 60,
                         ),
                       ): messages()

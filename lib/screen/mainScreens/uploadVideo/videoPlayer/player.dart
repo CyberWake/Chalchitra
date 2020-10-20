@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -588,6 +587,7 @@ class _PlayerState extends State<Player> {
                                                     }
                                                     _processing = false;
                                                   }
+                                                  setup();
                                                   setState(() {});
                                                 }
                                               }),

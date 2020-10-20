@@ -25,6 +25,7 @@ class _DraftsState extends State<Drafts> {
   bool _uploadingVideo = false;
   double _fontOne;
   bool _submitted = false;
+  bool didUpload = false;
   int _selectedCategory = 0;
   String category = "Vocals";
   double _widthOne;
@@ -104,9 +105,16 @@ class _DraftsState extends State<Drafts> {
   }
 
   Future<bool> onWillPop() {
-    Navigator.pushReplacement(context,
-        CupertinoPageRoute(builder: (context) => MainScreenWrapper(index: 0)));
-    return Future.value(true);
+    if (didUpload) {
+      Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+              builder: (context) => MainScreenWrapper(index: 0)));
+      return Future.value(true);
+    } else {
+      Navigator.pop(context);
+      return Future.value(true);
+    }
   }
 
   @override
@@ -126,10 +134,14 @@ class _DraftsState extends State<Drafts> {
             leading: IconButton(
               icon: Icon(Icons.arrow_back, color: AppTheme.backgroundColor),
               onPressed: () {
-                Navigator.pushReplacement(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (context) => MainScreenWrapper(index: 0)));
+                if (didUpload) {
+                  Navigator.pushReplacement(
+                      context,
+                      CupertinoPageRoute(
+                          builder: (context) => MainScreenWrapper(index: 0)));
+                } else {
+                  Navigator.pop(context);
+                }
               },
             ),
           ),
@@ -264,45 +276,45 @@ class _DraftsState extends State<Drafts> {
                                       child: DropdownButton(
                                           value: _selectedCategory,
                                           dropdownColor:
-                                              AppTheme.pureBlackColor,
+                                              AppTheme.backgroundColor,
                                           items: [
                                             DropdownMenuItem(
                                               child: Text("Vocals",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .pureWhiteColor)),
+                                                          .primaryColor)),
                                               value: 0,
                                             ),
                                             DropdownMenuItem(
                                                 child: Text("Acting",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .pureWhiteColor)),
+                                                            .primaryColor)),
                                                 value: 1),
                                             DropdownMenuItem(
                                               child: Text("Instrumental",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .pureWhiteColor)),
+                                                          .primaryColor)),
                                               value: 2,
                                             ),
                                             DropdownMenuItem(
                                                 child: Text("Standup Comedy",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .pureWhiteColor)),
+                                                            .primaryColor)),
                                                 value: 3),
                                             DropdownMenuItem(
                                                 child: Text("DJing",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .pureWhiteColor)),
+                                                            .primaryColor)),
                                                 value: 4),
                                             DropdownMenuItem(
                                                 child: Text("Dance",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .pureWhiteColor)),
+                                                            .primaryColor)),
                                                 value: 5),
                                           ],
                                           onChanged: (value) {
@@ -364,6 +376,7 @@ class _DraftsState extends State<Drafts> {
                                                 .validate()) {
                                               moveVideoToPost(index);
                                               removeVideoFromDrafts(index);
+                                              didUpload = true;
                                               setup();
                                             } else {
                                               setState(() {

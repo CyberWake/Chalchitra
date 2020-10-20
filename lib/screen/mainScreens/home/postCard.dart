@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,7 +7,7 @@ import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -51,7 +52,7 @@ class _PostCardState extends State<PostCard> {
 
   void _button(Offset offset) async {
     double left = offset.dx;
-    double top = offset.dy;
+    double top = offset.dy - 20;
     await showMenu(
         context: context,
         color: AppTheme.backgroundColor,
@@ -147,29 +148,41 @@ class _PostCardState extends State<PostCard> {
       final Uri dynamicUrl = await parameters.buildUrl();
       print(dynamicUrl);
     } else if (choice == Menu.Download) {
-      print('Download');
-      final directory = await getExternalStorageDirectories();
-      print(directory[0].path);
-      Scaffold.of(context).showSnackBar(SnackBar(
-        duration: Duration(milliseconds: 1000),
-        content: Text('Download Started'),
-      ));
-      Dio dio = Dio();
-      String time = DateTime.now().toString();
-      try {
-        Navigator.pop(context);
-        await dio.download(widget.video.videoUrl,
-            '${directory[0].path}/${time.substring(0, time.lastIndexOf("."))}/video.mp4',
-            onReceiveProgress: (received, total) {
-          if (total == received) {
-            Scaffold.of(context).showSnackBar(SnackBar(
-              duration: Duration(milliseconds: 1000),
-              content: Text('Download Completed'),
-            ));
-          }
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      } else if (status.isGranted) {
+        print('Download');
+        String directory;
+        Directory('/storage/emulated/0/WowTalent').create()
+            // The created directory is returned as a Future.
+            .then((Directory directoryPath) {
+          print(directoryPath.path);
+          directory = directoryPath.path;
         });
-      } catch (e) {
-        print(e.toString());
+        Scaffold.of(context).showSnackBar(SnackBar(
+          duration: Duration(milliseconds: 1000),
+          content: Text('Download Started'),
+        ));
+        Dio dio = Dio();
+        String time = DateTime.now().toString();
+        try {
+          Navigator.pop(context);
+          await dio.download(widget.video.videoUrl,
+              '/storage/emulated/0/WowTalent/${time.substring(0, time.lastIndexOf("."))}/video.mp4',
+              onReceiveProgress: (received, total) {
+            if (total == received) {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                duration: Duration(milliseconds: 1000),
+                content: Text('Download Completed'),
+              ));
+            }
+          });
+        } catch (e) {
+          print(e.toString());
+        }
+      } else {
+        Navigator.pop(context);
       }
     } else if (choice == Menu.Forward) {
       print('Forward');

@@ -169,9 +169,9 @@ class _VideoPreviewState extends State<VideoPreview> {
                       Container(
                         padding: EdgeInsets.symmetric(vertical: 10),
                         child: Text(
-                          "Custom Thumbnail",
+                          "Select a frame for the Thumbnail",
                           style: TextStyle(
-                              color: AppTheme.pureWhiteColor, fontSize: 20),
+                              color: AppTheme.backgroundColor, fontSize: 20),
                         ),
                       ),
                       AspectRatio(
