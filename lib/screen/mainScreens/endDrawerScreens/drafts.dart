@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
@@ -70,6 +71,7 @@ class _DraftsState extends State<Drafts> {
       comments: 0,
     );
     await UserVideoStore.saveVideo(videoInfo);
+    Fluttertoast.showToast(msg: "Video Posted Successfully");
     UserDataModel user =
         await UserInfoStore().getUserInformation(uid: _userAuth.user.uid);
     Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);

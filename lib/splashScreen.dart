@@ -1,38 +1,44 @@
-
-import 'dart:core';
 import 'dart:async';
+import 'dart:core';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/dynamicLinkService.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 
 class SplashScreen extends StatefulWidget {
   final dynamic navigateAfterSeconds;
   SplashScreen({
-        this.navigateAfterSeconds,
-      });
-
+    this.navigateAfterSeconds,
+  });
 
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver{
+class _SplashScreenState extends State<SplashScreen>
+    with WidgetsBindingObserver {
   DynamicLinkService links = DynamicLinkService();
   Timer _timerLink;
 
   _retrieveDynamicLink() async {
-    await links.handleDynamicLinks(context,true);
-    if(!links.isFromLink){
-      Timer(
-          Duration(seconds: 4), (){
+    await links.handleDynamicLinks(context, true);
+    if (!links.isFromLink) {
+      Timer(Duration(seconds: 4), () {
         print("Pushing navigate after page");
-        Navigator.of(context).pushReplacement(
-            MaterialPageRoute(
-                builder: (BuildContext context) => widget.navigateAfterSeconds
-            )
-        );
-      }
-      );
+        Navigator.of(context).pushReplacement(CupertinoPageRoute(
+            builder: (BuildContext context) => widget.navigateAfterSeconds));
+      });
+    } else {
+      Timer(Duration(seconds: 4), () {
+        print("Pushing player");
+        Navigator.of(context).pushReplacement(CupertinoPageRoute(
+            builder: (BuildContext context) => Player(
+              videos: links.videos,
+              index: 0,
+            )));
+      });
     }
   }
 
@@ -56,7 +62,7 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     print("running binding");
     WidgetsBinding.instance.addObserver(this);
@@ -77,20 +83,20 @@ class _SplashScreenState extends State<SplashScreen> with WidgetsBindingObserver
                 flex: 2,
                 child: Container(
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: <Widget>[
-                        CircleAvatar(
-                          backgroundColor: Colors.transparent,
-                          child: Container(
-                              child: Image.asset('assets/images/splash.png'),
-                          ),
-                          radius: 100.0,
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                        ),
-                      ],
-                    )),
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    CircleAvatar(
+                      backgroundColor: Colors.transparent,
+                      child: Container(
+                        child: Image.asset('assets/images/splash.png'),
+                      ),
+                      radius: 100.0,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.only(top: 10.0),
+                    ),
+                  ],
+                )),
               ),
               Expanded(
                 flex: 1,

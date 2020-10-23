@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -35,8 +36,6 @@ class _PlayerState extends State<Player> {
   UserAuth _userAuth = UserAuth();
   VideoPlayerController _controller;
   double _widthOne;
-  double _fontOne;
-  double _iconOne;
   double _sliderValue = 0.0;
   Size _size;
   UserVideoStore _userVideoStore = UserVideoStore();
@@ -157,28 +156,25 @@ class _PlayerState extends State<Player> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
-    _fontOne = (_size.height * 0.015) / 11;
-    _iconOne = (_size.height * 0.066) / 50;
     return WillPopScope(
-      onWillPop: _onBackPressed,
-      child: Scaffold(
-        key: _scaffoldGlobalKey,
-        body: swipePlayerBody(),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: AppTheme.primaryColor,
-          onPressed: () {
-            playing ? _controller.pause() : _controller.play();
-            playing = _controller.value.isPlaying;
-            setState(() {});
-          },
-          child: Icon(
-            playing ? Icons.pause : Icons.play_arrow,
-            color: AppTheme.backgroundColor,
+        onWillPop: _onBackPressed,
+        child: Scaffold(
+          key: _scaffoldGlobalKey,
+          body: swipePlayerBody(),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: AppTheme.primaryColor,
+            onPressed: () {
+              playing ? _controller.pause() : _controller.play();
+              playing = _controller.value.isPlaying;
+              setState(() {});
+            },
+            child: Icon(
+              playing ? Icons.pause : Icons.play_arrow,
+              color: AppTheme.backgroundColor,
+            ),
           ),
-        ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      ),
-    );
+          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        ));
   }
 
   updateVideo() {
@@ -206,6 +202,7 @@ class _PlayerState extends State<Player> {
     return ValueListenableBuilder(
       valueListenable: _controller,
       builder: (context, VideoPlayerValue value, child) {
+        print("${_controller.value.aspectRatio}");
         if (value.position != value.duration) {
           return AspectRatio(
               aspectRatio: _controller.value.aspectRatio,
@@ -292,8 +289,8 @@ class _PlayerState extends State<Player> {
                                       backgroundColor: Colors.white),
                                 ),
                                 Container(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 10, vertical: 5),
+                                  padding: EdgeInsets.only(
+                                      left: 10, right: 10, top: 5),
                                   child: Row(
                                     mainAxisAlignment:
                                         MainAxisAlignment.spaceBetween,
@@ -346,9 +343,6 @@ class _PlayerState extends State<Player> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisAlignment: MainAxisAlignment.end,
                           children: [
-                            SizedBox(
-                              height: MediaQuery.of(context).size.height * 0.75,
-                            ),
                             Padding(
                               padding: EdgeInsets.only(left: 20),
                               child: Row(
@@ -600,7 +594,6 @@ class _PlayerState extends State<Player> {
                                             : likeCount.toString(),
                                         style: TextStyle(
                                             fontWeight: FontWeight.w500,
-                                            fontSize: _fontOne * 14,
                                             color: Colors.white),
                                       ),
                                     ],
@@ -612,80 +605,40 @@ class _PlayerState extends State<Player> {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                     children: [
-                                      Platform.isIOS
-                                          ? CupertinoButton(
-                                              onPressed: () {
-                                                if (_userAuth.user == null) {
-                                                  Navigator.pop(context);
-                                                  Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) {
-                                                        return Authentication(
-                                                            AuthIndex.REGISTER);
-                                                      },
-                                                    ),
-                                                  );
-                                                } else {
-                                                  print(widget
-                                                      .videos[currentPos]
-                                                      .uploaderUid);
-                                                  _controller.pause();
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              CommentsScreen(
-                                                                videoId: widget
-                                                                    .videos[
-                                                                        currentPos]
-                                                                    .videoId,
-                                                              )));
-                                                }
-                                              },
-                                              child: Icon(
-                                                Icons.comment,
-                                                color:
-                                                    AppTheme.selectorTileColor,
-                                                size: _iconOne * 23,
-                                              ))
-                                          : IconButton(
-                                              onPressed: () {
-                                                if (_userAuth.user == null) {
-                                                  Navigator.pop(context);
-                                                  Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) {
-                                                        return Authentication(
-                                                            AuthIndex.REGISTER);
-                                                      },
-                                                    ),
-                                                  );
-                                                } else {
-                                                  print(widget
-                                                      .videos[currentPos]
-                                                      .uploaderUid);
-                                                  _controller.pause();
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              CommentsScreen(
-                                                                videoId: widget
-                                                                    .videos[
-                                                                        currentPos]
-                                                                    .videoId,
-                                                              )));
-                                                }
-                                              },
-                                              icon: Icon(
-                                                Icons.comment,
-                                                color:
-                                                    AppTheme.selectorTileColor,
-                                                size: _iconOne * 23,
+                                      IconButton(
+                                        onPressed: () {
+                                          if (_userAuth.user == null) {
+                                            Navigator.pop(context);
+                                            Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) {
+                                                  return Authentication(
+                                                      AuthIndex.REGISTER);
+                                                },
                                               ),
-                                            ),
+                                            );
+                                          } else {
+                                            print(widget.videos[currentPos]
+                                                .uploaderUid);
+                                            _controller.pause();
+                                            Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        CommentsScreen(
+                                                          videoId: widget
+                                                              .videos[
+                                                                  currentPos]
+                                                              .videoId,
+                                                        )));
+                                          }
+                                        },
+                                        icon: Icon(
+                                          Icons.comment,
+                                          color: AppTheme.selectorTileColor,
+                                        ),
+                                      ),
                                       SizedBox(
                                         width: _widthOne * 20,
                                       ),
@@ -698,7 +651,6 @@ class _PlayerState extends State<Player> {
                                                 .toString(),
                                         style: TextStyle(
                                             fontWeight: FontWeight.w500,
-                                            fontSize: _fontOne * 14,
                                             color: Colors.white),
                                       ),
                                     ],

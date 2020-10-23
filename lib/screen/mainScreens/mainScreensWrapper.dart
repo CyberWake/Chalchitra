@@ -17,6 +17,7 @@ import 'package:wowtalent/model/authPageEnums.dart';
 import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
+import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/drafts.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/privacyPage.dart';
@@ -25,11 +26,14 @@ import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoSelectorScreen.dart';
 
 class MainScreenWrapper extends StatefulWidget {
   final int index;
-  MainScreenWrapper({@required this.index});
+  final bool isFromLink;
+  final List<VideoInfo> videos;
+  MainScreenWrapper({@required this.index, this.isFromLink, this.videos});
   @override
   _MainScreenWrapperState createState() => _MainScreenWrapperState();
 }
@@ -57,6 +61,15 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   SharedPreferences prefs;
 
   void setup() async {
+    getUser();
+    prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('onBoarded')) {
+      prefs.setBool("onBoarded", true);
+    }
+    setState(() {});
+  }
+
+  void getUser() async {
     if (_userAuth.user != null) {
       print(_userAuth.user.uid);
       _currentUserInfo =
@@ -64,11 +77,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       user = UserDataModel.fromDocument(_currentUserInfo);
       Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
     }
-    prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('onBoarded')) {
-      prefs.setBool("onBoarded", true);
-    }
-    setState(() {});
   }
 
   _retrieveDynamicLink() async {
@@ -81,6 +89,12 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     await links.handleDynamicLinks(context, false);
     if (!links.isFromLink) {
       setup();
+    } else {
+      Navigator.of(context).pushReplacement(CupertinoPageRoute(
+          builder: (BuildContext context) => Player(
+                videos: links.videos,
+                index: 0,
+              )));
     }
   }
 
@@ -106,8 +120,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
-    _retrieveDynamicLink();
     super.initState();
+    getUser();
     _currentIndex = widget.index;
   }
 
@@ -395,9 +409,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           bottomNavigationBar: CurvedNavigationBar(
             index: _currentIndex,
             height: _heightOne * 55,
-            backgroundColor: _currentIndex == 4
-                ? AppTheme.backColor
-                : AppTheme.backgroundColor,
+            backgroundColor: AppTheme.backgroundColor,
             color: AppTheme.primaryColor,
             buttonBackgroundColor: AppTheme.primaryColor,
             items: <Widget>[

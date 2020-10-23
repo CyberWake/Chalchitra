@@ -144,7 +144,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
     Size size = MediaQuery.of(context).size;
     return Container(
-      color: AppTheme.backColor,
+      color: AppTheme.backgroundColor,
       child: Column(
         children: [
           Stack(
@@ -153,7 +153,7 @@ class _ProfilePageState extends State<ProfilePage> {
               SingleChildScrollView(
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppTheme.backColor,
+                    color: AppTheme.backgroundColor,
                     borderRadius: BorderRadius.only(
                       topRight: Radius.circular(20),
                       topLeft: Radius.circular(20),
@@ -185,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: size.width * 0.9,
                     child: Card(
                       elevation: 20,
-                      color: Colors.yellow[100],
+                      color: AppTheme.selectorTileColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
@@ -257,7 +257,7 @@ class _ProfilePageState extends State<ProfilePage> {
   getProfileTopView(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.backColor,
+        color: AppTheme.primaryColor,
         borderRadius: BorderRadius.only(
           bottomRight: Radius.circular(20),
           bottomLeft: Radius.circular(20),

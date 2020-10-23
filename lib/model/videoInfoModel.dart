@@ -5,6 +5,7 @@ class VideoInfo {
   String videoUrl;
   String thumbUrl;
   String coverUrl;
+  String shareUrl;
   double aspectRatio;
   int uploadedAt;
   String videoName;
@@ -23,6 +24,7 @@ class VideoInfo {
         this.videoUrl,
         this.thumbUrl,
         this.coverUrl,
+        this.shareUrl,
         this.aspectRatio,
         this.uploadedAt,
         this.videoName,
@@ -42,6 +44,7 @@ class VideoInfo {
       videoUrl: ds.data()['videoUrl'],
       thumbUrl: ds.data()['thumbUrl'],
       coverUrl: ds.data()['coverUrl'],
+      shareUrl: ds.data()['shareUrl'],
       rating: ds.data()['rating'],
       likes: ds.data()['likes'],
       comments: ds.data()['comments'],

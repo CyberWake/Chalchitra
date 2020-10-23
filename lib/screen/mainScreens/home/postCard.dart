@@ -3,7 +3,7 @@ import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -131,22 +131,12 @@ class _PostCardState extends State<PostCard> {
     print('called');
     if (choice == Menu.Share) {
       Navigator.pop(context);
-      final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: 'https://wowtalent.page.link',
-        link: Uri.parse(
-            'https://wowtalent.com/player?videoId=${widget.video.videoId}'),
-        androidParameters: AndroidParameters(
-          packageName: 'com.example.wowtalant',
-          minimumVersion: 125,
-        ),
-        iosParameters: IosParameters(
-          bundleId: 'com.example.wowtalant',
-          minimumVersion: '1.0.0',
-          appStoreId: '123456789',
-        ),
-      );
-      final Uri dynamicUrl = await parameters.buildUrl();
-      print(dynamicUrl);
+      await FlutterShare.share(
+          title: 'Watch WowTalent',
+          text:
+          "I'm loving this app, WowTalent, world's largest talent discovery platform. I found new talent :",
+          linkUrl: widget.video.shareUrl,
+          chooserTitle: 'Share');
     } else if (choice == Menu.Download) {
       var status = await Permission.storage.status;
       if (!status.isGranted) {
