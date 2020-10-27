@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
@@ -145,7 +147,6 @@ class _PlayerState extends State<Player> {
     return choppedDescription + ' ...';
   }
 
-  // ignore: missing_return
   Future<bool> _onBackPressed() {
     try {
       Navigator.pop(context);
@@ -167,18 +168,21 @@ class _PlayerState extends State<Player> {
       child: Scaffold(
         key: _scaffoldGlobalKey,
         body: swipePlayerBody(),
-        floatingActionButton: FloatingActionButton(
-          backgroundColor: AppTheme.selectorTileColor,
-          onPressed: () {
-            playing ? _controller.pause() : _controller.play();
-            playing = _controller.value.isPlaying;
-            setState(() {});
-          },
-          child: Icon(
-            playing ? Icons.pause : Icons.play_arrow,
-            color: AppTheme.pureBlackColor,
-          ),
-        ),
+        floatingActionButton:
+            MediaQuery.of(context).orientation == Orientation.landscape
+                ? Container()
+                : FloatingActionButton(
+                    backgroundColor: AppTheme.selectorTileColor,
+                    onPressed: () {
+                      playing ? _controller.pause() : _controller.play();
+                      playing = _controller.value.isPlaying;
+                      setState(() {});
+                    },
+                    child: Icon(
+                      playing ? Icons.pause : Icons.play_arrow,
+                      color: AppTheme.pureBlackColor,
+                    ),
+                  ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       ),
     );
@@ -240,8 +244,13 @@ class _PlayerState extends State<Player> {
     if (MediaQuery.of(context).orientation == Orientation.portrait &&
         _controller.value.aspectRatio > 1) {
       SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+      Platform.isAndroid ? SystemChrome.setEnabledSystemUIOverlays([]) : null;
     } else if (MediaQuery.of(context).orientation == Orientation.landscape) {
       SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+      Platform.isAndroid
+          ? SystemChrome.setEnabledSystemUIOverlays(
+              [SystemUiOverlay.top, SystemUiOverlay.bottom])
+          : null;
     } else {
       return;
     }
@@ -271,6 +280,7 @@ class _PlayerState extends State<Player> {
                               icon: Icon(
                                 Icons.fullscreen,
                                 size: 30,
+                                color: AppTheme.pureWhiteColor,
                               ),
                               onPressed: () {
                                 toggleOrientation();
@@ -289,6 +299,7 @@ class _PlayerState extends State<Player> {
                             icon: Icon(
                               Icons.fullscreen,
                               size: 30,
+                              color: AppTheme.pureWhiteColor,
                             ),
                             onPressed: () {
                               toggleOrientation();
@@ -373,6 +384,8 @@ class _PlayerState extends State<Player> {
                                                         icon: Icon(
                                                           Icons.fullscreen,
                                                           size: 30,
+                                                          color: AppTheme
+                                                              .pureWhiteColor,
                                                         ),
                                                         onPressed: () {
                                                           toggleOrientation();
@@ -391,6 +404,8 @@ class _PlayerState extends State<Player> {
                                                       icon: Icon(
                                                         Icons.fullscreen,
                                                         size: 30,
+                                                        color: AppTheme
+                                                            .pureWhiteColor,
                                                       ),
                                                       onPressed: () {
                                                         toggleOrientation();
@@ -451,6 +466,7 @@ class _PlayerState extends State<Player> {
                                         GestureDetector(
                                           onTap: () {
                                             _controller.pause();
+
                                             Navigator.push(
                                               context,
                                               CupertinoPageRoute(
@@ -579,69 +595,142 @@ class _PlayerState extends State<Player> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            InkWell(
-                                                child: SvgPicture.asset(
-                                                  _isLiked
-                                                      ? "assets/images/loved_icon.svg"
-                                                      : "assets/images/love_icon.svg",
-                                                  color: _isLiked
-                                                      ? Colors.red
-                                                      : Colors.red,
-                                                  width: 20,
-                                                ),
-                                                onTap: () async {
-                                                  if (_userAuth.user == null) {
-                                                    Navigator.pop(context);
-                                                    Navigator.pushReplacement(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                        builder: (context) {
-                                                          return Authentication(
-                                                              AuthIndex
-                                                                  .REGISTER);
-                                                        },
-                                                      ),
-                                                    );
-                                                  } else {
-                                                    if (!_processing) {
-                                                      _processing = true;
-                                                      if (!_isLiked) {
-                                                        _isLiked =
-                                                            await _userVideoStore
-                                                                .likeVideo(
-                                                          videoID: widget
-                                                              .videos[
-                                                                  currentPos]
-                                                              .videoId,
+                                            Platform.isIOS
+                                                ? CupertinoButton(
+                                                    child: SvgPicture.asset(
+                                                      _isLiked
+                                                          ? "assets/images/loved_icon.svg"
+                                                          : "assets/images/love_icon.svg",
+                                                      color: _isLiked
+                                                          ? AppTheme
+                                                              .selectorTileColor
+                                                          : AppTheme
+                                                              .selectorTileColor,
+                                                      width: 20,
+                                                    ),
+                                                    onPressed: () async {
+                                                      if (_userAuth.user ==
+                                                          null) {
+                                                        Navigator.pop(context);
+                                                        Navigator
+                                                            .pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) {
+                                                              return Authentication(
+                                                                  AuthIndex
+                                                                      .REGISTER);
+                                                            },
+                                                          ),
                                                         );
-                                                        if (_isLiked) {
-                                                          likeCount += 1;
-                                                          print("liked");
-                                                        }
                                                       } else {
-                                                        await _userVideoStore
-                                                            .dislikeVideo(
-                                                          videoID: widget
-                                                              .videos[
-                                                                  currentPos]
-                                                              .videoId,
-                                                        )
-                                                            .then((value) {
-                                                          if (value) {
-                                                            _isLiked = false;
+                                                        if (!_processing) {
+                                                          _processing = true;
+                                                          if (!_isLiked) {
+                                                            _isLiked =
+                                                                await _userVideoStore
+                                                                    .likeVideo(
+                                                              videoID: widget
+                                                                  .videos[
+                                                                      currentPos]
+                                                                  .videoId,
+                                                            );
+                                                            if (_isLiked) {
+                                                              likeCount += 1;
+                                                              print("liked");
+                                                            }
+                                                          } else {
+                                                            await _userVideoStore
+                                                                .dislikeVideo(
+                                                              videoID: widget
+                                                                  .videos[
+                                                                      currentPos]
+                                                                  .videoId,
+                                                            )
+                                                                .then((value) {
+                                                              if (value) {
+                                                                _isLiked =
+                                                                    false;
+                                                              }
+                                                            });
+                                                            if (!_isLiked) {
+                                                              likeCount -= 1;
+                                                              print("disliked");
+                                                            }
                                                           }
-                                                        });
-                                                        if (!_isLiked) {
-                                                          likeCount -= 1;
-                                                          print("disliked");
+                                                          _processing = false;
                                                         }
+                                                        setup();
+                                                        setState(() {});
                                                       }
-                                                      _processing = false;
-                                                    }
-                                                    setup();
-                                                    setState(() {});
-                                                  }
-                                                }),
+                                                    },
+                                                  )
+                                                : InkWell(
+                                                    child: SvgPicture.asset(
+                                                      _isLiked
+                                                          ? "assets/images/loved_icon.svg"
+                                                          : "assets/images/love_icon.svg",
+                                                      color: _isLiked
+                                                          ? Colors.red
+                                                          : Colors.red,
+                                                      width: 20,
+                                                    ),
+                                                    onTap: () async {
+                                                      if (_userAuth.user ==
+                                                          null) {
+                                                        Navigator.pop(context);
+                                                        Navigator
+                                                            .pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) {
+                                                              return Authentication(
+                                                                  AuthIndex
+                                                                      .REGISTER);
+                                                            },
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        if (!_processing) {
+                                                          _processing = true;
+                                                          if (!_isLiked) {
+                                                            _isLiked =
+                                                                await _userVideoStore
+                                                                    .likeVideo(
+                                                              videoID: widget
+                                                                  .videos[
+                                                                      currentPos]
+                                                                  .videoId,
+                                                            );
+                                                            if (_isLiked) {
+                                                              likeCount += 1;
+                                                              print("liked");
+                                                            }
+                                                          } else {
+                                                            await _userVideoStore
+                                                                .dislikeVideo(
+                                                              videoID: widget
+                                                                  .videos[
+                                                                      currentPos]
+                                                                  .videoId,
+                                                            )
+                                                                .then((value) {
+                                                              if (value) {
+                                                                _isLiked =
+                                                                    false;
+                                                              }
+                                                            });
+                                                            if (!_isLiked) {
+                                                              likeCount -= 1;
+                                                              print("disliked");
+                                                            }
+                                                          }
+                                                          _processing = false;
+                                                        }
+                                                        setup();
+                                                        setState(() {});
+                                                      }
+                                                    }),
                                             SizedBox(
                                               width: _widthOne * 20,
                                             ),
@@ -663,46 +752,94 @@ class _PlayerState extends State<Player> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            IconButton(
-                                              onPressed: () {
-                                                if (_userAuth.user == null) {
-                                                  Navigator.pop(context);
-                                                  Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) {
-                                                        return Authentication(
-                                                            AuthIndex.REGISTER);
-                                                      },
+                                            Platform.isIOS
+                                                ? CupertinoButton(
+                                                    onPressed: () {
+                                                      if (_userAuth.user ==
+                                                          null) {
+                                                        Navigator.pop(context);
+                                                        Navigator
+                                                            .pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) {
+                                                              return Authentication(
+                                                                  AuthIndex
+                                                                      .REGISTER);
+                                                            },
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        print(widget
+                                                            .videos[currentPos]
+                                                            .uploaderUid);
+                                                        _controller.pause();
+                                                        SystemChrome
+                                                            .setPreferredOrientations([
+                                                          DeviceOrientation
+                                                              .portraitUp
+                                                        ]);
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        CommentsScreen(
+                                                                          videoId: widget
+                                                                              .videos[currentPos]
+                                                                              .videoId,
+                                                                        )));
+                                                      }
+                                                    },
+                                                    child: Icon(
+                                                      Icons.comment,
+                                                      color: Colors.white,
+                                                      size: _iconOne * 23,
+                                                    ))
+                                                : IconButton(
+                                                    onPressed: () {
+                                                      if (_userAuth.user ==
+                                                          null) {
+                                                        Navigator.pop(context);
+                                                        Navigator
+                                                            .pushReplacement(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                            builder: (context) {
+                                                              return Authentication(
+                                                                  AuthIndex
+                                                                      .REGISTER);
+                                                            },
+                                                          ),
+                                                        );
+                                                      } else {
+                                                        print(widget
+                                                            .videos[currentPos]
+                                                            .uploaderUid);
+                                                        _controller.pause();
+                                                        SystemChrome
+                                                            .setPreferredOrientations([
+                                                          DeviceOrientation
+                                                              .portraitUp
+                                                        ]);
+                                                        Navigator.push(
+                                                            context,
+                                                            MaterialPageRoute(
+                                                                builder:
+                                                                    (context) =>
+                                                                        CommentsScreen(
+                                                                          videoId: widget
+                                                                              .videos[currentPos]
+                                                                              .videoId,
+                                                                        )));
+                                                      }
+                                                    },
+                                                    icon: Icon(
+                                                      Icons.comment,
+                                                      color: Colors.white,
+                                                      size: _iconOne * 23,
                                                     ),
-                                                  );
-                                                } else {
-                                                  print(widget
-                                                      .videos[currentPos]
-                                                      .uploaderUid);
-                                                  _controller.pause();
-                                                  SystemChrome
-                                                      .setPreferredOrientations([
-                                                    DeviceOrientation.portraitUp
-                                                  ]);
-                                                  Navigator.push(
-                                                      context,
-                                                      MaterialPageRoute(
-                                                          builder: (context) =>
-                                                              CommentsScreen(
-                                                                videoId: widget
-                                                                    .videos[
-                                                                        currentPos]
-                                                                    .videoId,
-                                                              )));
-                                                }
-                                              },
-                                              icon: Icon(
-                                                Icons.comment,
-                                                color: Colors.white,
-                                                size: _iconOne * 23,
-                                              ),
-                                            ),
+                                                  ),
                                             SizedBox(
                                               width: _widthOne * 20,
                                             ),
