@@ -34,9 +34,7 @@ class _ExploreState extends State<Explore> {
     "Acting",
   ];
 
-  @override
-  void initState() {
-    super.initState();
+  setup() {
     UserVideoStore.listenToAllVideos((newVideos) {
       if (this.mounted) {
         setState(() {
@@ -51,6 +49,12 @@ class _ExploreState extends State<Explore> {
         });
       }
     });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    setup();
   }
 
   @override

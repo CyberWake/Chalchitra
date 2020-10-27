@@ -22,7 +22,10 @@ void main() async {
     statusBarColor: AppTheme.primaryColor,
     // status bar color
   ));
-  runApp(MyApp());
+  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
+      .then((_) {
+    runApp(MyApp());
+  });
 }
 
 class MyApp extends StatelessWidget {

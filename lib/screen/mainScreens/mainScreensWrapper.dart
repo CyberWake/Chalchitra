@@ -267,7 +267,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       Message(),
       _profilePage,
     ];
-
     return WillPopScope(
       onWillPop: onWillPop,
       child: Scaffold(

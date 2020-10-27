@@ -217,13 +217,15 @@ class UserVideoStore {
 
   static mapQueryToVideoInfo(QuerySnapshot qs) {
     try {
+      print("here1");
       return qs.docs.map((DocumentSnapshot ds) {
+        print("here2");
         return VideoInfo(
             videoUrl: ds.data()['videoUrl'],
             videoHashtag: ds.data()['videoHashtag'],
             thumbUrl: ds.data()['thumbUrl'],
             coverUrl: ds.data()['coverUrl'],
-            aspectRatio: ds.data()['aspectRatio'],
+            aspectRatio: ds.data()['aspectRatio'].toDouble(),
             videoName: ds.data()['videoName'],
             category: ds.data()['category'],
             uploadedAt: ds.data()['uploadedAt'],
@@ -233,6 +235,7 @@ class UserVideoStore {
             videoId: ds.id);
       }).toList();
     } catch (e) {
+      print("error");
       print(e.toString());
     }
   }
@@ -244,7 +247,7 @@ class UserVideoStore {
           videoHashtag: ds.data()['videoHashtag'],
           thumbUrl: ds.data()['thumbUrl'],
           coverUrl: ds.data()['coverUrl'],
-          aspectRatio: ds.data()['aspectRatio'],
+          aspectRatio: ds.data()['aspectRatio'].toDouble(),
           videoName: ds.data()['videoName'],
           category: ds.data()['category'],
           uploadedAt: ds.data()['uploadedAt'],
@@ -253,6 +256,7 @@ class UserVideoStore {
           comments: ds.data()['comments'],
           videoId: ds.id);
     } catch (e) {
+      print("error");
       print(e.toString());
     }
   }

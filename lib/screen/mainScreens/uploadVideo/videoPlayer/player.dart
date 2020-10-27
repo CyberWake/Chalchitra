@@ -1,9 +1,8 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:screen/screen.dart';
@@ -38,6 +37,8 @@ class _PlayerState extends State<Player> {
   double _widthOne;
   double _sliderValue = 0.0;
   Size _size;
+  double _fontOne;
+  double _iconOne;
   UserVideoStore _userVideoStore = UserVideoStore();
   int likeCount = 0;
   int commentCount = 0;
@@ -102,6 +103,7 @@ class _PlayerState extends State<Player> {
   @override
   void initState() {
     currentPos = widget.index;
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     super.initState();
     Screen.keepOn(true);
     mySetup();
@@ -143,9 +145,11 @@ class _PlayerState extends State<Player> {
     return choppedDescription + ' ...';
   }
 
+  // ignore: missing_return
   Future<bool> _onBackPressed() {
     try {
       Navigator.pop(context);
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
       return _controller.pause() ?? false;
     } on Exception catch (e) {
       print(e.toString());
@@ -156,25 +160,28 @@ class _PlayerState extends State<Player> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
+    _fontOne = (_size.height * 0.015) / 11;
+    _iconOne = (_size.height * 0.066) / 50;
     return WillPopScope(
-        onWillPop: _onBackPressed,
-        child: Scaffold(
-          key: _scaffoldGlobalKey,
-          body: swipePlayerBody(),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: AppTheme.primaryColor,
-            onPressed: () {
-              playing ? _controller.pause() : _controller.play();
-              playing = _controller.value.isPlaying;
-              setState(() {});
-            },
-            child: Icon(
-              playing ? Icons.pause : Icons.play_arrow,
-              color: AppTheme.backgroundColor,
-            ),
+      onWillPop: _onBackPressed,
+      child: Scaffold(
+        key: _scaffoldGlobalKey,
+        body: swipePlayerBody(),
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: AppTheme.selectorTileColor,
+          onPressed: () {
+            playing ? _controller.pause() : _controller.play();
+            playing = _controller.value.isPlaying;
+            setState(() {});
+          },
+          child: Icon(
+            playing ? Icons.pause : Icons.play_arrow,
+            color: AppTheme.pureBlackColor,
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-        ));
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      ),
+    );
   }
 
   updateVideo() {
@@ -198,20 +205,96 @@ class _PlayerState extends State<Player> {
     );
   }
 
+  videoBody() {
+    return GestureDetector(
+      onTap: () {
+        if (unmute) {
+          _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
+            duration: Duration(milliseconds: 500),
+            content: Text('Audio Muted'),
+          ));
+          unmute = false;
+          _controller.setVolume(0.0);
+        } else {
+          _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
+            duration: Duration(milliseconds: 500),
+            content: Text('Audio Unmuted'),
+          ));
+          print("unmuted");
+          unmute = true;
+          _controller.setVolume(1.0);
+        }
+      },
+      child: AspectRatio(
+          aspectRatio: _controller.value.aspectRatio,
+          child: _controller.value.initialized
+              ? VideoPlayer(_controller)
+              : SpinKitCircle(
+                  color: AppTheme.primaryColor,
+                  size: 60,
+                )),
+    );
+  }
+
+  toggleOrientation() {
+    if (MediaQuery.of(context).orientation == Orientation.portrait &&
+        _controller.value.aspectRatio > 1) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.landscapeRight]);
+    } else if (MediaQuery.of(context).orientation == Orientation.landscape) {
+      SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
+    } else {
+      return;
+    }
+  }
+
   autoPlay() {
     return ValueListenableBuilder(
       valueListenable: _controller,
       builder: (context, VideoPlayerValue value, child) {
-        print("${_controller.value.aspectRatio}");
+        bool isPotrait = value.aspectRatio <= 1;
         if (value.position != value.duration) {
-          return AspectRatio(
-              aspectRatio: _controller.value.aspectRatio,
-              child: _controller.value.initialized
-                  ? VideoPlayer(_controller)
-                  : SpinKitCircle(
-                      color: AppTheme.primaryColor,
-                      size: 60,
-                    ));
+          return MediaQuery.of(context).orientation == Orientation.landscape
+              ? SafeArea(
+                  child: Stack(children: [
+                  AspectRatio(
+                    aspectRatio: _size.aspectRatio,
+                    child: videoBody(),
+                  ),
+                  isPotrait
+                      ? Container()
+                      : Positioned(
+                          bottom: 0.0,
+                          right: 0.0,
+                          child: Material(
+                            color: Colors.transparent,
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.fullscreen,
+                                size: 30,
+                              ),
+                              onPressed: () {
+                                toggleOrientation();
+                              },
+                            ),
+                          ))
+                ]))
+              : Stack(children: [
+                  videoBody(),
+                  isPotrait
+                      ? Container()
+                      : Positioned(
+                          bottom: 0.0,
+                          right: 0.0,
+                          child: IconButton(
+                            icon: Icon(
+                              Icons.fullscreen,
+                              size: 30,
+                            ),
+                            onPressed: () {
+                              toggleOrientation();
+                            },
+                          ))
+                ]);
         } else {
           _swiperStack.currentState.swipeLeft();
           return Container();
@@ -240,18 +323,20 @@ class _PlayerState extends State<Player> {
             child: SwipeStack(
               key: _swiperStack,
               onSwipe: (int index, SwiperPosition position) {
-                if (position == SwiperPosition.Right) {
-                  if (currentPos - 1 >= 0) {
-                    print("going backward");
-                    currentPos -= 1;
+                SystemChrome.setPreferredOrientations(
+                    [DeviceOrientation.portraitUp]);
+                if (position == SwiperPosition.Left) {
+                  if (currentPos + 1 < widget.videos.length) {
+                    print("going forward");
+                    currentPos += 1;
                     updateVideo();
                   } else {
                     _swiperStack.currentState.rewind();
                   }
-                } else if (position == SwiperPosition.Left) {
-                  if (currentPos + 1 < widget.videos.length) {
-                    print("going forward");
-                    currentPos += 1;
+                } else if (position == SwiperPosition.Right) {
+                  if (currentPos - 1 >= 0) {
+                    print("going backward");
+                    currentPos -= 1;
                     updateVideo();
                   } else {
                     _swiperStack.currentState.rewind();
@@ -263,462 +348,452 @@ class _PlayerState extends State<Player> {
                   return Material(
                     color: Colors.black,
                     child: Stack(children: [
-                      Builder(
-                        builder: (context) {
+                      OrientationBuilder(
+                        builder: (context, orientation) {
                           return Center(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 currentPos == widget.videos.length - 1
-                                    ? AspectRatio(
-                                        aspectRatio:
-                                            _controller.value.aspectRatio,
-                                        child: _controller.value.initialized
-                                            ? VideoPlayer(_controller)
-                                            : SpinKitCircle(
-                                                color: AppTheme.primaryColor,
-                                                size: 60,
-                                              ))
+                                    ? orientation == Orientation.landscape
+                                        ? SafeArea(
+                                            child: Stack(children: [
+                                            AspectRatio(
+                                              aspectRatio: _size.aspectRatio,
+                                              child: videoBody(),
+                                            ),
+                                            _controller.value.aspectRatio <= 1
+                                                ? Container()
+                                                : Positioned(
+                                                    bottom: 0.0,
+                                                    right: 0.0,
+                                                    child: Material(
+                                                      color: Colors.transparent,
+                                                      child: IconButton(
+                                                        icon: Icon(
+                                                          Icons.fullscreen,
+                                                          size: 30,
+                                                        ),
+                                                        onPressed: () {
+                                                          toggleOrientation();
+                                                        },
+                                                      ),
+                                                    ))
+                                          ]))
+                                        : Stack(children: [
+                                            videoBody(),
+                                            _controller.value.aspectRatio <= 1
+                                                ? Container()
+                                                : Positioned(
+                                                    bottom: 0.0,
+                                                    right: 0.0,
+                                                    child: IconButton(
+                                                      icon: Icon(
+                                                        Icons.fullscreen,
+                                                        size: 30,
+                                                      ),
+                                                      onPressed: () {
+                                                        toggleOrientation();
+                                                      },
+                                                    ))
+                                          ])
                                     : autoPlay(),
                                 VideoProgressIndicator(
                                   _controller,
                                   allowScrubbing: true,
                                   colors: VideoProgressColors(
-                                      playedColor: AppTheme.primaryColor,
+                                      playedColor: AppTheme.selectorTileColor,
                                       bufferedColor: Colors.grey,
                                       backgroundColor: Colors.white),
                                 ),
-                                Container(
-                                  padding: EdgeInsets.only(
-                                      left: 10, right: 10, top: 5),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      currPos(),
-                                      Text(
-                                        _controller.value.duration == null
-                                            ? ""
-                                            : trimDuration(
-                                                _controller.value.duration),
-                                        style: TextStyle(
-                                            color: AppTheme.pureWhiteColor),
-                                      )
-                                    ],
-                                  ),
-                                ),
+                                orientation == Orientation.landscape
+                                    ? Container()
+                                    : Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 10, vertical: 5),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            currPos(),
+                                            Text(
+                                              _controller.value.duration == null
+                                                  ? ""
+                                                  : trimDuration(_controller
+                                                      .value.duration),
+                                              style: TextStyle(
+                                                  color:
+                                                      AppTheme.pureWhiteColor),
+                                            )
+                                          ],
+                                        ),
+                                      ),
                               ],
                             ),
                           );
                         },
                       ),
-                      Container(
-                        height: double.infinity,
-                        width: double.infinity,
-                        child: GestureDetector(
-                          onTap: () {
-                            if (unmute) {
-                              _scaffoldGlobalKey.currentState
-                                  .showSnackBar(SnackBar(
-                                duration: Duration(milliseconds: 500),
-                                content: Text('Audio Muted'),
-                              ));
-                              unmute = false;
-                              _controller.setVolume(0.0);
-                            } else {
-                              _scaffoldGlobalKey.currentState
-                                  .showSnackBar(SnackBar(
-                                duration: Duration(milliseconds: 500),
-                                content: Text('Audio Unmuted'),
-                              ));
-                              print("unmuted");
-                              unmute = true;
-                              _controller.setVolume(1.0);
-                            }
-                          },
-                        ),
-                      ),
-                      Builder(builder: (context) {
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Padding(
-                              padding: EdgeInsets.only(left: 20),
-                              child: Row(
+                      OrientationBuilder(builder: (context, orientation) {
+                        return orientation == Orientation.landscape
+                            ? Container()
+                            : Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.end,
                                 children: [
-                                  GestureDetector(
-                                    onTap: () {
-                                      _controller.pause();
-                                      Navigator.push(
-                                        context,
-                                        CupertinoPageRoute(
-                                          builder: (context) {
-                                            return SearchProfile(uid: _user.id);
-                                          },
-                                        ),
-                                      );
-                                    },
-                                    child: Row(children: [
-                                      CircleAvatar(
-                                        backgroundImage: NetworkImage(_user
-                                                    .photoUrl ==
-                                                null
-                                            ? "https://via.placeholder.com/150"
-                                            : _user.photoUrl),
-                                        radius: 13,
-                                      ),
-                                      Text(
-                                        '  ${_user.username} \u2022',
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            color: Colors.white),
-                                      ),
-                                    ]),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () async {
-                                      if (_userAuth.user == null) {
-                                        Navigator.pop(context);
-                                        Navigator.pushReplacement(
-                                          context,
-                                          CupertinoPageRoute(
-                                            builder: (context) {
-                                              return Authentication(
-                                                  AuthIndex.REGISTER);
-                                            },
-                                          ),
-                                        );
-                                      } else {
-                                        try {
-                                          print(_following);
-                                          _following =
-                                              await _userInfoStore.followUser(
-                                                  uid: widget.videos[currentPos]
-                                                      .uploaderUid);
-                                          print(_following);
-                                          print('pressed');
-                                          setState(() {});
-                                        } on Exception catch (e) {
-                                          print(e.toString());
-                                        }
-                                      }
-                                    },
-                                    child: Text(
-                                      _userAuth.user == null
-                                          ? "Follow"
-                                          : _userAuth.user.uid ==
-                                                  widget.videos[currentPos]
-                                                      .uploaderUid
-                                              ? ' '
-                                              : !_following
-                                                  ? ' Follow'
-                                                  : " Following",
-                                      style: TextStyle(color: Colors.white),
-                                    ),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Padding(
-                                padding: EdgeInsets.symmetric(
-                                    horizontal: 23, vertical: 4),
-                                child: Text(
-                                  widget.videos[currentPos].videoName != null
-                                      ? widget.videos[currentPos].videoName
-                                                  .length >
-                                              37
-                                          ? "Title" +
-                                              ' \u2022 ' +
-                                              getChoppedUsername(widget
-                                                  .videos[currentPos].videoName)
-                                          : "Title" +
-                                              ' \u2022 ' +
-                                              widget.videos[currentPos]
-                                                  .videoName +
-                                              ' \u2022 '
-                                      : "Title" + ' \u2022 ',
-                                  style: TextStyle(color: Colors.white),
-                                )),
-                            Padding(
-                              padding: EdgeInsets.only(left: 23),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.equalizer,
-                                    color: Colors.white,
-                                  ),
-                                  Text(
-                                    ' \u2022 ' +
-                                            widget
-                                                .videos[currentPos].category ??
-                                        "Category",
-                                    style: TextStyle(color: Colors.white),
-                                  )
-                                ],
-                              ),
-                            ),
-                            Container(
-                              color: Colors.black12.withOpacity(0.4),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Platform.isIOS
-                                          ? CupertinoButton(
-                                              child: SvgPicture.asset(
-                                                _isLiked
-                                                    ? "assets/images/loved_icon.svg"
-                                                    : "assets/images/love_icon.svg",
-                                                color: AppTheme.primaryColor,
-                                                width: 20,
-                                              ),
-                                              onPressed: () async {
-                                                if (_userAuth.user == null) {
-                                                  Navigator.pop(context);
-                                                  Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) {
-                                                        return Authentication(
-                                                            AuthIndex.REGISTER);
-                                                      },
-                                                    ),
-                                                  );
-                                                } else {
-                                                  if (!_processing) {
-                                                    _processing = true;
-                                                    if (!_isLiked) {
-                                                      _isLiked =
-                                                          await _userVideoStore
-                                                              .likeVideo(
-                                                        videoID: widget
-                                                            .videos[currentPos]
-                                                            .videoId,
-                                                      );
-                                                      if (_isLiked) {
-                                                        likeCount += 1;
-                                                        print("liked");
-                                                      }
-                                                    } else {
-                                                      await _userVideoStore
-                                                          .dislikeVideo(
-                                                        videoID: widget
-                                                            .videos[currentPos]
-                                                            .videoId,
-                                                      )
-                                                          .then((value) {
-                                                        if (value) {
-                                                          _isLiked = false;
-                                                        }
-                                                      });
-                                                      if (!_isLiked) {
-                                                        likeCount -= 1;
-                                                        print("disliked");
-                                                      }
-                                                    }
-                                                    _processing = false;
-                                                  }
-                                                  setState(() {});
-                                                }
-                                              },
-                                            )
-                                          : InkWell(
-                                              child: SvgPicture.asset(
-                                                _isLiked
-                                                    ? "assets/images/loved_icon.svg"
-                                                    : "assets/images/love_icon.svg",
-                                                color: AppTheme.backgroundColor,
-                                                width: 20,
-                                              ),
-                                              onTap: () async {
-                                                if (_userAuth.user == null) {
-                                                  Navigator.pop(context);
-                                                  Navigator.pushReplacement(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) {
-                                                        return Authentication(
-                                                            AuthIndex.REGISTER);
-                                                      },
-                                                    ),
-                                                  );
-                                                } else {
-                                                  if (!_processing) {
-                                                    _processing = true;
-                                                    if (!_isLiked) {
-                                                      _isLiked =
-                                                          await _userVideoStore
-                                                              .likeVideo(
-                                                        videoID: widget
-                                                            .videos[currentPos]
-                                                            .videoId,
-                                                      );
-                                                      if (_isLiked) {
-                                                        likeCount += 1;
-                                                        print("liked");
-                                                      }
-                                                    } else {
-                                                      await _userVideoStore
-                                                          .dislikeVideo(
-                                                        videoID: widget
-                                                            .videos[currentPos]
-                                                            .videoId,
-                                                      )
-                                                          .then((value) {
-                                                        if (value) {
-                                                          _isLiked = false;
-                                                        }
-                                                      });
-                                                      if (!_isLiked) {
-                                                        likeCount -= 1;
-                                                        print("disliked");
-                                                      }
-                                                    }
-                                                    _processing = false;
-                                                  }
-                                                  setup();
-                                                  setState(() {});
-                                                }
-                                              }),
-                                      SizedBox(
-                                        width: _widthOne * 20,
-                                      ),
-                                      Text(
-                                        likeCount.toString() == "null"
-                                            ? "0"
-                                            : likeCount.toString(),
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
                                   SizedBox(
-                                    width: _widthOne * 30,
+                                    height: MediaQuery.of(context).size.height *
+                                        0.75,
                                   ),
-                                  Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () {
-                                          if (_userAuth.user == null) {
-                                            Navigator.pop(context);
-                                            Navigator.pushReplacement(
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 20),
+                                    child: Row(
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () {
+                                            _controller.pause();
+                                            Navigator.push(
                                               context,
-                                              MaterialPageRoute(
+                                              CupertinoPageRoute(
                                                 builder: (context) {
-                                                  return Authentication(
-                                                      AuthIndex.REGISTER);
+                                                  return SearchProfile(
+                                                      uid: _user.id);
                                                 },
                                               ),
                                             );
-                                          } else {
-                                            print(widget.videos[currentPos]
-                                                .uploaderUid);
-                                            _controller.pause();
-                                            Navigator.push(
+                                          },
+                                          child: Row(children: [
+                                            CircleAvatar(
+                                              backgroundImage: NetworkImage(_user
+                                                          .photoUrl ==
+                                                      null
+                                                  ? "https://via.placeholder.com/150"
+                                                  : _user.photoUrl),
+                                              radius: 13,
+                                            ),
+                                            Text(
+                                              '  ${_user.username} \u2022',
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  color: Colors.white),
+                                            ),
+                                          ]),
+                                        ),
+                                        GestureDetector(
+                                          onTap: () async {
+                                            if (_userAuth.user == null) {
+                                              Navigator.pop(context);
+                                              Navigator.pushReplacement(
                                                 context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        CommentsScreen(
-                                                          videoId: widget
+                                                CupertinoPageRoute(
+                                                  builder: (context) {
+                                                    return Authentication(
+                                                        AuthIndex.REGISTER);
+                                                  },
+                                                ),
+                                              );
+                                            } else {
+                                              try {
+                                                print(_following);
+                                                _following =
+                                                    await _userInfoStore
+                                                        .followUser(
+                                                            uid: widget
+                                                                .videos[
+                                                                    currentPos]
+                                                                .uploaderUid);
+                                                print(_following);
+                                                print('pressed');
+                                                setState(() {});
+                                              } on Exception catch (e) {
+                                                print(e.toString());
+                                              }
+                                            }
+                                          },
+                                          child: Text(
+                                            _userAuth.user == null
+                                                ? "Follow"
+                                                : _userAuth.user.uid ==
+                                                        widget
+                                                            .videos[currentPos]
+                                                            .uploaderUid
+                                                    ? ' '
+                                                    : !_following
+                                                        ? ' Follow'
+                                                        : " Following",
+                                            style:
+                                                TextStyle(color: Colors.white),
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Padding(
+                                      padding: EdgeInsets.symmetric(
+                                          horizontal: 23, vertical: 4),
+                                      child: Text(
+                                        widget.videos[currentPos].videoName !=
+                                                null
+                                            ? widget.videos[currentPos]
+                                                        .videoName.length >
+                                                    37
+                                                ? "Title" +
+                                                    ' \u2022 ' +
+                                                    getChoppedUsername(widget
+                                                        .videos[currentPos]
+                                                        .videoName)
+                                                : "Title" +
+                                                    ' \u2022 ' +
+                                                    widget.videos[currentPos]
+                                                        .videoName +
+                                                    ' \u2022 '
+                                            : "Title" + ' \u2022 ',
+                                        style: TextStyle(color: Colors.white),
+                                      )),
+                                  Padding(
+                                    padding: EdgeInsets.only(left: 23),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.equalizer,
+                                          color: Colors.white,
+                                        ),
+                                        Text(
+                                          ' \u2022 ' +
+                                                  widget.videos[currentPos]
+                                                      .category ??
+                                              "Category",
+                                          style: TextStyle(color: Colors.white),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                  Container(
+                                    color: Colors.black12.withOpacity(0.4),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            InkWell(
+                                                child: SvgPicture.asset(
+                                                  _isLiked
+                                                      ? "assets/images/loved_icon.svg"
+                                                      : "assets/images/love_icon.svg",
+                                                  color: _isLiked
+                                                      ? Colors.red
+                                                      : Colors.red,
+                                                  width: 20,
+                                                ),
+                                                onTap: () async {
+                                                  if (_userAuth.user == null) {
+                                                    Navigator.pop(context);
+                                                    Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder: (context) {
+                                                          return Authentication(
+                                                              AuthIndex
+                                                                  .REGISTER);
+                                                        },
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    if (!_processing) {
+                                                      _processing = true;
+                                                      if (!_isLiked) {
+                                                        _isLiked =
+                                                            await _userVideoStore
+                                                                .likeVideo(
+                                                          videoID: widget
                                                               .videos[
                                                                   currentPos]
                                                               .videoId,
-                                                        )));
-                                          }
-                                        },
-                                        icon: Icon(
-                                          Icons.comment,
-                                          color: AppTheme.selectorTileColor,
+                                                        );
+                                                        if (_isLiked) {
+                                                          likeCount += 1;
+                                                          print("liked");
+                                                        }
+                                                      } else {
+                                                        await _userVideoStore
+                                                            .dislikeVideo(
+                                                          videoID: widget
+                                                              .videos[
+                                                                  currentPos]
+                                                              .videoId,
+                                                        )
+                                                            .then((value) {
+                                                          if (value) {
+                                                            _isLiked = false;
+                                                          }
+                                                        });
+                                                        if (!_isLiked) {
+                                                          likeCount -= 1;
+                                                          print("disliked");
+                                                        }
+                                                      }
+                                                      _processing = false;
+                                                    }
+                                                    setup();
+                                                    setState(() {});
+                                                  }
+                                                }),
+                                            SizedBox(
+                                              width: _widthOne * 20,
+                                            ),
+                                            Text(
+                                              likeCount.toString() == "null"
+                                                  ? "0"
+                                                  : likeCount.toString(),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: _fontOne * 14,
+                                                  color: Colors.white),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                      SizedBox(
-                                        width: _widthOne * 20,
-                                      ),
-                                      Text(
-                                        widget.videos[currentPos].comments
-                                                    .toString() ==
-                                                "null"
-                                            ? "0"
-                                            : widget.videos[currentPos].comments
-                                                .toString(),
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            color: Colors.white),
-                                      ),
-                                    ],
-                                  ),
-                                  SizedBox(
-                                    width: _widthOne * 30,
-                                  ),
-                                  SizedBox(
-                                    width: _widthOne * 650,
-                                    child: SliderTheme(
-                                      data: SliderTheme.of(context).copyWith(
-                                        trackShape:
-                                            RectangularSliderTrackShape(),
-                                        trackHeight: 2.0,
-                                        thumbColor: AppTheme.primaryColor,
-                                        thumbShape: StarThumb(thumbRadius: 20),
-                                        overlayColor: AppTheme.pureBlackColor,
-                                        overlayShape: RoundSliderOverlayShape(
-                                            overlayRadius: 30.0),
-                                      ),
-                                      child: Slider(
-                                        value: _sliderValue,
-                                        min: 0,
-                                        max: 5,
-                                        onChangeEnd: (val) async {
-                                          if (_userAuth.user == null) {
-                                            Navigator.pop(context);
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) {
-                                                  return Authentication(
-                                                      AuthIndex.REGISTER);
-                                                },
+                                        SizedBox(
+                                          width: _widthOne * 30,
+                                        ),
+                                        Row(
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.center,
+                                          children: [
+                                            IconButton(
+                                              onPressed: () {
+                                                if (_userAuth.user == null) {
+                                                  Navigator.pop(context);
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return Authentication(
+                                                            AuthIndex.REGISTER);
+                                                      },
+                                                    ),
+                                                  );
+                                                } else {
+                                                  print(widget
+                                                      .videos[currentPos]
+                                                      .uploaderUid);
+                                                  _controller.pause();
+                                                  SystemChrome
+                                                      .setPreferredOrientations([
+                                                    DeviceOrientation.portraitUp
+                                                  ]);
+                                                  Navigator.push(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              CommentsScreen(
+                                                                videoId: widget
+                                                                    .videos[
+                                                                        currentPos]
+                                                                    .videoId,
+                                                              )));
+                                                }
+                                              },
+                                              icon: Icon(
+                                                Icons.comment,
+                                                color: Colors.white,
+                                                size: _iconOne * 23,
                                               ),
-                                            );
-                                          } else {
-                                            bool success =
-                                                await _userVideoStore.rateVideo(
-                                                    videoID: widget
-                                                        .videos[currentPos]
-                                                        .videoId,
-                                                    rating: _sliderValue);
-                                            if (!success) {
-                                              setState(() {
-                                                _sliderValue = 0;
-                                              });
-                                            }
-                                          }
-                                        },
-                                        onChanged: (val) async {
-                                          setState(() {
-                                            _sliderValue = val;
-                                          });
-                                        },
-                                        inactiveColor: AppTheme.primaryColor,
-                                        activeColor: AppTheme.selectorTileColor,
-                                      ),
+                                            ),
+                                            SizedBox(
+                                              width: _widthOne * 20,
+                                            ),
+                                            Text(
+                                              widget.videos[currentPos].comments
+                                                          .toString() ==
+                                                      "null"
+                                                  ? "0"
+                                                  : widget.videos[currentPos]
+                                                      .comments
+                                                      .toString(),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: _fontOne * 14,
+                                                  color: Colors.white),
+                                            ),
+                                          ],
+                                        ),
+                                        SizedBox(
+                                          width: _widthOne * 30,
+                                        ),
+                                        SizedBox(
+                                          width: _widthOne * 650,
+                                          child: SliderTheme(
+                                            data: SliderTheme.of(context)
+                                                .copyWith(
+                                              trackShape:
+                                                  RectangularSliderTrackShape(),
+                                              trackHeight: 2.0,
+                                              thumbColor: AppTheme.primaryColor,
+                                              thumbShape:
+                                                  StarThumb(thumbRadius: 20),
+                                              overlayColor:
+                                                  AppTheme.pureBlackColor,
+                                              overlayShape:
+                                                  RoundSliderOverlayShape(
+                                                      overlayRadius: 30.0),
+                                            ),
+                                            child: Slider(
+                                              value: _sliderValue,
+                                              min: 0,
+                                              max: 5,
+                                              onChangeEnd: (val) async {
+                                                if (_userAuth.user == null) {
+                                                  Navigator.pop(context);
+                                                  Navigator.pushReplacement(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) {
+                                                        return Authentication(
+                                                            AuthIndex.REGISTER);
+                                                      },
+                                                    ),
+                                                  );
+                                                } else {
+                                                  bool success =
+                                                      await _userVideoStore
+                                                          .rateVideo(
+                                                              videoID: widget
+                                                                  .videos[
+                                                                      currentPos]
+                                                                  .videoId,
+                                                              rating:
+                                                                  _sliderValue);
+                                                  if (!success) {
+                                                    setState(() {
+                                                      _sliderValue = 0;
+                                                    });
+                                                  }
+                                                }
+                                              },
+                                              onChanged: (val) async {
+                                                setState(() {
+                                                  _sliderValue = val;
+                                                });
+                                              },
+                                              inactiveColor:
+                                                  AppTheme.backgroundColor,
+                                              activeColor:
+                                                  AppTheme.selectorTileColor,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
                                   ),
+                                  SizedBox(
+                                    height: 35,
+                                  )
                                 ],
-                              ),
-                            ),
-                            SizedBox(
-                              height: 35,
-                            )
-                          ],
-                        );
+                              );
                       }),
                     ]),
                   );
@@ -739,6 +814,7 @@ class _PlayerState extends State<Player> {
   @override
   void dispose() {
     super.dispose();
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
     _controller.dispose();
   }
 }
