@@ -260,7 +260,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                 ],
               )
             : SpinKitCircle(
-                color: Colors.grey,
+                color: Colors.black,
                 size: 60,
               );
   }
@@ -293,7 +293,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                     });
                     await _processVideo(selectedVideo);
                   },
-                  child: Text(_encodingVideo ? 'Encoding..' : 'Encode',
+                  child: Text(_encodingVideo ? 'Processing...' : 'Next',
                       style: TextStyle(color: Colors.white, fontSize: 20)),
                 )
               ]
@@ -318,7 +318,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                     });
                     await _processVideo(selectedVideo);
                   },
-                  child: Text(_encodingVideo ? 'Encoding..' : 'Encode',
+                  child: Text(_encodingVideo ? 'Processing..' : 'Next',
                       style: TextStyle(color: Colors.white, fontSize: 20)),
                 ),
               ],

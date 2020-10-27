@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageSearchResult.dart';
 
@@ -42,7 +43,7 @@ class _SearchMessageState extends State<SearchMessage> {
         children: [
           Icon(
             Icons.group,
-            color: Colors.orange.shade300,
+            color: AppTheme.primaryColor,
             size: 40,
           ),
           SizedBox(width: 20,),
@@ -50,7 +51,7 @@ class _SearchMessageState extends State<SearchMessage> {
             "Search Contacts",
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.orange.shade300,
+                color: AppTheme.primaryColor,
                 fontWeight: FontWeight.w500,
                 fontSize: 25
             ),
@@ -67,8 +68,8 @@ class _SearchMessageState extends State<SearchMessage> {
         builder: (context, dataSnapshot) {
           if (!dataSnapshot.hasData) {
             return LinearProgressIndicator(
-              backgroundColor: Colors.orange.shade400,
-              valueColor: AlwaysStoppedAnimation<Color>(Colors.orange.shade300),
+              backgroundColor: AppTheme.primaryColor,
+              valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
             );
           }
           List uIDs= [];

@@ -1,11 +1,10 @@
 import 'dart:io';
-import 'dart:math' as math;
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -94,7 +93,7 @@ class _PostCardState extends State<PostCard> {
                     ],
                   ),
                 ),
-                SizedBox(
+                /*SizedBox(
                   height: 20,
                 ),
                 InkWell(
@@ -117,7 +116,7 @@ class _PostCardState extends State<PostCard> {
                       )
                     ],
                   ),
-                ),
+                ),*/
                 SizedBox(
                   height: 10,
                 ),
@@ -134,7 +133,7 @@ class _PostCardState extends State<PostCard> {
       await FlutterShare.share(
           title: 'Watch WowTalent',
           text:
-          "I'm loving this app, WowTalent, world's largest talent discovery platform. I found new talent :",
+              "I'm loving this app, WowTalent, world's largest talent discovery platform. I found new talent :",
           linkUrl: widget.video.shareUrl,
           chooserTitle: 'Share');
     } else if (choice == Menu.Download) {
@@ -174,10 +173,11 @@ class _PostCardState extends State<PostCard> {
       } else {
         Navigator.pop(context);
       }
-    } else if (choice == Menu.Forward) {
+    }
+    /*else if (choice == Menu.Forward) {
       print('Forward');
       Navigator.pop(context);
-    }
+    }*/
   }
 
   void setup() async {
@@ -345,7 +345,7 @@ class _PostCardState extends State<PostCard> {
                                   ? SvgPicture.asset(
                                       "assets/images/love_icon.svg",
                                       width: 20,
-                                      color: AppTheme.backgroundColor,
+                                      color: AppTheme.selectorTileColor,
                                     )
                                   : SvgPicture.asset(
                                       "assets/images/loved_icon.svg",

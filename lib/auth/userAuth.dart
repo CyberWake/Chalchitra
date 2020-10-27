@@ -32,9 +32,14 @@ class UserAuth {
       );
       DocumentSnapshot userSnapshot =
           await _usersCollection.doc(userCredential.user.uid).get();
-      UserDataModel user = UserDataModel.fromDocument(userSnapshot);
-      Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
-      return "success";
+      if (userSnapshot.exists) {
+        UserDataModel user = UserDataModel.fromDocument(userSnapshot);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(user);
+        return "success";
+      } else {
+        return "No user found for this email.";
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return 'No user found for this email.';

@@ -181,6 +181,7 @@ class _LoginFormState extends State<LoginForm> {
                 .signInWithEmailAndPassword(
               email: _userDataModel.email,
               password: _userDataModel.password,
+              context: context,
             )
                 .then((result) {
               if (result == null) {

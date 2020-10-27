@@ -117,7 +117,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                   vertical: 10.0, horizontal: 2),
                               child: Text(
                                 'Explore Content',
-                                style: TextStyle(fontSize: 18),
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    color: AppTheme.backgroundColor),
                               ),
                             ),
                           )
