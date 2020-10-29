@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:timeago/timeago.dart';
 
 import '../auth/userAuth.dart';
 import '../model/videoInfoModel.dart';
@@ -217,9 +218,7 @@ class UserVideoStore {
 
   static mapQueryToVideoInfo(QuerySnapshot qs) {
     try {
-      print("here1");
       return qs.docs.map((DocumentSnapshot ds) {
-        print("here2");
         return VideoInfo(
             videoUrl: ds.data()['videoUrl'],
             videoHashtag: ds.data()['videoHashtag'],
@@ -235,7 +234,6 @@ class UserVideoStore {
             videoId: ds.id);
       }).toList();
     } catch (e) {
-      print("error");
       print(e.toString());
     }
   }
@@ -247,7 +245,7 @@ class UserVideoStore {
           videoHashtag: ds.data()['videoHashtag'],
           thumbUrl: ds.data()['thumbUrl'],
           coverUrl: ds.data()['coverUrl'],
-          aspectRatio: ds.data()['aspectRatio'].toDouble(),
+          aspectRatio: ds.data()['aspectRatio'],
           videoName: ds.data()['videoName'],
           category: ds.data()['category'],
           uploadedAt: ds.data()['uploadedAt'],
@@ -256,7 +254,6 @@ class UserVideoStore {
           comments: ds.data()['comments'],
           videoId: ds.id);
     } catch (e) {
-      print("error");
       print(e.toString());
     }
   }
@@ -406,5 +403,10 @@ class UserVideoStore {
         .orderBy("timestamp", descending: true)
         .limit(50)
         .snapshots();
+  }
+
+  Future getComments({String id}) async {
+    final query = await _videoComments.doc(id).collection(id).get();
+    return query;
   }
 }
