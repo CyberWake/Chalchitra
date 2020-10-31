@@ -30,15 +30,19 @@ class UserAuth {
         email: email,
         password: password,
       );
-      DocumentSnapshot userSnapshot =
-          await _usersCollection.doc(userCredential.user.uid).get();
-      if (userSnapshot.exists) {
-        UserDataModel user = UserDataModel.fromDocument(userSnapshot);
-        Provider.of<CurrentUser>(context, listen: false)
-            .updateCurrentUser(user);
-        return "success";
+      if (userCredential.user.emailVerified) {
+        DocumentSnapshot userSnapshot =
+            await _usersCollection.doc(userCredential.user.uid).get();
+        if (userSnapshot.exists) {
+          UserDataModel user = UserDataModel.fromDocument(userSnapshot);
+          Provider.of<CurrentUser>(context, listen: false)
+              .updateCurrentUser(user);
+          return "success";
+        } else {
+          return "No user found for this email.";
+        }
       } else {
-        return "No user found for this email.";
+        return "User Not Verified";
       }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
@@ -63,7 +67,7 @@ class UserAuth {
         email: email,
         password: password,
       );
-
+      await userCredential.user.sendEmailVerification();
       DocumentSnapshot userRecord =
           await _usersCollection.doc(userCredential.user.uid).get();
       if (!userRecord.exists) {
@@ -71,15 +75,13 @@ class UserAuth {
             .createUserRecord(username: username)
             .then((value) async {
           if (value) {
-            userRecord =
-                await _usersCollection.doc(userCredential.user.uid).get();
-            currentUserModel = UserDataModel.fromDocument(userRecord);
-            Provider.of<CurrentUser>(context, listen: false)
-                .updateCurrentUser(currentUserModel);
+            print("user created");
           }
         });
       }
-      return "success";
+      await _auth.signOut();
+      userCredential = null;
+      return "Check mailbox and verify your account to login";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         return 'The password provided is too weak.';

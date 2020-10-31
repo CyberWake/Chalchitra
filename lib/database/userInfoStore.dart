@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 import '../auth/userAuth.dart';
@@ -40,9 +38,6 @@ class UserInfoStore {
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
         }
-        _currentUserModel = UserDataModel.fromDocument(userRecord);
-        Provider.of<CurrentUser>(context, listen: false)
-            .updateCurrentUser(_currentUserModel);
       }
 
       return true;

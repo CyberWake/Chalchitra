@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
@@ -18,11 +19,10 @@ class _SearchUserState extends State<SearchUser> {
   List<UserDataModel> searchUserResult = [];
   String search = "";
   UserInfoStore searchUser = UserInfoStore();
+  UserAuth _userAuth = UserAuth();
   SearchResult searchResult;
   QuerySnapshot searchKeyQuery;
   TextEditingController searchTextEditingController = TextEditingController();
-  //Future<QuerySnapshot> futureSearchResult;
-  //final ref = FirebaseFirestore.instance.collection('WowUsers');
   UserDataModel user;
 
   initiateSearch(searchUsername) async {
@@ -45,9 +45,10 @@ class _SearchUserState extends State<SearchUser> {
       for (int i = 0; i < searchKeyQuery.docs.length; ++i) {
         queryResultSet.add(searchKeyQuery.docs[i].data());
         if (searchKeyQuery.docs[i]
-            .data()['username']
-            .toUpperCase()
-            .startsWith(capitalizedValue)) {
+                .data()['username']
+                .toUpperCase()
+                .startsWith(capitalizedValue) &&
+            searchKeyQuery.docs[i].data()['email'] != _userAuth.user.email) {
           UserDataModel eachUser =
               UserDataModel.fromDocument(searchKeyQuery.docs[i]);
           searchUserResult.add(eachUser);
@@ -67,9 +68,10 @@ class _SearchUserState extends State<SearchUser> {
       for (int i = 0; i < searchKeyQuery.docs.length; ++i) {
         queryResultSet.add(searchKeyQuery.docs[i].data());
         if (searchKeyQuery.docs[i]
-            .data()['username']
-            .toUpperCase()
-            .startsWith(capitalizedValue)) {
+                .data()['username']
+                .toUpperCase()
+                .startsWith(capitalizedValue) &&
+            searchKeyQuery.docs[i].data()['email'] != _userAuth.user.email) {
           UserDataModel eachUser =
               UserDataModel.fromDocument(searchKeyQuery.docs[i]);
           searchUserResult.add(eachUser);
@@ -159,6 +161,8 @@ class _SearchUserState extends State<SearchUser> {
                           ? ListView.builder(
                               itemCount: searchUserResult.length,
                               itemBuilder: (BuildContext context, int index) {
+                                if (searchUserResult[index].id !=
+                                    _userAuth.user.uid) {}
                                 return SearchResult(searchUserResult[index]);
                               }
                               // tempSearchStore == null ? resultNotFound() : foundUsers(),
