@@ -4,6 +4,7 @@ import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
@@ -29,6 +30,9 @@ import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoSelectorScreen.dart';
 
+import '../../model/theme.dart';
+import 'endDrawerScreens/drafts.dart';
+
 class MainScreenWrapper extends StatefulWidget {
   final int index;
   final bool isFromLink;
@@ -42,6 +46,9 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     with WidgetsBindingObserver {
   final GlobalKey<ScaffoldState> _scaffoldGlobalKey =
       GlobalKey<ScaffoldState>();
+
+  final FirebaseMessaging _fcm = FirebaseMessaging();
+
   List<Widget> _screens;
   int _currentIndex = 0;
   double _widthOne;
@@ -72,6 +79,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   void getUser() async {
     if (_userAuth.user != null) {
       print(_userAuth.user.uid);
+      await _userInfoStore.updateToken(context: context);
       _currentUserInfo =
           await _userInfoStore.getUserInfo(uid: _userAuth.user.uid);
       user = UserDataModel.fromDocument(_currentUserInfo);
@@ -117,12 +125,34 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     super.dispose();
   }
 
+  getUserInfo() async {
+    UserDataModel user =
+        await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
+    Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
+  }
+
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
     getUser();
     _currentIndex = widget.index;
+    if (_userAuth.user != null) {
+      getUserInfo();
+    }
+
+    _fcm.configure(onMessage: (Map<String, dynamic> message) async {
+      _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
+          content: ListTile(
+        contentPadding: EdgeInsets.symmetric(vertical: 0.0),
+        title: Text(message['notification']['title']),
+        subtitle: Text(message['notification']['body']),
+      )));
+    }, onLaunch: (Map<String, dynamic> message) async {
+      print("onLaunch work");
+    }, onResume: (Map<String, dynamic> message) async {
+      print("onResume");
+    });
   }
 
   _buildConfirmSignOut(context) {
@@ -134,7 +164,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: AppTheme.selectorTileColor, width: 3)),
+            border: Border.all(color: AppTheme.primaryColor, width: 3)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -232,7 +262,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     }
     print(index);
     if (index == 5) {
-      _scaffoldGlobalKey.currentState.openEndDrawer();
+      _scaffoldGlobalKey.currentState.openDrawer();
     } else if (index == 4) {
       print(index);
       UserAuth().account.listen((user) {
@@ -267,209 +297,207 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       Message(),
       _profilePage,
     ];
-    return WillPopScope(
-      onWillPop: onWillPop,
-      child: Scaffold(
+
+    return WillPopScope(onWillPop: onWillPop, child: wrapperMain());
+  }
+
+  Widget wrapperMain() {
+    return Scaffold(
+        backgroundColor: AppTheme.backgroundColor,
+        key: _scaffoldGlobalKey,
+        appBar: AppBar(
+          elevation: 0.0,
+          backgroundColor: AppTheme.primaryColor,
+          title: Container(
+            padding: EdgeInsets.symmetric(
+              vertical: 10,
+            ),
+            height: 55,
+            width: _size.width / 2.5,
+            child: Image.asset(
+              'assets/images/appBarLogo1.png',
+              fit: BoxFit.fitHeight,
+            ),
+          ),
+          actions: [
+            _currentIndex != 4
+                ? IconButton(
+                    icon: Icon(
+                      Icons.search,
+                      color: AppTheme.backgroundColor,
+                      size: _iconOne * 30,
+                    ),
+                    onPressed: () {
+                      if (_userAuth.user != null) {
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (_) => SearchUser()));
+                      } else {
+                        Navigator.pushReplacement(
+                            context,
+                            CupertinoPageRoute(
+                                builder: (_) =>
+                                    Authentication(AuthIndex.REGISTER)));
+                      }
+                    },
+                  )
+                : IconButton(
+                    icon: Icon(
+                      Icons.menu,
+                      color: AppTheme.backgroundColor,
+                      size: _iconOne * 25,
+                    ),
+                    onPressed: () =>
+                        _scaffoldGlobalKey.currentState.openEndDrawer(),
+                    tooltip:
+                        MaterialLocalizations.of(context).openAppDrawerTooltip,
+                  ),
+            SizedBox(
+              width: _widthOne * 100,
+            )
+          ],
+          automaticallyImplyLeading: false,
+        ),
+        endDrawer: Container(
+          width: _size.width * 0.5,
+          child: Drawer(
+              child: Container(
+            color: AppTheme.primaryColor,
+            child: Column(
+              children: [
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.only(top: _size.height * 0.039),
+                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                  child: FittedBox(
+                    child: Text(
+                      user == null ? " " : user.username,
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+                Divider(
+                  color: Colors.white,
+                  thickness: 0.5,
+                ),
+                ListTile(
+                  leading: Icon(Icons.drafts, color: Colors.white),
+                  title: Text("Drafts", style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (BuildContext context) => Drafts()));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.settings, color: Colors.white),
+                  title:
+                      Text('Settings', style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(context,
+                        CupertinoPageRoute(builder: (_) => PrivacyPage()));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.group_add, color: Colors.white),
+                  title: Text('Invite', style: TextStyle(color: Colors.white)),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await FlutterShare.share(
+                        title: 'Join WowTalent',
+                        text:
+                            "I'm loving this app, WowTalent, world's largest talent discovery platform. Download Here:",
+                        linkUrl:
+                            'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                        chooserTitle: 'Invite');
+                  },
+                ),
+                Spacer(),
+                ListTile(
+                  leading: Icon(Icons.power_settings_new, color: Colors.white),
+                  title: Text('Signout', style: TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) =>
+                          _buildConfirmSignOut(context),
+                    );
+                  },
+                ),
+              ],
+            ),
+          )),
+        ),
+        bottomNavigationBar: CurvedNavigationBar(
+          index: _currentIndex,
+          height: Platform.isIOS ? _heightOne * 40 : _heightOne * 55,
           backgroundColor: AppTheme.backgroundColor,
-          key: _scaffoldGlobalKey,
-          appBar: AppBar(
-            elevation: 0.0,
-            backgroundColor: AppTheme.primaryColor,
-            title: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 10,
-              ),
-              height: 55,
-              width: _size.width / 2.5,
-              child: Image.asset(
-                'assets/images/appBarLogo1.png',
-                fit: BoxFit.fitHeight,
+          color: AppTheme.primaryColor,
+          buttonBackgroundColor: AppTheme.primaryColor,
+          items: <Widget>[
+            Icon(
+              Icons.home,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+            Icon(
+              Icons.explore,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+            Icon(
+              Icons.add,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+            Transform.rotate(
+              angle: 180 * pi / 100,
+              child: Icon(
+                Icons.send,
+                size: 25,
+                color: AppTheme.backgroundColor,
               ),
             ),
-            actions: [
-              _currentIndex != 4
-                  ? IconButton(
-                      icon: Icon(
-                        Icons.search,
-                        color: AppTheme.backgroundColor,
-                        size: _iconOne * 30,
-                      ),
-                      onPressed: () {
-                        if (_userAuth.user != null) {
-                          Navigator.push(context,
-                              MaterialPageRoute(builder: (_) => SearchUser()));
-                        } else {
-                          Navigator.pushReplacement(
-                              context,
-                              CupertinoPageRoute(
-                                  builder: (_) =>
-                                      Authentication(AuthIndex.REGISTER)));
-                        }
-                      },
-                    )
-                  : IconButton(
-                      icon: Icon(
-                        Icons.menu,
-                        color: AppTheme.backgroundColor,
-                        size: _iconOne * 25,
-                      ),
-                      onPressed: () =>
-                          _scaffoldGlobalKey.currentState.openEndDrawer(),
-                      tooltip: MaterialLocalizations.of(context)
-                          .openAppDrawerTooltip,
-                    ),
-              SizedBox(
-                width: _widthOne * 100,
-              )
-            ],
-            automaticallyImplyLeading: false,
-          ),
-          endDrawer: Container(
-            width: _size.width * 0.5,
-            child: Drawer(
-                child: Container(
-              color: AppTheme.primaryColor,
-              child: Column(
-                children: [
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.only(top: _size.height * 0.039),
-                    padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                    child: FittedBox(
-                      child: Text(
-                        user == null ? " " : user.username,
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                  Divider(
-                    color: Colors.white,
-                    thickness: 0.5,
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.drafts, color: Colors.white),
-                    title:
-                        Text("Drafts", style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(
-                          context,
-                          CupertinoPageRoute(
-                              builder: (BuildContext context) => Drafts()));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.settings, color: Colors.white),
-                    title:
-                        Text('Settings', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      Navigator.push(context,
-                          CupertinoPageRoute(builder: (_) => PrivacyPage()));
-                    },
-                  ),
-                  ListTile(
-                    leading: Icon(Icons.group_add, color: Colors.white),
-                    title:
-                        Text('Invite', style: TextStyle(color: Colors.white)),
-                    onTap: () async {
-                      Navigator.pop(context);
-                      await FlutterShare.share(
-                          title: 'Join WowTalent',
-                          text:
-                              "I'm loving this app, WowTalent, world's largest talent discovery platform. Download Here:",
-                          linkUrl:
-                              'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
-                          chooserTitle: 'Invite');
-                    },
-                  ),
-                  Spacer(),
-                  ListTile(
-                    leading:
-                        Icon(Icons.power_settings_new, color: Colors.white),
-                    title:
-                        Text('Signout', style: TextStyle(color: Colors.white)),
-                    onTap: () {
-                      Navigator.pop(context);
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) =>
-                            _buildConfirmSignOut(context),
-                      );
-                    },
-                  ),
-                ],
-              ),
-            )),
-          ),
-          bottomNavigationBar: CurvedNavigationBar(
-            index: _currentIndex,
-            height: _heightOne * 55,
-            backgroundColor: AppTheme.backgroundColor,
-            color: AppTheme.primaryColor,
-            buttonBackgroundColor: AppTheme.primaryColor,
-            items: <Widget>[
-              Icon(
-                Icons.home,
-                size: 25,
-                color: AppTheme.backgroundColor,
-              ),
-              Icon(
-                Icons.explore,
-                size: 25,
-                color: AppTheme.backgroundColor,
-              ),
-              Icon(
-                Icons.add,
-                size: 25,
-                color: AppTheme.backgroundColor,
-              ),
-              Transform.rotate(
-                angle: 180 * pi / 100,
-                child: Icon(
-                  Icons.send,
-                  size: 25,
-                  color: AppTheme.backgroundColor,
-                ),
-              ),
-              Icon(
-                Icons.account_circle,
-                size: 25,
-                color: AppTheme.backgroundColor,
-              ),
-            ],
-            onTap: (index) async {
-              changePage(index);
-            },
-          ),
-          body: GestureDetector(
-            onHorizontalDragEnd: (DragEndDetails details) {
-              Offset offset = details.velocity.pixelsPerSecond;
-              print(offset);
-              if (offset.dx < 0) {
-                print(offset.dx);
-                if (_currentIndex + 1 == 5) {
-                  changePage(5);
-                }
-                if (_currentIndex + 1 < 5) {
-                  print("going forward");
-                  _currentIndex += 1;
-                  changePage(_currentIndex);
-                }
-              } else if (offset.dx > 0) {
-                print(offset.dx);
-                if (_currentIndex - 1 >= 0) {
-                  print("going backward");
-                  _currentIndex -= 1;
-                  changePage(_currentIndex);
-                }
+            Icon(
+              Icons.account_circle,
+              size: 25,
+              color: AppTheme.backgroundColor,
+            ),
+          ],
+          onTap: (index) async {
+            changePage(index);
+          },
+        ),
+        body: GestureDetector(
+          onHorizontalDragEnd: (DragEndDetails details) {
+            Offset offset = details.velocity.pixelsPerSecond;
+            print(offset);
+            if (offset.dx < 0) {
+              print(offset.dx);
+              if (_currentIndex + 1 == 5) {
+                changePage(5);
               }
-            },
-            child: Container(child: _screens[_currentIndex]),
-          )),
-    );
+              if (_currentIndex + 1 < 5) {
+                print("going forward");
+                _currentIndex += 1;
+                changePage(_currentIndex);
+              }
+            } else if (offset.dx > 0) {
+              print(offset.dx);
+              if (_currentIndex - 1 >= 0) {
+                print("going backward");
+                _currentIndex -= 1;
+                changePage(_currentIndex);
+              }
+            }
+          },
+          child: Container(child: _screens[_currentIndex]),
+        ));
   }
 }

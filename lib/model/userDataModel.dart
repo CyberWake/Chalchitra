@@ -16,6 +16,7 @@ class UserDataModel {
   int followers;
   int following;
   int videoCount;
+  String fcmToken;
 
   UserDataModel(
       {this.displayName,
@@ -32,7 +33,9 @@ class UserDataModel {
       this.private = false,
       this.followers,
       this.following,
-      this.videoCount});
+      this.videoCount,
+      this.fcmToken
+      });
 
   factory UserDataModel.fromDocument(DocumentSnapshot document) {
     return UserDataModel(
@@ -49,6 +52,7 @@ class UserDataModel {
         private: document.data()['private'],
         followers: document.data()['followers'],
         following: document.data()['following'],
-        videoCount: document.data()['videoCount']);
+        videoCount: document.data()['videoCount'],
+        fcmToken: document.data()['fcmToken']);
   }
 }

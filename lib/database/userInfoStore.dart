@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 import '../auth/userAuth.dart';
@@ -13,14 +16,15 @@ class UserInfoStore {
   final _activity = FirebaseFirestore.instance.collection('activity feed');
   final _chatUIDs = FirebaseFirestore.instance.collection('chatUIDs');
   final _allChats = FirebaseFirestore.instance.collection('allChats');
-
+  final FirebaseMessaging _fcm = FirebaseMessaging();
   static final UserAuth _userAuth = UserAuth();
 
   Future<bool> createUserRecord(
       {String username = "", BuildContext context}) async {
     try {
+      String _fcmToken = await _fcm.getToken();
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
-      if (_userAuth.user != null) {
+      if (_userAuth.user != null && _fcmToken != null) {
         if (!userRecord.exists) {
           Map<String, dynamic> userData = {
             "id": _userAuth.user.uid,
@@ -34,6 +38,7 @@ class UserInfoStore {
             "followers": 0,
             "following": 0,
             "videoCount": 0,
+            "fcmToken": _fcmToken
           };
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
@@ -44,6 +49,21 @@ class UserInfoStore {
     } catch (e) {
       print(e.toString());
       return false;
+    }
+  }
+
+  Future updateToken({BuildContext context}) async {
+    try {
+      String _fcmToken = await _fcm.getToken();
+      print("run");
+      DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
+      _users.doc(_userAuth.user.uid).update({'fcmToken': _fcmToken});
+      userRecord = await _users.doc(_userAuth.user.uid).get();
+      _currentUserModel = UserDataModel.fromDocument(userRecord);
+      Provider.of<CurrentUser>(context, listen: false)
+          .updateCurrentUser(_currentUserModel);
+    } catch (e) {
+      print(e.toString());
     }
   }
 
