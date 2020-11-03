@@ -38,7 +38,7 @@ class StarThumb extends SliderComponentShape {
 
     // Thumb colors
     final paint = Paint()
-      ..color = AppTheme.selectorTileColor
+      ..color = AppTheme.secondaryColor
       ..style = PaintingStyle.fill
       ..strokeCap = StrokeCap.round;
     // Thumb text style

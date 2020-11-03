@@ -25,13 +25,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
   bool _loading = true;
   final TextEditingController controller = new TextEditingController();
   bool _checkChatAlreadyAdded = true;
-  void setup() async{
-    await _userInfoStore.getUserInfoStream(
-      uid: widget.targetUID
-    ).first.then((document){
+  void setup() async {
+    await _userInfoStore
+        .getUserInfoStream(uid: widget.targetUID)
+        .first
+        .then((document) {
       _userDataModel = UserDataModel.fromDocument(document);
     });
-
 
     setState(() {
       _loading = false;
@@ -43,6 +43,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     super.initState();
     setup();
   }
+
   String text = "";
 
   @override
@@ -68,20 +69,21 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: <Widget>[
-                    SizedBox(width: _widthOne * 50,),
-                    IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: AppTheme.backgroundColor,
-                      ),
-                      onPressed: (){
-                        FocusScope.of(context).unfocus();
-                        Navigator.pop(context);
-                      }
+                    SizedBox(
+                      width: _widthOne * 50,
                     ),
+                    IconButton(
+                        icon: Icon(
+                          Icons.arrow_back_ios,
+                          color: AppTheme.backgroundColor,
+                        ),
+                        onPressed: () {
+                          FocusScope.of(context).unfocus();
+                          Navigator.pop(context);
+                        }),
                     Expanded(child: Container()),
                     Text(
-                      _loading ?  " " : _userDataModel.username,
+                      _loading ? " " : _userDataModel.username,
                       style: TextStyle(
                         color: AppTheme.backgroundColor,
                         fontSize: _fontOne * 25,
@@ -93,12 +95,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       backgroundColor: Colors.grey,
                       radius: _iconOne * 25,
                       backgroundImage: CachedNetworkImageProvider(
-                        _userDataModel.photoUrl == null ?
-                        'https://via.placeholder.com/150' :
-                            _userDataModel.photoUrl
-                      ),
+                          _userDataModel.photoUrl == null
+                              ? 'https://via.placeholder.com/150'
+                              : _userDataModel.photoUrl),
                     ),
-                    SizedBox(width: _widthOne * 100,)
+                    SizedBox(
+                      width: _widthOne * 100,
+                    )
                   ],
                 ),
               ),
@@ -110,20 +113,18 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                           borderRadius: BorderRadius.only(
                             topRight: Radius.circular(25),
                             topLeft: Radius.circular(25),
-                          )
-                      ),
-                      child: _loading ? Center(
-                        child: SpinKitCircle(
-                          color: AppTheme.backgroundColor,
-                          size: _fontOne * 60,
-                        ),
-                      ): messages()
-                  )
-              ),
+                          )),
+                      child: _loading
+                          ? Center(
+                              child: SpinKitCircle(
+                                color: AppTheme.backgroundColor,
+                                size: _fontOne * 60,
+                              ),
+                            )
+                          : messages())),
               sendMessageField()
             ],
-          )
-      ),
+          )),
     );
   }
 
@@ -135,20 +136,21 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return Center(
-              child: SpinKitCircle(
-                color: AppTheme.backgroundColor,
-                size: _fontOne * 60,
-              ),
+            child: SpinKitCircle(
+              color: AppTheme.backgroundColor,
+              size: _fontOne * 60,
+            ),
           );
-        }else {
+        } else {
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => ChatBubble(
-              isMe: snapshot.data.documents[index].data()["reciever"] == widget.targetUID,
-              message: snapshot.data.documents[index].data()['message'],
-              profileImg: _userDataModel.photoUrl == null ?
-              'https://via.placeholder.com/150' : _userDataModel.photoUrl
-            ),
+                isMe: snapshot.data.documents[index].data()["reciever"] ==
+                    widget.targetUID,
+                message: snapshot.data.documents[index].data()['message'],
+                profileImg: _userDataModel.photoUrl == null
+                    ? 'https://via.placeholder.com/150'
+                    : _userDataModel.photoUrl),
             itemCount: snapshot.data.documents.length,
             reverse: true,
           );
@@ -157,7 +159,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     );
   }
 
-  Widget sendMessageField(){
+  Widget sendMessageField() {
     return Container(
       padding: EdgeInsets.zero,
       margin: EdgeInsets.only(bottom: 0),
@@ -174,13 +176,17 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           Expanded(
             child: TextField(
               controller: controller,
-              onChanged: (val){
+              onChanged: (val) {
                 text = val;
               },
-              style: TextStyle(color: AppTheme.pureWhiteColor,),
+              style: TextStyle(
+                color: AppTheme.primaryColorDark,
+              ),
               decoration: InputDecoration.collapsed(
                 hintText: 'Send a message..',
-                hintStyle: TextStyle(color: AppTheme.pureWhiteColor,),
+                hintStyle: TextStyle(
+                  color: AppTheme.primaryColorDark,
+                ),
               ),
               textCapitalization: TextCapitalization.sentences,
             ),
@@ -188,24 +194,22 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           IconButton(
             icon: Icon(Icons.send),
             iconSize: 25,
-            color:  AppTheme.primaryColor,
-            onPressed: () async{
-              if(text.isEmpty || text.replaceAll(" ", "").length == 0){
+            color: AppTheme.primaryColor,
+            onPressed: () async {
+              if (text.isEmpty || text.replaceAll(" ", "").length == 0) {
                 return;
               }
 
-              if(_checkChatAlreadyAdded){
-                await _userInfoStore.checkChatExists(
-                    targetUID: widget.targetUID
-                ).then((value) async{
+              if (_checkChatAlreadyAdded) {
+                await _userInfoStore
+                    .checkChatExists(targetUID: widget.targetUID)
+                    .then((value) async {
                   print(value);
-                  if(value == false){
+                  if (value == false) {
                     await _userInfoStore.addChatSender(
-                        targetUID: widget.targetUID
-                    );
+                        targetUID: widget.targetUID);
                     await _userInfoStore.addChatReceiver(
-                        targetUID: widget.targetUID
-                    );
+                        targetUID: widget.targetUID);
                   }
                 });
                 _checkChatAlreadyAdded = false;

@@ -185,7 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: size.width * 0.9,
                     child: Card(
                       elevation: 20,
-                      color: AppTheme.selectorTileColor,
+                      color: AppTheme.secondaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
@@ -477,10 +477,10 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     "Delete",
-                    style: TextStyle(color: AppTheme.backColor),
+                    style: TextStyle(color: AppTheme.primaryColorDark),
                   ),
                   Icon(Icons.delete_rounded,
-                      size: 20, color: AppTheme.backColor),
+                      size: 20, color: AppTheme.primaryColorDark),
                 ],
               ),
             ),

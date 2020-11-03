@@ -391,7 +391,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           padding: EdgeInsets.symmetric(
                               horizontal: 10, vertical: 20),
                           decoration: BoxDecoration(
-                              color: AppTheme.selectorTileColor,
+                              color: AppTheme.secondaryColor,
                               borderRadius: BorderRadius.circular(25),
                               boxShadow: [
                                 BoxShadow(
@@ -509,46 +509,46 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                   child: DropdownButtonHideUnderline(
                                     child: DropdownButton(
                                         value: _selectedCategory,
-                                        dropdownColor: Colors.white,
+                                        dropdownColor: AppTheme.pureWhiteColor,
                                         items: [
                                           DropdownMenuItem(
                                             child: Text("Vocals",
                                                 style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryColor)),
+                                                    color: AppTheme
+                                                        .primaryColorDark)),
                                             value: 0,
                                           ),
                                           DropdownMenuItem(
                                             child: Text("Dance",
                                                 style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryColor)),
+                                                    color: AppTheme
+                                                        .primaryColorDark)),
                                             value: 1,
                                           ),
                                           DropdownMenuItem(
                                             child: Text("Instrumental",
                                                 style: TextStyle(
-                                                    color:
-                                                        AppTheme.primaryColor)),
+                                                    color: AppTheme
+                                                        .primaryColorDark)),
                                             value: 2,
                                           ),
                                           DropdownMenuItem(
                                               child: Text("Standup Comedy",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .primaryColorDark)),
                                               value: 3),
                                           DropdownMenuItem(
                                               child: Text("DJing",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .primaryColorDark)),
                                               value: 4),
                                           DropdownMenuItem(
                                               child: Text("Acting",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .primaryColorDark)),
                                               value: 5),
                                         ],
                                         onChanged: (value) {

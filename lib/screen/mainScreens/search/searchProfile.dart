@@ -23,9 +23,9 @@ class _SearchProfileState extends State<SearchProfile> {
     _widthOne = _size.width * 0.0008;
     _heightOne = (_size.height * 0.007) / 5;
     return Scaffold(
-      backgroundColor: AppTheme.backColor,
+      backgroundColor: AppTheme.primaryColorDark,
       body: Container(
-        color: AppTheme.backColor,
+        color: AppTheme.primaryColorDark,
         child: Column(
           mainAxisSize: MainAxisSize.max,
           children: [

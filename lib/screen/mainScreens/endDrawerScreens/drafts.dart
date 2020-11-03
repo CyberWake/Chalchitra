@@ -278,45 +278,45 @@ class _DraftsState extends State<Drafts> {
                                       child: DropdownButton(
                                           value: _selectedCategory,
                                           dropdownColor:
-                                              AppTheme.backgroundColor,
+                                              AppTheme.pureWhiteColor,
                                           items: [
                                             DropdownMenuItem(
                                               child: Text("Vocals",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .primaryColorDark)),
                                               value: 0,
                                             ),
                                             DropdownMenuItem(
                                                 child: Text("Acting",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .primaryColor)),
+                                                            .primaryColorDark)),
                                                 value: 1),
                                             DropdownMenuItem(
                                               child: Text("Instrumental",
                                                   style: TextStyle(
                                                       color: AppTheme
-                                                          .primaryColor)),
+                                                          .primaryColorDark)),
                                               value: 2,
                                             ),
                                             DropdownMenuItem(
                                                 child: Text("Standup Comedy",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .primaryColor)),
+                                                            .primaryColorDark)),
                                                 value: 3),
                                             DropdownMenuItem(
                                                 child: Text("DJing",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .primaryColor)),
+                                                            .primaryColorDark)),
                                                 value: 4),
                                             DropdownMenuItem(
                                                 child: Text("Dance",
                                                     style: TextStyle(
                                                         color: AppTheme
-                                                            .primaryColor)),
+                                                            .primaryColorDark)),
                                                 value: 5),
                                           ],
                                           onChanged: (value) {

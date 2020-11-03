@@ -61,7 +61,6 @@ class _ExploreState extends State<Explore> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     return Container(
-      padding: EdgeInsets.only(top: 10),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -113,20 +112,18 @@ class _ExploreState extends State<Explore> {
 
   Widget _categories() {
     return Container(
+      padding: EdgeInsets.only(left: 10),
       width: _size.width,
       height: _size.height * 0.07,
       child: ListView(
         scrollDirection: Axis.horizontal,
         children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(left: 15),
-            child: Row(
-              children: List.generate(searchCategories.length, (index) {
-                return CategoryStoryItem(
-                  name: searchCategories[index],
-                );
-              }),
-            ),
+          Row(
+            children: List.generate(searchCategories.length, (index) {
+              return CategoryStoryItem(
+                name: searchCategories[index],
+              );
+            }),
           ),
         ],
       ),

@@ -17,7 +17,7 @@ void main() async {
   await Firebase.initializeApp();
   prefs = await SharedPreferences.getInstance();
   SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
-    systemNavigationBarColor: AppTheme.backColor,
+    systemNavigationBarColor: AppTheme.primaryColorDark,
     statusBarBrightness: Brightness.light, // navigation bar color
     statusBarColor: AppTheme.primaryColor,
     // status bar color

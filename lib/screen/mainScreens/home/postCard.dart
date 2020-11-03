@@ -71,7 +71,7 @@ class _PostCardState extends State<PostCard> {
                     children: [
                       Text(
                         Menu.Share,
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
+                        style: TextStyle(color: AppTheme.primaryColorDark),
                       ),
                       Icon(Icons.share, size: 18, color: Colors.blueAccent),
                     ],
@@ -87,7 +87,7 @@ class _PostCardState extends State<PostCard> {
                     children: [
                       Text(
                         Menu.Download,
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
+                        style: TextStyle(color: AppTheme.primaryColorDark),
                       ),
                       Icon(Icons.arrow_downward, size: 20, color: Colors.green),
                     ],
@@ -210,7 +210,7 @@ class _PostCardState extends State<PostCard> {
       height: _size.height * 0.4,
       width: _size.width * 0.9,
       decoration: BoxDecoration(
-        color: AppTheme.pureBlackColor,
+        color: AppTheme.pureWhiteColor,
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(25),
           bottomLeft: Radius.circular(25),
@@ -254,7 +254,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 14,
-                                color: AppTheme.backgroundColor,
+                                color: AppTheme.primaryColorDark,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -266,7 +266,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: _fontOne * 12,
-                                  color: AppTheme.backgroundColor),
+                                  color: AppTheme.primaryColorDark),
                             ),
                           ],
                         ),
@@ -345,17 +345,20 @@ class _PostCardState extends State<PostCard> {
                                   ? SvgPicture.asset(
                                       "assets/images/love_icon.svg",
                                       width: 20,
-                                      color: AppTheme.selectorTileColor,
+                                      color: AppTheme.secondaryColor,
                                     )
                                   : SvgPicture.asset(
                                       "assets/images/loved_icon.svg",
                                       width: 20,
-                                      color: AppTheme.selectorTileColor,
+                                      color: AppTheme.secondaryColor,
                                     ),
                               onTap: () async {
                                 if (!_processing) {
                                   _processing = true;
                                   if (!_isLiked) {
+                                    setState(() {
+                                      _isLiked = !_isLiked;
+                                    });
                                     _isLiked = await _userVideoStore.likeVideo(
                                       videoID: widget.video.videoId,
                                     );
@@ -363,6 +366,9 @@ class _PostCardState extends State<PostCard> {
                                       likeCount += 1;
                                     }
                                   } else {
+                                    setState(() {
+                                      _isLiked = !_isLiked;
+                                    });
                                     await _userVideoStore
                                         .dislikeVideo(
                                       videoID: widget.video.videoId,
@@ -389,7 +395,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 14,
-                                color: Colors.grey,
+                                color: AppTheme.primaryColorDark,
                               ),
                             ),
                           ],
@@ -411,7 +417,7 @@ class _PostCardState extends State<PostCard> {
                               },
                               icon: Icon(
                                 Icons.comment,
-                                color: AppTheme.selectorTileColor,
+                                color: AppTheme.secondaryColor,
                                 size: _iconOne * 23,
                               ),
                             ),
@@ -423,7 +429,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: _fontOne * 14,
-                                  color: Colors.grey),
+                                  color: AppTheme.primaryColorDark),
                             ),
                           ],
                         ),
@@ -462,7 +468,7 @@ class _PostCardState extends State<PostCard> {
                                 });
                               },
                               inactiveColor: AppTheme.primaryColor,
-                              activeColor: AppTheme.selectorTileColor,
+                              activeColor: AppTheme.secondaryColor,
                             ),
                           ),
                         ),

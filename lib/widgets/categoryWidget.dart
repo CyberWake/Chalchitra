@@ -19,22 +19,21 @@ class CategoryStoryItem extends StatelessWidget {
                   categoryName: name,
                 )));
       },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 10),
+      child: Container(
+        margin: const EdgeInsets.only(right: 10),
+        height: MediaQuery.of(context).size.height * 0.05,
+        padding: EdgeInsets.symmetric(horizontal: 15),
+        decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: AppTheme.backgroundColor,
+            border: Border.all(color: AppTheme.primaryColor, width: 2)),
         child: Center(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppTheme.backgroundColor,
-                border: Border.all(color: AppTheme.primaryColor, width: 2)),
-            child: Text(
-              name,
-              style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15),
-            ),
+          child: Text(
+            name,
+            style: TextStyle(
+                color: AppTheme.primaryColor,
+                fontWeight: FontWeight.w500,
+                fontSize: 20),
           ),
         ),
       ),

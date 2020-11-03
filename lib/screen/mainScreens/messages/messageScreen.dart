@@ -130,6 +130,9 @@ class _MessageState extends State<Message> {
                             )
                           : getBody()),
                 ),
+                SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.19,
+                )
               ]),
         ),
       ),
@@ -181,7 +184,7 @@ class _MessageState extends State<Message> {
             );
           } else {
             return ListView.builder(
-              padding: EdgeInsets.all(10.0),
+              padding: EdgeInsets.all(15.0),
               itemBuilder: (context, index) {
                 if (_usersDetails[index] == null) {
                   return Container();
@@ -196,14 +199,15 @@ class _MessageState extends State<Message> {
                                   )));
                     },
                     child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(color: AppTheme.backColor, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
                       padding: const EdgeInsets.symmetric(
                           vertical: 10, horizontal: 15),
                       margin: EdgeInsets.symmetric(vertical: 2),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        border: Border.all(
+                            color: AppTheme.primaryColorDark, width: 1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
                       child: Row(children: <Widget>[
                         Container(
                           decoration: BoxDecoration(
@@ -246,7 +250,7 @@ class _MessageState extends State<Message> {
                                           _usersDetails[index].username,
                                           style: TextStyle(
                                               fontSize: 17,
-                                              color: AppTheme.pureWhiteColor,
+                                              color: AppTheme.primaryColorDark,
                                               fontWeight: FontWeight.w500),
                                         ),
                                         SizedBox(
@@ -261,7 +265,7 @@ class _MessageState extends State<Message> {
                                                 : ".....",
                                             style: TextStyle(
                                               fontSize: _fontOne * 13,
-                                              color: AppTheme.pureWhiteColor,
+                                              color: AppTheme.primaryColorDark,
                                             ),
                                             overflow: TextOverflow.ellipsis,
                                           ),

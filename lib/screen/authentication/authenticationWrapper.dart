@@ -135,7 +135,7 @@ class _AuthenticationState extends State<Authentication> {
                   color: AppTheme.backgroundColor,
                   boxShadow: [
                     BoxShadow(
-                      color: AppTheme.selectorTileColor.withOpacity(0.4),
+                      color: AppTheme.secondaryColor.withOpacity(0.4),
                       offset: Offset(0.0, -10.0), //(x,y)
                       blurRadius: 15.0,
                     ),
