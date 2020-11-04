@@ -25,19 +25,19 @@ class _SplashScreenState extends State<SplashScreen>
   _retrieveDynamicLink() async {
     await links.handleDynamicLinks(context, true);
     if (!links.isFromLink) {
-      Timer(Duration(seconds: 4), () {
+      Timer(Duration(seconds: 2), () {
         print("Pushing navigate after page");
         Navigator.of(context).pushReplacement(CupertinoPageRoute(
             builder: (BuildContext context) => widget.navigateAfterSeconds));
       });
     } else {
-      Timer(Duration(seconds: 4), () {
+      Timer(Duration(seconds: 2), () {
         print("Pushing player");
         Navigator.of(context).pushReplacement(CupertinoPageRoute(
             builder: (BuildContext context) => Player(
-              videos: links.videos,
-              index: 0,
-            )));
+                  videos: links.videos,
+                  index: 0,
+                )));
       });
     }
   }
@@ -73,6 +73,10 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor:
+          MediaQuery.of(context).platformBrightness == Brightness.dark
+              ? Colors.black
+              : Colors.white,
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -83,17 +87,20 @@ class _SplashScreenState extends State<SplashScreen>
                 flex: 2,
                 child: Container(
                     child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.end,
                   children: <Widget>[
                     CircleAvatar(
                       backgroundColor: Colors.transparent,
                       child: Container(
-                        child: Image.asset('assets/images/splash.png'),
+                        child: MediaQuery.of(context).platformBrightness ==
+                                Brightness.dark
+                            ? Image.asset('assets/images/splashdark.png')
+                            : Image.asset('assets/images/splashlight.png'),
                       ),
                       radius: 100.0,
                     ),
                     Padding(
-                      padding: EdgeInsets.only(top: 10.0),
+                      padding: EdgeInsets.all(10.0),
                     ),
                   ],
                 )),

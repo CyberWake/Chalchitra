@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:inview_notifier_list/inview_notifier_list.dart';
 import 'package:popup_menu/popup_menu.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
@@ -12,6 +15,8 @@ import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+
+import '../../../model/theme.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -56,8 +61,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     Size size = MediaQuery.of(context).size;
     _widthOne = size.width * 0.0008;
     _heightOne = (size.height * 0.007) / 5;
-    return StreamBuilder(
-        stream: _userInfoStore.getFollowing(uid: _userAuth.user.uid),
+    return FutureBuilder(
+        future: _userInfoStore.getFollowingFuture(uid: _userAuth.user.uid),
         builder: (context, data) {
           if (!data.hasData) {
             return Center(
@@ -69,7 +74,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
           } else {
             if (data.data.documents.length == 0) {
               return Container(
-                color: Colors.transparent,
+                color: Platform.isIOS
+                    ? AppTheme.backgroundColor
+                    : Colors.transparent,
                 child: AnimatedBackground(
                   behaviour: RandomParticleBehaviour(
                     options: particleOptions,
@@ -119,7 +126,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 'Explore Content',
                                 style: TextStyle(
                                     fontSize: 18,
-                                    color: AppTheme.backgroundColor),
+                                    color: AppTheme.pureWhiteColor),
                               ),
                             ),
                           )
@@ -135,13 +142,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 color: AppTheme.backgroundColor,
                 onRefresh: () async {
                   UserVideoStore()
-                      .getFollowingVideos(followings: data.data.documents)
-                      .first;
+                      .getFollowingVideos(followings: data.data.documents);
+                  setState(() {});
                 },
                 child: FutureBuilder(
                     future: UserVideoStore()
-                        .getFollowingVideos(followings: data.data.documents)
-                        .first,
+                        .getFollowingVideos(followings: data.data.documents),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return Center(
@@ -169,9 +175,14 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                           );
                         } else {
                           return Center(
-                              child: ListView.builder(
+                              child: InViewNotifierList(
+                            isInViewPortCondition: (double delTop,
+                                double delBottom, double viewPort) {
+                              return delTop < (0.2 * viewPort) &&
+                                  delBottom > (0.2 * viewPort);
+                            },
                             itemCount: snapshot.data.documents.length,
-                            itemBuilder: (context, index) {
+                            builder: (context, index) {
                               return FutureBuilder(
                                 future: _userInfoStore.getUserInfo(
                                     uid: snapshot.data.documents[index]
@@ -182,32 +193,39 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                       !snap.hasData) {
                                     return Container();
                                   }
-                                  return Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: _widthOne * 50,
-                                        vertical: _heightOne * 20),
-                                    child: PostCard(
-                                      video: videoList[index],
-                                      uploader: snap.data.data()['username'],
-                                      profileImg: snap.data
-                                                  .data()['photoUrl'] ==
-                                              null
-                                          ? "https://via.placeholder.com/150"
-                                          : snap.data.data()['photoUrl'],
-                                      navigate: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) {
-                                              return Player(
-                                                videos: videoList,
-                                                index: index,
-                                              );
-                                            },
-                                          ),
-                                        );
-                                      },
-                                    ),
+                                  return InViewNotifierWidget(
+                                    id: videoList[index].videoId,
+                                    builder: (context, isInView, child) {
+                                      return Padding(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: _widthOne * 50,
+                                            vertical: _heightOne * 20),
+                                        child: PostCard(
+                                          playVideo: isInView ? true : false,
+                                          video: videoList[index],
+                                          uploader:
+                                              snap.data.data()['username'],
+                                          profileImg: snap.data
+                                                      .data()['photoUrl'] ==
+                                                  null
+                                              ? "https://via.placeholder.com/150"
+                                              : snap.data.data()['photoUrl'],
+                                          navigate: () {
+                                            Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                builder: (context) {
+                                                  return Player(
+                                                    videos: videoList,
+                                                    index: index,
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    },
                                   );
                                 },
                               );

@@ -10,7 +10,7 @@ import '../auth/userAuth.dart';
 class UserInfoStore {
   UserDataModel _currentUserModel;
   static final CollectionReference _users =
-      FirebaseFirestore.instance.collection('WowUsers');
+  FirebaseFirestore.instance.collection('WowUsers');
   final _followers = FirebaseFirestore.instance.collection('followers');
   final _followings = FirebaseFirestore.instance.collection('following');
   final _activity = FirebaseFirestore.instance.collection('activity feed');
@@ -24,7 +24,7 @@ class UserInfoStore {
     try {
       String _fcmToken = await _fcm.getToken();
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
-      if (_userAuth.user != null && _fcmToken != null) {
+      if (_userAuth.user != null && _fcmToken!=null) {
         if (!userRecord.exists) {
           Map<String, dynamic> userData = {
             "id": _userAuth.user.uid,
@@ -38,11 +38,14 @@ class UserInfoStore {
             "followers": 0,
             "following": 0,
             "videoCount": 0,
-            "fcmToken": _fcmToken
+            "fcmToken":_fcmToken
           };
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
         }
+        _currentUserModel = UserDataModel.fromDocument(userRecord);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(_currentUserModel);
       }
 
       return true;
@@ -53,16 +56,18 @@ class UserInfoStore {
   }
 
   Future updateToken({BuildContext context}) async {
-    try {
+    try{
       String _fcmToken = await _fcm.getToken();
       print("run");
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
-      _users.doc(_userAuth.user.uid).update({'fcmToken': _fcmToken});
+      _users.doc(_userAuth.user.uid).update({
+        'fcmToken': _fcmToken
+      });
       userRecord = await _users.doc(_userAuth.user.uid).get();
       _currentUserModel = UserDataModel.fromDocument(userRecord);
-      Provider.of<CurrentUser>(context, listen: false)
-          .updateCurrentUser(_currentUserModel);
-    } catch (e) {
+      Provider.of<CurrentUser>(context,listen:false).updateCurrentUser(_currentUserModel);
+    }
+    catch(e){
       print(e.toString());
     }
   }
@@ -86,14 +91,14 @@ class UserInfoStore {
           .where("id", isEqualTo: uid)
           .get()
           .then((QuerySnapshot querySnapshot) => {
-                querySnapshot.docs.forEach((doc) {
-                  if (doc.data()['id'] == uid) {
-                    print("privacy in database " +
-                        doc.data()["private"].toString());
-                    result = doc.data()["private"];
-                  }
-                })
-              });
+        querySnapshot.docs.forEach((doc) {
+          if (doc.data()['id'] == uid) {
+            print("privacy in database " +
+                doc.data()["private"].toString());
+            result = doc.data()["private"];
+          }
+        })
+      });
       print("result " + result.toString());
       return result;
     } on Exception catch (e) {
@@ -106,7 +111,7 @@ class UserInfoStore {
     print(username);
     try {
       QuerySnapshot read =
-          await _users.where("username", isEqualTo: username).get();
+      await _users.where("username", isEqualTo: username).get();
 
       if (read.size != 0) {
         return false;
@@ -137,7 +142,7 @@ class UserInfoStore {
     print('here');
     return _users
         .where('searchKey',
-            isEqualTo: searchIndex.substring(0, 1).toUpperCase())
+        isEqualTo: searchIndex.substring(0, 1).toUpperCase())
         .get();
   }
 
@@ -147,6 +152,10 @@ class UserInfoStore {
 
   Stream getFollowing({String uid}) {
     return _followings.doc(uid).collection('userFollowing').snapshots();
+  }
+
+  Future getFollowingFuture({String uid}){
+    return _followings.doc(uid).collection("userFollowing").get();
   }
 
   Future<bool> checkIfAlreadyFollowing({String uid}) async {
@@ -218,8 +227,8 @@ class UserInfoStore {
           .doc(_userAuth.user.uid)
           .get()
           .then((document) async => {
-                if (document.exists) {await document.reference.delete()}
-              });
+        if (document.exists) {await document.reference.delete()}
+      });
       await _users.doc(uid).update({"followers": FieldValue.increment(-1)});
 
       await _followings
@@ -228,8 +237,8 @@ class UserInfoStore {
           .doc(uid)
           .get()
           .then((document) async => {
-                if (document.exists) {await document.reference.delete()}
-              });
+        if (document.exists) {await document.reference.delete()}
+      });
       await _users
           .doc(_userAuth.user.uid)
           .update({"following": FieldValue.increment(-1)});
@@ -240,8 +249,8 @@ class UserInfoStore {
           .doc(_userAuth.user.uid)
           .get()
           .then((document) async => {
-                if (document.exists) {await document.reference.delete()}
-              });
+        if (document.exists) {await document.reference.delete()}
+      });
 
       return Future.value(false);
     } catch (e) {
@@ -258,8 +267,8 @@ class UserInfoStore {
           .doc(_userAuth.user.uid)
           .get()
           .then((document) async => {
-                if (document.exists) {await document.reference.delete()}
-              });
+        if (document.exists) {await document.reference.delete()}
+      });
 
       await _followers
           .doc(_userAuth.user.uid)
@@ -267,8 +276,8 @@ class UserInfoStore {
           .doc(uid)
           .get()
           .then((document) async => {
-                if (document.exists) {await document.reference.delete()}
-              });
+        if (document.exists) {await document.reference.delete()}
+      });
 
       await _activity
           .doc(_userAuth.user.uid)
@@ -276,8 +285,8 @@ class UserInfoStore {
           .doc(uid)
           .get()
           .then((document) async => {
-                if (document.exists) {await document.reference.delete()}
-              });
+        if (document.exists) {await document.reference.delete()}
+      });
 
       return Future.value(false);
     } catch (e) {

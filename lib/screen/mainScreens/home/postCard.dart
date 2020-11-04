@@ -5,8 +5,10 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -17,18 +19,22 @@ import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/widgets/customSliderThumb.dart';
+import 'package:wowtalent/widgets/customSliderTrackShape.dart';
+
+import '../../../model/theme.dart';
 
 class PostCard extends StatefulWidget {
   final VideoInfo video;
   final String profileImg, uploader;
   final Function navigate;
+  bool playVideo = false;
 
-  PostCard({
-    this.video,
-    this.navigate,
-    this.profileImg,
-    this.uploader,
-  });
+  PostCard(
+      {this.video,
+      this.navigate,
+      this.profileImg,
+      this.uploader,
+      this.playVideo});
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -48,13 +54,14 @@ class _PostCardState extends State<PostCard> {
   bool _isLiked;
   int likeCount;
   bool _processing = false;
+  VideoPlayerController _controller;
 
   void _button(Offset offset) async {
     double left = offset.dx;
     double top = offset.dy - 20;
     await showMenu(
         context: context,
-        color: AppTheme.backgroundColor,
+        color: AppTheme.pureWhiteColor,
         position: RelativeRect.fromLTRB(left, top, 0, 0),
         items: [
           PopupMenuItem(
@@ -71,7 +78,7 @@ class _PostCardState extends State<PostCard> {
                     children: [
                       Text(
                         Menu.Share,
-                        style: TextStyle(color: AppTheme.primaryColorDark),
+                        style: TextStyle(color: AppTheme.pureBlackColor),
                       ),
                       Icon(Icons.share, size: 18, color: Colors.blueAccent),
                     ],
@@ -87,39 +94,39 @@ class _PostCardState extends State<PostCard> {
                     children: [
                       Text(
                         Menu.Download,
-                        style: TextStyle(color: AppTheme.primaryColorDark),
+                        style: TextStyle(color: AppTheme.pureBlackColor),
                       ),
                       Icon(Icons.arrow_downward, size: 20, color: Colors.green),
                     ],
                   ),
                 ),
-                /*SizedBox(
+                SizedBox(
                   height: 20,
                 ),
-                InkWell(
-                  onTap: () => choiceAction(Menu.Forward),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        Menu.Forward,
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
-                      ),
-                      Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(math.pi),
-                        child: Icon(
-                          Icons.reply,
-                          size: 20,
-                          color: Colors.orangeAccent,
-                        ),
-                      )
-                    ],
-                  ),
-                ),*/
-                SizedBox(
-                  height: 10,
-                ),
+                // InkWell(
+                //   onTap: () => choiceAction(Menu.Forward),
+                //   child: Row(
+                //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //     children: [
+                //       Text(
+                //         Menu.Forward,
+                //         style: TextStyle(color: AppTheme.pureBlackColor),
+                //       ),
+                //       Transform(
+                //         alignment: Alignment.center,
+                //         transform: Matrix4.rotationY(math.pi),
+                //         child: Icon(
+                //           Icons.reply,
+                //           size: 20,
+                //           color: Colors.orangeAccent,
+                //         ),
+                //       )
+                //     ],
+                //   ),
+                // ),
+                // SizedBox(
+                //   height: 10,
+                // ),
               ],
             ),
           )
@@ -173,11 +180,10 @@ class _PostCardState extends State<PostCard> {
       } else {
         Navigator.pop(context);
       }
-    }
-    /*else if (choice == Menu.Forward) {
+    } else if (choice == Menu.Forward) {
       print('Forward');
       Navigator.pop(context);
-    }*/
+    }
   }
 
   void setup() async {
@@ -197,6 +203,33 @@ class _PostCardState extends State<PostCard> {
   void initState() {
     super.initState();
     setup();
+    _controller = VideoPlayerController.network(widget.video.videoUrl)
+      ..initialize().then((_) {
+        setState(() {});
+      });
+    if (widget.playVideo) {
+      _controller.play();
+      _controller.setLooping(true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(PostCard oldWidget) {
+    if (oldWidget.playVideo != widget.playVideo) {
+      if (widget.playVideo) {
+        _controller.play();
+        _controller.setLooping(true);
+      } else {
+        _controller.pause();
+      }
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
   }
 
   @override
@@ -254,7 +287,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 14,
-                                color: AppTheme.primaryColorDark,
+                                color: AppTheme.pureBlackColor,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -266,7 +299,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: _fontOne * 12,
-                                  color: AppTheme.primaryColorDark),
+                                  color: AppTheme.pureBlackColor),
                             ),
                           ],
                         ),
@@ -302,7 +335,6 @@ class _PostCardState extends State<PostCard> {
                   ),
                   Expanded(
                     child: InkWell(
-                      // onTap: widget.navigate,
                       onTap: () async {
                         bool isWatched = await UserVideoStore()
                             .checkWatched(videoID: widget.video.videoId);
@@ -312,19 +344,36 @@ class _PostCardState extends State<PostCard> {
                         }
                         widget.navigate();
                       },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(15),
-                              bottomLeft: Radius.circular(15),
+                      child: widget.playVideo
+                          ? Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15),
+                                  bottomLeft: Radius.circular(15),
+                                ),
+                              ),
+                              child: _controller.value.initialized
+                                  ? AspectRatio(
+                                      aspectRatio:
+                                          _controller.value.aspectRatio,
+                                      child: VideoPlayer(_controller))
+                                  : SpinKitCircle(
+                                      color: AppTheme.primaryColor,
+                                      size: 60,
+                                    ))
+                          : Container(
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15),
+                                  ),
+                                  color: AppTheme.backgroundColor,
+                                  image: DecorationImage(
+                                      fit: BoxFit.cover,
+                                      image: NetworkImage(
+                                        widget.video.thumbUrl,
+                                      ))),
                             ),
-                            color: AppTheme.backgroundColor,
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(
-                                  widget.video.thumbUrl,
-                                ))),
-                      ),
                     ),
                   ),
                   SizedBox(
@@ -345,7 +394,7 @@ class _PostCardState extends State<PostCard> {
                                   ? SvgPicture.asset(
                                       "assets/images/love_icon.svg",
                                       width: 20,
-                                      color: AppTheme.secondaryColor,
+                                      color: AppTheme.secondaryColorDark,
                                     )
                                   : SvgPicture.asset(
                                       "assets/images/loved_icon.svg",
@@ -369,20 +418,19 @@ class _PostCardState extends State<PostCard> {
                                     setState(() {
                                       _isLiked = !_isLiked;
                                     });
-                                    await _userVideoStore
-                                        .dislikeVideo(
+                                    _isLiked =
+                                        !await _userVideoStore.dislikeVideo(
                                       videoID: widget.video.videoId,
-                                    )
-                                        .then((value) {
-                                      if (value) {
-                                        _isLiked = false;
-                                      }
-                                    });
+                                    );
                                     if (!_isLiked) {
                                       likeCount -= 1;
                                     }
                                   }
                                   _processing = false;
+                                } else {
+                                  setState(() {
+                                    _isLiked = !_isLiked;
+                                  });
                                 }
                                 setState(() {});
                               },
@@ -395,7 +443,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 14,
-                                color: AppTheme.primaryColorDark,
+                                color: Colors.grey,
                               ),
                             ),
                           ],
@@ -410,14 +458,14 @@ class _PostCardState extends State<PostCard> {
                               onPressed: () {
                                 Navigator.push(
                                     context,
-                                    MaterialPageRoute(
+                                    CupertinoPageRoute(
                                         builder: (context) => CommentsScreen(
                                               videoId: widget.video.videoId,
                                             )));
                               },
                               icon: Icon(
                                 Icons.comment,
-                                color: AppTheme.secondaryColor,
+                                color: AppTheme.pureBlackColor,
                                 size: _iconOne * 23,
                               ),
                             ),
@@ -429,7 +477,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: _fontOne * 14,
-                                  color: AppTheme.primaryColorDark),
+                                  color: Colors.grey),
                             ),
                           ],
                         ),
@@ -439,8 +487,8 @@ class _PostCardState extends State<PostCard> {
                         Expanded(
                           child: SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                              trackShape: RectangularSliderTrackShape(),
-                              trackHeight: 4.0,
+                              trackShape: RoundSliderTrackShape(),
+                              trackHeight: 6.0,
                               thumbColor: Colors.orange[600],
                               thumbShape: StarThumb(thumbRadius: 20),
                               overlayColor: AppTheme.pureBlackColor,
@@ -467,7 +515,7 @@ class _PostCardState extends State<PostCard> {
                                   _sliderValue = val;
                                 });
                               },
-                              inactiveColor: AppTheme.primaryColor,
+                              inactiveColor: AppTheme.backgroundColor,
                               activeColor: AppTheme.secondaryColor,
                             ),
                           ),

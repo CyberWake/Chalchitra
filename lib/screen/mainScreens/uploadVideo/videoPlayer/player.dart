@@ -22,6 +22,7 @@ import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 import 'package:wowtalent/widgets/customSliderThumb.dart';
+import 'package:wowtalent/widgets/customSliderTrackShape.dart';
 
 class Player extends StatefulWidget {
   final UserDataModel user;
@@ -756,9 +757,8 @@ class _PlayerState extends State<Player> {
                                     width: _widthOne * 650,
                                     child: SliderTheme(
                                       data: SliderTheme.of(context).copyWith(
-                                        trackShape:
-                                            RectangularSliderTrackShape(),
-                                        trackHeight: 2.0,
+                                        trackShape: RoundSliderTrackShape(),
+                                        trackHeight: 6.0,
                                         thumbColor: AppTheme.primaryColor,
                                         thumbShape: StarThumb(thumbRadius: 20),
                                         overlayColor: AppTheme.pureBlackColor,

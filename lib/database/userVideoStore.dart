@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:timeago/timeago.dart';
 
 import '../auth/userAuth.dart';
 import '../model/videoInfoModel.dart';
@@ -158,15 +157,15 @@ class UserVideoStore {
     return _allVideos.orderBy("uploadedAt", descending: true).snapshots();
   }
 
-  Stream getFollowingVideos({List<DocumentSnapshot> followings}) {
+  Future getFollowingVideos({List<DocumentSnapshot> followings}) {
     return _allVideos
         .where('uploaderUid',
             whereIn: List.generate(followings.length, (index) {
               return followings[index].id;
             }))
         .orderBy("uploadedAt", descending: true)
-        .limit(100)
-        .snapshots();
+        .limit(50)
+        .get();
   }
 
   static listenToAllVideos(callback) async {
@@ -278,20 +277,6 @@ class UserVideoStore {
       await _videoWatched
           .doc(_userAuth.user.uid)
           .collection("viewedVideos")
-          .doc(videoID)
-          .set({"id": videoID});
-      return true;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future getLikeCount({String videoID}) async {
-    try {
-      await _allVideos.doc(videoID).update({"likes": FieldValue.increment(1)});
-      await _videoLikes
-          .doc(_userAuth.user.uid)
-          .collection("likedVideos")
           .doc(videoID)
           .set({"id": videoID});
       return true;
