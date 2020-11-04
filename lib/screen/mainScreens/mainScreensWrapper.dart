@@ -263,7 +263,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     print(index);
     if (index == 5) {
       print('called');
-      _scaffoldGlobalKey.currentState.openDrawer();
+      _scaffoldGlobalKey.currentState.openEndDrawer();
     } else if (index == 4) {
       print(index);
       UserAuth().account.listen((user) {
