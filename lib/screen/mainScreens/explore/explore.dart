@@ -1,6 +1,8 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/theme.dart';
@@ -159,7 +161,49 @@ class _ExploreState extends State<Explore> {
                 ),
               );
             },
-            child: Container(
+            child: CachedNetworkImage(
+              imageUrl: video.thumbUrl,
+              imageBuilder: (context, imageProvider) => Container(
+                width: _size.width * 0.25,
+                height: _size.height * 0.25,
+                margin: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.5),
+                  color: AppTheme.pureBlackColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryColor.withOpacity(0.2),
+                      offset: Offset(0.0, 10.0), //(x,y)
+                      blurRadius: 10.0,
+                    ),
+                  ],
+                  image: DecorationImage(
+                      image: imageProvider, fit: BoxFit.fitWidth),
+                ),
+              ),
+              placeholder: (context, url) => Shimmer.fromColors(
+                highlightColor: AppTheme.pureWhiteColor,
+                baseColor: AppTheme.grey,
+                child: Container(
+                  width: _size.width * 0.25,
+                  height: _size.height * 0.25,
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.5),
+                    color: AppTheme.pureBlackColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withOpacity(0.2),
+                        offset: Offset(0.0, 10.0), //(x,y)
+                        blurRadius: 10.0,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ),
+            /*Container(
               width: _size.width * 0.25,
               height: _size.height * 0.25,
               margin: EdgeInsets.all(5),
@@ -176,7 +220,7 @@ class _ExploreState extends State<Explore> {
                   ),
                 ],
               ),
-            ),
+            ),*/
           );
         }),
       ),
@@ -212,23 +256,47 @@ class _ExploreState extends State<Explore> {
                 ),
               );
             },
-            child: Container(
-              width: _size.width * 0.25,
-              height: _size.height * 0.25,
-              margin: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                image: DecorationImage(
-                    image: NetworkImage(video.thumbUrl), fit: BoxFit.fitWidth),
-                borderRadius: BorderRadius.circular(10.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.2),
-                    offset: Offset(0.0, 10.0), //(x,y)
-                    blurRadius: 10.0,
-                  ),
-                ],
+            child: CachedNetworkImage(
+              imageUrl: video.thumbUrl,
+              imageBuilder: (context, imageProvider) => Container(
+                width: _size.width * 0.25,
+                height: _size.height * 0.25,
+                margin: EdgeInsets.all(5),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10.5),
+                  color: AppTheme.pureBlackColor,
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppTheme.primaryColor.withOpacity(0.2),
+                      offset: Offset(0.0, 10.0), //(x,y)
+                      blurRadius: 10.0,
+                    ),
+                  ],
+                  image: DecorationImage(
+                      image: imageProvider, fit: BoxFit.fitWidth),
+                ),
               ),
+              placeholder: (context, url) => Shimmer.fromColors(
+                highlightColor: AppTheme.pureWhiteColor,
+                baseColor: AppTheme.grey,
+                child: Container(
+                  width: _size.width * 0.25,
+                  height: _size.height * 0.25,
+                  margin: EdgeInsets.all(5),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10.5),
+                    color: AppTheme.pureBlackColor,
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppTheme.primaryColor.withOpacity(0.2),
+                        offset: Offset(0.0, 10.0), //(x,y)
+                        blurRadius: 10.0,
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
             ),
           );
         }),
@@ -267,12 +335,31 @@ class _ExploreState extends State<Explore> {
                 ),
               );
             },
-            child: Container(
+            child: CachedNetworkImage(
+              imageUrl: video.thumbUrl,
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey, width: 1),
+                  image:
+                      DecorationImage(image: imageProvider, fit: BoxFit.cover),
+                ),
+              ),
+              placeholder: (context, url) => Shimmer.fromColors(
+                highlightColor: AppTheme.pureWhiteColor,
+                baseColor: AppTheme.grey,
+                child: Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width: 1),
+                  ),
+                ),
+              ),
+              errorWidget: (context, url, error) => Icon(Icons.error),
+            ), /*Container(
               decoration: BoxDecoration(
                   border: Border.all(color: Colors.grey, width: 1),
                   image: DecorationImage(
                       image: NetworkImage(video.thumbUrl), fit: BoxFit.cover)),
-            ),
+            ),*/
           );
         },
         staggeredTileBuilder: (int index) {
