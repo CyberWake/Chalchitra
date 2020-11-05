@@ -72,18 +72,25 @@ class _PrivacyPageState extends State<PrivacyPage> {
                 });
                 changePrivacy(isPrivate);
               },
-              leading: Icon(Icons.security, color: AppTheme.primaryColor),
+              leading: Icon(
+                Icons.security,
+                color: AppTheme.primaryColor,
+                size: 40,
+              ),
               title: Text('Change account private',
-                  style: TextStyle(color: AppTheme.pureWhiteColor)),
+                  style: TextStyle(
+                      color: AppTheme.primaryColorDark,
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700)),
               subtitle: Text('Enabling will make your account private',
-                  style: TextStyle(color: AppTheme.pureWhiteColor)),
+                  style: TextStyle(color: AppTheme.primaryColorLight)),
               trailing: Padding(
                 padding: EdgeInsets.only(right: 15.0),
                 child: AspectRatio(
                   aspectRatio: 0.3,
                   child: CupertinoSwitch(
                     value: user == null ? false : user.private,
-                    activeColor: AppTheme.primaryColor,
+                    activeColor: AppTheme.primaryColorLight,
                     onChanged: (bool value) async {
                       changePrivacy(value);
                     },
@@ -91,6 +98,7 @@ class _PrivacyPageState extends State<PrivacyPage> {
                 ),
               ),
             ),
+            Divider(),
           ],
         ));
   }

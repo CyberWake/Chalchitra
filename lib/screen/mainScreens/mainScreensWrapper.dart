@@ -384,8 +384,15 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                   thickness: 0.5,
                 ),
                 ListTile(
-                  leading: Icon(Icons.drafts, color: Colors.white),
-                  title: Text("Drafts", style: TextStyle(color: Colors.white)),
+                  leading: Icon(
+                    Icons.drafts,
+                    color: AppTheme.pureWhiteColor,
+                    semanticLabel: 'Draft',
+                    size: 30,
+                  ),
+                  title: Text("Drafts",
+                      style: TextStyle(
+                          color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(
@@ -395,9 +402,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.settings, color: Colors.white),
-                  title:
-                      Text('Settings', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.settings,
+                      color: AppTheme.pureWhiteColor,
+                      semanticLabel: 'Setting',
+                      size: 30),
+                  title: Text('Settings',
+                      style: TextStyle(
+                          color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -405,8 +416,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                   },
                 ),
                 ListTile(
-                  leading: Icon(Icons.group_add, color: Colors.white),
-                  title: Text('Invite', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.group_add,
+                      color: AppTheme.pureWhiteColor,
+                      semanticLabel: 'Invite',
+                      size: 30),
+                  title: Text('Invite',
+                      style: TextStyle(
+                          color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () async {
                     Navigator.pop(context);
                     await FlutterShare.share(
@@ -420,8 +436,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                 ),
                 Spacer(),
                 ListTile(
-                  leading: Icon(Icons.power_settings_new, color: Colors.white),
-                  title: Text('Signout', style: TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.power_settings_new,
+                      color: AppTheme.pureWhiteColor,
+                      semanticLabel: 'Signout',
+                      size: 30),
+                  title: Text('Signout',
+                      style: TextStyle(
+                          color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () {
                     Navigator.pop(context);
                     showDialog(

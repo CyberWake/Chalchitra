@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
@@ -8,6 +9,7 @@ import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
@@ -266,7 +268,33 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
+                      CachedNetworkImage(
+                        imageUrl: widget.profileImg,
+                        imageBuilder: (context, imageProvider) => Container(
+                          width: _fontOne * 40,
+                          height: _heightOne * 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: AppTheme.backgroundColor,
+                            image: DecorationImage(
+                                image: imageProvider, fit: BoxFit.cover),
+                          ),
+                        ),
+                        placeholder: (context, url) => Shimmer.fromColors(
+                          highlightColor: AppTheme.pureWhiteColor,
+                          baseColor: AppTheme.backgroundColor,
+                          child: Container(
+                            width: _fontOne * 40,
+                            height: _heightOne * 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppTheme.backgroundColor,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                      /*Container(
                         width: _fontOne * 40,
                         height: _heightOne * 40,
                         decoration: BoxDecoration(
@@ -274,7 +302,7 @@ class _PostCardState extends State<PostCard> {
                                 fit: BoxFit.cover,
                                 image: NetworkImage(widget.profileImg)),
                             borderRadius: BorderRadius.circular(10)),
-                      ),
+                      ),*/
                       SizedBox(
                         width: _widthOne * 40,
                       ),
@@ -361,7 +389,36 @@ class _PostCardState extends State<PostCard> {
                                       color: AppTheme.primaryColor,
                                       size: 60,
                                     ))
-                          : Container(
+                          : CachedNetworkImage(
+                              imageUrl: widget.video.thumbUrl,
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15),
+                                  ),
+                                  color: AppTheme.backgroundColor,
+                                  image: DecorationImage(
+                                      image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                highlightColor: AppTheme.pureWhiteColor,
+                                baseColor: AppTheme.backgroundColor,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(15),
+                                      bottomLeft: Radius.circular(15),
+                                    ),
+                                    color: AppTheme.backgroundColor,
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
+                            ), /*Container(
                               decoration: BoxDecoration(
                                   borderRadius: BorderRadius.only(
                                     topRight: Radius.circular(15),
@@ -373,7 +430,7 @@ class _PostCardState extends State<PostCard> {
                                       image: NetworkImage(
                                         widget.video.thumbUrl,
                                       ))),
-                            ),
+                            ),*/
                     ),
                   ),
                   SizedBox(
