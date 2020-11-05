@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:inview_notifier_list/inview_notifier_list.dart';
 import 'package:popup_menu/popup_menu.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -16,8 +17,6 @@ import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 
-import '../../../model/theme.dart';
-
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
@@ -27,6 +26,9 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   List<VideoInfo> _videos = <VideoInfo>[];
   double _widthOne;
   double _heightOne;
+  double _fontOne;
+  double _iconOne;
+  Size _size;
   UserInfoStore _userInfoStore = UserInfoStore();
   List _usersDetails = [];
   PopupMenu menu;
@@ -58,17 +60,318 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    _widthOne = size.width * 0.0008;
-    _heightOne = (size.height * 0.007) / 5;
+    _size = MediaQuery.of(context).size;
+    _widthOne = _size.width * 0.0008;
+    _heightOne = (_size.height * 0.007) / 5;
+    _fontOne = (_size.height * 0.015) / 11;
+    _iconOne = (_size.height * 0.066) / 50;
     return FutureBuilder(
         future: _userInfoStore.getFollowingFuture(uid: _userAuth.user.uid),
         builder: (context, data) {
-          if (!data.hasData) {
-            return Center(
-              child: SpinKitCircle(
-                color: AppTheme.backgroundColor,
-                size: 60,
+          if (!data.hasData ||
+              data.connectionState == ConnectionState.waiting) {
+            return SingleChildScrollView(
+              child: Container(
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 20),
+                          height: _size.height * 0.4,
+                          width: _size.width * 0.9,
+                          decoration: BoxDecoration(
+                            color: AppTheme.pureWhiteColor,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(25),
+                              bottomLeft: Radius.circular(25),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                offset: Offset(0.0, 0.0), //(x,y)
+                                blurRadius: 15.0,
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(_fontOne * 12.5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Shimmer.fromColors(
+                                      highlightColor: AppTheme.pureWhiteColor,
+                                      baseColor: AppTheme.backgroundColor,
+                                      child: Container(
+                                        width: _widthOne * 140,
+                                        height: _heightOne * 40,
+                                        decoration: BoxDecoration(
+                                            color: AppTheme.backgroundColor,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: _widthOne * 40,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Shimmer.fromColors(
+                                            highlightColor:
+                                                AppTheme.pureWhiteColor,
+                                            baseColor: AppTheme.backgroundColor,
+                                            child: Container(
+                                              height: _heightOne * 20,
+                                              width: _widthOne * 300,
+                                              color: AppTheme.backgroundColor,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: _heightOne * 1.5,
+                                          ),
+                                          Shimmer.fromColors(
+                                            highlightColor:
+                                                AppTheme.pureWhiteColor,
+                                            baseColor: AppTheme.backgroundColor,
+                                            child: Container(
+                                              height: _heightOne * 20,
+                                              width: _widthOne * 250,
+                                              color: AppTheme.backgroundColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: _widthOne * 10,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.more_horiz,
+                                            color: Colors.grey,
+                                            size: _iconOne * 30),
+                                        Shimmer.fromColors(
+                                          highlightColor:
+                                              AppTheme.pureWhiteColor,
+                                          baseColor: AppTheme.backgroundColor,
+                                          child: Container(
+                                            height: _heightOne * 15,
+                                            width: _widthOne * 100,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: _heightOne * 15,
+                                ),
+                                Expanded(
+                                  child: Shimmer.fromColors(
+                                    highlightColor: AppTheme.pureWhiteColor,
+                                    baseColor: AppTheme.backgroundColor,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(25),
+                                          bottomLeft: Radius.circular(25),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.3),
+                                            offset: Offset(0.0, 0.0), //(x,y)
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: _heightOne * 15,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: _widthOne * 30,
+                                  ),
+                                  child: Shimmer.fromColors(
+                                    highlightColor: AppTheme.pureWhiteColor,
+                                    baseColor: AppTheme.backgroundColor,
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      height: _heightOne * 35,
+                                      width: double.infinity,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          margin: EdgeInsets.symmetric(vertical: 20),
+                          height: _size.height * 0.4,
+                          width: _size.width * 0.9,
+                          decoration: BoxDecoration(
+                            color: AppTheme.pureWhiteColor,
+                            borderRadius: BorderRadius.only(
+                              topRight: Radius.circular(25),
+                              bottomLeft: Radius.circular(25),
+                            ),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                offset: Offset(0.0, 0.0), //(x,y)
+                                blurRadius: 15.0,
+                              ),
+                            ],
+                          ),
+                          child: Padding(
+                            padding: EdgeInsets.all(_fontOne * 12.5),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Shimmer.fromColors(
+                                      highlightColor: AppTheme.pureWhiteColor,
+                                      baseColor: AppTheme.backgroundColor,
+                                      child: Container(
+                                        width: _widthOne * 140,
+                                        height: _heightOne * 40,
+                                        decoration: BoxDecoration(
+                                            color: AppTheme.backgroundColor,
+                                            borderRadius:
+                                                BorderRadius.circular(10)),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: _widthOne * 40,
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Shimmer.fromColors(
+                                            highlightColor:
+                                                AppTheme.pureWhiteColor,
+                                            baseColor: AppTheme.backgroundColor,
+                                            child: Container(
+                                              height: _heightOne * 20,
+                                              width: _widthOne * 300,
+                                              color: AppTheme.backgroundColor,
+                                            ),
+                                          ),
+                                          SizedBox(
+                                            height: _heightOne * 1.5,
+                                          ),
+                                          Shimmer.fromColors(
+                                            highlightColor:
+                                                AppTheme.pureWhiteColor,
+                                            baseColor: AppTheme.backgroundColor,
+                                            child: Container(
+                                              height: _heightOne * 20,
+                                              width: _widthOne * 250,
+                                              color: AppTheme.backgroundColor,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: _widthOne * 10,
+                                    ),
+                                    Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Icon(Icons.more_horiz,
+                                            color: Colors.grey,
+                                            size: _iconOne * 30),
+                                        Shimmer.fromColors(
+                                          highlightColor:
+                                              AppTheme.pureWhiteColor,
+                                          baseColor: AppTheme.backgroundColor,
+                                          child: Container(
+                                            height: _heightOne * 15,
+                                            width: _widthOne * 100,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(
+                                  height: _heightOne * 15,
+                                ),
+                                Expanded(
+                                  child: Shimmer.fromColors(
+                                    highlightColor: AppTheme.pureWhiteColor,
+                                    baseColor: AppTheme.backgroundColor,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey,
+                                        borderRadius: BorderRadius.only(
+                                          topRight: Radius.circular(25),
+                                          bottomLeft: Radius.circular(25),
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: Colors.grey.withOpacity(0.3),
+                                            offset: Offset(0.0, 0.0), //(x,y)
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: _heightOne * 15,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: _widthOne * 30,
+                                  ),
+                                  child: Shimmer.fromColors(
+                                    highlightColor: AppTheme.pureWhiteColor,
+                                    baseColor: AppTheme.backgroundColor,
+                                    child: Container(
+                                      padding:
+                                          EdgeInsets.symmetric(horizontal: 20),
+                                      height: _heightOne * 35,
+                                      width: double.infinity,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                )
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
               ),
             );
           } else {
@@ -192,41 +495,44 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                           ConnectionState.none ||
                                       !snap.hasData) {
                                     return Container();
+                                  } else if (snap.connectionState ==
+                                      ConnectionState.done) {
+                                    return InViewNotifierWidget(
+                                      id: videoList[index].videoId,
+                                      builder: (context, isInView, child) {
+                                        return Padding(
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: _widthOne * 50,
+                                              vertical: _heightOne * 20),
+                                          child: PostCard(
+                                            playVideo: isInView ? true : false,
+                                            video: videoList[index],
+                                            uploader:
+                                                snap.data.data()['username'],
+                                            profileImg: snap.data
+                                                        .data()['photoUrl'] ==
+                                                    null
+                                                ? "https://via.placeholder.com/150"
+                                                : snap.data.data()['photoUrl'],
+                                            navigate: () {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                  builder: (context) {
+                                                    return Player(
+                                                      videos: videoList,
+                                                      index: index,
+                                                    );
+                                                  },
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
+                                    );
                                   }
-                                  return InViewNotifierWidget(
-                                    id: videoList[index].videoId,
-                                    builder: (context, isInView, child) {
-                                      return Padding(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: _widthOne * 50,
-                                            vertical: _heightOne * 20),
-                                        child: PostCard(
-                                          playVideo: isInView ? true : false,
-                                          video: videoList[index],
-                                          uploader:
-                                              snap.data.data()['username'],
-                                          profileImg: snap.data
-                                                      .data()['photoUrl'] ==
-                                                  null
-                                              ? "https://via.placeholder.com/150"
-                                              : snap.data.data()['photoUrl'],
-                                          navigate: () {
-                                            Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder: (context) {
-                                                  return Player(
-                                                    videos: videoList,
-                                                    index: index,
-                                                  );
-                                                },
-                                              ),
-                                            );
-                                          },
-                                        ),
-                                      );
-                                    },
-                                  );
+                                  return Container();
                                 },
                               );
                             },
