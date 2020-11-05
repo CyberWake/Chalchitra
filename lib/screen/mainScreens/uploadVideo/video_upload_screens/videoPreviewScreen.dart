@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
@@ -43,6 +44,7 @@ class _VideoPreviewState extends State<VideoPreview> {
       rawVideoFile.path,
       quality: VideoQuality.MediumQuality,
       deleteOrigin: false, // It's false by default
+      includeAudio: true,
     );
     setState(() {
       _processPhase = "Generating Thumbnail";
@@ -81,6 +83,16 @@ class _VideoPreviewState extends State<VideoPreview> {
     playing = true;
   }
 
+  void dispose() {
+    super.dispose();
+    if (_controller == null) {
+      _controller.dispose();
+    } else {
+      _controller = null;
+      _controller.dispose();
+    }
+  }
+
   _getProgressBar() {
     return Container(
       padding: EdgeInsets.all(30.0),
@@ -95,13 +107,10 @@ class _VideoPreviewState extends State<VideoPreview> {
               style: TextStyle(color: Colors.white),
             ),
           ),
-          Platform.isIOS
-              ? LinearProgressIndicator(
-                  backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
-                  valueColor:
-                      AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
-                )
-              : LinearProgressIndicator(),
+          LinearProgressIndicator(
+            backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
+            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+          ),
         ],
       ),
     );

@@ -270,7 +270,7 @@ class DropDownFieldState extends FormFieldState<String> {
       dense: true,
       title: Text(
         text,
-        style: TextStyle(color: AppTheme.pureWhiteColor),
+        style: TextStyle(color: AppTheme.primaryColor, fontSize: 16),
       ),
       onTap: () {
         setState(() {

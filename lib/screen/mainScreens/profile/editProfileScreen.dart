@@ -330,7 +330,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       padding: EdgeInsets.all(10.0),
       child: TextFormField(
         style: TextStyle(
-          color: AppTheme.pureWhiteColor,
+          color: AppTheme.primaryColor,
         ),
         controller: usernameController,
         decoration: authInputFormatting.copyWith(
@@ -338,21 +338,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
             labelText: 'Username',
             fillColor: AppTheme.backgroundColor,
             hintStyle: TextStyle(
-              color: AppTheme.pureWhiteColor,
+              color: AppTheme.primaryColor,
             ),
             labelStyle: TextStyle(
-              color: AppTheme.pureWhiteColor,
+              color: AppTheme.primaryColor,
             ),
             filled: true,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppTheme.pureWhiteColor,
+                color: AppTheme.primaryColorDark,
                 width: 1.0,
               ),
             ),
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppTheme.primaryColor,
+                color: AppTheme.primaryColorDark,
                 width: 2.0,
               ),
             ),
@@ -367,27 +367,27 @@ class _EditProfilePageState extends State<EditProfilePage> {
       padding: EdgeInsets.all(10.0),
       child: TextFormField(
         style: TextStyle(
-          color: AppTheme.pureWhiteColor,
+          color: AppTheme.primaryColor,
         ),
         controller: nameController,
         decoration: authInputFormatting.copyWith(
             hintText: "Profile Name",
             fillColor: AppTheme.backgroundColor,
             hintStyle: TextStyle(
-              color: AppTheme.pureWhiteColor,
+              color: AppTheme.primaryColor,
             ),
             labelStyle: TextStyle(
-              color: AppTheme.pureWhiteColor,
+              color: AppTheme.primaryColor,
             ),
             filled: true,
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: AppTheme.pureWhiteColor,
+                color: AppTheme.primaryColorDark,
                 width: 1.0,
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.primaryColor, width: 2.0),
+              borderSide: BorderSide(color: AppTheme.primaryColorDark, width: 2.0),
             ),
             labelText: 'Profile Name',
             errorText: _nameValid ? null : 'Profile name cannot be empty!'),
@@ -401,7 +401,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       padding: EdgeInsets.all(10.0),
       child: TextFormField(
         style: TextStyle(
-          color: AppTheme.pureWhiteColor,
+          color: AppTheme.primaryColor,
         ),
         controller: bioController,
         decoration: authInputFormatting.copyWith(
@@ -409,21 +409,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
           labelText: 'Your Bio',
           fillColor: AppTheme.backgroundColor,
           hintStyle: TextStyle(
-            color: AppTheme.pureWhiteColor,
+            color: AppTheme.primaryColor,
           ),
           labelStyle: TextStyle(
-            color: AppTheme.pureWhiteColor,
+            color: AppTheme.primaryColor,
           ),
           filled: true,
           enabledBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: AppTheme.pureWhiteColor,
+              color: AppTheme.primaryColorDark,
               width: 1.0,
             ),
           ),
           focusedBorder: OutlineInputBorder(
             borderSide: BorderSide(
-              color: AppTheme.primaryColor,
+              color: AppTheme.primaryColorDark,
               width: 2.0,
             ),
           ),
@@ -442,7 +442,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           alignment: Alignment.centerLeft,
           width: double.infinity,
           decoration: BoxDecoration(
-            border: Border.all(color: AppTheme.pureWhiteColor, width: 1.0),
+            border: Border.all(color: AppTheme.primaryColorDark, width: 1.0),
             borderRadius: BorderRadius.circular(5),
           ),
           child: Padding(
@@ -504,7 +504,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
               child: Text(
                 'Gender',
-                style: TextStyle(color: AppTheme.pureWhiteColor, fontSize: 13),
+                style: TextStyle(color: AppTheme.primaryColor, fontSize: 13),
               ),
             ),
           ),
@@ -522,15 +522,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
           padding: const EdgeInsets.all(5),
           decoration: BoxDecoration(
             color: AppTheme.backgroundColor,
-            border: Border.all(color: AppTheme.pureWhiteColor, width: 1),
+            border: Border.all(color: AppTheme.primaryColorDark, width: 1),
             borderRadius: BorderRadius.circular(5),
           ),
           child: DropDownField(
             textStyle: TextStyle(
-              color: AppTheme.pureWhiteColor,
+              color: AppTheme.primaryColor,
             ),
             hintStyle: TextStyle(
-              color: AppTheme.pureWhiteColor,
+              color: AppTheme.primaryColor,
             ),
             hintText: "Country",
             controller: countryController,
@@ -560,7 +560,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
               child: Text(
                 'Country',
-                style: TextStyle(color: AppTheme.pureWhiteColor, fontSize: 13),
+                style: TextStyle(color: AppTheme.primaryColor, fontSize: 13),
               ),
             ),
           ),
@@ -597,7 +597,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           width: double.infinity,
           height: _size.height * 0.075,
           decoration: BoxDecoration(
-            border: Border.all(color: AppTheme.pureWhiteColor, width: 1),
+            border: Border.all(color: AppTheme.primaryColorDark, width: 1),
             borderRadius: BorderRadius.circular(5),
           ),
           child: InkWell(
@@ -612,7 +612,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 child: Text(
                   _dob == null ? " " : _dob,
                   style:
-                      TextStyle(fontSize: 16, color: AppTheme.pureWhiteColor),
+                      TextStyle(fontSize: 16, color: AppTheme.primaryColor),
                 ),
               ),
             ),
@@ -628,7 +628,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   const EdgeInsets.symmetric(horizontal: 5.0, vertical: 3.0),
               child: Text(
                 'Date of Birth',
-                style: TextStyle(color: AppTheme.pureWhiteColor, fontSize: 13),
+                style: TextStyle(color: AppTheme.primaryColor, fontSize: 13),
               ),
             ),
           ),

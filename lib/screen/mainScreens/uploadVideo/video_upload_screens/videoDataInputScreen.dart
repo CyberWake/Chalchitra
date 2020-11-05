@@ -275,7 +275,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
         height: 200,
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: AppTheme.pureWhiteColor, width: 3)),
+            border: Border.all(color: AppTheme.primaryColor, width: 3)),
         child: Padding(
           padding: const EdgeInsets.all(12.0),
           child: Column(
@@ -352,7 +352,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
           leading: IconButton(
               icon: Icon(
                 Icons.arrow_back_ios,
-                color: AppTheme.pureBlackColor,
+                color: AppTheme.pureWhiteColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -370,7 +370,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
             IconButton(
               icon: Icon(
                 Icons.save,
-                color: AppTheme.pureBlackColor,
+                color: AppTheme.pureWhiteColor,
                 size: _iconOne * 30,
               ),
               onPressed: () {
@@ -437,7 +437,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                       disabledBorder: InputBorder.none,
                                       hintText: "Enter Title",
                                       hintStyle: TextStyle(
-                                        color: AppTheme.pureWhiteColor,
+                                        color: AppTheme.primaryColorDark,
                                         fontSize: _fontOne * 15,
                                       ),
                                       errorStyle: TextStyle(
@@ -445,7 +445,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                       ),
                                     ),
                                     style: TextStyle(
-                                      color: AppTheme.pureWhiteColor,
+                                      color: AppTheme.primaryColorDark,
                                       fontSize: _fontOne * 15,
                                     ),
                                   ),
@@ -477,7 +477,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                       disabledBorder: InputBorder.none,
                                       hintText: "Enter hashtag",
                                       hintStyle: TextStyle(
-                                        color: AppTheme.pureWhiteColor,
+                                        color: AppTheme.primaryColorDark,
                                         fontSize: _fontOne * 15,
                                       ),
                                       errorStyle: TextStyle(
@@ -485,7 +485,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                       ),
                                     ),
                                     style: TextStyle(
-                                      color: AppTheme.pureWhiteColor,
+                                      color: AppTheme.primaryColorDark,
                                       fontSize: _fontOne * 15,
                                     ),
                                   ),
@@ -502,7 +502,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                                   width: _size.width * 0.87,
                                   decoration: BoxDecoration(
                                       border: Border.all(
-                                        color: AppTheme.primaryColor,
+                                        color: AppTheme.primaryColorDark,
                                       ),
                                       borderRadius:
                                           BorderRadius.circular(15.0)),
