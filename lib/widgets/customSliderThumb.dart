@@ -48,7 +48,7 @@ class StarThumb extends SliderComponentShape {
         fontWeight: FontWeight.w700,
         color: AppTheme.pureBlackColor,
       ),
-      text: getValue(value),
+      text: getValue(value) == "0" ? "" : getValue(value),
     );
 
     //Thumb text paint

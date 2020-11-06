@@ -79,7 +79,7 @@ class _VideoUploaderState extends State<VideoUploader>
             vsync: this,
             child: Center(
               child: Container(
-                padding: EdgeInsets.all(50),
+                padding: EdgeInsets.all(20),
                 decoration: BoxDecoration(
                     color: AppTheme.secondaryColor,
                     border: Border.all(color: AppTheme.primaryColor, width: 2),
@@ -99,7 +99,7 @@ class _VideoUploaderState extends State<VideoUploader>
                       "Showcase your Talent",
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
+                          fontSize: 22,
                           color: AppTheme.primaryColor),
                     ),
                     SizedBox(

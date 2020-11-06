@@ -1,7 +1,8 @@
-import 'package:flutter/cupertino.dart';
 import 'dart:io' show Platform;
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
@@ -51,93 +52,88 @@ class _MessageState extends State<Message> {
     _iconOne = (_size.height * 0.066) / 50;
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Container(
-          height: _size.height,
-          color: AppTheme.primaryColor,
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    Spacer(),
-                    Text(
-                      "Messages",
-                      style: TextStyle(
-                        color: AppTheme.backgroundColor,
-                        fontSize: _fontOne * 25,
-                        fontWeight: FontWeight.bold,
-                      ),
+      body: Container(
+        height: _size.height,
+        color: AppTheme.primaryColor,
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  Spacer(),
+                  Text(
+                    "Messages",
+                    style: TextStyle(
+                      color: AppTheme.backgroundColor,
+                      fontSize: _fontOne * 25,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Spacer(),
-                  ],
-                ),
-                SizedBox(
-                  height: 5,
-                ),
-                Container(
-                  width: _size.width * 0.8,
-                  height: _heightOne * 42.5,
-                  margin: EdgeInsets.only(
-                    bottom: _heightOne * 20,
                   ),
-                  padding: EdgeInsets.all(_iconOne * 5),
-                  decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(15)),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: TextFormField(
-                          onTap: () {
-                            _updateIsSearch(true);
-                          },
-                          onFieldSubmitted: (val) {
-                            setState(() {
-                              _search = val;
-                            });
-                          },
-                          decoration: authInputFormatting.copyWith(
-                            hintText: "Search By Username",
-                          ),
+                  Spacer(),
+                ],
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              Container(
+                width: _size.width * 0.8,
+                height: _heightOne * 42.5,
+                margin: EdgeInsets.only(
+                  bottom: _heightOne * 20,
+                ),
+                padding: EdgeInsets.all(_iconOne * 5),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(15)),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        onTap: () {
+                          _updateIsSearch(true);
+                        },
+                        onFieldSubmitted: (val) {
+                          setState(() {
+                            _search = val;
+                          });
+                        },
+                        decoration: authInputFormatting.copyWith(
+                          hintText: "Search By Username",
                         ),
                       ),
-                      _isSearchActive
-                          ? IconButton(
-                              icon: Icon(
-                                Icons.cancel,
-                                color: AppTheme.primaryColor,
-                              ),
-                              onPressed: () {
-                                _updateIsSearch(false);
-                              },
-                            )
-                          : Container(),
-                    ],
-                  ),
+                    ),
+                    _isSearchActive
+                        ? IconButton(
+                            icon: Icon(
+                              Icons.cancel,
+                              color: AppTheme.primaryColor,
+                            ),
+                            onPressed: () {
+                              _updateIsSearch(false);
+                            },
+                          )
+                        : Container(),
+                  ],
                 ),
-                Expanded(
-                  child: Container(
-                      padding: EdgeInsets.only(top: _heightOne * 20),
-                      decoration: BoxDecoration(
-                          color: AppTheme.backgroundColor,
-                          borderRadius: BorderRadius.only(
-                            topRight: Radius.circular(25),
-                            topLeft: Radius.circular(25),
-                          )),
-                      child: _isSearchActive
-                          ? SearchMessage(
-                              userName: _search,
-                            )
-                          : getBody()),
-                ),
-                SizedBox(
-                  height: Platform.isIOS ? _heightOne * 40 : _heightOne * 55,
-                )
-              ]),
-        ),
+              ),
+              Expanded(
+                child: Container(
+                    padding: EdgeInsets.only(top: _heightOne * 20),
+                    decoration: BoxDecoration(
+                        color: AppTheme.backgroundColor,
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(25),
+                          topLeft: Radius.circular(25),
+                        )),
+                    child: _isSearchActive
+                        ? SearchMessage(
+                            userName: _search,
+                          )
+                        : getBody()),
+              ),
+            ]),
       ),
     );
   }
@@ -147,12 +143,27 @@ class _MessageState extends State<Message> {
       stream: _userInfoStore.getChats(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
-          return Center(
-            child: SpinKitCircle(
-              color: AppTheme.backgroundColor,
-              size: _fontOne * 60,
-            ),
-          );
+          return ListView.builder(
+              itemCount: 6,
+              itemBuilder: (BuildContext context, int index) {
+                return Shimmer.fromColors(
+                  highlightColor: AppTheme.backgroundColor,
+                  baseColor: AppTheme.pureWhiteColor,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 15),
+                    margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                    height: 70,
+                    decoration: BoxDecoration(
+                      color: Colors.grey,
+                      border: Border.all(
+                          color: AppTheme.primaryColorDark, width: 1),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                );
+              });
+          ;
         } else {
           if (snapshot.data.data() == null) {
             return Center(
@@ -179,15 +190,29 @@ class _MessageState extends State<Message> {
               ),
             );
           } else if (_usersDetails.length < keys.length) {
-            return Center(
-              child: SpinKitCircle(
-                color: AppTheme.backgroundColor,
-                size: _fontOne * 60,
-              ),
-            );
+            return ListView.builder(
+                itemCount: 6,
+                itemBuilder: (BuildContext context, int index) {
+                  return Shimmer.fromColors(
+                    highlightColor: AppTheme.backgroundColor,
+                    baseColor: AppTheme.pureWhiteColor,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 15),
+                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                      height: 70,
+                      decoration: BoxDecoration(
+                        color: Colors.grey,
+                        border: Border.all(
+                            color: AppTheme.primaryColorDark, width: 1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                    ),
+                  );
+                });
           } else {
             return ListView.builder(
-              padding: EdgeInsets.all(15.0),
+              padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 20),
               itemBuilder: (context, index) {
                 if (_usersDetails[index] == null) {
                   return Container();

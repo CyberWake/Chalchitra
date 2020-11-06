@@ -31,6 +31,7 @@ void main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    print('${prefs.containsKey('onBoarded')}');
     UserAuth _userAuth = UserAuth();
     return ChangeNotifierProvider(
       create: (_) => CurrentUser(),

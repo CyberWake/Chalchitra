@@ -77,6 +77,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     if (!prefs.containsKey('onBoarded')) {
       prefs.setBool("onBoarded", true);
     }
+    print('${prefs.containsKey('onBoarded')}');
     if (_userAuth.user != null) {
       print(_userAuth.user.uid);
       await _userInfoStore.updateToken(context: context);
@@ -307,17 +308,18 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         backgroundColor: AppTheme.backgroundColor,
         key: _scaffoldGlobalKey,
         appBar: AppBar(
+          toolbarOpacity: 1.0,
           elevation: 0.0,
           backgroundColor: AppTheme.primaryColor,
           title: Container(
-            padding: EdgeInsets.symmetric(
-              vertical: 10,
-            ),
-            height: 55,
-            width: _size.width / 2.5,
-            child: Image.asset(
-              'assets/images/appBarLogo1.png',
-              fit: BoxFit.fitHeight,
+            height: _size.width / 4,
+            width: _size.width / 4,
+            child: Opacity(
+              opacity: 0.5,
+              child: Image.asset(
+                'assets/images/appBarLogo1.gif',
+                fit: BoxFit.fitWidth,
+              ),
             ),
           ),
           actions: [
