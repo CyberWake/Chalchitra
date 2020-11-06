@@ -14,40 +14,39 @@ class OnBoardScreen1 extends StatefulWidget {
 
 class _OnBoardScreen1State extends State<OnBoardScreen1> {
   VideoPlayerController _controller;
+  Future<void> initialisedVideoPlayer;
   String text = "It's your time to Shine.";
   bool _visible = false;
   @override
   void initState() {
-    super.initState();
     SystemChrome.setPreferredOrientations([
       DeviceOrientation.portraitUp,
     ]);
-
-    _controller = VideoPlayerController.asset("assets/videos/video1.mp4");
+    /*assets/videos/video1.mp4*/
+    _controller = VideoPlayerController.asset('assets/videos/video1.mp4');
+    print('${_controller.dataSource}');
     _controller.addListener(() {
       setState(() {});
     });
+    _controller.initialize().then((_) => setState(() {}));
+    _controller.play();
     _controller.setLooping(true);
-    _controller.initialize().then((_) {
-      Timer(Duration(milliseconds: 100), () {
-        setState(() {
-          _controller.play();
-          _visible = true;
-        });
-      });
+    setState(() {
+      _visible = true;
     });
   }
 
   @override
   void dispose() {
-    super.dispose();
     if (_controller != null) {
       _controller.dispose();
       _controller = null;
     }
+    super.dispose();
   }
 
   _getVideoBackground() {
+    print('running');
     return AnimatedOpacity(
       opacity: _visible ? 1.0 : 0.0,
       duration: Duration(milliseconds: 500),
@@ -57,7 +56,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
 
   _getBackgroundColor() {
     return Container(
-      color: Colors.black12.withAlpha(120),
+      color: Colors.black,
     );
   }
 
@@ -100,26 +99,18 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
                 text = "90 seconds to fame.";
                 _controller =
                     VideoPlayerController.asset("assets/videos/video2.mp4");
-                _controller.initialize().then((_) {
-                  _controller.setLooping(true);
-                  Timer(Duration(milliseconds: 50), () {
-                    setState(() {
-                      _controller.play();
-                    });
-                  });
-                });
+                initialisedVideoPlayer = _controller.initialize();
+                _visible = true;
+                _controller.play();
+                _controller.setLooping(true);
               } else if (text == "90 seconds to fame.") {
                 text = "Rehearse. Record. Rise.";
                 _controller =
                     VideoPlayerController.asset("assets/videos/video3.mp4");
-                _controller.initialize().then((_) {
-                  _controller.setLooping(true);
-                  Timer(Duration(milliseconds: 50), () {
-                    setState(() {
-                      _controller.play();
-                    });
-                  });
-                });
+                initialisedVideoPlayer = _controller.initialize();
+                _visible = true;
+                _controller.play();
+                _controller.setLooping(true);
               } else if (text == "Rehearse. Record. Rise.") {
                 _controller.pause();
                 Navigator.of(context).pushReplacement(CupertinoPageRoute(
@@ -143,8 +134,8 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
       body: Center(
         child: Stack(
           children: <Widget>[
-            _getVideoBackground(),
             _getBackgroundColor(),
+            _getVideoBackground(),
             _getContent(),
           ],
         ),

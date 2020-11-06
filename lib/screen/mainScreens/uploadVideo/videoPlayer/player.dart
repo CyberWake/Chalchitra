@@ -766,7 +766,7 @@ class _PlayerState extends State<Player> {
                                       child: SliderTheme(
                                         data: SliderTheme.of(context).copyWith(
                                           trackShape: RoundSliderTrackShape(),
-                                          trackHeight: 2.0,
+                                          trackHeight: 6.0,
                                           thumbColor: AppTheme.primaryColor,
                                           thumbShape:
                                               StarThumb(thumbRadius: 20),

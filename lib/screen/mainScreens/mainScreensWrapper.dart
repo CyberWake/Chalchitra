@@ -69,14 +69,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
 
   void setup() async {
     getUser();
-    prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('onBoarded')) {
-      prefs.setBool("onBoarded", true);
-    }
     setState(() {});
   }
 
   void getUser() async {
+    prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('onBoarded')) {
+      prefs.setBool("onBoarded", true);
+    }
     if (_userAuth.user != null) {
       print(_userAuth.user.uid);
       await _userInfoStore.updateToken(context: context);
