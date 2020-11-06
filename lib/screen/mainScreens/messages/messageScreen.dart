@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
@@ -43,7 +44,9 @@ class _MessageState extends State<Message> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
-    _heightOne = (_size.height * 0.007) / 5;
+    _heightOne = !Platform.isIOS
+        ? (_size.height * 0.007) / 5
+        : (_size.height * 0.009) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
 
@@ -131,7 +134,7 @@ class _MessageState extends State<Message> {
                           : getBody()),
                 ),
                 SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.19,
+                  height: Platform.isIOS ? _heightOne * 40 : _heightOne * 55,
                 )
               ]),
         ),

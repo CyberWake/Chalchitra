@@ -39,14 +39,17 @@ class SearchResult extends StatelessWidget {
                             ? eachUser.username
                             : eachUser.displayName,
                         style: TextStyle(
-                            color: AppTheme.pureWhiteColor,
+                            color: AppTheme.primaryColor,
                             fontSize: 16,
                             fontWeight: FontWeight.bold)),
                     subtitle: Text(
                       eachUser.username == null ? '' : eachUser.username,
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                      style: TextStyle(color: AppTheme.grey, fontSize: 13),
                     ),
-                  ))
+                  )),
+              Divider(
+                color: AppTheme.grey,
+              ),
             ],
           )),
     );

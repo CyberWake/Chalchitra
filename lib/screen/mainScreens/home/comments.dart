@@ -122,13 +122,13 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     Expanded(
                       child: TextField(
                         controller: controller,
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
+                        style: TextStyle(color: AppTheme.primaryColor),
                         onChanged: (val){
                           _comment = val;
                         },
                         decoration: InputDecoration.collapsed(
                           hintText: 'Post a comment..',
-                          hintStyle: TextStyle(color: AppTheme.pureWhiteColor),
+                          hintStyle: TextStyle(color: AppTheme.primaryColor),
                         ),
                         textCapitalization: TextCapitalization.sentences,
                       ),
@@ -219,7 +219,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                           Text(
                             snapshot.data.data()["username"] + " \u2022 ",
                             style: TextStyle(
-                              color: Colors.grey,
+                              color: AppTheme.primaryColorLight,
                               fontSize: _fontOne * 10,
                               fontWeight: FontWeight.w500,
                             ),
@@ -227,7 +227,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                           Text(
                             formatDateTime(timestamp),
                             style: TextStyle(
-                              color: Colors.grey,
+                              color: AppTheme.primaryColorLight,
                               fontSize: _fontOne * 10,
                               fontWeight: FontWeight.w500,
                             ),
@@ -238,7 +238,7 @@ class _CommentsScreenState extends State<CommentsScreen> {
                       Text(
                         comment,
                         style: TextStyle(
-                          color: AppTheme.pureWhiteColor,
+                          color: AppTheme.primaryColor,
                           fontSize: _fontOne * 13,
                           fontWeight: FontWeight.w500,
                         ),

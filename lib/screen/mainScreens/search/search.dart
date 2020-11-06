@@ -126,12 +126,12 @@ class _SearchUserState extends State<SearchUser> {
                         Expanded(
                           child: TextFormField(
                             style: TextStyle(
-                                fontSize: 18, color: AppTheme.pureWhiteColor),
+                                fontSize: 18, color: AppTheme.primaryColor),
                             controller: searchTextEditingController,
                             decoration: InputDecoration(
                                 hintText: "Search By Username",
                                 hintStyle:
-                                    TextStyle(color: AppTheme.pureWhiteColor),
+                                    TextStyle(color: AppTheme.primaryColor),
                                 border: InputBorder.none,
                                 suffixIcon: IconButton(
                                     icon: Icon(Icons.clear,

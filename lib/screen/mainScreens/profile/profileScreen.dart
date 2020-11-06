@@ -2,6 +2,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -525,24 +526,47 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   );
                 },
-                child: Container(
-                  width: size.width * 0.24,
-                  height: size.height * 0.24,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    image: DecorationImage(
-                        image: NetworkImage(_videos[index].thumbUrl),
-                        fit: BoxFit.fitWidth),
-                    borderRadius: BorderRadius.circular(10.5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.4),
-                        offset: Offset(0.5, 10.0), //(x,y)
-                        blurRadius: 10.0,
-                      ),
-                    ],
+                child: CachedNetworkImage(
+                  imageUrl: _videos[index].thumbUrl,
+                  imageBuilder: (context, imageProvider) => Container(
+                    width: size.width * 0.24,
+                    height: size.height * 0.24,
+                    margin: EdgeInsets.all(5),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.5),
+                      color: AppTheme.pureBlackColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          offset: Offset(0.0, 10.0), //(x,y)
+                          blurRadius: 10.0,
+                        ),
+                      ],
+                      image: DecorationImage(
+                          image: imageProvider, fit: BoxFit.fitWidth),
+                    ),
                   ),
+                  placeholder: (context, url) => Shimmer.fromColors(
+                    highlightColor: AppTheme.pureWhiteColor,
+                    baseColor: AppTheme.grey,
+                    child: Container(
+                      width: size.width * 0.24,
+                      height: size.height * 0.24,
+                      margin: EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(10.5),
+                        color: AppTheme.pureBlackColor,
+                        boxShadow: [
+                          BoxShadow(
+                            color: AppTheme.primaryColor.withOpacity(0.2),
+                            offset: Offset(0.0, 10.0), //(x,y)
+                            blurRadius: 10.0,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                 ),
               );
             }),
