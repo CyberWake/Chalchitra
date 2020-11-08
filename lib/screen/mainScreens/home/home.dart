@@ -232,7 +232,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               text: '  Creators to see content',
                               style: TextStyle(
                                   fontSize: 38,
-                                  color: AppTheme.pureWhiteColor,
+                                  color: AppTheme.primaryColor,
                                   fontWeight: FontWeight.bold),
                             )
                           ])),
@@ -308,8 +308,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               child: InViewNotifierList(
                             isInViewPortCondition: (double delTop,
                                 double delBottom, double viewPort) {
-                              return delTop < (0.2 * viewPort) &&
-                                  delBottom > (0.2 * viewPort);
+                              return delTop < (0.5 * viewPort) &&
+                                  delBottom > (0.5 * viewPort);
                             },
                             itemCount: snapshot.data.documents.length,
                             builder: (context, index) {

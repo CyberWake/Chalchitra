@@ -20,13 +20,17 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
+import 'package:wowtalent/screen/mainScreens/endDrawerScreens/activityPage.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/drafts.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/privacyPage.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
+import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/home/home.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
+import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/search/search.dart';
+import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoSelectorScreen.dart';
 
@@ -144,15 +148,90 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
 
     _fcm.configure(onMessage: (Map<String, dynamic> message) async {
       _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
+          duration: Duration(seconds: 2),
           content: ListTile(
-        contentPadding: EdgeInsets.symmetric(vertical: 0.0),
-        title: Text(message['notification']['title']),
-        subtitle: Text(message['notification']['body']),
-      )));
+            contentPadding: EdgeInsets.symmetric(vertical: 0.0),
+            title: Text(message['notification']['title']),
+            subtitle: Text(message['notification']['body']),
+            onTap: () {
+              if (message['type'] == "like") {
+                return;
+              } else if (message['type'] == "comment") {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (_) => CommentsScreen(
+                              videoId: message["videoID"],
+                            )));
+              } else if (message['type'] == "msg") {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (_) => ChatDetailPage(
+                              targetUID: message["senderID"],
+                            )));
+              } else if (message['type'] == "follow") {
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (_) => SearchProfile(
+                              uid: message['followerID'],
+                            )));
+              }
+            },
+          )));
     }, onLaunch: (Map<String, dynamic> message) async {
       print("onLaunch work");
+      if (message['type'] == "like") {
+        return;
+      } else if (message['type'] == "comment") {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => CommentsScreen(
+                      videoId: message["videoID"],
+                    )));
+      } else if (message['type'] == "msg") {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => ChatDetailPage(
+                      targetUID: message["senderID"],
+                    )));
+      } else if (message['type'] == "follow") {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => SearchProfile(
+                      uid: message['followerID'],
+                    )));
+      }
     }, onResume: (Map<String, dynamic> message) async {
       print("onResume");
+      if (message['type'] == "like") {
+        return;
+      } else if (message['type'] == "comment") {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => CommentsScreen(
+                      videoId: message["videoID"],
+                    )));
+      } else if (message['type'] == "msg") {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => ChatDetailPage(
+                      targetUID: message["senderID"],
+                    )));
+      } else if (message['type'] == "follow") {
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => SearchProfile(
+                      uid: message['followerID'],
+                    )));
+      }
     });
   }
 
@@ -333,7 +412,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                     onPressed: () {
                       if (_userAuth.user != null) {
                         Navigator.push(context,
-                            MaterialPageRoute(builder: (_) => SearchUser()));
+                            CupertinoPageRoute(builder: (_) => SearchUser()));
                       } else {
                         Navigator.pushReplacement(
                             context,
@@ -401,6 +480,28 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                         context,
                         CupertinoPageRoute(
                             builder: (BuildContext context) => Drafts()));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(
+                    Icons.notifications,
+                    color: AppTheme.pureWhiteColor,
+                    semanticLabel: 'Activity',
+                    size: 30,
+                  ),
+                  title: Text(
+                    "Activity",
+                    style:
+                        TextStyle(color: AppTheme.pureWhiteColor, fontSize: 18),
+                  ),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (_) => ActivityPage(
+                                  uid: _userAuth.user.uid,
+                                )));
                   },
                 ),
                 ListTile(

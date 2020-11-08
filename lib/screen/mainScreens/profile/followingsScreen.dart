@@ -102,7 +102,7 @@ class _FollowingsPageState extends State<FollowingsPage>
                                   text: '  Creators to see them here',
                                   style: TextStyle(
                                       fontSize: 38,
-                                      color: AppTheme.pureWhiteColor,
+                                      color: AppTheme.primaryColor,
                                       fontWeight: FontWeight.bold),
                                 )
                               ])),

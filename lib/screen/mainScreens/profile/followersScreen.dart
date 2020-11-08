@@ -99,7 +99,7 @@ class _FollowersPageState extends State<FollowersPage>
                                   text: '  Attracts followers',
                                   style: TextStyle(
                                       fontSize: 38,
-                                      color: AppTheme.pureWhiteColor,
+                                      color: AppTheme.primaryColor,
                                       fontWeight: FontWeight.bold),
                                 )
                               ])),

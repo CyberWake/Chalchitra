@@ -18,26 +18,27 @@ class VideoInfo {
   int comments;
   String videoId;
 
-  VideoInfo({
-    this.uploaderUid,
-    this.videoUrl,
-    this.thumbUrl,
-    this.coverUrl,
-    this.shareUrl,
-    this.aspectRatio,
-    this.uploadedAt,
-    this.videoName,
-    this.videoHashtag,
-    this.category,
-    this.views,
-    this.likes,
-    this.shares,
-    this.rating,
-    this.comments,
-    this.videoId,
-  });
+  VideoInfo(
+      {
+        this.uploaderUid,
+        this.videoUrl,
+        this.thumbUrl,
+        this.coverUrl,
+        this.shareUrl,
+        this.aspectRatio,
+        this.uploadedAt,
+        this.videoName,
+        this.videoHashtag,
+        this.category,
+        this.views,
+        this.likes,
+        this.shares,
+        this.rating,
+        this.comments,
+        this.videoId,
+      });
 
-  static fromDocument(QueryDocumentSnapshot ds) {
+  static fromDocument(DocumentSnapshot ds) {
     return VideoInfo(
       uploaderUid: ds.data()['uploaderUid'],
       videoUrl: ds.data()['videoUrl'],

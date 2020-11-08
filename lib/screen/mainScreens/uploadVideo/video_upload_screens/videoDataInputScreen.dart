@@ -89,13 +89,13 @@ class _VideoDataInputState extends State<VideoDataInput> {
     _uploadingVideo = true;
     int timestamp = DateTime.now().millisecondsSinceEpoch;
     setState(() {
-      _processPhase = 'Saving video thumbnail to server';
+      _processPhase = 'Uploading video thumbnail';
       _uploadProgress = 0.0;
     });
     final thumbUrl = await _uploadThumbnail(widget.thumbnailPath,
         'thumbnail/' + _userAuth.user.uid, timestamp.toString());
     setState(() {
-      _processPhase = 'Saving video file to servers';
+      _processPhase = 'Uploading video file';
       _uploadProgress = 0.0;
     });
     final videoUrl = await _uploadVideo(widget.mediaInfoPath,

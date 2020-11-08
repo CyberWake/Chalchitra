@@ -107,6 +107,15 @@ class UserVideoStore {
     }
   }
 
+  Future getVideoInfo({String videoid}) async {
+    try {
+      var doc = await _allVideos.doc(videoid).get();
+      return VideoInfo.fromDocument(doc);
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
   Future getDraftVideos({String uid}) async {
     try {
       QuerySnapshot qs =
@@ -144,6 +153,16 @@ class UserVideoStore {
   }
 
   Future<VideoInfo> getSharedLinkVideo({String videoId}) async {
+    try {
+      DocumentSnapshot ds = await _allVideos.doc(videoId).get();
+      return mapDocumentToVideoInfo(ds);
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
+  Future<VideoInfo> getLikedVideo({String videoId}) async {
     try {
       DocumentSnapshot ds = await _allVideos.doc(videoId).get();
       return mapDocumentToVideoInfo(ds);

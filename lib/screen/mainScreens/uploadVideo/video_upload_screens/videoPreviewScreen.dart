@@ -38,7 +38,7 @@ class _VideoPreviewState extends State<VideoPreview> {
     print("processing");
     print(rawVideoFile.path);
     setState(() {
-      _processPhase = "Encoding Video";
+      _processPhase = "Processing Video";
     });
     mediaInfo = await VideoCompress.compressVideo(
       rawVideoFile.path,

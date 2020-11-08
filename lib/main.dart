@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -28,11 +29,42 @@ void main() async {
   });
 }
 
-class MyApp extends StatelessWidget {
+class App extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MyApp();
+  }
+}
+
+class MyApp extends StatefulWidget {
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  static final CollectionReference _usersCollection =
+      FirebaseFirestore.instance.collection('WowUsers');
+  UserAuth _userAuth = UserAuth();
+
+  isUserReal() async {
+    DocumentSnapshot userRecord =
+        await _usersCollection.doc(_userAuth.user.uid).get();
+    if (!userRecord.exists) {
+      _userAuth.signOut();
+      return false;
+    }
+    return true;
+  }
+
+  @override
+  void initState() {
+    isUserReal();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     print('${prefs.containsKey('onBoarded')}');
-    UserAuth _userAuth = UserAuth();
     return ChangeNotifierProvider(
       create: (_) => CurrentUser(),
       child: StreamProvider<User>.value(

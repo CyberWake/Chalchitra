@@ -83,7 +83,7 @@ class _VideoUploaderState extends State<VideoUploader>
                 decoration: BoxDecoration(
                     color: AppTheme.secondaryColor,
                     border: Border.all(color: AppTheme.primaryColor, width: 2),
-                    borderRadius: BorderRadius.circular(25),
+                    borderRadius: BorderRadius.circular(20),
                     boxShadow: [
                       BoxShadow(
                         color: Colors.white.withOpacity(0.15),
