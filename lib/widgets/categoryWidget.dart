@@ -5,8 +5,10 @@ import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
 
 class CategoryStoryItem extends StatelessWidget {
   final String name;
+  final IconData icon;
   const CategoryStoryItem({
     Key key,
+    this.icon,
     this.name,
   }) : super(key: key);
 
@@ -28,12 +30,26 @@ class CategoryStoryItem extends StatelessWidget {
             color: AppTheme.backgroundColor,
             border: Border.all(color: AppTheme.primaryColor, width: 2)),
         child: Center(
-          child: Text(
-            name,
-            style: TextStyle(
-                color: AppTheme.primaryColor,
-                fontWeight: FontWeight.w500,
-                fontSize: 20),
+          child: Row(
+            children: [
+              icon != Icons.face
+                  ? Icon(icon)
+                  : Container(
+                      height: 25,
+                      width: 25,
+                      child: Image.asset(
+                        'assets/images/acting.png',
+                        fit: BoxFit.fitWidth,
+                      )),
+              Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
+              Text(
+                name,
+                style: TextStyle(
+                    color: AppTheme.primaryColor,
+                    fontWeight: FontWeight.w500,
+                    fontSize: 20),
+              ),
+            ],
           ),
         ),
       ),

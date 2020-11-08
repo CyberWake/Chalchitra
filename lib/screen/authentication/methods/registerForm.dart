@@ -245,6 +245,7 @@ class _RegisterFormState extends State<RegisterForm> {
             side:
                 BorderSide(color: AppTheme.primaryColor, width: _widthOne * 5)),
         splashColor: Colors.orange[100],
+        color: AppTheme.secondaryColor,
         padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
         child: Text(
           "Register",

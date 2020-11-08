@@ -31,9 +31,17 @@ class _ExploreState extends State<Explore> {
     "Vocals",
     "Dance",
     "Instrumental",
-    "Stand up Comedy",
+    "Stand-up Comedy",
     "DJing",
     "Acting",
+  ];
+  List<IconData> searchIcons = [
+    Icons.mic,
+    Icons.directions_run,
+    Icons.music_note,
+    Icons.sentiment_very_satisfied,
+    Icons.headset,
+    Icons.face,
   ];
 
   setup() {
@@ -71,9 +79,9 @@ class _ExploreState extends State<Explore> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "#Trending",
+                "#TrendingNow",
                 style: TextStyle(
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.blue,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -84,9 +92,9 @@ class _ExploreState extends State<Explore> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "#StaffPicks",
+                "#JudgePicks",
                 style: TextStyle(
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.blue,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -97,9 +105,9 @@ class _ExploreState extends State<Explore> {
               alignment: Alignment.centerLeft,
               padding: const EdgeInsets.all(8.0),
               child: Text(
-                "#LatestVideos",
+                "#TalentOnFire",
                 style: TextStyle(
-                    color: AppTheme.primaryColor,
+                    color: AppTheme.blue,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -124,6 +132,7 @@ class _ExploreState extends State<Explore> {
             children: List.generate(searchCategories.length, (index) {
               return CategoryStoryItem(
                 name: searchCategories[index],
+                icon: searchIcons[index],
               );
             }),
           ),

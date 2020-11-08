@@ -47,13 +47,13 @@ class _MyAppState extends State<MyApp> {
   UserAuth _userAuth = UserAuth();
 
   isUserReal() async {
-    DocumentSnapshot userRecord =
-        await _usersCollection.doc(_userAuth.user.uid).get();
-    if (!userRecord.exists) {
-      _userAuth.signOut();
-      return false;
+    if (_userAuth.user != null) {
+      DocumentSnapshot userRecord =
+          await _usersCollection.doc(_userAuth.user.uid).get();
+      if (!userRecord.exists) {
+        _userAuth.signOut();
+      }
     }
-    return true;
   }
 
   @override

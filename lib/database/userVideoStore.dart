@@ -99,6 +99,7 @@ class UserVideoStore {
       //await _videoLikes.doc(video.videoId).delete();   #todo
       //await _videoRating.doc(video.videoId).delete();  #todo
       //await _videoWatched.doc(video.videoId).delete(); #todo
+      //delete notifications from everywhere             #todo
       await _users
           .doc(_userAuth.user.uid)
           .update({"videoCount": FieldValue.increment(-1)});

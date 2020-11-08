@@ -392,13 +392,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           backgroundColor: AppTheme.primaryColor,
           title: Container(
             height: _size.width / 4,
-            width: _size.width / 4,
-            child: Opacity(
-              opacity: 0.5,
-              child: Image.asset(
-                'assets/images/appBarLogo1.gif',
-                fit: BoxFit.fitWidth,
-              ),
+            width: _size.width / 2,
+            child: Image.asset(
+              'assets/images/appBarLogo1.png',
+              fit: BoxFit.fitWidth,
             ),
           ),
           actions: [

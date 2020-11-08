@@ -15,7 +15,13 @@ class OnBoardScreen1 extends StatefulWidget {
 class _OnBoardScreen1State extends State<OnBoardScreen1> {
   VideoPlayerController _controller;
   Future<void> initialisedVideoPlayer;
-  String text = "It's your time to Shine.";
+  List<String> textList = [
+    "90 seconds to Fame!",
+    "It's your time to Shine!",
+    "Rehearse. Record. Rise."
+  ];
+  int index = 0;
+  String text = "90 seconds to Fame!";
   bool _visible = false;
   @override
   void initState() {
@@ -69,7 +75,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
           margin: const EdgeInsets.only(left: 30.0, right: 30.0, top: 40.0),
           alignment: Alignment.center,
           child: Text(
-            text,
+            textList[index],
             textAlign: TextAlign.center,
             style: TextStyle(
                 color: AppTheme.backgroundColor,
@@ -84,7 +90,7 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
           margin: const EdgeInsets.only(top: 10, left: 20, right: 20),
           width: MediaQuery.of(context).size.width / 2,
           child: FlatButton(
-            color: Colors.white,
+            color: AppTheme.secondaryColor,
             padding: const EdgeInsets.only(top: 15.0, bottom: 15.0),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -95,23 +101,25 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
             onPressed: () {
               _controller.pause();
               setState(() {});
-              if (text == "It's your time to Shine.") {
-                text = "90 seconds to fame.";
+              if (index == 0) {
+                index += 1;
+                text = textList[index];
                 _controller =
                     VideoPlayerController.asset("assets/videos/video2.mp4");
                 initialisedVideoPlayer = _controller.initialize();
                 _visible = true;
                 _controller.play();
                 _controller.setLooping(true);
-              } else if (text == "90 seconds to fame.") {
-                text = "Rehearse. Record. Rise.";
+              } else if (index == 1) {
+                index += 1;
+                text = textList[index];
                 _controller =
                     VideoPlayerController.asset("assets/videos/video3.mp4");
                 initialisedVideoPlayer = _controller.initialize();
                 _visible = true;
                 _controller.play();
                 _controller.setLooping(true);
-              } else if (text == "Rehearse. Record. Rise.") {
+              } else if (index == 2) {
                 _controller.pause();
                 Navigator.of(context).pushReplacement(CupertinoPageRoute(
                     builder: (context) => MainScreenWrapper(
@@ -137,6 +145,66 @@ class _OnBoardScreen1State extends State<OnBoardScreen1> {
             _getBackgroundColor(),
             _getVideoBackground(),
             _getContent(),
+            Container(
+              height: double.infinity,
+              width: double.infinity,
+              child: GestureDetector(
+                onHorizontalDragEnd: (DragEndDetails details) {
+                  Offset offset = details.velocity.pixelsPerSecond;
+                  if (offset.dx < 0) {
+                    print(offset);
+                    print("going forward");
+                    if (index == 0) {
+                      index += 1;
+                      text = textList[index];
+                      _controller = VideoPlayerController.asset(
+                          "assets/videos/video${index + 1}.mp4");
+                      initialisedVideoPlayer = _controller.initialize();
+                      _visible = true;
+                      _controller.play();
+                      _controller.setLooping(true);
+                    } else if (index == 1) {
+                      index += 1;
+                      text = textList[index];
+                      _controller = VideoPlayerController.asset(
+                          "assets/videos/video${index + 1}.mp4");
+                      initialisedVideoPlayer = _controller.initialize();
+                      _visible = true;
+                      _controller.play();
+                      _controller.setLooping(true);
+                    } else if (index == 2) {
+                      _controller.pause();
+                      Navigator.of(context).pushReplacement(CupertinoPageRoute(
+                          builder: (context) => MainScreenWrapper(
+                                index: 1,
+                              )));
+                    }
+                  } else if (offset.dx > 0) {
+                    print(offset);
+                    print("going backward");
+                    if (index == 1) {
+                      index -= 1;
+                      text = textList[index];
+                      _controller = VideoPlayerController.asset(
+                          "assets/videos/video${index + 1}.mp4");
+                      initialisedVideoPlayer = _controller.initialize();
+                      _visible = true;
+                      _controller.play();
+                      _controller.setLooping(true);
+                    } else if (index == 2) {
+                      index -= 1;
+                      text = textList[index];
+                      _controller = VideoPlayerController.asset(
+                          "assets/videos/video${index + 1}.mp4");
+                      initialisedVideoPlayer = _controller.initialize();
+                      _visible = true;
+                      _controller.play();
+                      _controller.setLooping(true);
+                    }
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),

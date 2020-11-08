@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
+import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 import 'package:wowtalent/widgets/notificationCard.dart';
 
 class ActivityPage extends StatefulWidget {
@@ -26,8 +27,8 @@ class _ActivityPageState extends State<ActivityPage>
     maxOpacity: 0.4,
     spawnMinSpeed: 30.0,
     spawnMaxSpeed: 70.0,
-    spawnMinRadius: 7.0,
-    spawnMaxRadius: 15.0,
+    spawnMinRadius: 15.0,
+    spawnMaxRadius: 25.0,
     particleCount: 40,
   );
 
@@ -106,20 +107,52 @@ class _ActivityPageState extends State<ActivityPage>
                           children: [
                             Text.rich(TextSpan(text: '', children: <InlineSpan>[
                               TextSpan(
-                                text: 'Nice Content',
+                                text: 'Your Activity',
                                 style: TextStyle(
-                                    fontSize: 56,
+                                    fontSize: 50,
                                     color: Colors.redAccent,
                                     fontWeight: FontWeight.bold),
                               ),
                               TextSpan(
-                                text: '  Attracts followers',
+                                text:
+                                    '\n\nAll your app notifications will show up here.',
                                 style: TextStyle(
-                                    fontSize: 38,
+                                    fontSize: 28,
+                                    color: AppTheme.primaryColor,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                              TextSpan(
+                                text:
+                                    '\n\nGo engage with Creators: Like, Follow, Comment and Rate their Talent\n',
+                                style: TextStyle(
+                                    fontSize: 20,
                                     color: AppTheme.primaryColor,
                                     fontWeight: FontWeight.bold),
                               )
                             ])),
+                            FlatButton(
+                              color: AppTheme.primaryColor,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              onPressed: () {
+                                Navigator.pushReplacement(
+                                    context,
+                                    CupertinoPageRoute(
+                                        builder: (_) => MainScreenWrapper(
+                                              index: 1,
+                                            )));
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                    vertical: 10.0, horizontal: 2),
+                                child: Text(
+                                  'Explore Talent',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      color: AppTheme.secondaryColor),
+                                ),
+                              ),
+                            )
                           ],
                         ),
                       ),

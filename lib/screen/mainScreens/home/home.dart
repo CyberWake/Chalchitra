@@ -44,8 +44,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     maxOpacity: 0.4,
     spawnMinSpeed: 30.0,
     spawnMaxSpeed: 70.0,
-    spawnMinRadius: 7.0,
-    spawnMaxRadius: 15.0,
+    spawnMinRadius: 15.0,
+    spawnMaxRadius: 25.0,
     particleCount: 40,
   );
 
@@ -253,10 +253,10 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                               padding: const EdgeInsets.symmetric(
                                   vertical: 10.0, horizontal: 2),
                               child: Text(
-                                'Explore Content',
+                                'Explore Talent',
                                 style: TextStyle(
                                     fontSize: 18,
-                                    color: AppTheme.pureWhiteColor),
+                                    color: AppTheme.secondaryColor),
                               ),
                             ),
                           )

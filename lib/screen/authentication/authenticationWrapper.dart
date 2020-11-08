@@ -30,7 +30,7 @@ class _AuthenticationState extends State<Authentication> {
     if (widget.index == AuthIndex.LOGIN) {
       return "LOGIN";
     } else if (widget.index == AuthIndex.REGISTER) {
-      return "REGISTER";
+      return "Join the Revolution ";
     } else if (widget.index == AuthIndex.FORGOT) {
       return "FORGOT PASSWORD";
     }
@@ -45,7 +45,7 @@ class _AuthenticationState extends State<Authentication> {
         return "We are always there to help";
         break;
       case AuthIndex.REGISTER:
-        return "We'll be glad if you join us.";
+        return "Rehearse. Record. Rise";
         break;
     }
   }
@@ -108,9 +108,9 @@ class _AuthenticationState extends State<Authentication> {
                     topText(),
                     style: TextStyle(
                         color: AppTheme.backgroundColor,
-                        fontSize: widget.index == AuthIndex.FORGOT
-                            ? _fontOne * 35
-                            : _fontOne * 50,
+                        fontSize: widget.index == AuthIndex.LOGIN
+                            ? _fontOne * 50
+                            : _fontOne * 35,
                         fontWeight: FontWeight.normal),
                   ),
                   Text(

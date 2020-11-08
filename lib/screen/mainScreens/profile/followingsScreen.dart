@@ -32,8 +32,8 @@ class _FollowingsPageState extends State<FollowingsPage>
     maxOpacity: 0.4,
     spawnMinSpeed: 30.0,
     spawnMaxSpeed: 70.0,
-    spawnMinRadius: 7.0,
-    spawnMaxRadius: 15.0,
+    spawnMinRadius: 15.0,
+    spawnMaxRadius: 25.0,
     particleCount: 40,
   );
 

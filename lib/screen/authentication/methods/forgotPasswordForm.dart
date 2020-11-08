@@ -146,6 +146,7 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
             side:
                 BorderSide(color: AppTheme.primaryColor, width: _widthOne * 5)),
         splashColor: Colors.orange[100],
+        color: AppTheme.secondaryColor,
         padding: EdgeInsets.symmetric(horizontal: _size.width * 0.277),
         child: Text(
           "Submit",
