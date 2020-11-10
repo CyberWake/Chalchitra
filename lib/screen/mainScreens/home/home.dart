@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -14,15 +11,15 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:wowtalent/widgets/noDataTile.dart';
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with TickerProviderStateMixin {
+class _HomeState extends State<Home> {
   List<VideoInfo> _videos = <VideoInfo>[];
   double _widthOne;
   double _heightOne;
@@ -34,24 +31,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   PopupMenu menu;
   GlobalKey btnKey = GlobalKey();
   UserAuth _userAuth = UserAuth();
-
-  ParticleOptions particleOptions = ParticleOptions(
-    image: Image.asset('assets/images/star_stroke.png'),
-    baseColor: Colors.blue,
-    spawnOpacity: 0.0,
-    opacityChangeRate: 0.25,
-    minOpacity: 0.1,
-    maxOpacity: 0.4,
-    spawnMinSpeed: 30.0,
-    spawnMaxSpeed: 70.0,
-    spawnMinRadius: 15.0,
-    spawnMaxRadius: 25.0,
-    particleCount: 40,
-  );
-
-  var particlePaint = Paint()
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 1.0;
 
   @override
   void initState() {
@@ -203,68 +182,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             );
           } else {
             if (data.data.documents.length == 0) {
-              return Container(
-                color: Platform.isIOS
-                    ? AppTheme.backgroundColor
-                    : Colors.transparent,
-                child: AnimatedBackground(
-                  behaviour: RandomParticleBehaviour(
-                    options: particleOptions,
-                    paint: particlePaint,
-                  ),
-                  vsync: this,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 35),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(TextSpan(text: '', children: <InlineSpan>[
-                            TextSpan(
-                              text: 'Follow',
-                              style: TextStyle(
-                                  fontSize: 56,
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: '  Creators to see content',
-                              style: TextStyle(
-                                  fontSize: 38,
-                                  color: AppTheme.primaryColor,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ])),
-                          SizedBox(height: 20),
-                          FlatButton(
-                            color: AppTheme.primaryColor,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(8)),
-                            onPressed: () {
-                              Navigator.pushReplacement(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (_) => MainScreenWrapper(
-                                            index: 1,
-                                          )));
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10.0, horizontal: 2),
-                              child: Text(
-                                'Explore Talent',
-                                style: TextStyle(
-                                    fontSize: 18,
-                                    color: AppTheme.backgroundColor),
-                              ),
-                            ),
-                          )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+              return NoDataTile(
+                showButton: true,
+                isActivity: false,
+                titleText: "Follow",
+                bodyText: "  Creators to see content",
+                buttonText: "Explore Talent",
               );
             } else {
               return RefreshIndicator(

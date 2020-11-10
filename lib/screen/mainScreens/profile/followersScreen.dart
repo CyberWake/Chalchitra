@@ -1,12 +1,13 @@
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
+import 'package:wowtalent/widgets/loadingTiles.dart';
+import 'package:wowtalent/widgets/noDataTile.dart';
 
 class FollowersPage extends StatefulWidget {
   final String uid;
@@ -63,67 +64,14 @@ class _FollowersPageState extends State<FollowersPage>
           builder: (context, snapshot) {
             if (!snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting) {
-              return Container(
-                height: MediaQuery.of(context).size.height,
-                child: ListView.builder(
-                    itemCount: 8,
-                    itemBuilder: (BuildContext context, int index) {
-                      return Shimmer.fromColors(
-                        highlightColor: AppTheme.backgroundColor,
-                        baseColor: AppTheme.pureWhiteColor,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 15),
-                          margin:
-                              EdgeInsets.symmetric(vertical: 2, horizontal: 10),
-                          height: 70,
-                          decoration: BoxDecoration(
-                            color: Colors.grey,
-                            border: Border.all(
-                                color: AppTheme.primaryColorDark, width: 1),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                      );
-                    }),
-              );
+              return LoadingCards();
             } else if (snapshot.data.documents.length == 0) {
-              return Container(
-                  color: Colors.transparent,
-                  child: AnimatedBackground(
-                      behaviour: RandomParticleBehaviour(
-                        options: particleOptions,
-                        paint: particlePaint,
-                      ),
-                      vsync: this,
-                      child: Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 35),
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text.rich(
-                                  TextSpan(text: '', children: <InlineSpan>[
-                                TextSpan(
-                                  text: 'Nice Content',
-                                  style: TextStyle(
-                                      fontSize: 56,
-                                      color: Colors.redAccent,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                TextSpan(
-                                  text: '  Attracts followers',
-                                  style: TextStyle(
-                                      fontSize: 38,
-                                      color: AppTheme.primaryColor,
-                                      fontWeight: FontWeight.bold),
-                                )
-                              ])),
-                            ],
-                          ),
-                        ),
-                      )));
+              return NoDataTile(
+                showButton: false,
+                isActivity: false,
+                titleText: "Nice Content",
+                bodyText: "  Attracts followers",
+              );
             }
             return ListView.builder(
               itemCount: snapshot.data.documents.length,
@@ -135,31 +83,7 @@ class _FollowersPageState extends State<FollowersPage>
                     builder: (context, snap) {
                       if (!snap.hasData ||
                           snap.connectionState == ConnectionState.waiting) {
-                        return Container(
-                          height: MediaQuery.of(context).size.height,
-                          child: ListView.builder(
-                              itemCount: 8,
-                              itemBuilder: (BuildContext context, int index) {
-                                return Shimmer.fromColors(
-                                  highlightColor: AppTheme.backgroundColor,
-                                  baseColor: AppTheme.pureWhiteColor,
-                                  child: Container(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10, horizontal: 15),
-                                    margin: EdgeInsets.symmetric(
-                                        vertical: 2, horizontal: 10),
-                                    height: 70,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey,
-                                      border: Border.all(
-                                          color: AppTheme.primaryColorDark,
-                                          width: 1),
-                                      borderRadius: BorderRadius.circular(10),
-                                    ),
-                                  ),
-                                );
-                              }),
-                        );
+                        return LoadingCards();
                       } else if (snap.connectionState == ConnectionState.done) {
                         var _user = UserDataModel.fromDocument(snap.data);
                         return GestureDetector(

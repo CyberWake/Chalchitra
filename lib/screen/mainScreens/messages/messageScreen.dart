@@ -10,6 +10,7 @@ import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messageSearch.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
+import 'package:wowtalent/widgets/loadingTiles.dart';
 
 class Message extends StatefulWidget {
   Message({Key key}) : super(key: key);
@@ -190,26 +191,7 @@ class _MessageState extends State<Message> {
               ),
             );
           } else if (_usersDetails.length < keys.length) {
-            return ListView.builder(
-                itemCount: 6,
-                itemBuilder: (BuildContext context, int index) {
-                  return Shimmer.fromColors(
-                    highlightColor: AppTheme.backgroundColor,
-                    baseColor: AppTheme.pureWhiteColor,
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 15),
-                      margin: EdgeInsets.symmetric(vertical: 2, horizontal: 10),
-                      height: 70,
-                      decoration: BoxDecoration(
-                        color: Colors.grey,
-                        border: Border.all(
-                            color: AppTheme.primaryColorDark, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                  );
-                });
+            return LoadingCards();
           } else {
             return ListView.builder(
               padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 20),
