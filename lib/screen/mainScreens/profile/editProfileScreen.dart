@@ -44,6 +44,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   UserDataModel user = UserDataModel();
   bool _usernameValid = true;
   bool validUsername;
+  bool validCountry;
   bool _nameValid = true;
   bool _updateButton = true;
   int _selectedGender;
@@ -96,7 +97,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 ],
               ),
               child: loading
-                  ? LinearProgressIndicator()
+                  ? Container()
                   : ListView(children: <Widget>[
                       Container(
                           padding:
@@ -271,8 +272,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
     } else {
       validUsername = true;
     }
+    validCountry = (countries.contains(countryController.text));
 
-    if (_usernameValid && _nameValid && validUsername) {
+    if (_usernameValid && _nameValid && validUsername && validCountry) {
       setState(() {
         loading = true;
       });
@@ -319,6 +321,12 @@ class _EditProfilePageState extends State<EditProfilePage> {
     } else if (!validUsername) {
       SnackBar successSnackBar = SnackBar(
         content: Text('Username Already Taken!!'),
+      );
+      _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
+    } else if (!validCountry) {
+      SnackBar successSnackBar = SnackBar(
+        content: Text('Enter a valid country name'),
+        duration: Duration(milliseconds: 1000),
       );
       _scaffoldGlobalKey.currentState.showSnackBar(successSnackBar);
     }
@@ -387,7 +395,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
               ),
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppTheme.primaryColorDark, width: 2.0),
+              borderSide:
+                  BorderSide(color: AppTheme.primaryColorDark, width: 2.0),
             ),
             labelText: 'Profile Name',
             errorText: _nameValid ? null : 'Profile name cannot be empty!'),
@@ -611,8 +620,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 padding: EdgeInsets.only(left: 4.0),
                 child: Text(
                   _dob == null ? " " : _dob,
-                  style:
-                      TextStyle(fontSize: 16, color: AppTheme.primaryColor),
+                  style: TextStyle(fontSize: 16, color: AppTheme.primaryColor),
                 ),
               ),
             ),

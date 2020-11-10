@@ -28,16 +28,16 @@ class _VideoUploaderState extends State<VideoUploader>
 
   ParticleOptions particleOptions = ParticleOptions(
     image: Image.asset('assets/images/star_stroke.png'),
-    baseColor: Colors.yellow,
+    baseColor: Colors.blue,
     spawnOpacity: 0.0,
     opacityChangeRate: 0.25,
     minOpacity: 0.1,
     maxOpacity: 0.4,
     spawnMinSpeed: 30.0,
-    spawnMaxSpeed: 30.0,
+    spawnMaxSpeed: 70.0,
     spawnMinRadius: 15.0,
     spawnMaxRadius: 25.0,
-    particleCount: 20,
+    particleCount: 40,
   );
 
   var particlePaint = Paint()

@@ -1,14 +1,15 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:screen/screen.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:swipe_stack/swipe_stack.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -247,9 +248,33 @@ class _PlayerState extends State<Player> {
           aspectRatio: _controller.value.aspectRatio,
           child: _controller.value.initialized
               ? VideoPlayer(_controller)
-              : SpinKitCircle(
-                  color: AppTheme.primaryColor,
-                  size: 60,
+              : CachedNetworkImage(
+                  imageUrl: widget.videos[currentPos].thumbUrl,
+                  imageBuilder: (context, imageProvider) => Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(15),
+                        bottomLeft: Radius.circular(15),
+                      ),
+                      color: AppTheme.backgroundColor,
+                      image: DecorationImage(
+                          image: imageProvider, fit: BoxFit.cover),
+                    ),
+                  ),
+                  placeholder: (context, url) => Shimmer.fromColors(
+                    highlightColor: AppTheme.pureWhiteColor,
+                    baseColor: AppTheme.backgroundColor,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topRight: Radius.circular(15),
+                          bottomLeft: Radius.circular(15),
+                        ),
+                        color: AppTheme.backgroundColor,
+                      ),
+                    ),
+                  ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
                 )),
     );
   }

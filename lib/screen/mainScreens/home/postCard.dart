@@ -6,7 +6,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shimmer/shimmer.dart';
@@ -385,9 +384,37 @@ class _PostCardState extends State<PostCard> {
                                       aspectRatio:
                                           _controller.value.aspectRatio,
                                       child: VideoPlayer(_controller))
-                                  : SpinKitCircle(
-                                      color: AppTheme.primaryColor,
-                                      size: 60,
+                                  : CachedNetworkImage(
+                                      imageUrl: widget.video.thumbUrl,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(15),
+                                            bottomLeft: Radius.circular(15),
+                                          ),
+                                          color: AppTheme.backgroundColor,
+                                          image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          Shimmer.fromColors(
+                                        highlightColor: AppTheme.pureWhiteColor,
+                                        baseColor: AppTheme.backgroundColor,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(15),
+                                              bottomLeft: Radius.circular(15),
+                                            ),
+                                            color: AppTheme.backgroundColor,
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
                                     ))
                           : CachedNetworkImage(
                               imageUrl: widget.video.thumbUrl,

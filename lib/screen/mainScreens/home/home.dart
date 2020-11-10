@@ -256,7 +256,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                                 'Explore Talent',
                                 style: TextStyle(
                                     fontSize: 18,
-                                    color: AppTheme.secondaryColor),
+                                    color: AppTheme.backgroundColor),
                               ),
                             ),
                           )

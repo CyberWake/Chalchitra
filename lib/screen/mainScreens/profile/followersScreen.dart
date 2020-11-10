@@ -1,7 +1,7 @@
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
@@ -61,15 +61,32 @@ class _FollowersPageState extends State<FollowersPage>
       body: StreamBuilder(
           stream: _userInfoStore.getFollowers(uid: widget.uid),
           builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(
-                child: SpinKitCircle(
-                  color: AppTheme.primaryColor,
-                  size: 60,
-                ),
+            if (!snapshot.hasData ||
+                snapshot.connectionState == ConnectionState.waiting) {
+              return Container(
+                height: MediaQuery.of(context).size.height,
+                child: ListView.builder(
+                    itemCount: 8,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Shimmer.fromColors(
+                        highlightColor: AppTheme.backgroundColor,
+                        baseColor: AppTheme.pureWhiteColor,
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10, horizontal: 15),
+                          margin:
+                              EdgeInsets.symmetric(vertical: 2, horizontal: 10),
+                          height: 70,
+                          decoration: BoxDecoration(
+                            color: Colors.grey,
+                            border: Border.all(
+                                color: AppTheme.primaryColorDark, width: 1),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      );
+                    }),
               );
-            } else if (!snapshot.hasData) {
-              return Center(child: Text('Something went wrong'));
             } else if (snapshot.data.documents.length == 0) {
               return Container(
                   color: Colors.transparent,
@@ -116,7 +133,34 @@ class _FollowersPageState extends State<FollowersPage>
                     future: _userInfoStore.getUserInfo(
                         uid: snapshot.data.documents[index].id),
                     builder: (context, snap) {
-                      if (snap.connectionState == ConnectionState.done) {
+                      if (!snap.hasData ||
+                          snap.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          height: MediaQuery.of(context).size.height,
+                          child: ListView.builder(
+                              itemCount: 8,
+                              itemBuilder: (BuildContext context, int index) {
+                                return Shimmer.fromColors(
+                                  highlightColor: AppTheme.backgroundColor,
+                                  baseColor: AppTheme.pureWhiteColor,
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 15),
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 2, horizontal: 10),
+                                    height: 70,
+                                    decoration: BoxDecoration(
+                                      color: Colors.grey,
+                                      border: Border.all(
+                                          color: AppTheme.primaryColorDark,
+                                          width: 1),
+                                      borderRadius: BorderRadius.circular(10),
+                                    ),
+                                  ),
+                                );
+                              }),
+                        );
+                      } else if (snap.connectionState == ConnectionState.done) {
                         var _user = UserDataModel.fromDocument(snap.data);
                         return GestureDetector(
                           onTap: () {
@@ -133,7 +177,7 @@ class _FollowersPageState extends State<FollowersPage>
                             color: Colors.white,
                             child: ListTile(
                               leading: CircleAvatar(
-                                backgroundColor: Colors.indigoAccent,
+                                backgroundColor: AppTheme.primaryColor,
                                 backgroundImage: _user.photoUrl == null
                                     ? NetworkImage(nullImageUrl)
                                     : NetworkImage(_user.photoUrl),

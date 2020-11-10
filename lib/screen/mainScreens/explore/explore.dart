@@ -81,7 +81,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#TrendingNow",
                 style: TextStyle(
-                    color: AppTheme.blue,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -94,7 +94,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#JudgePicks",
                 style: TextStyle(
-                    color: AppTheme.blue,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
@@ -107,7 +107,7 @@ class _ExploreState extends State<Explore> {
               child: Text(
                 "#TalentOnFire",
                 style: TextStyle(
-                    color: AppTheme.blue,
+                    color: AppTheme.primaryColor,
                     fontFamily: 'League Spartan',
                     fontWeight: FontWeight.bold,
                     fontSize: 20),
