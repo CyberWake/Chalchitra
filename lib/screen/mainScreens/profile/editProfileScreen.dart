@@ -13,6 +13,7 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/staticData/countryList.dart';
+import 'package:wowtalent/widgets/bouncingButton.dart';
 import 'package:wowtalent/widgets/dropdownField.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -127,7 +128,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               SizedBox(
                                 height: 20,
                               ),
-                              InkWell(
+                              /*InkWell(
                                 onTap: updateUserProfile,
                                 child: Container(
                                   height: 50,
@@ -146,6 +147,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                         fontSize: 17),
                                   )),
                                 ),
+                              ),*/
+                              BouncingButton(
+                                buttonText: "Update",
+                                height: _size.width * 0.14,
+                                width: _size.width * 0.8,
+                                buttonFunction: () {
+                                  updateUserProfile();
+                                },
                               ),
                             ],
                           ))

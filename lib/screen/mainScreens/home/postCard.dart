@@ -445,19 +445,7 @@ class _PostCardState extends State<PostCard> {
                               ),
                               errorWidget: (context, url, error) =>
                                   Icon(Icons.error),
-                            ), /*Container(
-                              decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.only(
-                                    topRight: Radius.circular(15),
-                                    bottomLeft: Radius.circular(15),
-                                  ),
-                                  color: AppTheme.backgroundColor,
-                                  image: DecorationImage(
-                                      fit: BoxFit.cover,
-                                      image: NetworkImage(
-                                        widget.video.thumbUrl,
-                                      ))),
-                            ),*/
+                            ),
                     ),
                   ),
                   SizedBox(

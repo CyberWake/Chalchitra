@@ -14,6 +14,7 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
+import 'package:wowtalent/widgets/bouncingButton.dart';
 
 class VideoDataInput extends StatefulWidget {
   final String thumbnailPath;
@@ -218,42 +219,23 @@ class _VideoDataInputState extends State<VideoDataInput> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(
+                    BouncingButton(
+                      buttonText: "No",
                       width: _size.width * 0.3,
-                      child: RaisedButton(
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(18.0),
-                              side: BorderSide(
-                                  color: AppTheme.primaryColor, width: 2)),
-                          onPressed: () {
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                            Navigator.pop(context);
-                          },
-                          child: Text(
-                            "No",
-                            style: TextStyle(color: AppTheme.backgroundColor),
-                          ),
-                          color: AppTheme.primaryColor),
+                      buttonFunction: () {
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                        Navigator.pop(context);
+                      },
                     ),
-                    SizedBox(
+                    BouncingButton(
+                      buttonText: "Yes",
                       width: _size.width * 0.3,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(
-                                color: AppTheme.primaryColor, width: 2)),
-                        onPressed: () {
-                          Navigator.pop(context);
-                          _draftSaved = true;
-                          uploadDraftToServer();
-                        },
-                        child: Text(
-                          "Yes",
-                          style: TextStyle(color: AppTheme.backgroundColor),
-                        ),
-                        color: AppTheme.primaryColor,
-                      ),
+                      buttonFunction: () {
+                        Navigator.pop(context);
+                        _draftSaved = true;
+                        uploadDraftToServer();
+                      },
                     ),
                   ],
                 ),
@@ -296,22 +278,13 @@ class _VideoDataInputState extends State<VideoDataInput> {
               ),
               Padding(
                 padding: EdgeInsets.only(top: 50.0),
-                child: SizedBox(
-                  width: _size.width * 0.3,
-                  child: RaisedButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18.0),
-                          side: BorderSide(
-                              color: AppTheme.primaryColor, width: 2)),
-                      onPressed: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                      child: Text(
-                        "OK",
-                        style: TextStyle(color: AppTheme.backgroundColor),
-                      ),
-                      color: AppTheme.primaryColor),
+                child: BouncingButton(
+                  buttonText: "OK",
+                  width: MediaQuery.of(context).size.width * 0.6,
+                  buttonFunction: () {
+                    Navigator.pop(context);
+                    Navigator.pop(context);
+                  },
                 ),
               ),
               SizedBox(height: 10)

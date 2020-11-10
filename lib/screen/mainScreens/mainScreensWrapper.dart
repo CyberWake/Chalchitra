@@ -33,6 +33,7 @@ import 'package:wowtalent/screen/mainScreens/search/search.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoSelectorScreen.dart';
+import 'package:wowtalent/widgets/bouncingButton.dart';
 
 import '../../model/theme.dart';
 import 'endDrawerScreens/drafts.dart';
@@ -77,12 +78,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   }
 
   void getUser() async {
-    prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('onBoarded')) {
-      prefs.setBool("onBoarded", true);
-    }
-    print('${prefs.containsKey('onBoarded')}');
     if (_userAuth.user != null) {
+      fcmSetup();
       print(_userAuth.user.uid);
       await _userInfoStore.updateToken(context: context);
       _currentUserInfo =
@@ -90,6 +87,11 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       user = UserDataModel.fromDocument(_currentUserInfo);
       Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
     }
+    prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('onBoarded')) {
+      prefs.setBool("onBoarded", true);
+    }
+    print('${prefs.containsKey('onBoarded')}');
   }
 
   _retrieveDynamicLink() async {
@@ -130,22 +132,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     super.dispose();
   }
 
-  getUserInfo() async {
-    UserDataModel user =
-        await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
-    Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
-  }
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    super.initState();
-    getUser();
-    _currentIndex = widget.index;
-    if (_userAuth.user != null) {
-      getUserInfo();
-    }
-
+  fcmSetup() {
     _fcm.configure(onMessage: (Map<String, dynamic> message) async {
       _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
           duration: Duration(seconds: 2),
@@ -235,6 +222,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     });
   }
 
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+    getUser();
+    _currentIndex = widget.index;
+  }
+
   _buildConfirmSignOut(context) {
     return Dialog(
       shape: RoundedRectangleBorder(
@@ -264,52 +259,32 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(
+                    BouncingButton(
+                      buttonText: "Yes",
                       width: _size.width * 0.3,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(
-                                color: AppTheme.primaryColor, width: 2)),
-                        onPressed: () async {
-                          await UserAuth().signOut().then((value) {
-                            if (value) {
-                              Navigator.pop(context);
-                              Navigator.pushReplacement(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (_) =>
-                                          Authentication(AuthIndex.LOGIN)));
-                            } else {
-                              Scaffold.of(context).showSnackBar(SnackBar(
-                                  content:
-                                      Text('Something went wrong try again')));
-                            }
-                          });
-                        },
-                        child: Text(
-                          "Yes",
-                          style: TextStyle(color: AppTheme.backgroundColor),
-                        ),
-                        color: AppTheme.primaryColor,
-                      ),
+                      buttonFunction: () async {
+                        await UserAuth().signOut().then((value) {
+                          if (value) {
+                            Navigator.pop(context);
+                            Navigator.pushReplacement(
+                                context,
+                                CupertinoPageRoute(
+                                    builder: (_) =>
+                                        Authentication(AuthIndex.LOGIN)));
+                          } else {
+                            Scaffold.of(context).showSnackBar(SnackBar(
+                                content:
+                                    Text('Something went wrong try again')));
+                          }
+                        });
+                      },
                     ),
-                    SizedBox(
+                    BouncingButton(
+                      buttonText: "No",
                       width: _size.width * 0.3,
-                      child: RaisedButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(18.0),
-                            side: BorderSide(
-                                color: AppTheme.primaryColor, width: 2)),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: Text(
-                          "No",
-                          style: TextStyle(color: AppTheme.backgroundColor),
-                        ),
-                        color: AppTheme.primaryColor,
-                      ),
+                      buttonFunction: () {
+                        Navigator.pop(context);
+                      },
                     ),
                   ],
                 ),
@@ -348,7 +323,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       print(index);
       UserAuth().account.listen((user) {
         if (user != null) {
-          _profilePage = ProfilePage(uid: user.uid);
+          _profilePage = ProfilePage(
+            uid: user.uid,
+            isFromSearch: false,
+          );
         }
       });
       _isMessagePage = false;

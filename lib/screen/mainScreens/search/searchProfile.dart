@@ -24,54 +24,35 @@ class _SearchProfileState extends State<SearchProfile> {
     _heightOne = (_size.height * 0.007) / 5;
     return Scaffold(
       backgroundColor: AppTheme.primaryColorDark,
-      body: Container(
-        color: AppTheme.primaryColorDark,
-        child: Column(
-          mainAxisSize: MainAxisSize.max,
-          children: [
-            Container(
-              color: AppTheme.primaryColor,
-              padding: EdgeInsets.only(
-                top: _heightOne * 35,
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(
-                    width: _widthOne * 50,
-                  ),
-                  IconButton(
-                    icon: Icon(
-                      Icons.arrow_back_ios,
-                      color: AppTheme.backgroundColor,
-                    ),
-                    onPressed: () => Navigator.pop(context),
-                  ),
-                  Spacer(),
-                  _userAuth.user.uid != widget.uid
-                      ? IconButton(
-                          icon: Icon(
-                            Icons.message,
-                            color: AppTheme.backgroundColor,
-                          ),
-                          onPressed: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => ChatDetailPage(
-                                        targetUID: widget.uid,
-                                      ))),
-                        )
-                      : Container(),
-                  SizedBox(
-                    width: _widthOne * 50,
-                  )
-                ],
-              ),
-            ),
-            ProfilePage(uid: widget.uid),
-          ],
+      appBar: AppBar(
+        elevation: 0.0,
+        leading: IconButton(
+          icon: Icon(
+            Icons.arrow_back_ios,
+            color: AppTheme.backgroundColor,
+          ),
+          onPressed: () => Navigator.pop(context),
         ),
+        actions: [
+          _userAuth.user.uid != widget.uid
+              ? IconButton(
+                  icon: Icon(
+                    Icons.message,
+                    color: AppTheme.backgroundColor,
+                  ),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ChatDetailPage(
+                                targetUID: widget.uid,
+                              ))),
+                )
+              : Container(),
+        ],
+      ),
+      body: ProfilePage(
+        uid: widget.uid,
+        isFromSearch: true,
       ),
     );
   }

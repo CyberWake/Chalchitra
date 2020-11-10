@@ -411,7 +411,7 @@ class _DraftsState extends State<Drafts> {
                 )
               : Center(
                   child: Text(
-                    "No saved drafts",
+                    " ",
                     style:
                         TextStyle(fontSize: 18, color: AppTheme.primaryColor),
                   ),

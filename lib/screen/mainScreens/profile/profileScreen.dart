@@ -2,7 +2,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -13,15 +12,17 @@ import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/followersScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/followingsScreen.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:wowtalent/widgets/bouncingButton.dart';
+import 'package:wowtalent/widgets/profileVideoGrid.dart';
 
 class ProfilePage extends StatefulWidget {
+  final bool isFromSearch;
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
 
   final String uid;
 
-  ProfilePage({@required this.uid});
+  ProfilePage({@required this.uid, this.isFromSearch = false});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -167,14 +168,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  height: size.height * 0.4557247,
+                  height: widget.isFromSearch
+                      ? size.height * 0.5324
+                      : size.height * 0.4557247,
                   width: size.width,
                   margin: EdgeInsets.only(top: size.height * 0.35),
                   padding: EdgeInsets.only(
                       top: size.height * 0.1,
                       left: size.width * 0.05,
                       right: size.width * 0.05),
-                  child: buildPictureCard(),
+                  child: ProfileVideoGrid(
+                    uid: widget.uid,
+                    videos: _videos,
+                    function: _deleteButton,
+                  ),
                 ),
               ),
               Row(
@@ -358,14 +365,32 @@ class _ProfilePageState extends State<ProfilePage> {
     bool userProfile = currentUserID == widget.uid;
     print("$currentUserID : ${widget.uid}");
     if (userProfile) {
-      return createButtonTitleORFunction(
-          title: 'Edit Profile', function: gotoEditProfile);
+      return BouncingButton(
+        buttonText: "Edit Profile",
+        width: MediaQuery.of(context).size.width * 0.6,
+        buttonFunction: () {
+          gotoEditProfile();
+          setState(() {});
+        },
+      );
     } else if (following) {
-      return createButtonTitleORFunction(
-          title: 'Unfollow', function: controlUnFollowUsers);
+      return BouncingButton(
+        buttonText: "Unfollow",
+        width: MediaQuery.of(context).size.width * 0.6,
+        buttonFunction: () {
+          controlUnFollowUsers();
+          setState(() {});
+        },
+      );
     } else if (!following) {
-      return createButtonTitleORFunction(
-          title: 'Follow', function: controlFollowUsers);
+      return BouncingButton(
+        buttonText: "Follow",
+        width: MediaQuery.of(context).size.width * 0.6,
+        buttonFunction: () {
+          controlFollowUsers();
+          setState(() {});
+        },
+      );
     }
   }
 
@@ -423,29 +448,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  Container createButtonTitleORFunction({String title, Function function}) {
-    return Container(
-        padding: EdgeInsets.only(top: 5),
-        child: RaisedButton(
-            color: AppTheme.primaryColor,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.all(Radius.circular(15))),
-            onPressed: () async {
-              await function();
-              setState(() {});
-            },
-            child: Container(
-              width: 150,
-              height: 30,
-              child: Text(title,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.backgroundColor,
-                      fontSize: 16)),
-              alignment: Alignment.center,
-            )));
-  }
-
   removeVideoFromUserAccount(int index) async {
     print("deleting video ${_videos[index].videoId}");
     final videoInfo = VideoInfo(videoId: _videos[index].videoId);
@@ -487,93 +489,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           )
         ]);
-  }
-
-  SingleChildScrollView buildPictureCard() {
-    var size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Wrap(
-            spacing: 1,
-            runSpacing: 1,
-            children: List.generate(_videos.length, (index) {
-              return GestureDetector(
-                onLongPress: () {
-                  if (widget.uid == _userAuth.user.uid) {
-                    _deleteButton(index);
-                  }
-                },
-                onTap: () async {
-                  bool isWatched = await UserVideoStore()
-                      .checkWatched(videoID: _videos[index].videoId);
-                  print(" isWatched: $isWatched");
-                  if (!isWatched) {
-                    bool result = await UserVideoStore()
-                        .increaseVideoCount(videoID: _videos[index].videoId);
-                    print(result);
-                  }
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) {
-                        return Player(
-                          videos: _videos,
-                          index: index,
-                        );
-                      },
-                    ),
-                  );
-                },
-                child: CachedNetworkImage(
-                  imageUrl: _videos[index].thumbUrl,
-                  imageBuilder: (context, imageProvider) => Container(
-                    width: size.width * 0.24,
-                    height: size.height * 0.24,
-                    margin: EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10.5),
-                      color: AppTheme.pureBlackColor,
-                      boxShadow: [
-                        BoxShadow(
-                          color: AppTheme.primaryColor.withOpacity(0.2),
-                          offset: Offset(0.0, 10.0), //(x,y)
-                          blurRadius: 10.0,
-                        ),
-                      ],
-                      image: DecorationImage(
-                          image: imageProvider, fit: BoxFit.fitWidth),
-                    ),
-                  ),
-                  placeholder: (context, url) => Shimmer.fromColors(
-                    highlightColor: AppTheme.pureWhiteColor,
-                    baseColor: AppTheme.grey,
-                    child: Container(
-                      width: size.width * 0.24,
-                      height: size.height * 0.24,
-                      margin: EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10.5),
-                        color: AppTheme.pureBlackColor,
-                        boxShadow: [
-                          BoxShadow(
-                            color: AppTheme.primaryColor.withOpacity(0.2),
-                            offset: Offset(0.0, 10.0), //(x,y)
-                            blurRadius: 10.0,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  errorWidget: (context, url, error) => Icon(Icons.error),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
   }
 
   buildPostStat() {
