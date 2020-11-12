@@ -438,14 +438,14 @@ class UserInfoStore {
     }
   }
 
-  Future getActivityFeed({String uid}) async {
+  Stream getActivityFeed({String uid}) {
     try {
       return _notificationCenter
           .doc(uid)
           .collection("notifs")
           .orderBy("timestamp", descending: true)
           .limit(25)
-          .get();
+          .snapshots();
     } catch (e) {
       print(e.toString());
     }

@@ -58,6 +58,13 @@ class _NotificationCardState extends State<NotificationCard> {
     return _notifInfo;
   }
 
+  Stream<NotifInfo> getNotif() async* {
+    while (true) {
+      await Future.delayed(Duration(milliseconds: 800));
+      yield await assignNotif(widget.from, widget.videoId);
+    }
+  }
+
   Future notifFuture;
   String notifType;
   String notifTitle;
@@ -96,10 +103,11 @@ class _NotificationCardState extends State<NotificationCard> {
           shape:
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           elevation: 5,
-          child: FutureBuilder(
-            future: notifFuture,
+          child: StreamBuilder(
+            stream: getNotif(),
             builder: (context, snap) {
-              if (!snap.hasData) {
+              if (!snap.hasData ||
+                  snap.connectionState == ConnectionState.waiting) {
                 return Shimmer.fromColors(
                   highlightColor: AppTheme.pureWhiteColor,
                   baseColor: AppTheme.grey,
@@ -172,7 +180,7 @@ class _NotificationCardState extends State<NotificationCard> {
                                     snap.data.vidInfo.thumbUrl))),
                   ),
                   subtitle: Text(
-                    "${snap.data.userInfo.username} $notifType",
+                    "${snap.data.userInfo.username} ${notifType}",
                     style: TextStyle(color: Colors.black),
                   ),
                   title: Text(notifTitle),

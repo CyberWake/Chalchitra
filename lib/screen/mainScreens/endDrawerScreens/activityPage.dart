@@ -7,7 +7,7 @@ import 'package:wowtalent/widgets/noDataTile.dart';
 import 'package:wowtalent/widgets/notificationCard.dart';
 
 class ActivityPage extends StatefulWidget {
-  final String uid;
+  String uid;
   ActivityPage({this.uid});
   @override
   _ActivityPageState createState() => _ActivityPageState();
@@ -42,8 +42,8 @@ class _ActivityPageState extends State<ActivityPage> {
 
   Widget bodyContent() {
     return Material(
-      child: FutureBuilder(
-        future: _userInfoStore.getActivityFeed(uid: widget.uid),
+      child: StreamBuilder(
+        stream: _userInfoStore.getActivityFeed(uid: widget.uid),
         builder: (context, snap) {
           print(snap.data);
           if (snap.connectionState == ConnectionState.waiting ||

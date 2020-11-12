@@ -158,15 +158,21 @@ class _SearchUserState extends State<SearchUser> {
                   ),
                   Expanded(
                       child: isFound
-                          ? ListView.builder(
-                              itemCount: searchUserResult.length,
-                              itemBuilder: (BuildContext context, int index) {
-                                if (searchUserResult[index].id !=
-                                    _userAuth.user.uid) {}
-                                return SearchResult(searchUserResult[index]);
-                              }
-                              // tempSearchStore == null ? resultNotFound() : foundUsers(),
-                              )
+                          ? Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 10.0),
+                              child: ListView.builder(
+                                  itemCount: searchUserResult.length,
+                                  itemBuilder:
+                                      (BuildContext context, int index) {
+                                    if (searchUserResult[index].id !=
+                                        _userAuth.user.uid) {}
+                                    return SearchResult(
+                                        searchUserResult[index]);
+                                  }
+                                  // tempSearchStore == null ? resultNotFound() : foundUsers(),
+                                  ),
+                            )
                           : resultNotFound()),
                 ],
               ),
