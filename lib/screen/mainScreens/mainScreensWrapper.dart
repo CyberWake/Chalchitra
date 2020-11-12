@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io' show Platform;
 import 'dart:math';
 
+import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -36,7 +37,6 @@ import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/vi
 import 'package:wowtalent/widgets/bouncingButton.dart';
 
 import '../../model/theme.dart';
-import 'endDrawerScreens/drafts.dart';
 
 class MainScreenWrapper extends StatefulWidget {
   final int index;
@@ -48,12 +48,12 @@ class MainScreenWrapper extends StatefulWidget {
 }
 
 class _MainScreenWrapperState extends State<MainScreenWrapper>
-    with WidgetsBindingObserver {
+    with WidgetsBindingObserver, SingleTickerProviderStateMixin {
   final GlobalKey<ScaffoldState> _scaffoldGlobalKey =
       GlobalKey<ScaffoldState>();
 
   final FirebaseMessaging _fcm = FirebaseMessaging();
-
+  TabController _tabController;
   List<Widget> _screens;
   int _currentIndex = 0;
   double _widthOne;
@@ -61,6 +61,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   double _iconOne;
   Size _size;
   bool _isMessagePage = false;
+  bool _notLoggedIn = true;
   DateTime currentBackPressTime;
   Widget _profilePage = Container();
   UserAuth _userAuth = UserAuth();
@@ -79,6 +80,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
 
   void getUser() async {
     if (_userAuth.user != null) {
+      _notLoggedIn = false;
       fcmSetup();
       print(_userAuth.user.uid);
       await _userInfoStore.updateToken(context: context);
@@ -86,6 +88,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           await _userInfoStore.getUserInfo(uid: _userAuth.user.uid);
       user = UserDataModel.fromDocument(_currentUserInfo);
       Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
+    } else {
+      _notLoggedIn = true;
     }
     prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('onBoarded')) {
@@ -226,8 +230,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    getUser();
     _currentIndex = widget.index;
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController.index = _currentIndex;
+    getUser();
   }
 
   _buildConfirmSignOut(context) {
@@ -309,17 +315,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   }
 
   changePage(int index) {
-    if (_userAuth.user == null) {
+    if (_notLoggedIn) {
       Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
               builder: (context) => Authentication(AuthIndex.REGISTER)));
     }
     print(index);
-    if (index == 5) {
-      print('called');
-      _scaffoldGlobalKey.currentState.openEndDrawer();
-    } else if (index == 4) {
+    if (index == 4) {
       print(index);
       UserAuth().account.listen((user) {
         if (user != null) {
@@ -331,14 +334,26 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       });
       _isMessagePage = false;
       _currentIndex = index;
+      _tabController.index = _currentIndex;
     } else if (index == 3) {
       _isMessagePage = true;
       _currentIndex = index;
+      _tabController.index = _currentIndex;
     } else {
       _isMessagePage = false;
       _currentIndex = index;
+      _tabController.index = _currentIndex;
     }
     setState(() {});
+  }
+
+  userNotLoggedIn() {
+    Navigator.pop(context);
+    Navigator.pushReplacement(
+        context,
+        CupertinoPageRoute(
+            builder: (BuildContext context) =>
+                Authentication(AuthIndex.REGISTER)));
   }
 
   @override
@@ -349,20 +364,17 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         ? (_size.height * 0.007) / 5
         : (_size.height * 0.009) / 5;
     _iconOne = (_size.height * 0.066) / 50;
-    _screens = [
-      Home(),
-      Explore(),
-      VideoUploader(),
-      Message(),
-      _profilePage,
-    ];
+    _screens = [Home(), Explore(), VideoUploader(), Message(), _profilePage];
 
     return WillPopScope(onWillPop: onWillPop, child: wrapperMain());
   }
 
   Widget wrapperMain() {
-    return Scaffold(
+    return DefaultTabController(
+      length: 5,
+      child: Scaffold(
         backgroundColor: AppTheme.backgroundColor,
+        endDrawerEnableOpenDragGesture: false,
         key: _scaffoldGlobalKey,
         appBar: AppBar(
           toolbarOpacity: 1.0,
@@ -377,25 +389,30 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
             ),
           ),
           actions: [
-            _currentIndex != 4
-                ? IconButton(
-                    icon: Icon(
-                      Icons.search,
-                      color: AppTheme.backgroundColor,
-                      size: _iconOne * 30,
+            _tabController.index != 4
+                ? Container(
+                    height: _size.width / 4,
+                    width: _size.width / 8,
+                    child: OpenContainer(
+                      closedElevation: 0.0,
+                      closedColor: AppTheme.primaryColor,
+                      tappable: true,
+                      transitionDuration: Duration(milliseconds: 500),
+                      openBuilder: (BuildContext context,
+                          void Function({Object returnValue}) action) {
+                        return _userAuth.user != null
+                            ? SearchUser()
+                            : Authentication(AuthIndex.REGISTER);
+                      },
+                      closedBuilder:
+                          (BuildContext context, void Function() action) {
+                        return Icon(
+                          Icons.search,
+                          color: AppTheme.backgroundColor,
+                          size: _iconOne * 30,
+                        );
+                      },
                     ),
-                    onPressed: () {
-                      if (_userAuth.user != null) {
-                        Navigator.push(context,
-                            CupertinoPageRoute(builder: (_) => SearchUser()));
-                      } else {
-                        Navigator.pushReplacement(
-                            context,
-                            CupertinoPageRoute(
-                                builder: (_) =>
-                                    Authentication(AuthIndex.REGISTER)));
-                      }
-                    },
                   )
                 : IconButton(
                     icon: Icon(
@@ -450,7 +467,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       style: TextStyle(
                           color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () {
-                    Navigator.pop(context);
+                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
                     Navigator.push(
                         context,
                         CupertinoPageRoute(
@@ -470,7 +487,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                         TextStyle(color: AppTheme.pureWhiteColor, fontSize: 18),
                   ),
                   onTap: () {
-                    Navigator.pop(context);
+                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
                     Navigator.push(
                         context,
                         CupertinoPageRoute(
@@ -488,7 +505,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       style: TextStyle(
                           color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () {
-                    Navigator.pop(context);
+                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
                     Navigator.push(context,
                         CupertinoPageRoute(builder: (_) => PrivacyPage()));
                   },
@@ -502,7 +519,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       style: TextStyle(
                           color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () async {
-                    Navigator.pop(context);
+                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
                     await FlutterShare.share(
                         title: 'Join WowTalent',
                         text:
@@ -522,7 +539,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       style: TextStyle(
                           color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () {
-                    Navigator.pop(context);
+                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) =>
@@ -574,30 +591,12 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
             changePage(index);
           },
         ),
-        body: GestureDetector(
-          onHorizontalDragEnd: (DragEndDetails details) {
-            Offset offset = details.velocity.pixelsPerSecond;
-            print(offset);
-            if (offset.dx < 0) {
-              print(offset.dx);
-              if (_currentIndex + 1 == 5) {
-                changePage(5);
-              }
-              if (_currentIndex + 1 < 5) {
-                print("going forward");
-                _currentIndex += 1;
-                changePage(_currentIndex);
-              }
-            } else if (offset.dx > 0) {
-              print(offset.dx);
-              if (_currentIndex - 1 >= 0) {
-                print("going backward");
-                _currentIndex -= 1;
-                changePage(_currentIndex);
-              }
-            }
-          },
-          child: Container(child: _screens[_currentIndex]),
-        ));
+        body: TabBarView(
+          physics: NeverScrollableScrollPhysics(),
+          children: _screens,
+          controller: _tabController,
+        ),
+      ),
+    );
   }
 }

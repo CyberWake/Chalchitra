@@ -172,7 +172,7 @@ class _NotificationCardState extends State<NotificationCard> {
                                     snap.data.vidInfo.thumbUrl))),
                   ),
                   subtitle: Text(
-                    "${snap.data.userInfo.username} ${notifType}",
+                    "${snap.data.userInfo.username} $notifType",
                     style: TextStyle(color: Colors.black),
                   ),
                   title: Text(notifTitle),

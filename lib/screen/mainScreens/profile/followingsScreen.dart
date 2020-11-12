@@ -1,4 +1,5 @@
 import 'package:animated_background/animated_background.dart';
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -86,37 +87,42 @@ class _FollowingsPageState extends State<FollowingsPage>
                         } else if (snap.connectionState ==
                             ConnectionState.done) {
                           var _user = UserDataModel.fromDocument(snap.data);
-                          return GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                  context,
-                                  CupertinoPageRoute(
-                                      builder: (BuildContext context) =>
-                                          SearchProfile(
-                                            uid: _user.id,
-                                          )));
-                            },
-                            child: Container(
-                              margin: EdgeInsets.symmetric(vertical: 0.8),
-                              color: Colors.white,
-                              child: ListTile(
-                                leading: CircleAvatar(
-                                  backgroundColor: AppTheme.primaryColor,
-                                  backgroundImage: _user.photoUrl == null
-                                      ? NetworkImage(nullImageUrl)
-                                      : NetworkImage(_user.photoUrl),
-                                  foregroundColor: Colors.white,
-                                ),
-                                title: Text(
-                                    _user.displayName == null
-                                        ? "Wow Talent User"
-                                        : _user.displayName,
-                                    style: TextStyle(
-                                        color: AppTheme.primaryColor)),
-                                subtitle: Text(_user.username,
-                                    style: TextStyle(
-                                        color: AppTheme.primaryColor)),
-                              ),
+                          return Container(
+                            child: OpenContainer(
+                              closedElevation: 0.0,
+                              closedColor: AppTheme.backgroundColor,
+                              transitionDuration: Duration(milliseconds: 500),
+                              openBuilder: (BuildContext context,
+                                  void Function({Object returnValue}) action) {
+                                return SearchProfile(
+                                  uid: _user.id,
+                                );
+                              },
+                              closedBuilder: (BuildContext context,
+                                  void Function() action) {
+                                return Container(
+                                  margin: EdgeInsets.symmetric(vertical: 0.8),
+                                  color: Colors.white,
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: AppTheme.primaryColor,
+                                      backgroundImage: _user.photoUrl == null
+                                          ? NetworkImage(nullImageUrl)
+                                          : NetworkImage(_user.photoUrl),
+                                      foregroundColor: Colors.white,
+                                    ),
+                                    title: Text(
+                                        _user.displayName == null
+                                            ? "Wow Talent User"
+                                            : _user.displayName,
+                                        style: TextStyle(
+                                            color: AppTheme.primaryColor)),
+                                    subtitle: Text(_user.username,
+                                        style: TextStyle(
+                                            color: AppTheme.primaryColor)),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         } else {

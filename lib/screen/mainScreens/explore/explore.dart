@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
 import 'package:wowtalent/widgets/categoryWidget.dart';
+import 'package:wowtalent/widgets/videoCardPlaceHolder.dart';
 
 class Explore extends StatefulWidget {
   @override
@@ -59,6 +61,24 @@ class _ExploreState extends State<Explore> {
         });
       }
     });
+  }
+
+  increaseTrendingWatchCount(int index) async {
+    bool isWatched = await UserVideoStore()
+        .checkWatched(videoID: _videosTrending[index].videoId);
+    if (!isWatched) {
+      await UserVideoStore()
+          .increaseVideoCount(videoID: _videosTrending[index].videoId);
+    }
+  }
+
+  increaseAllVideoWatchCount(int index) async {
+    bool isWatched =
+        await UserVideoStore().checkWatched(videoID: _allVideos[index].videoId);
+    if (!isWatched) {
+      await UserVideoStore()
+          .increaseVideoCount(videoID: _allVideos[index].videoId);
+    }
   }
 
   @override
@@ -150,86 +170,48 @@ class _ExploreState extends State<Explore> {
         shrinkWrap: true,
         children: List.generate(_videosTrending.length, (index) {
           final video = _videosTrending[index];
-          return GestureDetector(
-            onTap: () async {
-              bool isWatched = await UserVideoStore()
-                  .checkWatched(videoID: _videosTrending[index].videoId);
-              if (!isWatched) {
-                await UserVideoStore().increaseVideoCount(
-                    videoID: _videosTrending[index].videoId);
-              }
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) {
-                    return Player(
-                      videos: _videosTrending,
-                      index: index,
-                    );
-                  },
-                ),
-              );
-            },
-            child: CachedNetworkImage(
-              imageUrl: video.thumbUrl,
-              imageBuilder: (context, imageProvider) => Container(
-                width: _size.width * 0.25,
-                height: _size.height * 0.25,
-                margin: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.5),
-                  color: AppTheme.pureBlackColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryColor.withOpacity(0.2),
-                      offset: Offset(0.0, 10.0), //(x,y)
-                      blurRadius: 10.0,
+          return FittedBox(
+            child: OpenContainer(
+              closedElevation: 0.0,
+              closedColor: AppTheme.backgroundColor,
+              transitionDuration: Duration(milliseconds: 500),
+              openBuilder: (BuildContext context,
+                  void Function({Object returnValue}) action) {
+                increaseTrendingWatchCount(index);
+                return Player(
+                  videos: _videosTrending,
+                  index: index,
+                );
+              },
+              closedBuilder: (BuildContext context, void Function() action) {
+                return CachedNetworkImage(
+                  imageUrl: video.thumbUrl,
+                  imageBuilder: (context, imageProvider) => Container(
+                    width: _size.width * 0.25,
+                    height: _size.height * 0.25,
+                    margin: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.5),
+                      color: AppTheme.pureBlackColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          offset: Offset(0.0, 10.0), //(x,y)
+                          blurRadius: 10.0,
+                        ),
+                      ],
+                      image: DecorationImage(
+                          image: imageProvider, fit: BoxFit.fitWidth),
                     ),
-                  ],
-                  image: DecorationImage(
-                      image: imageProvider, fit: BoxFit.fitWidth),
-                ),
-              ),
-              placeholder: (context, url) => Shimmer.fromColors(
-                highlightColor: AppTheme.pureWhiteColor,
-                baseColor: AppTheme.grey,
-                child: Container(
-                  width: _size.width * 0.25,
-                  height: _size.height * 0.25,
-                  margin: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.5),
-                    color: AppTheme.pureBlackColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withOpacity(0.2),
-                        offset: Offset(0.0, 10.0), //(x,y)
-                        blurRadius: 10.0,
-                      ),
-                    ],
                   ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+                  placeholder: (context, url) => DummyVideoCard(
+                    width: _size.width * 0.25,
+                    height: _size.height * 0.25,
+                  ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                );
+              },
             ),
-            /*Container(
-              width: _size.width * 0.25,
-              height: _size.height * 0.25,
-              margin: EdgeInsets.all(5),
-              decoration: BoxDecoration(
-                color: Colors.black,
-                image: DecorationImage(
-                    image: NetworkImage(video.thumbUrl), fit: BoxFit.fitWidth),
-                borderRadius: BorderRadius.circular(10.5),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppTheme.primaryColor.withOpacity(0.2),
-                    offset: Offset(0.0, 10.0), //(x,y)
-                    blurRadius: 10.0,
-                  ),
-                ],
-              ),
-            ),*/
           );
         }),
       ),
@@ -245,67 +227,47 @@ class _ExploreState extends State<Explore> {
         shrinkWrap: true,
         children: List.generate(_allVideos.length, (index) {
           final video = _allVideos[index];
-          return GestureDetector(
-            onTap: () async {
-              bool isWatched = await UserVideoStore()
-                  .checkWatched(videoID: _allVideos[index].videoId);
-              if (!isWatched) {
-                await UserVideoStore()
-                    .increaseVideoCount(videoID: _allVideos[index].videoId);
-              }
-              Navigator.push(
-                context,
-                CupertinoPageRoute(
-                  builder: (context) {
-                    return Player(
-                      videos: _allVideos,
-                      index: index,
-                    );
-                  },
-                ),
-              );
-            },
-            child: CachedNetworkImage(
-              imageUrl: video.thumbUrl,
-              imageBuilder: (context, imageProvider) => Container(
-                width: _size.width * 0.25,
-                height: _size.height * 0.25,
-                margin: EdgeInsets.all(5),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10.5),
-                  color: AppTheme.pureBlackColor,
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppTheme.primaryColor.withOpacity(0.2),
-                      offset: Offset(0.0, 10.0), //(x,y)
-                      blurRadius: 10.0,
+          return FittedBox(
+            child: OpenContainer(
+              closedElevation: 0.0,
+              closedColor: AppTheme.backgroundColor,
+              transitionDuration: Duration(milliseconds: 500),
+              openBuilder: (BuildContext context,
+                  void Function({Object returnValue}) action) {
+                increaseAllVideoWatchCount(index);
+                return Player(
+                  videos: _allVideos,
+                  index: index,
+                );
+              },
+              closedBuilder: (BuildContext context, void Function() action) {
+                return CachedNetworkImage(
+                  imageUrl: video.thumbUrl,
+                  imageBuilder: (context, imageProvider) => Container(
+                    width: _size.width * 0.25,
+                    height: _size.height * 0.25,
+                    margin: EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10.5),
+                      color: AppTheme.pureBlackColor,
+                      boxShadow: [
+                        BoxShadow(
+                          color: AppTheme.primaryColor.withOpacity(0.2),
+                          offset: Offset(0.0, 10.0), //(x,y)
+                          blurRadius: 10.0,
+                        ),
+                      ],
+                      image: DecorationImage(
+                          image: imageProvider, fit: BoxFit.fitWidth),
                     ),
-                  ],
-                  image: DecorationImage(
-                      image: imageProvider, fit: BoxFit.fitWidth),
-                ),
-              ),
-              placeholder: (context, url) => Shimmer.fromColors(
-                highlightColor: AppTheme.pureWhiteColor,
-                baseColor: AppTheme.grey,
-                child: Container(
-                  width: _size.width * 0.25,
-                  height: _size.height * 0.25,
-                  margin: EdgeInsets.all(5),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10.5),
-                    color: AppTheme.pureBlackColor,
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppTheme.primaryColor.withOpacity(0.2),
-                        offset: Offset(0.0, 10.0), //(x,y)
-                        blurRadius: 10.0,
-                      ),
-                    ],
                   ),
-                ),
-              ),
-              errorWidget: (context, url, error) => Icon(Icons.error),
+                  placeholder: (context, url) => DummyVideoCard(
+                    width: _size.width * 0.25,
+                    height: _size.height * 0.25,
+                  ),
+                  errorWidget: (context, url, error) => Icon(Icons.error),
+                );
+              },
             ),
           );
         }),
@@ -326,12 +288,7 @@ class _ExploreState extends State<Explore> {
           dynamic video = _allVideos[index];
           return GestureDetector(
             onTap: () async {
-              bool isWatched = await UserVideoStore()
-                  .checkWatched(videoID: _allVideos[index].videoId);
-              if (!isWatched) {
-                await UserVideoStore()
-                    .increaseVideoCount(videoID: _allVideos[index].videoId);
-              }
+              increaseAllVideoWatchCount(index);
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -363,12 +320,7 @@ class _ExploreState extends State<Explore> {
                 ),
               ),
               errorWidget: (context, url, error) => Icon(Icons.error),
-            ), /*Container(
-              decoration: BoxDecoration(
-                  border: Border.all(color: Colors.grey, width: 1),
-                  image: DecorationImage(
-                      image: NetworkImage(video.thumbUrl), fit: BoxFit.cover)),
-            ),*/
+            ),
           );
         },
         staggeredTileBuilder: (int index) {

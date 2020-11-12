@@ -62,6 +62,7 @@ dependencies:
   animated_background: ^1.0.5
   swipe_stack: ^1.0.0
   shimmer: ^1.1.2
+  animations: ^1.1.2
   # Misc
   flutter_dotenv: ^2.0.3
 

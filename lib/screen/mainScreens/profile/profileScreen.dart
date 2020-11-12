@@ -369,7 +369,12 @@ class _ProfilePageState extends State<ProfilePage> {
         buttonText: "Edit Profile",
         width: MediaQuery.of(context).size.width * 0.6,
         buttonFunction: () {
-          gotoEditProfile();
+          Navigator.push(
+              context,
+              CupertinoPageRoute(
+                  builder: (_) => EditProfilePage(
+                        uid: currentUserID,
+                      )));
           setState(() {});
         },
       );
@@ -392,15 +397,6 @@ class _ProfilePageState extends State<ProfilePage> {
         },
       );
     }
-  }
-
-  gotoEditProfile() {
-    Navigator.push(
-        context,
-        CupertinoPageRoute(
-            builder: (_) => EditProfilePage(
-                  uid: currentUserID,
-                )));
   }
 
   controlUnFollowUsers() async {

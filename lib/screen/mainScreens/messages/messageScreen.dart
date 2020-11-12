@@ -1,5 +1,6 @@
 import 'dart:io' show Platform;
 
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
@@ -195,113 +196,127 @@ class _MessageState extends State<Message> {
           } else {
             return ListView.builder(
               padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 20),
+
               itemBuilder: (context, index) {
                 if (_usersDetails[index] == null) {
                   return Container();
                 } else {
-                  return InkWell(
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (_) => ChatDetailPage(
-                                    targetUID: values[index],
-                                  )));
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 10, horizontal: 15),
-                      margin: EdgeInsets.symmetric(vertical: 2),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        border: Border.all(
-                            color: AppTheme.primaryColorDark, width: 1),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: Row(children: <Widget>[
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(3),
-                            child: Container(
-                                width: 50,
-                                height: 50,
-                                decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                        width: 1.5,
-                                        color: AppTheme.primaryColor),
-                                    image: DecorationImage(
-                                        image: NetworkImage(_usersDetails[index]
-                                                    .photoUrl ==
-                                                null
-                                            ? "https://via.placeholder.com/150"
-                                            : _usersDetails[index].photoUrl),
-                                        fit: BoxFit.cover))),
-                          ),
-                        ),
-                        SizedBox(
-                          width: 20,
-                        ),
-                        StreamBuilder(
-                            stream: _userInfoStore.getLastMessage(
-                              targetUID: values[index],
+                  return Container(
+                    margin: EdgeInsets.symmetric(vertical: 2),
+                    child: FittedBox(
+                      child: OpenContainer(
+                        closedElevation: 0.0,
+                        transitionDuration: Duration(milliseconds: 500),
+                        openBuilder: (BuildContext context,
+                            void Function({Object returnValue}) action) {
+                          return ChatDetailPage(
+                            targetUID: values[index],
+                          );
+                        },
+                        closedBuilder:
+                            (BuildContext context, void Function() action) {
+                          return Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 5, horizontal: 15),
+                            margin: EdgeInsets.symmetric(vertical: 2),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            builder: (context, snapshot) {
-                              return Row(
-                                children: [
-                                  Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
+                            child: Row(children: <Widget>[
+                              Container(
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsets.all(3),
+                                  child: Container(
+                                      width: 50,
+                                      height: 50,
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(
+                                              width: 1.5,
+                                              color: AppTheme.primaryColor),
+                                          image: DecorationImage(
+                                              image: NetworkImage(_usersDetails[
+                                                              index]
+                                                          .photoUrl ==
+                                                      null
+                                                  ? "https://via.placeholder.com/150"
+                                                  : _usersDetails[index]
+                                                      .photoUrl),
+                                              fit: BoxFit.cover))),
+                                ),
+                              ),
+                              SizedBox(
+                                width: 20,
+                              ),
+                              StreamBuilder(
+                                  stream: _userInfoStore.getLastMessage(
+                                    targetUID: values[index],
+                                  ),
+                                  builder: (context, snapshot) {
+                                    return Row(
+                                      children: [
+                                        Column(
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Text(
+                                                _usersDetails[index].username,
+                                                style: TextStyle(
+                                                    fontSize: 17,
+                                                    color: AppTheme
+                                                        .primaryColorDark,
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                              SizedBox(
+                                                height: 5,
+                                              ),
+                                              SizedBox(
+                                                width: _size.width * 0.45,
+                                                child: Text(
+                                                  snapshot.hasData
+                                                      ? snapshot
+                                                          .data.documents[0]
+                                                          .data()['message']
+                                                      : ".....",
+                                                  style: TextStyle(
+                                                    fontSize: _fontOne * 13,
+                                                    color: AppTheme
+                                                        .primaryColorDark,
+                                                  ),
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                ),
+                                              )
+                                            ]),
+                                        SizedBox(
+                                          width: _widthOne * 40,
+                                        ),
                                         Text(
-                                          _usersDetails[index].username,
+                                          snapshot.hasData
+                                              ? formatDateTime(
+                                                  millisecondsSinceEpoch:
+                                                      snapshot.data.documents[0]
+                                                          .data()['timestamp'])
+                                              : ".....",
                                           style: TextStyle(
-                                              fontSize: 17,
-                                              color: AppTheme.primaryColorDark,
-                                              fontWeight: FontWeight.w500),
+                                              color: Colors.grey,
+                                              fontSize: _fontOne * 12),
                                         ),
                                         SizedBox(
-                                          height: 5,
-                                        ),
-                                        SizedBox(
-                                          width: _size.width * 0.45,
-                                          child: Text(
-                                            snapshot.hasData
-                                                ? snapshot.data.documents[0]
-                                                    .data()['message']
-                                                : ".....",
-                                            style: TextStyle(
-                                              fontSize: _fontOne * 13,
-                                              color: AppTheme.primaryColorDark,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                          width: _widthOne * 20,
                                         )
-                                      ]),
-                                  SizedBox(
-                                    width: _widthOne * 40,
-                                  ),
-                                  Text(
-                                    snapshot.hasData
-                                        ? formatDateTime(
-                                            millisecondsSinceEpoch: snapshot
-                                                .data.documents[0]
-                                                .data()['timestamp'])
-                                        : ".....",
-                                    style: TextStyle(
-                                        color: Colors.grey,
-                                        fontSize: _fontOne * 12),
-                                  ),
-                                  SizedBox(
-                                    width: _widthOne * 20,
-                                  )
-                                ],
-                              );
-                            })
-                      ]),
+                                      ],
+                                    );
+                                  })
+                            ]),
+                          );
+                        },
+                      ),
                     ),
                   );
                 }
@@ -316,14 +331,16 @@ class _MessageState extends State<Message> {
   }
 
   void getUsersDetails(List uIDs) async {
-    for (int i = 0; i < uIDs.length; i++) {
-      dynamic result = await _userInfoStore.getUserInfo(uid: uIDs[i]);
-      if (result != null) {
-        _usersDetails.add(UserDataModel.fromDocument(result));
-      } else {
-        _usersDetails.add(null);
+    if (mounted) {
+      for (int i = 0; i < uIDs.length; i++) {
+        dynamic result = await _userInfoStore.getUserInfo(uid: uIDs[i]);
+        if (result != null) {
+          _usersDetails.add(UserDataModel.fromDocument(result));
+        } else {
+          _usersDetails.add(null);
+        }
       }
+      setState(() {});
     }
-    setState(() {});
   }
 }
