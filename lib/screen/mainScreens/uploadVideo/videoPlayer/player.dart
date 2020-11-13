@@ -252,10 +252,6 @@ class _PlayerState extends State<Player> {
                   imageUrl: widget.videos[currentPos].thumbUrl,
                   imageBuilder: (context, imageProvider) => Container(
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topRight: Radius.circular(15),
-                        bottomLeft: Radius.circular(15),
-                      ),
                       color: AppTheme.backgroundColor,
                       image: DecorationImage(
                           image: imageProvider, fit: BoxFit.cover),

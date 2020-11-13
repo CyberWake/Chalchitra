@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -86,28 +87,35 @@ class _VideoUploaderState extends State<VideoUploader> {
                     height: 10.0,
                   ),
                   _videoCheckOK
-                      ? FlatButton(
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (context) => VideoPreview(
-                                          videoFile: videoFile,
-                                        )));
-                            print("go to preview screen");
+                      ? OpenContainer(
+                          closedElevation: 0.0,
+                          closedColor: Colors.transparent,
+                          tappable: false,
+                          transitionDuration: Duration(milliseconds: 500),
+                          openBuilder: (BuildContext context,
+                              void Function({Object returnValue}) action) {
                             setState(() {
                               _videoCheckOK = false;
                             });
+                            return VideoPreview(
+                              videoFile: videoFile,
+                            );
                           },
-                          shape: RoundedRectangleBorder(
-                              side: BorderSide(
-                                color: AppTheme.primaryColor,
-                              ),
-                              borderRadius: BorderRadius.circular(5)),
-                          child: Text("Next",
-                              style: TextStyle(
-                                color: AppTheme.primaryColor,
-                              )))
+                          closedBuilder:
+                              (BuildContext context, void Function() action) {
+                            return FlatButton(
+                                onPressed: () => action(),
+                                shape: RoundedRectangleBorder(
+                                    side: BorderSide(
+                                      color: AppTheme.primaryColor,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5)),
+                                child: Text("Next",
+                                    style: TextStyle(
+                                      color: AppTheme.primaryColor,
+                                    )));
+                          },
+                        )
                       : Column(
                           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [

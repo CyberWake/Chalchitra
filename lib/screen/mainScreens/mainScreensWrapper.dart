@@ -23,6 +23,7 @@ import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/activityPage.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/drafts.dart';
+import 'package:wowtalent/screen/mainScreens/endDrawerScreens/helpAndFeedbackPage.dart';
 import 'package:wowtalent/screen/mainScreens/endDrawerScreens/privacyPage.dart';
 import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
@@ -88,6 +89,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           await _userInfoStore.getUserInfo(uid: _userAuth.user.uid);
       user = UserDataModel.fromDocument(_currentUserInfo);
       Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
+      _profilePage = ProfilePage(
+        uid: user.id,
+        isFromSearch: false,
+      );
     } else {
       _notLoggedIn = true;
     }
@@ -146,7 +151,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
             subtitle: Text(message['notification']['body']),
             onTap: () {
               if (message['type'] == "like") {
-                return;
+                return ActivityPage(uid: _userAuth.user.uid);
               } else if (message['type'] == "comment") {
                 Navigator.push(
                     context,
@@ -174,7 +179,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     }, onLaunch: (Map<String, dynamic> message) async {
       print("onLaunch work");
       if (message['type'] == "like") {
-        return;
+        return ActivityPage(uid: _userAuth.user.uid);
       } else if (message['type'] == "comment") {
         Navigator.push(
             context,
@@ -200,7 +205,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     }, onResume: (Map<String, dynamic> message) async {
       print("onResume");
       if (message['type'] == "like") {
-        return;
+        return ActivityPage(uid: _userAuth.user.uid);
       } else if (message['type'] == "comment") {
         Navigator.push(
             context,
@@ -237,70 +242,90 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   }
 
   _buildConfirmSignOut(context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ), //this right here
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: AppTheme.primaryColor, width: 3)),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 20.0, left: 10),
-                child: Text(
-                  'Are you sure you want to log out?',
-                  style: TextStyle(fontSize: 18),
+    return showGeneralDialog(
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Opacity(
+              opacity: a1.value,
+              child: Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ), //this right here
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      border:
+                          Border.all(color: AppTheme.primaryColor, width: 3)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0, left: 10),
+                          child: Text(
+                            'Are you sure you want to log out?',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 50.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              BouncingButton(
+                                buttonText: "Yes",
+                                width: _size.width * 0.3,
+                                buttonFunction: () async {
+                                  await UserAuth().signOut().then((value) {
+                                    if (value) {
+                                      Navigator.pop(context);
+                                      Navigator.pushReplacement(
+                                          context,
+                                          CupertinoPageRoute(
+                                              builder: (_) => Authentication(
+                                                  AuthIndex.LOGIN)));
+                                    } else {
+                                      Scaffold.of(context).showSnackBar(SnackBar(
+                                          content: Text(
+                                              'Something went wrong try again')));
+                                    }
+                                  });
+                                },
+                              ),
+                              BouncingButton(
+                                buttonText: "No",
+                                width: _size.width * 0.3,
+                                buttonFunction: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10)
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 50.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    BouncingButton(
-                      buttonText: "Yes",
-                      width: _size.width * 0.3,
-                      buttonFunction: () async {
-                        await UserAuth().signOut().then((value) {
-                          if (value) {
-                            Navigator.pop(context);
-                            Navigator.pushReplacement(
-                                context,
-                                CupertinoPageRoute(
-                                    builder: (_) =>
-                                        Authentication(AuthIndex.LOGIN)));
-                          } else {
-                            Scaffold.of(context).showSnackBar(SnackBar(
-                                content:
-                                    Text('Something went wrong try again')));
-                          }
-                        });
-                      },
-                    ),
-                    BouncingButton(
-                      buttonText: "No",
-                      width: _size.width * 0.3,
-                      buttonFunction: () {
-                        Navigator.pop(context);
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10)
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 200),
+        barrierDismissible: true,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return Container(
+            color: Colors.red,
+          );
+        });
   }
 
   Future<bool> onWillPop() {
@@ -324,14 +349,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     print(index);
     if (index == 4) {
       print(index);
-      UserAuth().account.listen((user) {
-        if (user != null) {
-          _profilePage = ProfilePage(
-            uid: user.uid,
-            isFromSearch: false,
-          );
-        }
-      });
       _isMessagePage = false;
       _currentIndex = index;
       _tabController.index = _currentIndex;
@@ -364,7 +381,13 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         ? (_size.height * 0.007) / 5
         : (_size.height * 0.009) / 5;
     _iconOne = (_size.height * 0.066) / 50;
-    _screens = [Home(), Explore(), VideoUploader(), Message(), _profilePage];
+    _screens = [
+      Home(),
+      Explore(),
+      VideoUploader(),
+      Message(),
+      _profilePage,
+    ];
 
     return WillPopScope(onWillPop: onWillPop, child: wrapperMain());
   }
@@ -400,7 +423,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       transitionDuration: Duration(milliseconds: 500),
                       openBuilder: (BuildContext context,
                           void Function({Object returnValue}) action) {
-                        return _userAuth.user != null
+                        return !_notLoggedIn
                             ? SearchUser()
                             : Authentication(AuthIndex.REGISTER);
                       },
@@ -529,6 +552,38 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                         chooserTitle: 'Invite');
                   },
                 ),
+                ListTile(
+                  leading: Icon(Icons.contact_support,
+                      color: AppTheme.pureWhiteColor,
+                      semanticLabel: 'FeedBack and Help',
+                      size: 30),
+                  title: Text('FeedBack and Help',
+                      style: TextStyle(
+                          color: AppTheme.pureWhiteColor, fontSize: 18)),
+                  onTap: () {
+                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        CupertinoPageRoute(
+                            builder: (_) => FeedBack(
+                                  user: user,
+                                )));
+                  },
+                ),
+                ListTile(
+                  leading: Icon(Icons.contacts,
+                      color: AppTheme.pureWhiteColor,
+                      semanticLabel: 'Contact Us',
+                      size: 30),
+                  title: Text('Contact Us',
+                      style: TextStyle(
+                          color: AppTheme.pureWhiteColor, fontSize: 18)),
+                  onTap: () {
+                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
+                    /*Navigator.push(
+                        context, CupertinoPageRoute(builder: (_) => null));*/
+                  },
+                ),
                 Spacer(),
                 ListTile(
                   leading: Icon(Icons.power_settings_new,
@@ -540,11 +595,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                           color: AppTheme.pureWhiteColor, fontSize: 18)),
                   onTap: () {
                     _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) =>
-                          _buildConfirmSignOut(context),
-                    );
+                    _buildConfirmSignOut(context);
                   },
                 ),
               ],
@@ -553,6 +604,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         ),
         bottomNavigationBar: CurvedNavigationBar(
           index: _currentIndex,
+          animationDuration: Duration(milliseconds: 100),
           height: Platform.isIOS ? _heightOne * 40 : _heightOne * 55,
           backgroundColor: AppTheme.backgroundColor,
           color: AppTheme.primaryColor,

@@ -1,7 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/notificationInfo.dart';
@@ -11,6 +10,7 @@ import 'package:wowtalent/model/videoInfoModel.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:wowtalent/widgets/loadingTiles.dart';
 
 class NotificationCard extends StatefulWidget {
   final String type;
@@ -71,6 +71,11 @@ class _NotificationCardState extends State<NotificationCard> {
   @override
   void initState() {
     notifFuture = assignNotif(widget.from, widget.videoId);
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
     switch (widget.type) {
       case "like":
         setState(() {
@@ -91,12 +96,6 @@ class _NotificationCardState extends State<NotificationCard> {
         });
         break;
     }
-
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 8.0),
       child: Card(
@@ -108,16 +107,7 @@ class _NotificationCardState extends State<NotificationCard> {
             builder: (context, snap) {
               if (!snap.hasData ||
                   snap.connectionState == ConnectionState.waiting) {
-                return Shimmer.fromColors(
-                  highlightColor: AppTheme.pureWhiteColor,
-                  baseColor: AppTheme.grey,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: AppTheme.backgroundColor,
-                    ),
-                  ),
-                );
+                return LoadingCards();
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),

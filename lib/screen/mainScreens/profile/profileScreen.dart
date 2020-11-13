@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -227,8 +228,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                buildPostStat(),
                                 getFollowers(),
+                                buildPostStat(),
                                 getFollowings()
                               ],
                             ),
@@ -511,66 +512,76 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   getFollowers() {
-    return GestureDetector(
-      onTap: () {
-        if (seeFollowers) {
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (BuildContext context) =>
-                      FollowersPage(uid: widget.uid)));
-        }
-      },
-      child: Column(
-        children: [
-          Text(
-            totalFollowers.toString(),
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.pureBlackColor),
-          ),
-          Text(
-            'Followers',
-            style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.pureBlackColor),
-          ),
-        ],
+    return OpenContainer(
+      closedColor: Colors.transparent,
+      closedElevation: 0.0,
+      tappable: seeFollowers,
+      closedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
       ),
+      transitionDuration: Duration(milliseconds: 200),
+      transitionType: ContainerTransitionType.fadeThrough,
+      openBuilder:
+          (BuildContext context, void Function({Object returnValue}) action) {
+        return FollowersPage(uid: widget.uid);
+      },
+      closedBuilder: (BuildContext context, void Function() action) {
+        return Column(
+          children: [
+            Text(
+              totalFollowers.toString(),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+            Text(
+              'Followers',
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+          ],
+        );
+      },
     );
   }
 
   getFollowings() {
-    return GestureDetector(
-      onTap: () {
-        if (seeFollowings) {
-          Navigator.push(
-              context,
-              CupertinoPageRoute(
-                  builder: (BuildContext context) =>
-                      FollowingsPage(uid: widget.uid)));
-        }
-      },
-      child: Column(
-        children: [
-          Text(
-            totalFollowings.toString(),
-            style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.pureBlackColor),
-          ),
-          Text(
-            'Following',
-            style: TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.pureBlackColor),
-          ),
-        ],
+    return OpenContainer(
+      closedColor: Colors.transparent,
+      closedElevation: 0.0,
+      tappable: seeFollowers,
+      closedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
       ),
+      transitionDuration: Duration(milliseconds: 200),
+      transitionType: ContainerTransitionType.fadeThrough,
+      openBuilder:
+          (BuildContext context, void Function({Object returnValue}) action) {
+        return FollowingsPage(uid: widget.uid);
+      },
+      closedBuilder: (BuildContext context, void Function() action) {
+        return Column(
+          children: [
+            Text(
+              totalFollowings.toString(),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+            Text(
+              'Following',
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+          ],
+        );
+      },
     );
   }
 }

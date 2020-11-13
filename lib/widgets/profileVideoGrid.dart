@@ -51,9 +51,13 @@ class _ProfileVideoGridState extends State<ProfileVideoGrid> {
                 },
                 child: FittedBox(
                   child: OpenContainer(
-                    closedColor: AppTheme.backgroundColor,
+                    closedColor: Colors.transparent,
                     closedElevation: 0.0,
-                    transitionDuration: Duration(milliseconds: 500),
+                    closedShape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.zero,
+                    ),
+                    transitionDuration: Duration(milliseconds: 200),
+                    transitionType: ContainerTransitionType.fadeThrough,
                     openBuilder: (BuildContext context,
                         void Function({Object returnValue}) action) {
                       updateVideoWatchCount(index);

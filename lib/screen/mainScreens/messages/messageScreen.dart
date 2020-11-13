@@ -206,7 +206,12 @@ class _MessageState extends State<Message> {
                     child: FittedBox(
                       child: OpenContainer(
                         closedElevation: 0.0,
-                        transitionDuration: Duration(milliseconds: 500),
+                        closedColor: Colors.transparent,
+                        closedShape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
+                        ),
+                        transitionDuration: Duration(milliseconds: 200),
+                        transitionType: ContainerTransitionType.fadeThrough,
                         openBuilder: (BuildContext context,
                             void Function({Object returnValue}) action) {
                           return ChatDetailPage(

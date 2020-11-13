@@ -191,108 +191,148 @@ class _VideoDataInputState extends State<VideoDataInput> {
   }
 
   _buildConfirmDiscard(context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ), //this right here
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: AppTheme.pureWhiteColor, width: 3)),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 20.0, left: 10),
-                child: Text(
-                  'Do you want to save this post as a draft?',
-                  style: TextStyle(fontSize: 18),
+    return showGeneralDialog(
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Opacity(
+              opacity: a1.value,
+              child: Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ), //this right here
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      border:
+                          Border.all(color: AppTheme.pureWhiteColor, width: 3)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0, left: 10),
+                          child: Text(
+                            'Do you want to save this post as a draft?',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 50.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              BouncingButton(
+                                buttonText: "No",
+                                width: _size.width * 0.3,
+                                buttonFunction: () {
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                  Navigator.pop(context);
+                                },
+                              ),
+                              BouncingButton(
+                                buttonText: "Yes",
+                                width: _size.width * 0.3,
+                                buttonFunction: () {
+                                  Navigator.pop(context);
+                                  _draftSaved = true;
+                                  uploadDraftToServer();
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(height: 10)
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 50.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    BouncingButton(
-                      buttonText: "No",
-                      width: _size.width * 0.3,
-                      buttonFunction: () {
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                        Navigator.pop(context);
-                      },
-                    ),
-                    BouncingButton(
-                      buttonText: "Yes",
-                      width: _size.width * 0.3,
-                      buttonFunction: () {
-                        Navigator.pop(context);
-                        _draftSaved = true;
-                        uploadDraftToServer();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(height: 10)
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 200),
+        barrierDismissible: true,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return Container(
+            color: Colors.red,
+          );
+        });
   }
 
   _buildUploadSuccess(context) {
-    return Dialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(20.0),
-      ), //this right here
-      child: Container(
-        height: 200,
-        decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(20.0),
-            border: Border.all(color: AppTheme.primaryColor, width: 3)),
-        child: Padding(
-          padding: const EdgeInsets.all(12.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(top: 20.0, left: 10),
-                child: Text(
-                  _draftSaved
-                      ? 'Draft Saved Successfully'
-                      : _uploadSuccess
-                          ? 'Video Posted Succesfully'
-                          : 'Error somewhere',
-                  style: TextStyle(fontSize: 18),
+    return showGeneralDialog(
+        barrierColor: Colors.black.withOpacity(0.5),
+        transitionBuilder: (context, a1, a2, widget) {
+          return Transform.scale(
+            scale: a1.value,
+            child: Opacity(
+              opacity: a1.value,
+              child: Dialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20.0),
+                ), //this right here
+                child: Container(
+                  height: 200,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20.0),
+                      border:
+                          Border.all(color: AppTheme.primaryColor, width: 3)),
+                  child: Padding(
+                    padding: const EdgeInsets.all(12.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(top: 20.0, left: 10),
+                          child: Text(
+                            _draftSaved
+                                ? 'Draft Saved Successfully'
+                                : _uploadSuccess
+                                    ? 'Video Posted Succesfully'
+                                    : 'Error somewhere',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.only(top: 50.0),
+                          child: BouncingButton(
+                            buttonText: "OK",
+                            width: MediaQuery.of(context).size.width * 0.6,
+                            buttonFunction: () {
+                              Navigator.pop(context);
+                              Navigator.pop(context);
+                            },
+                          ),
+                        ),
+                        SizedBox(height: 10)
+                      ],
+                    ),
+                  ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.only(top: 50.0),
-                child: BouncingButton(
-                  buttonText: "OK",
-                  width: MediaQuery.of(context).size.width * 0.6,
-                  buttonFunction: () {
-                    Navigator.pop(context);
-                    Navigator.pop(context);
-                  },
-                ),
-              ),
-              SizedBox(height: 10)
-            ],
-          ),
-        ),
-      ),
-    );
+            ),
+          );
+        },
+        transitionDuration: Duration(milliseconds: 200),
+        barrierDismissible: true,
+        barrierLabel: '',
+        context: context,
+        pageBuilder: (context, animation1, animation2) {
+          return Container(
+            color: Colors.red,
+          );
+        });
   }
 
   @override
@@ -332,11 +372,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                 if (_draftSaved) {
                   Navigator.pop(context);
                 } else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) =>
-                        _buildConfirmDiscard(context),
-                  );
+                  _buildConfirmDiscard(context);
                 }
               }),
           actions: [

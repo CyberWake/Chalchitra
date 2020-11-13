@@ -173,8 +173,12 @@ class _ExploreState extends State<Explore> {
           return FittedBox(
             child: OpenContainer(
               closedElevation: 0.0,
-              closedColor: AppTheme.backgroundColor,
-              transitionDuration: Duration(milliseconds: 500),
+              closedColor: Colors.transparent,
+              closedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              transitionDuration: Duration(milliseconds: 200),
+              transitionType: ContainerTransitionType.fadeThrough,
               openBuilder: (BuildContext context,
                   void Function({Object returnValue}) action) {
                 increaseTrendingWatchCount(index);
@@ -230,8 +234,12 @@ class _ExploreState extends State<Explore> {
           return FittedBox(
             child: OpenContainer(
               closedElevation: 0.0,
-              closedColor: AppTheme.backgroundColor,
-              transitionDuration: Duration(milliseconds: 500),
+              closedColor: Colors.transparent,
+              closedShape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.zero,
+              ),
+              transitionDuration: Duration(milliseconds: 200),
+              transitionType: ContainerTransitionType.fadeThrough,
               openBuilder: (BuildContext context,
                   void Function({Object returnValue}) action) {
                 increaseAllVideoWatchCount(index);

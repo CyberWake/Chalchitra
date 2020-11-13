@@ -369,6 +369,7 @@ class _PostCardState extends State<PostCard> {
                           await UserVideoStore().increaseVideoCount(
                               videoID: widget.video.videoId);
                         }
+                        _controller.pause();
                         widget.navigate();
                       },
                       child: widget.playVideo

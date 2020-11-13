@@ -48,6 +48,7 @@ dependencies:
 
   # Utilities
   provider: ^4.3.1
+  mailer: ^3.0.4
   timeago: ^2.0.21
 
   # Formatting

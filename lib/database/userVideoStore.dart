@@ -5,31 +5,31 @@ import '../model/videoInfoModel.dart';
 
 class UserVideoStore {
   static final CollectionReference _feedVideos =
-  FirebaseFirestore.instance.collection('feedVideos');
+      FirebaseFirestore.instance.collection('feedVideos');
 
   static final CollectionReference _users =
-  FirebaseFirestore.instance.collection('WowUsers');
+      FirebaseFirestore.instance.collection('WowUsers');
 
   static final CollectionReference _allVideos =
-  FirebaseFirestore.instance.collection('videos');
+      FirebaseFirestore.instance.collection('videos');
 
   static final CollectionReference _videoLikes =
-  FirebaseFirestore.instance.collection('videoLikes');
+      FirebaseFirestore.instance.collection('videoLikes');
 
   static final CollectionReference _videoWatched =
-  FirebaseFirestore.instance.collection('videoWatched');
+      FirebaseFirestore.instance.collection('videoWatched');
 
   static final CollectionReference _videoComments =
-  FirebaseFirestore.instance.collection('videoComments');
+      FirebaseFirestore.instance.collection('videoComments');
 
   static final CollectionReference _videoRating =
-  FirebaseFirestore.instance.collection('ratings');
+      FirebaseFirestore.instance.collection('ratings');
 
   static final CollectionReference _videoDrafts =
-  FirebaseFirestore.instance.collection('videoDrafts');
+      FirebaseFirestore.instance.collection('videoDrafts');
 
   static final _notificationCenter =
-  FirebaseFirestore.instance.collection("notifications");
+      FirebaseFirestore.instance.collection("notifications");
 
   static final UserAuth _userAuth = UserAuth();
 
@@ -115,35 +115,43 @@ class UserVideoStore {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     try {
       return _videoLikes.get().then((value) => value.docs.forEach((element) {
-        element.reference.collection("likedVideos").where("id",isEqualTo: video.videoId).get().then((value) {
-          if(value.docs.isEmpty){
-          }else{
-            value.docs.forEach((element) {
-              batch.delete(element.reference);
+            element.reference
+                .collection("likedVideos")
+                .where("id", isEqualTo: video.videoId)
+                .get()
+                .then((value) {
+              if (value.docs.isEmpty) {
+              } else {
+                value.docs.forEach((element) {
+                  batch.delete(element.reference);
+                });
+                return batch.commit();
+              }
             });
-            return batch.commit();
-          }
-        });
-      }));
+          }));
     } catch (e) {
       print(e.toString());
     }
   }
 
-  static removeWatchHistory(VideoInfo video){
+  static removeWatchHistory(VideoInfo video) {
     WriteBatch batch = FirebaseFirestore.instance.batch();
     try {
       return _videoWatched.get().then((value) => value.docs.forEach((element) {
-        element.reference.collection("viewedVideos").where("id",isEqualTo: video.videoId).get().then((value){
-          if(value.docs.isEmpty){
-          }else{
-            value.docs.forEach((element) {
-              batch.delete(element.reference);
+            element.reference
+                .collection("viewedVideos")
+                .where("id", isEqualTo: video.videoId)
+                .get()
+                .then((value) {
+              if (value.docs.isEmpty) {
+              } else {
+                value.docs.forEach((element) {
+                  batch.delete(element.reference);
+                });
+                return batch.commit();
+              }
             });
-            return batch.commit();
-          }
-        });
-      }));
+          }));
     } catch (e) {
       print(e.toString());
     }
@@ -151,31 +159,35 @@ class UserVideoStore {
 
   static removeRating(VideoInfo video) async {
     try {
-      WriteBatch batch =FirebaseFirestore.instance.batch();
+      WriteBatch batch = FirebaseFirestore.instance.batch();
       return _videoRating.get().then((value) => value.docs.forEach((element) {
-        element.reference.collection(video.videoId).get().then((value){
-          value.docs.forEach((element) {
-            batch.delete(element.reference);
-          });
-          return batch.commit();}
-        );
-      }));
+            element.reference.collection(video.videoId).get().then((value) {
+              value.docs.forEach((element) {
+                batch.delete(element.reference);
+              });
+              return batch.commit();
+            });
+          }));
     } catch (e) {
       print(e.toString());
     }
   }
 
-  static deleteNotif(VideoInfo video)async{
+  static deleteNotif(VideoInfo video) async {
     try {
-      WriteBatch batch =FirebaseFirestore.instance.batch();
-      return _notificationCenter.doc(_userAuth.user.uid).collection("notifs")
-          .where("videoID",isEqualTo: video.videoId).get()
-          .then((value){
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+      return _notificationCenter
+          .doc(_userAuth.user.uid)
+          .collection("notifs")
+          .where("videoID", isEqualTo: video.videoId)
+          .get()
+          .then((value) {
         print(value.docs[0]);
         value.docs.forEach((element) {
           batch.delete(element.reference);
         });
-        return batch.commit();});
+        return batch.commit();
+      });
     } catch (e) {
       print(e.toString());
     }
@@ -193,7 +205,7 @@ class UserVideoStore {
   Future getDraftVideos({String uid}) async {
     try {
       QuerySnapshot qs =
-      await _videoDrafts.where('uploaderUid', isEqualTo: uid).get();
+          await _videoDrafts.where('uploaderUid', isEqualTo: uid).get();
       return mapQueryToVideoInfo(qs);
     } catch (e) {
       print(e.toString());
@@ -218,7 +230,7 @@ class UserVideoStore {
   Future getProfileVideos({String uid}) async {
     try {
       QuerySnapshot qs =
-      await _allVideos.where('uploaderUid', isEqualTo: uid).get();
+          await _allVideos.where('uploaderUid', isEqualTo: uid).get();
       return mapQueryToVideoInfo(qs);
     } catch (e) {
       print(e.toString());
@@ -253,9 +265,9 @@ class UserVideoStore {
   Future getFollowingVideos({List<DocumentSnapshot> followings}) {
     return _allVideos
         .where('uploaderUid',
-        whereIn: List.generate(followings.length, (index) {
-          return followings[index].id;
-        }))
+            whereIn: List.generate(followings.length, (index) {
+              return followings[index].id;
+            }))
         .orderBy("uploadedAt", descending: true)
         .limit(50)
         .get();
@@ -398,7 +410,7 @@ class UserVideoStore {
           .doc(_userAuth.user.uid)
           .collection(videoID)
           .doc(videoID)
-          .set({'videoID': videoID, 'rating': rating});
+          .set({'videoID': videoID, 'rating': rating.toInt()});
       return true;
     } catch (e) {
       return false;

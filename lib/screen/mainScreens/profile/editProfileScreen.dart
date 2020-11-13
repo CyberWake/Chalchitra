@@ -128,26 +128,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               SizedBox(
                                 height: 20,
                               ),
-                              /*InkWell(
-                                onTap: updateUserProfile,
-                                child: Container(
-                                  height: 50,
-                                  margin: EdgeInsets.symmetric(horizontal: 10),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(50),
-                                    color: AppTheme.primaryColor,
-                                  ),
-                                  child: Center(
-                                      child: Text(
-                                    "Update",
-                                    style: TextStyle(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                        letterSpacing: 1.5,
-                                        fontSize: 17),
-                                  )),
-                                ),
-                              ),*/
                               BouncingButton(
                                 buttonText: "Update",
                                 height: _size.width * 0.14,
