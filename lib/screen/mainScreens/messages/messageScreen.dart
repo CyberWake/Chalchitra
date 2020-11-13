@@ -1,5 +1,3 @@
-import 'dart:io' show Platform;
-
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,6 +10,7 @@ import 'package:wowtalent/screen/mainScreens/messages/messageSearch.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/widgets/loadingTiles.dart';
+import '../../../model/theme.dart';
 
 class Message extends StatefulWidget {
   Message({Key key}) : super(key: key);
@@ -47,14 +46,102 @@ class _MessageState extends State<Message> {
   Widget build(BuildContext context) {
     _size = MediaQuery.of(context).size;
     _widthOne = _size.width * 0.0008;
-    _heightOne = !Platform.isIOS
-        ? (_size.height * 0.007) / 5
-        : (_size.height * 0.009) / 5;
+    _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
 
     return Scaffold(
-      body: Container(
+      body: SingleChildScrollView(
+        child: Container(
+          height: _size.height,
+          color: AppTheme.primaryColor,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Spacer(),
+                    Text(
+                      "Messages",
+                      style: TextStyle(
+                        color: AppTheme.backgroundColor,
+                        fontSize: _fontOne * 25,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Spacer(),
+                  ],
+                ),
+                SizedBox(
+                  height: 5,
+                ),
+                Container(
+                  width: _size.width * 0.8,
+                  height: _heightOne * 42.5,
+                  margin: EdgeInsets.only(
+                    bottom: _heightOne * 20,
+                  ),
+                  padding: EdgeInsets.all(_iconOne * 5),
+                  decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15)),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          onTap: () {
+                            _updateIsSearch(true);
+                          },
+                          onFieldSubmitted: (val) {
+                            setState(() {
+                              _search = val;
+                            });
+                          },
+                          decoration: authInputFormatting.copyWith(
+                            hintText: "Search By Username",
+                          ),
+                        ),
+                      ),
+                      _isSearchActive
+                          ? IconButton(
+                        icon: Icon(
+                          Icons.cancel,
+                          color: AppTheme.primaryColor,
+                        ),
+                        onPressed: () {
+                          _updateIsSearch(false);
+                        },
+                      )
+                          : Container(),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                      padding: EdgeInsets.only(top: _heightOne * 20),
+                      decoration: BoxDecoration(
+                          color: AppTheme.backgroundColor,
+                          borderRadius: BorderRadius.only(
+                            topRight: Radius.circular(25),
+                            topLeft: Radius.circular(25),
+                          )),
+                      child: _isSearchActive
+                          ? SearchMessage(
+                        userName: _search,
+                      )
+                          : getBody()),
+                ),
+              ]),
+        ),
+      ),
+    );
+  }
+
+  Widget msgScreenBody(){
+    return  SingleChildScrollView(
+      child: Container(
         height: _size.height,
         color: AppTheme.primaryColor,
         child: Column(
@@ -108,14 +195,14 @@ class _MessageState extends State<Message> {
                     ),
                     _isSearchActive
                         ? IconButton(
-                            icon: Icon(
-                              Icons.cancel,
-                              color: AppTheme.primaryColor,
-                            ),
-                            onPressed: () {
-                              _updateIsSearch(false);
-                            },
-                          )
+                      icon: Icon(
+                        Icons.cancel,
+                        color: AppTheme.primaryColor,
+                      ),
+                      onPressed: () {
+                        _updateIsSearch(false);
+                      },
+                    )
                         : Container(),
                   ],
                 ),
@@ -131,8 +218,8 @@ class _MessageState extends State<Message> {
                         )),
                     child: _isSearchActive
                         ? SearchMessage(
-                            userName: _search,
-                          )
+                      userName: _search,
+                    )
                         : getBody()),
               ),
             ]),
@@ -165,9 +252,8 @@ class _MessageState extends State<Message> {
                   ),
                 );
               });
-          ;
         } else {
-          if (snapshot.data.data() == null) {
+          if (snapshot.data.docs.length == null) {
             return Center(
               child: Text(
                 "No chats found",
@@ -178,8 +264,17 @@ class _MessageState extends State<Message> {
               ),
             );
           }
-          List keys = snapshot.data.data().keys.toList();
-          List values = snapshot.data.data().values.toList();
+          List keys = [];
+          snapshot.data.documents.forEach((doc){
+            keys.add(doc.id);
+          });
+          List values = [];
+          snapshot.data.documents.forEach((doc){
+            values.add(doc.data()["uid"]);
+          });
+          // List keys = snapshot.data.data().keys.toList();
+          // List values = snapshot.data.data().values.toList();
+          // print(keys);
           getUsersDetails(values);
           if (keys.isEmpty) {
             return Center(
@@ -196,7 +291,6 @@ class _MessageState extends State<Message> {
           } else {
             return ListView.builder(
               padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 20),
-
               itemBuilder: (context, index) {
                 if (_usersDetails[index] == null) {
                   return Container();
@@ -245,12 +339,12 @@ class _MessageState extends State<Message> {
                                               color: AppTheme.primaryColor),
                                           image: DecorationImage(
                                               image: NetworkImage(_usersDetails[
-                                                              index]
-                                                          .photoUrl ==
-                                                      null
+                                              index]
+                                                  .photoUrl ==
+                                                  null
                                                   ? "https://via.placeholder.com/150"
                                                   : _usersDetails[index]
-                                                      .photoUrl),
+                                                  .photoUrl),
                                               fit: BoxFit.cover))),
                                 ),
                               ),
@@ -266,7 +360,7 @@ class _MessageState extends State<Message> {
                                       children: [
                                         Column(
                                             crossAxisAlignment:
-                                                CrossAxisAlignment.start,
+                                            CrossAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
                                                 _usersDetails[index].username,
@@ -275,7 +369,7 @@ class _MessageState extends State<Message> {
                                                     color: AppTheme
                                                         .primaryColorDark,
                                                     fontWeight:
-                                                        FontWeight.w500),
+                                                    FontWeight.w500),
                                               ),
                                               SizedBox(
                                                 height: 5,
@@ -285,8 +379,8 @@ class _MessageState extends State<Message> {
                                                 child: Text(
                                                   snapshot.hasData
                                                       ? snapshot
-                                                          .data.documents[0]
-                                                          .data()['message']
+                                                      .data.documents[0]
+                                                      .data()['message']
                                                       : ".....",
                                                   style: TextStyle(
                                                     fontSize: _fontOne * 13,
@@ -294,7 +388,7 @@ class _MessageState extends State<Message> {
                                                         .primaryColorDark,
                                                   ),
                                                   overflow:
-                                                      TextOverflow.ellipsis,
+                                                  TextOverflow.ellipsis,
                                                 ),
                                               )
                                             ]),
@@ -304,9 +398,9 @@ class _MessageState extends State<Message> {
                                         Text(
                                           snapshot.hasData
                                               ? formatDateTime(
-                                                  millisecondsSinceEpoch:
-                                                      snapshot.data.documents[0]
-                                                          .data()['timestamp'])
+                                              millisecondsSinceEpoch:
+                                              snapshot.data.documents[0]
+                                                  .data()['timestamp'])
                                               : ".....",
                                           style: TextStyle(
                                               color: Colors.grey,
@@ -326,7 +420,7 @@ class _MessageState extends State<Message> {
                   );
                 }
               },
-              itemCount: snapshot.data.data().length,
+              itemCount: snapshot.data.documents.length,
               //controller: listScrollController,
             );
           }
@@ -336,16 +430,14 @@ class _MessageState extends State<Message> {
   }
 
   void getUsersDetails(List uIDs) async {
-    if (mounted) {
-      for (int i = 0; i < uIDs.length; i++) {
-        dynamic result = await _userInfoStore.getUserInfo(uid: uIDs[i]);
-        if (result != null) {
-          _usersDetails.add(UserDataModel.fromDocument(result));
-        } else {
-          _usersDetails.add(null);
-        }
+    for (int i = 0; i < uIDs.length; i++) {
+      dynamic result = await _userInfoStore.getUserInfo(uid: uIDs[i]);
+      if (result != null) {
+        _usersDetails.add(UserDataModel.fromDocument(result));
+      } else {
+        _usersDetails.add(null);
       }
-      setState(() {});
     }
+    setState(() {});
   }
 }

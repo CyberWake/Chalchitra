@@ -412,7 +412,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
             ),
           ),
           actions: [
-            _tabController.index != 4
+            _tabController.index != 4 && _tabController.index != 3
                 ? Container(
                     height: _size.width / 4,
                     width: _size.width / 8,
@@ -437,17 +437,20 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                       },
                     ),
                   )
-                : IconButton(
-                    icon: Icon(
-                      Icons.menu,
-                      color: AppTheme.backgroundColor,
-                      size: _iconOne * 25,
-                    ),
-                    onPressed: () =>
-                        _scaffoldGlobalKey.currentState.openEndDrawer(),
-                    tooltip:
-                        MaterialLocalizations.of(context).openAppDrawerTooltip,
-                  ),
+                : _tabController.index != 3
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.menu,
+                          color: AppTheme.backgroundColor,
+                          size: _iconOne * 25,
+                          semanticLabel: "Menu",
+                        ),
+                        onPressed: () =>
+                            _scaffoldGlobalKey.currentState.openEndDrawer(),
+                        tooltip: MaterialLocalizations.of(context)
+                            .openAppDrawerTooltip,
+                      )
+                    : Container(),
             SizedBox(
               width: _widthOne * 100,
             )

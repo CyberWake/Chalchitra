@@ -410,7 +410,7 @@ class UserVideoStore {
           .doc(_userAuth.user.uid)
           .collection(videoID)
           .doc(videoID)
-          .set({'videoID': videoID, 'rating': rating.toInt()});
+          .set({'videoID': videoID, 'rating': rating});
       return true;
     } catch (e) {
       return false;
