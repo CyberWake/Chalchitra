@@ -10,14 +10,14 @@ import '../auth/userAuth.dart';
 class UserInfoStore {
   UserDataModel _currentUserModel;
   static final CollectionReference _users =
-  FirebaseFirestore.instance.collection('WowUsers');
+      FirebaseFirestore.instance.collection('WowUsers');
   final _followers = FirebaseFirestore.instance.collection('followers');
   final _followings = FirebaseFirestore.instance.collection('following');
   final _activity = FirebaseFirestore.instance.collection('activity feed');
   final _chatUIDs = FirebaseFirestore.instance.collection('chatUIDs');
   final _allChats = FirebaseFirestore.instance.collection('allChats');
   final _notificationCenter =
-  FirebaseFirestore.instance.collection("notifications");
+      FirebaseFirestore.instance.collection("notifications");
   final FirebaseMessaging _fcm = FirebaseMessaging();
   static final UserAuth _userAuth = UserAuth();
 
@@ -91,14 +91,14 @@ class UserInfoStore {
           .where("id", isEqualTo: uid)
           .get()
           .then((QuerySnapshot querySnapshot) => {
-        querySnapshot.docs.forEach((doc) {
-          if (doc.data()['id'] == uid) {
-            print("privacy in database " +
-                doc.data()["private"].toString());
-            result = doc.data()["private"];
-          }
-        })
-      });
+                querySnapshot.docs.forEach((doc) {
+                  if (doc.data()['id'] == uid) {
+                    print("privacy in database " +
+                        doc.data()["private"].toString());
+                    result = doc.data()["private"];
+                  }
+                })
+              });
       print("result " + result.toString());
       return result;
     } on Exception catch (e) {
@@ -111,7 +111,7 @@ class UserInfoStore {
     print(username);
     try {
       QuerySnapshot read =
-      await _users.where("username", isEqualTo: username).get();
+          await _users.where("username", isEqualTo: username).get();
 
       if (read.size != 0) {
         return false;
@@ -142,7 +142,7 @@ class UserInfoStore {
     print('here');
     return _users
         .where('searchKey',
-        isEqualTo: searchIndex.substring(0, 1).toUpperCase())
+            isEqualTo: searchIndex.substring(0, 1).toUpperCase())
         .get();
   }
 
@@ -227,8 +227,8 @@ class UserInfoStore {
           .doc(_userAuth.user.uid)
           .get()
           .then((document) async => {
-        if (document.exists) {await document.reference.delete()}
-      });
+                if (document.exists) {await document.reference.delete()}
+              });
       await _users.doc(uid).update({"followers": FieldValue.increment(-1)});
 
       await _followings
@@ -237,8 +237,8 @@ class UserInfoStore {
           .doc(uid)
           .get()
           .then((document) async => {
-        if (document.exists) {await document.reference.delete()}
-      });
+                if (document.exists) {await document.reference.delete()}
+              });
       await _users
           .doc(_userAuth.user.uid)
           .update({"following": FieldValue.increment(-1)});
@@ -249,8 +249,8 @@ class UserInfoStore {
           .doc(_userAuth.user.uid)
           .get()
           .then((document) async => {
-        if (document.exists) {await document.reference.delete()}
-      });
+                if (document.exists) {await document.reference.delete()}
+              });
 
       return Future.value(false);
     } catch (e) {
@@ -267,8 +267,8 @@ class UserInfoStore {
           .doc(_userAuth.user.uid)
           .get()
           .then((document) async => {
-        if (document.exists) {await document.reference.delete()}
-      });
+                if (document.exists) {await document.reference.delete()}
+              });
 
       await _followers
           .doc(_userAuth.user.uid)
@@ -276,8 +276,8 @@ class UserInfoStore {
           .doc(uid)
           .get()
           .then((document) async => {
-        if (document.exists) {await document.reference.delete()}
-      });
+                if (document.exists) {await document.reference.delete()}
+              });
 
       await _activity
           .doc(_userAuth.user.uid)
@@ -285,8 +285,8 @@ class UserInfoStore {
           .doc(uid)
           .get()
           .then((document) async => {
-        if (document.exists) {await document.reference.delete()}
-      });
+                if (document.exists) {await document.reference.delete()}
+              });
 
       return Future.value(false);
     } catch (e) {
@@ -313,7 +313,11 @@ class UserInfoStore {
   }
 
   Stream getChats() {
-    return _chatUIDs.doc(_userAuth.user.uid).collection("chatUID").orderBy("timestamp",descending: true).snapshots();
+    return _chatUIDs
+        .doc(_userAuth.user.uid)
+        .collection("chatUID")
+        .orderBy("timestamp", descending: true)
+        .snapshots();
   }
 
   Future checkChatExists({String targetUID}) async {
@@ -326,7 +330,12 @@ class UserInfoStore {
         chatID = targetUID + currentUID;
       }
       bool result;
-      await _chatUIDs.doc(currentUID).collection("chatUID").doc(chatID).get().then((document) {
+      await _chatUIDs
+          .doc(currentUID)
+          .collection("chatUID")
+          .doc(chatID)
+          .get()
+          .then((document) {
         if (document.exists) {
           result = document.data().keys.contains(chatID);
         } else {
@@ -349,9 +358,9 @@ class UserInfoStore {
       } else {
         chatID = targetUID + currentUID;
       }
-      await _chatUIDs
-          .doc(currentUID).collection("chatUID").doc(chatID)
-          .set({"uid": targetUID,"timestamp":DateTime.now()}, SetOptions(merge: true));
+      await _chatUIDs.doc(currentUID).collection("chatUID").doc(chatID).set(
+          {"uid": targetUID, "timestamp": DateTime.now()},
+          SetOptions(merge: true));
     } catch (e) {
       print("getChats : " + e.toString());
       return null;
@@ -367,9 +376,9 @@ class UserInfoStore {
       } else {
         chatID = targetUID + currentUID;
       }
-      await _chatUIDs
-          .doc(targetUID).collection("chatUID").doc(chatID)
-          .set({"uid": currentUID,"timestamp":DateTime.now()}, SetOptions(merge: true));
+      await _chatUIDs.doc(targetUID).collection("chatUID").doc(chatID).set(
+          {"uid": currentUID, "timestamp": DateTime.now()},
+          SetOptions(merge: true));
     } catch (e) {
       print("getChats : " + e.toString());
       return null;
@@ -446,6 +455,32 @@ class UserInfoStore {
           .orderBy("timestamp", descending: true)
           .limit(25)
           .snapshots();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Stream notifCount({String uid}) {
+    try {
+      return _notificationCenter
+          .doc(uid)
+          .collection("notifs")
+          .where("read", isEqualTo: false)
+          .snapshots();
+    } catch (e) {}
+  }
+
+  Future updateNotif({String uid, DocumentSnapshot doc}) async {
+    try {
+      print("\t\t\t\t\t\t\tin Update");
+      if (doc.exists) {
+        print(doc.id);
+        await _notificationCenter
+            .doc(uid)
+            .collection("notifs")
+            .doc(doc.id)
+            .update({"read": true});
+      }
     } catch (e) {
       print(e.toString());
     }

@@ -563,6 +563,7 @@ class _ProfilePageState extends State<ProfilePage> {
         return FollowingsPage(uid: widget.uid);
       },
       closedBuilder: (BuildContext context, void Function() action) {
+        print("called");
         return Column(
           children: [
             Text(

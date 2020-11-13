@@ -47,7 +47,7 @@ class _CategoryState extends State<Category> {
           IconButton(
             icon: Icon(
               Icons.search,
-              color: AppTheme.pureBlackColor,
+              color: AppTheme.pureWhiteColor,
               size: _iconOne * 30,
             ),
             onPressed: () {

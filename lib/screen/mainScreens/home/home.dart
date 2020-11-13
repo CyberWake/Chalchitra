@@ -47,14 +47,17 @@ class _HomeState extends State<Home> {
           followingFuture.add(e);
         });
       });
-      await UserVideoStore()
-          .getFollowingVideos(followings: followingFuture)
-          .then((value) {
-        value.docs.forEach((e) async {
-          VideoInfo vid = VideoInfo.fromDocument(e);
-          videoList.add(vid);
+      if (followingFuture.length != 0) {
+        print("running");
+        await UserVideoStore()
+            .getFollowingVideos(followings: followingFuture)
+            .then((value) {
+          value.docs.forEach((e) async {
+            VideoInfo vid = VideoInfo.fromDocument(e);
+            videoList.add(vid);
+          });
         });
-      });
+      }
       return true;
     } on Exception catch (e) {
       print(e.toString());

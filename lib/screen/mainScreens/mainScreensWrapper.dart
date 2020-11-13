@@ -405,7 +405,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
           backgroundColor: AppTheme.primaryColor,
           title: Container(
             height: _size.width / 4,
-            width: _size.width / 2,
+            width: _size.width / 3,
             child: Image.asset(
               'assets/images/appBarLogo1.png',
               fit: BoxFit.fitWidth,
@@ -501,11 +501,58 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                   },
                 ),
                 ListTile(
-                  leading: Icon(
-                    Icons.notifications,
-                    color: AppTheme.pureWhiteColor,
-                    semanticLabel: 'Activity',
-                    size: 30,
+                  leading: StreamBuilder(
+                    stream: _userInfoStore.notifCount(uid: _userAuth.user.uid),
+                    builder: (_, snap) {
+                      if (!snap.hasData) {
+                        return Icon(
+                          Icons.notifications,
+                          color: AppTheme.pureWhiteColor,
+                          semanticLabel: 'Activity',
+                          size: 30,
+                        );
+                      }
+                      if (snap.data.documents.length > 0) {
+                        return Material(
+                          color: Colors.transparent,
+                          child: Stack(
+                            children: [
+                              Icon(
+                                Icons.notifications,
+                                color: AppTheme.pureWhiteColor,
+                                semanticLabel: 'Activity',
+                                size: 30,
+                              ),
+                              Positioned(
+                                top: 0.0,
+                                right: 0.0,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.redAccent),
+                                  width: 15.0,
+                                  height: 15.0,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    snap.data.documents.length.toString(),
+                                    textAlign: TextAlign.center,
+                                    style: TextStyle(
+                                        color: AppTheme.pureWhiteColor,
+                                        fontSize: 10.0),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        );
+                      }
+                      return Icon(
+                        Icons.notifications,
+                        color: AppTheme.pureWhiteColor,
+                        semanticLabel: 'Activity',
+                        size: 30,
+                      );
+                    },
                   ),
                   title: Text(
                     "Activity",

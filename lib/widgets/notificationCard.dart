@@ -16,7 +16,9 @@ class NotificationCard extends StatefulWidget {
   final String type;
   final String from;
   final String videoId;
-  NotificationCard({this.type, this.from, this.videoId});
+  final bool read;
+  Function onTap;
+  NotificationCard({this.onTap, this.read, this.type, this.from, this.videoId});
   @override
   _NotificationCardState createState() => _NotificationCardState();
 }
@@ -41,7 +43,7 @@ class _NotificationCardState extends State<NotificationCard> {
                 builder: (_) => Player(
                       videos: videos,
                       index: 0,
-                    )));
+                    ))).then((value) => widget.onTap());
       }
     });
     setState(() {});
@@ -79,19 +81,19 @@ class _NotificationCardState extends State<NotificationCard> {
     switch (widget.type) {
       case "like":
         setState(() {
-          notifTitle = "New Like";
+          notifTitle = !widget.read ? "New Like" : "Like";
           notifType = "liked your video";
         });
         break;
       case "comment":
         setState(() {
-          notifTitle = "New Comment";
+          notifTitle = !widget.read ? "New Comment" : "Comment";
           notifType = "commented on your video";
         });
         break;
       case "follow":
         setState(() {
-          notifTitle = "New Follower";
+          notifTitle = !widget.read ? "New Follower" : "Follower";
           notifType = "started following you";
         });
         break;
@@ -123,7 +125,7 @@ class _NotificationCardState extends State<NotificationCard> {
                             CupertinoPageRoute(
                                 builder: (_) => CommentsScreen(
                                       videoId: widget.videoId,
-                                    )));
+                                    ))).then((value) => widget.onTap());
                         break;
                       case "follow":
                         Navigator.push(
@@ -131,7 +133,7 @@ class _NotificationCardState extends State<NotificationCard> {
                             CupertinoPageRoute(
                                 builder: (_) => SearchProfile(
                                       uid: widget.from,
-                                    )));
+                                    ))).then((value) => widget.onTap());
                         break;
                     }
                   },
@@ -171,9 +173,17 @@ class _NotificationCardState extends State<NotificationCard> {
                   ),
                   subtitle: Text(
                     "${snap.data.userInfo.username} ${notifType}",
-                    style: TextStyle(color: Colors.black),
+                    style: TextStyle(
+                        color: Colors.black,
+                        fontWeight:
+                            !widget.read ? FontWeight.bold : FontWeight.normal),
                   ),
-                  title: Text(notifTitle),
+                  title: Text(
+                    notifTitle,
+                    style: TextStyle(
+                        fontWeight:
+                            !widget.read ? FontWeight.bold : FontWeight.normal),
+                  ),
                 ),
               );
             },

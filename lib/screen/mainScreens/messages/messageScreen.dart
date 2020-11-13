@@ -10,6 +10,7 @@ import 'package:wowtalent/screen/mainScreens/messages/messageSearch.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 import 'package:wowtalent/shared/formFormatting.dart';
 import 'package:wowtalent/widgets/loadingTiles.dart';
+
 import '../../../model/theme.dart';
 
 class Message extends StatefulWidget {
@@ -106,14 +107,14 @@ class _MessageState extends State<Message> {
                       ),
                       _isSearchActive
                           ? IconButton(
-                        icon: Icon(
-                          Icons.cancel,
-                          color: AppTheme.primaryColor,
-                        ),
-                        onPressed: () {
-                          _updateIsSearch(false);
-                        },
-                      )
+                              icon: Icon(
+                                Icons.cancel,
+                                color: AppTheme.primaryColor,
+                              ),
+                              onPressed: () {
+                                _updateIsSearch(false);
+                              },
+                            )
                           : Container(),
                     ],
                   ),
@@ -129,8 +130,8 @@ class _MessageState extends State<Message> {
                           )),
                       child: _isSearchActive
                           ? SearchMessage(
-                        userName: _search,
-                      )
+                              userName: _search,
+                            )
                           : getBody()),
                 ),
               ]),
@@ -139,8 +140,8 @@ class _MessageState extends State<Message> {
     );
   }
 
-  Widget msgScreenBody(){
-    return  SingleChildScrollView(
+  Widget msgScreenBody() {
+    return SingleChildScrollView(
       child: Container(
         height: _size.height,
         color: AppTheme.primaryColor,
@@ -195,14 +196,14 @@ class _MessageState extends State<Message> {
                     ),
                     _isSearchActive
                         ? IconButton(
-                      icon: Icon(
-                        Icons.cancel,
-                        color: AppTheme.primaryColor,
-                      ),
-                      onPressed: () {
-                        _updateIsSearch(false);
-                      },
-                    )
+                            icon: Icon(
+                              Icons.cancel,
+                              color: AppTheme.primaryColor,
+                            ),
+                            onPressed: () {
+                              _updateIsSearch(false);
+                            },
+                          )
                         : Container(),
                   ],
                 ),
@@ -218,8 +219,8 @@ class _MessageState extends State<Message> {
                         )),
                     child: _isSearchActive
                         ? SearchMessage(
-                      userName: _search,
-                    )
+                            userName: _search,
+                          )
                         : getBody()),
               ),
             ]),
@@ -265,11 +266,11 @@ class _MessageState extends State<Message> {
             );
           }
           List keys = [];
-          snapshot.data.documents.forEach((doc){
+          snapshot.data.documents.forEach((doc) {
             keys.add(doc.id);
           });
           List values = [];
-          snapshot.data.documents.forEach((doc){
+          snapshot.data.documents.forEach((doc) {
             values.add(doc.data()["uid"]);
           });
           // List keys = snapshot.data.data().keys.toList();
@@ -339,12 +340,12 @@ class _MessageState extends State<Message> {
                                               color: AppTheme.primaryColor),
                                           image: DecorationImage(
                                               image: NetworkImage(_usersDetails[
-                                              index]
-                                                  .photoUrl ==
-                                                  null
+                                                              index]
+                                                          .photoUrl ==
+                                                      null
                                                   ? "https://via.placeholder.com/150"
                                                   : _usersDetails[index]
-                                                  .photoUrl),
+                                                      .photoUrl),
                                               fit: BoxFit.cover))),
                                 ),
                               ),
@@ -360,7 +361,7 @@ class _MessageState extends State<Message> {
                                       children: [
                                         Column(
                                             crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                                CrossAxisAlignment.start,
                                             children: <Widget>[
                                               Text(
                                                 _usersDetails[index].username,
@@ -369,7 +370,7 @@ class _MessageState extends State<Message> {
                                                     color: AppTheme
                                                         .primaryColorDark,
                                                     fontWeight:
-                                                    FontWeight.w500),
+                                                        FontWeight.w500),
                                               ),
                                               SizedBox(
                                                 height: 5,
@@ -379,8 +380,8 @@ class _MessageState extends State<Message> {
                                                 child: Text(
                                                   snapshot.hasData
                                                       ? snapshot
-                                                      .data.documents[0]
-                                                      .data()['message']
+                                                          .data.documents[0]
+                                                          .data()['message']
                                                       : ".....",
                                                   style: TextStyle(
                                                     fontSize: _fontOne * 13,
@@ -388,7 +389,7 @@ class _MessageState extends State<Message> {
                                                         .primaryColorDark,
                                                   ),
                                                   overflow:
-                                                  TextOverflow.ellipsis,
+                                                      TextOverflow.ellipsis,
                                                 ),
                                               )
                                             ]),
@@ -398,9 +399,9 @@ class _MessageState extends State<Message> {
                                         Text(
                                           snapshot.hasData
                                               ? formatDateTime(
-                                              millisecondsSinceEpoch:
-                                              snapshot.data.documents[0]
-                                                  .data()['timestamp'])
+                                                  millisecondsSinceEpoch:
+                                                      snapshot.data.documents[0]
+                                                          .data()['timestamp'])
                                               : ".....",
                                           style: TextStyle(
                                               color: Colors.grey,

@@ -60,10 +60,17 @@ class _ActivityPageState extends State<ActivityPage> {
               buttonText: "Explore Talent",
             );
           }
+          print(snap.data.documents[0]['read']);
           return ListView.builder(
             itemCount: snap.data.documents.length,
             itemBuilder: (context, index) {
               return NotificationCard(
+                onTap: () async {
+                  print("called notification read");
+                  await _userInfoStore.updateNotif(
+                      uid: widget.uid, doc: snap.data.documents[index]);
+                },
+                read: snap.data.documents[index]["read"],
                 type: snap.data.documents[index]['type'],
                 from: snap.data.documents[index]["from"],
                 videoId: snap.data.documents[index]['type'] == "follow"
