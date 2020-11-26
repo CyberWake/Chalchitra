@@ -94,8 +94,10 @@ class _VideoUploaderState extends State<VideoUploader> {
                           transitionDuration: Duration(milliseconds: 500),
                           openBuilder: (BuildContext context,
                               void Function({Object returnValue}) action) {
-                            setState(() {
-                              _videoCheckOK = false;
+                            Future.delayed(Duration.zero, () async {
+                              setState(() {
+                                _videoCheckOK = false;
+                              });
                             });
                             return VideoPreview(
                               videoFile: videoFile,

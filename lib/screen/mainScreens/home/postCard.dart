@@ -231,6 +231,7 @@ class _PostCardState extends State<PostCard> {
   void dispose() {
     _controller.dispose();
     super.dispose();
+    setup();
   }
 
   @override
@@ -544,12 +545,31 @@ class _PostCardState extends State<PostCard> {
                             SizedBox(
                               width: _widthOne * 20,
                             ),
-                            Text(
-                              widget.video.comments.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: _fontOne * 14,
-                                  color: Colors.grey),
+                            FutureBuilder(
+                              future: _userVideoStore.getComments(
+                                  id: widget.video.videoId),
+                              builder: (context, snap) {
+                                if (snap.data == null) {
+                                  return Text(
+                                    widget.video.comments.toString() == null
+                                        ? "0"
+                                        : widget.video.comments.toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: _fontOne * 14,
+                                        color: Colors.grey),
+                                  );
+                                }
+                                return Text(
+                                  snap.data.docs.length == null
+                                      ? "0"
+                                      : snap.data.docs.length.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: _fontOne * 14,
+                                      color: Colors.grey),
+                                );
+                              },
                             ),
                           ],
                         ),

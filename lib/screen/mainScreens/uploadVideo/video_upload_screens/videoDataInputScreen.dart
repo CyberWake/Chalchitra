@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
+import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:wowtalent/auth/userAuth.dart';
@@ -87,47 +88,56 @@ class _VideoDataInputState extends State<VideoDataInput> {
   }
 
   uploadToServer() async {
-    _uploadingVideo = true;
-    int timestamp = DateTime.now().millisecondsSinceEpoch;
-    setState(() {
-      _processPhase = 'Uploading video thumbnail';
-      _uploadProgress = 0.0;
-    });
-    final thumbUrl = await _uploadThumbnail(widget.thumbnailPath,
-        'thumbnail/' + _userAuth.user.uid, timestamp.toString());
-    setState(() {
-      _processPhase = 'Uploading video file';
-      _uploadProgress = 0.0;
-    });
-    final videoUrl = await _uploadVideo(widget.mediaInfoPath,
-        'videos/' + _userAuth.user.uid + videoName, timestamp.toString());
-    final videoInfo = VideoInfo(
-      uploaderUid: UserAuth().user.uid,
-      videoUrl: videoUrl,
-      thumbUrl: thumbUrl,
-      coverUrl: thumbUrl,
-      aspectRatio: widget.aspectRatio,
-      uploadedAt: timestamp,
-      videoName: videoName,
-      videoHashtag: videoHashTag,
-      category: category,
-      likes: 0,
-      views: 0,
-      rating: 0,
-      comments: 0,
-    );
+    try {
+      _uploadingVideo = true;
+      int timestamp = DateTime.now().millisecondsSinceEpoch;
+      setState(() {
+        _processPhase = 'Uploading video thumbnail';
+        _uploadProgress = 0.0;
+      });
+      final thumbUrl = await _uploadThumbnail(widget.thumbnailPath,
+          'thumbnail/' + _userAuth.user.uid, timestamp.toString());
+      setState(() {
+        _processPhase = 'Uploading video file';
+        _uploadProgress = 0.0;
+      });
+      final videoUrl = await _uploadVideo(widget.mediaInfoPath,
+          'videos/' + _userAuth.user.uid + videoName, timestamp.toString());
+      final videoInfo = VideoInfo(
+        uploaderUid: UserAuth().user.uid,
+        videoUrl: videoUrl,
+        thumbUrl: thumbUrl,
+        coverUrl: thumbUrl,
+        aspectRatio: widget.aspectRatio,
+        uploadedAt: timestamp,
+        videoName: videoName,
+        videoHashtag: videoHashTag,
+        category: category,
+        likes: 0,
+        views: 0,
+        rating: 0,
+        comments: 0,
+      );
 
-    await UserVideoStore.saveVideo(videoInfo);
-    setState(() {
-      _processPhase = '';
-      _uploadProgress = 0.0;
-      _uploadingVideo = false;
-      _uploadSuccess = true;
-    });
-    UserDataModel user =
-        await UserInfoStore().getUserInformation(uid: _userAuth.user.uid);
-    Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
-    await VideoCompress.deleteAllCache();
+      await UserVideoStore.saveVideo(videoInfo);
+      Future.delayed(Duration(milliseconds: 200)).then((value) {
+        setState(() {
+          _processPhase = '';
+          _uploadProgress = 0.0;
+          _uploadingVideo = false;
+          _uploadSuccess = true;
+        });
+      });
+      UserDataModel user =
+          await UserInfoStore().getUserInformation(uid: _userAuth.user.uid);
+      Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
+      await VideoCompress.deleteAllCache();
+    } catch (e) {
+      print(e.toString());
+    }
+    if (_uploadSuccess) {
+      _buildUploadSuccess(context);
+    }
   }
 
   uploadDraftToServer() async {
@@ -182,8 +192,17 @@ class _VideoDataInputState extends State<VideoDataInput> {
             margin: EdgeInsets.only(bottom: 30.0),
             child: Text(_processPhase),
           ),
-          LinearProgressIndicator(
-            value: _uploadProgress,
+          LinearPercentIndicator(
+            alignment: MainAxisAlignment.center,
+            width: MediaQuery.of(context).size.width * 0.75,
+            animation: false,
+            lineHeight: 20.0,
+            animationDuration: 2500,
+            percent: _uploadProgress,
+            center: Text('${(_uploadProgress * 100).toStringAsFixed(2)}%',
+                style: TextStyle(color: Colors.black)),
+            linearStrokeCap: LinearStrokeCap.roundAll,
+            progressColor: Colors.green,
           ),
         ],
       ),
@@ -310,6 +329,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
                             buttonText: "OK",
                             width: MediaQuery.of(context).size.width * 0.6,
                             buttonFunction: () {
+                              Navigator.pop(context);
                               Navigator.pop(context);
                               Navigator.pop(context);
                             },
@@ -621,6 +641,6 @@ class _VideoDataInputState extends State<VideoDataInput> {
                           ),
                         ),
                       )
-                    : _buildUploadSuccess(context)));
+                    : Container()));
   }
 }

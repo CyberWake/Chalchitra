@@ -1,4 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/provideUser.dart';
+import 'package:wowtalent/model/userDataModel.dart';
 
 import '../auth/userAuth.dart';
 import '../model/videoInfoModel.dart';
@@ -95,20 +99,24 @@ class UserVideoStore {
     }
   }
 
-  static deleteUploadedVideo(VideoInfo video) async {
+  static deleteUploadedVideo(VideoInfo video, context) async {
     try {
+      await _users
+          .doc(_userAuth.user.uid)
+          .update({"videoCount": FieldValue.increment(-1)});
       await _allVideos.doc(video.videoId).delete();
       await _videoComments.doc(video.videoId).delete();
       await removeLike(video);
       await removeRating(video);
       await removeWatchHistory(video);
       await deleteNotif(video);
-      await _users
-          .doc(_userAuth.user.uid)
-          .update({"videoCount": FieldValue.increment(-1)});
     } catch (e) {
       print(e.toString());
     }
+    UserDataModel userData =
+        await UserInfoStore().getUserInformation(uid: _userAuth.user.uid);
+    Provider.of<CurrentUser>(context, listen: false)
+        .updateCurrentUser(userData);
   }
 
   static removeLike(VideoInfo video) async {

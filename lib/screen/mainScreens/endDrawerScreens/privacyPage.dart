@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
@@ -86,15 +87,22 @@ class _PrivacyPageState extends State<PrivacyPage> {
                   style: TextStyle(color: AppTheme.primaryColorLight)),
               trailing: Padding(
                 padding: EdgeInsets.only(right: 15.0),
-                child: AspectRatio(
-                  aspectRatio: 0.3,
-                  child: CupertinoSwitch(
-                    value: user == null ? false : user.private,
-                    activeColor: AppTheme.primaryColorLight,
-                    onChanged: (bool value) async {
-                      changePrivacy(value);
-                    },
-                  ),
+                child: AdvancedSwitch(
+                  activeColor: AppTheme.primaryColorLight,
+                  inactiveColor: AppTheme.pureWhiteColor,
+                  activeChild: Text('Private',
+                      style: TextStyle(
+                          color: AppTheme.pureWhiteColor,
+                          fontWeight: FontWeight.bold)),
+                  inactiveChild: Text('Public',
+                      style: TextStyle(
+                          color: AppTheme.primaryColor,
+                          fontWeight: FontWeight.bold)),
+                  width: 80.0,
+                  value: user == null ? false : user.private,
+                  onChanged: (bool value) async {
+                    changePrivacy(value);
+                  },
                 ),
               ),
             ),

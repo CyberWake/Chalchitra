@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:percent_indicator/percent_indicator.dart';
+import 'package:video_compress/src/progress_callback.dart/subscription.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
 import 'package:wowtalent/model/theme.dart';
@@ -21,6 +23,8 @@ class VideoPreview extends StatefulWidget {
 
 class _VideoPreviewState extends State<VideoPreview> {
   final _scaffoldGlobalKey = GlobalKey<ScaffoldState>();
+  Subscription _subscription;
+  double _progress = 0.0;
   VideoPlayerController _controller;
   File selectedVideo;
   bool playing;
@@ -71,6 +75,11 @@ class _VideoPreviewState extends State<VideoPreview> {
 
   @override
   void initState() {
+    _subscription = VideoCompress.compressProgress$.subscribe((event) {
+      setState(() {
+        _progress = event.roundToDouble();
+      });
+    });
     super.initState();
     selectedVideo = File(widget.videoFile.path);
     _encodingVideo = false;
@@ -83,6 +92,7 @@ class _VideoPreviewState extends State<VideoPreview> {
     playing = true;
   }
 
+  @override
   void dispose() {
     super.dispose();
     if (_controller == null) {
@@ -90,6 +100,7 @@ class _VideoPreviewState extends State<VideoPreview> {
     } else {
       _controller = null;
       _controller.dispose();
+      _subscription.unsubscribe();
     }
   }
 
@@ -107,15 +118,23 @@ class _VideoPreviewState extends State<VideoPreview> {
               style: TextStyle(color: Colors.white),
             ),
           ),
-          LinearProgressIndicator(
-            backgroundColor: AppTheme.primaryColor.withOpacity(0.3),
-            valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryColor),
+          LinearPercentIndicator(
+            alignment: MainAxisAlignment.center,
+            width: MediaQuery.of(context).size.width * 0.8,
+            animation: false,
+            lineHeight: 20.0,
+            animationDuration: 2500,
+            percent: _progress / 100,
+            center: Text('$_progress%', style: TextStyle(color: Colors.black)),
+            linearStrokeCap: LinearStrokeCap.roundAll,
+            progressColor: Colors.green,
           ),
         ],
       ),
     );
   }
 
+  // ignore: missing_return
   Future<bool> _onBackPressed() {
     try {
       Navigator.pop(context);
@@ -312,6 +331,7 @@ class _VideoPreviewState extends State<VideoPreview> {
                     _controller.pause();
                     VideoCompress.cancelCompression();
                     await VideoCompress.deleteAllCache();
+                    _subscription.unsubscribe();
                     Navigator.pop(context);
                   },
                   child: Text(

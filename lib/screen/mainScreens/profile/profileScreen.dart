@@ -445,30 +445,28 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  removeVideoFromUserAccount(int index) async {
+  removeVideoFromUserAccount(int index, context) async {
     print("deleting video ${_videos[index].videoId}");
     final videoInfo = VideoInfo(videoId: _videos[index].videoId);
-    await UserVideoStore.deleteUploadedVideo(videoInfo);
+    await UserVideoStore.deleteUploadedVideo(videoInfo, context);
   }
 
   void _deleteButton(int index) async {
-    await showMenu(
+    int result = await showMenu(
         context: context,
         color: Colors.yellow[100],
         position: RelativeRect.fromLTRB(125, 530, 125, 0),
         items: [
           PopupMenuItem(
-            child: InkWell(
+            value: 0,
+            height: 50,
+            child: GestureDetector(
               onTap: () async {
-                await removeVideoFromUserAccount(index);
+                await removeVideoFromUserAccount(index, context);
                 Navigator.pop(context);
                 Scaffold.of(context).showSnackBar(SnackBar(
                   content: Text('Video Deleted Successfully'),
                 ));
-                UserDataModel userData = await UserInfoStore()
-                    .getUserInformation(uid: _userAuth.user.uid);
-                Provider.of<CurrentUser>(context, listen: false)
-                    .updateCurrentUser(userData);
                 setup();
                 setState(() {});
               },
@@ -486,6 +484,14 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           )
         ]);
+    if (result == 0) {
+      await removeVideoFromUserAccount(index, context);
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Video Deleted Successfully'),
+      ));
+      setup();
+      setState(() {});
+    }
   }
 
   buildPostStat() {

@@ -485,4 +485,23 @@ class UserInfoStore {
       print(e.toString());
     }
   }
+
+  Future updateAllNotif({String uid}) async {
+    try {
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+      _notificationCenter
+          .doc(uid)
+          .collection("notifs")
+          .where("read", isEqualTo: false)
+          .get()
+          .then((val) {
+        val.docs.forEach((element) {
+          batch.update(element.reference, {"read": true});
+        });
+        return batch.commit();
+      });
+    } catch (e) {
+      print(e.toString());
+    }
+  }
 }

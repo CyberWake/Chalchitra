@@ -7,7 +7,7 @@ import 'package:wowtalent/widgets/noDataTile.dart';
 import 'package:wowtalent/widgets/notificationCard.dart';
 
 class ActivityPage extends StatefulWidget {
-  String uid;
+  final String uid;
   ActivityPage({this.uid});
   @override
   _ActivityPageState createState() => _ActivityPageState();
@@ -19,6 +19,12 @@ class _ActivityPageState extends State<ActivityPage> {
   @override
   void initState() {
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _userInfoStore.updateAllNotif(uid: widget.uid);
   }
 
   @override

@@ -237,6 +237,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_advanced_switch:
+    dependency: "direct main"
+    description:
+      name: flutter_advanced_switch
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.0.8"
   flutter_blurhash:
     dependency: transitive
     description:
@@ -251,13 +258,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
-  flutter_colored_progress_indicators:
-    dependency: "direct main"
-    description:
-      name: flutter_colored_progress_indicators
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.2.0"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -272,6 +272,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.2.4"
+  flutter_icons:
+    dependency: transitive
+    description:
+      name: flutter_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
@@ -520,6 +527,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.9.2"
+  percent_indicator:
+    dependency: "direct main"
+    description:
+      name: percent_indicator
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.1.8"
   permission_handler:
     dependency: "direct main"
     description:

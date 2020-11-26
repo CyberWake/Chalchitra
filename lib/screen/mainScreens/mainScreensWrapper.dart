@@ -82,7 +82,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   void getUser() async {
     if (_userAuth.user != null) {
       _notLoggedIn = false;
-      fcmSetup();
       print(_userAuth.user.uid);
       await _userInfoStore.updateToken(context: context);
       _currentUserInfo =
@@ -141,7 +140,14 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     super.dispose();
   }
 
-  fcmSetup() {
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+    _currentIndex = widget.index;
+    _tabController = TabController(length: 5, vsync: this);
+    _tabController.index = _currentIndex;
+    getUser();
     _fcm.configure(onMessage: (Map<String, dynamic> message) async {
       _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
           duration: Duration(seconds: 2),
@@ -151,7 +157,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
             subtitle: Text(message['notification']['body']),
             onTap: () {
               if (message['type'] == "like") {
-                return ActivityPage(uid: _userAuth.user.uid);
+                Navigator.push(
+                    context,
+                    CupertinoPageRoute(
+                        builder: (_) => ActivityPage(uid: _userAuth.user.uid)));
               } else if (message['type'] == "comment") {
                 Navigator.push(
                     context,
@@ -179,7 +188,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     }, onLaunch: (Map<String, dynamic> message) async {
       print("onLaunch work");
       if (message['type'] == "like") {
-        return ActivityPage(uid: _userAuth.user.uid);
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => ActivityPage(uid: _userAuth.user.uid)));
       } else if (message['type'] == "comment") {
         Navigator.push(
             context,
@@ -205,7 +217,10 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     }, onResume: (Map<String, dynamic> message) async {
       print("onResume");
       if (message['type'] == "like") {
-        return ActivityPage(uid: _userAuth.user.uid);
+        Navigator.push(
+            context,
+            CupertinoPageRoute(
+                builder: (_) => ActivityPage(uid: _userAuth.user.uid)));
       } else if (message['type'] == "comment") {
         Navigator.push(
             context,
@@ -229,16 +244,6 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                     )));
       }
     });
-  }
-
-  @override
-  void initState() {
-    WidgetsBinding.instance.addObserver(this);
-    super.initState();
-    _currentIndex = widget.index;
-    _tabController = TabController(length: 5, vsync: this);
-    _tabController.index = _currentIndex;
-    getUser();
   }
 
   _buildConfirmSignOut(context) {
@@ -348,6 +353,12 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     }
     print(index);
     if (index == 4) {
+      if (_profilePage == Container()) {
+        _profilePage = ProfilePage(
+          uid: user.id,
+          isFromSearch: false,
+        );
+      }
       print(index);
       _isMessagePage = false;
       _currentIndex = index;
@@ -397,7 +408,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
       length: 5,
       child: Scaffold(
         backgroundColor: AppTheme.backgroundColor,
-        endDrawerEnableOpenDragGesture: false,
+        endDrawerEnableOpenDragGesture: true,
         key: _scaffoldGlobalKey,
         appBar: AppBar(
           toolbarOpacity: 1.0,
@@ -439,12 +450,43 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                   )
                 : _tabController.index != 3
                     ? IconButton(
-                        icon: Icon(
-                          Icons.menu,
-                          color: AppTheme.backgroundColor,
-                          size: _iconOne * 25,
-                          semanticLabel: "Menu",
-                        ),
+                        icon: StreamBuilder(
+                            stream: _userInfoStore.notifCount(
+                                uid: _userAuth.user.uid),
+                            builder: (_, snap) {
+                              if (!snap.hasData) {
+                                return Icon(
+                                  Icons.menu,
+                                  color: AppTheme.backgroundColor,
+                                  size: _iconOne * 25,
+                                );
+                              }
+                              if (snap.data.documents.length > 0) {
+                                return Stack(
+                                  children: [
+                                    Icon(
+                                      Icons.menu,
+                                      color: AppTheme.backgroundColor,
+                                      size: _iconOne * 25,
+                                    ),
+                                    Positioned(
+                                      top: 0.0,
+                                      left: 13,
+                                      child: Icon(
+                                        Icons.brightness_1,
+                                        color: Colors.redAccent,
+                                        size: _iconOne * 12,
+                                      ),
+                                    )
+                                  ],
+                                );
+                              }
+                              return Icon(
+                                Icons.menu,
+                                color: AppTheme.backgroundColor,
+                                size: _iconOne * 25,
+                              );
+                            }),
                         onPressed: () =>
                             _scaffoldGlobalKey.currentState.openEndDrawer(),
                         tooltip: MaterialLocalizations.of(context)
@@ -459,202 +501,228 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
         ),
         endDrawer: Container(
           width: _size.width * 0.5,
-          child: Drawer(
-              child: Container(
-            color: AppTheme.primaryColor,
-            child: Column(
-              children: [
-                Container(
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.only(top: _size.height * 0.039),
-                  padding: EdgeInsets.symmetric(horizontal: 10, vertical: 10),
-                  child: FittedBox(
-                    child: Text(
-                      user == null ? " " : user.username,
-                      style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-                Divider(
-                  color: Colors.white,
-                  thickness: 0.5,
-                ),
-                ListTile(
-                  leading: Icon(
-                    Icons.drafts,
-                    color: AppTheme.pureWhiteColor,
-                    semanticLabel: 'Draft',
-                    size: 30,
-                  ),
-                  title: Text("Drafts",
-                      style: TextStyle(
-                          color: AppTheme.pureWhiteColor, fontSize: 18)),
-                  onTap: () {
-                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (BuildContext context) => Drafts()));
-                  },
-                ),
-                ListTile(
-                  leading: StreamBuilder(
-                    stream: _userInfoStore.notifCount(uid: _userAuth.user.uid),
-                    builder: (_, snap) {
-                      if (!snap.hasData) {
-                        return Icon(
-                          Icons.notifications,
+          child: user != null
+              ? Drawer(
+                  child: Container(
+                  color: AppTheme.primaryColor,
+                  child: Column(
+                    children: [
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.only(top: _size.height * 0.039),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                        child: FittedBox(
+                          child: Text(
+                            user == null ? " " : user.username,
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ),
+                      Divider(
+                        color: Colors.white,
+                        thickness: 0.5,
+                      ),
+                      ListTile(
+                        leading: Icon(
+                          Icons.drafts,
                           color: AppTheme.pureWhiteColor,
-                          semanticLabel: 'Activity',
+                          semanticLabel: 'Draft',
                           size: 30,
-                        );
-                      }
-                      if (snap.data.documents.length > 0) {
-                        return Material(
-                          color: Colors.transparent,
-                          child: Stack(
-                            children: [
-                              Icon(
+                        ),
+                        title: Text("Drafts",
+                            style: TextStyle(
+                                color: AppTheme.pureWhiteColor, fontSize: 18)),
+                        onTap: () {
+                          _notLoggedIn
+                              ? userNotLoggedIn()
+                              : Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (BuildContext context) => Drafts()));
+                        },
+                      ),
+                      ListTile(
+                        leading: StreamBuilder(
+                          stream: _userInfoStore.notifCount(
+                              uid: _userAuth.user.uid),
+                          builder: (_, snap) {
+                            if (!snap.hasData) {
+                              return Icon(
                                 Icons.notifications,
                                 color: AppTheme.pureWhiteColor,
                                 semanticLabel: 'Activity',
                                 size: 30,
-                              ),
-                              Positioned(
-                                top: 0.0,
-                                right: 0.0,
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.redAccent),
-                                  width: 15.0,
-                                  height: 15.0,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    snap.data.documents.length.toString(),
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(
-                                        color: AppTheme.pureWhiteColor,
-                                        fontSize: 10.0),
-                                  ),
+                              );
+                            }
+                            if (snap.data.documents.length > 0) {
+                              return Material(
+                                color: Colors.transparent,
+                                child: Stack(
+                                  children: [
+                                    Icon(
+                                      Icons.notifications,
+                                      color: AppTheme.pureWhiteColor,
+                                      semanticLabel: 'Activity',
+                                      size: 30,
+                                    ),
+                                    Positioned(
+                                      top: 0.0,
+                                      left: 9.5,
+                                      child: Container(
+                                        padding: EdgeInsets.symmetric(
+                                            horizontal: 0.0),
+                                        decoration: BoxDecoration(
+                                            borderRadius:
+                                                BorderRadius.circular(5),
+                                            color: Colors.redAccent),
+                                        width: 20.0,
+                                        height: 15.0,
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          snap.data.documents.length < 11
+                                              ? snap.data.documents.length
+                                                  .toString()
+                                              : "10+",
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: AppTheme.pureWhiteColor,
+                                              fontSize: 10.0),
+                                        ),
+                                      ),
+                                    )
+                                  ],
                                 ),
-                              )
-                            ],
-                          ),
-                        );
-                      }
-                      return Icon(
-                        Icons.notifications,
-                        color: AppTheme.pureWhiteColor,
-                        semanticLabel: 'Activity',
-                        size: 30,
-                      );
-                    },
-                  ),
-                  title: Text(
-                    "Activity",
-                    style:
-                        TextStyle(color: AppTheme.pureWhiteColor, fontSize: 18),
-                  ),
-                  onTap: () {
-                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (_) => ActivityPage(
-                                  uid: _userAuth.user.uid,
-                                )));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.settings,
-                      color: AppTheme.pureWhiteColor,
-                      semanticLabel: 'Setting',
-                      size: 30),
-                  title: Text('Settings',
-                      style: TextStyle(
-                          color: AppTheme.pureWhiteColor, fontSize: 18)),
-                  onTap: () {
-                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    Navigator.push(context,
-                        CupertinoPageRoute(builder: (_) => PrivacyPage()));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.group_add,
-                      color: AppTheme.pureWhiteColor,
-                      semanticLabel: 'Invite',
-                      size: 30),
-                  title: Text('Invite',
-                      style: TextStyle(
-                          color: AppTheme.pureWhiteColor, fontSize: 18)),
-                  onTap: () async {
-                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    await FlutterShare.share(
-                        title: 'Join WowTalent',
-                        text:
-                            "I'm loving this app, WowTalent, world's largest talent discovery platform. Download Here:",
-                        linkUrl:
-                            'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
-                        chooserTitle: 'Invite');
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.contact_support,
-                      color: AppTheme.pureWhiteColor,
-                      semanticLabel: 'FeedBack and Help',
-                      size: 30),
-                  title: Text('FeedBack and Help',
-                      style: TextStyle(
-                          color: AppTheme.pureWhiteColor, fontSize: 18)),
-                  onTap: () {
-                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    Navigator.push(
-                        context,
-                        CupertinoPageRoute(
-                            builder: (_) => FeedBack(
-                                  user: user,
-                                )));
-                  },
-                ),
-                ListTile(
-                  leading: Icon(Icons.contacts,
-                      color: AppTheme.pureWhiteColor,
-                      semanticLabel: 'Contact Us',
-                      size: 30),
-                  title: Text('Contact Us',
-                      style: TextStyle(
-                          color: AppTheme.pureWhiteColor, fontSize: 18)),
-                  onTap: () {
-                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    /*Navigator.push(
+                              );
+                            }
+                            return Icon(
+                              Icons.notifications,
+                              color: AppTheme.pureWhiteColor,
+                              semanticLabel: 'Activity',
+                              size: 30,
+                            );
+                          },
+                        ),
+                        title: Text(
+                          "Activity",
+                          style: TextStyle(
+                              color: AppTheme.pureWhiteColor, fontSize: 18),
+                        ),
+                        onTap: () {
+                          _notLoggedIn
+                              ? userNotLoggedIn()
+                              : Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (_) => ActivityPage(
+                                        uid: _userAuth.user.uid,
+                                      )));
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.settings,
+                            color: AppTheme.pureWhiteColor,
+                            semanticLabel: 'Setting',
+                            size: 30),
+                        title: Text('Settings',
+                            style: TextStyle(
+                                color: AppTheme.pureWhiteColor, fontSize: 18)),
+                        onTap: () {
+                          _notLoggedIn
+                              ? userNotLoggedIn()
+                              : Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (_) => PrivacyPage()));
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.group_add,
+                            color: AppTheme.pureWhiteColor,
+                            semanticLabel: 'Invite',
+                            size: 30),
+                        title: Text('Invite',
+                            style: TextStyle(
+                                color: AppTheme.pureWhiteColor, fontSize: 18)),
+                        onTap: () async {
+                          _notLoggedIn
+                              ? userNotLoggedIn()
+                              : Navigator.pop(context);
+                          await FlutterShare.share(
+                              title: 'Join WowTalent',
+                              text:
+                                  "I'm loving this app, WowTalent, world's largest talent discovery platform. Download Here:",
+                              linkUrl:
+                                  'http://www.mediafire.com/folder/gqt2pihrq20h9/Documents',
+                              chooserTitle: 'Invite');
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.contact_support,
+                            color: AppTheme.pureWhiteColor,
+                            semanticLabel: 'FeedBack and Help',
+                            size: 30),
+                        title: Text('FeedBack and Help',
+                            style: TextStyle(
+                                color: AppTheme.pureWhiteColor, fontSize: 18)),
+                        onTap: () {
+                          _notLoggedIn
+                              ? userNotLoggedIn()
+                              : Navigator.pop(context);
+                          Navigator.push(
+                              context,
+                              CupertinoPageRoute(
+                                  builder: (_) => FeedBack(
+                                        user: user,
+                                      )));
+                        },
+                      ),
+                      ListTile(
+                        leading: Icon(Icons.contacts,
+                            color: AppTheme.pureWhiteColor,
+                            semanticLabel: 'Contact Us',
+                            size: 30),
+                        title: Text('Contact Us',
+                            style: TextStyle(
+                                color: AppTheme.pureWhiteColor, fontSize: 18)),
+                        onTap: () {
+                          _notLoggedIn
+                              ? userNotLoggedIn()
+                              : Navigator.pop(context);
+                          /*Navigator.push(
                         context, CupertinoPageRoute(builder: (_) => null));*/
-                  },
-                ),
-                Spacer(),
-                ListTile(
-                  leading: Icon(Icons.power_settings_new,
-                      color: AppTheme.pureWhiteColor,
-                      semanticLabel: 'Signout',
-                      size: 30),
-                  title: Text('Signout',
-                      style: TextStyle(
-                          color: AppTheme.pureWhiteColor, fontSize: 18)),
-                  onTap: () {
-                    _notLoggedIn ? userNotLoggedIn() : Navigator.pop(context);
-                    _buildConfirmSignOut(context);
-                  },
-                ),
-              ],
-            ),
-          )),
+                        },
+                      ),
+                      Spacer(),
+                      ListTile(
+                        leading: Icon(Icons.power_settings_new,
+                            color: AppTheme.pureWhiteColor,
+                            semanticLabel: 'Signout',
+                            size: 30),
+                        title: Text('Signout',
+                            style: TextStyle(
+                                color: AppTheme.pureWhiteColor, fontSize: 18)),
+                        onTap: () {
+                          _notLoggedIn
+                              ? userNotLoggedIn()
+                              : Navigator.pop(context);
+                          _buildConfirmSignOut(context);
+                        },
+                      ),
+                    ],
+                  ),
+                ))
+              : Container(),
         ),
         bottomNavigationBar: CurvedNavigationBar(
           index: _currentIndex,
-          animationDuration: Duration(milliseconds: 100),
+          animationDuration: Duration(milliseconds: 400),
           height: Platform.isIOS ? _heightOne * 40 : _heightOne * 55,
           backgroundColor: AppTheme.backgroundColor,
           color: AppTheme.primaryColor,

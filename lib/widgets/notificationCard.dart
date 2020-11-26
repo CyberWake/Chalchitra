@@ -109,7 +109,9 @@ class _NotificationCardState extends State<NotificationCard> {
             builder: (context, snap) {
               if (!snap.hasData ||
                   snap.connectionState == ConnectionState.waiting) {
-                return LoadingCards();
+                return LoadingCards(
+                  count: 1,
+                );
               }
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 5),
