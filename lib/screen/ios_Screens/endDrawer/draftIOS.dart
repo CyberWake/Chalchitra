@@ -13,11 +13,11 @@ class _DraftIOSState extends State<DraftIOS> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        navigationBar: CupertinoNavigationBar(
-          middle: Text("Drafts"),
-          backgroundColor: AppTheme.backgroundColor,
-        ),
-        child: widget.bodyContent,
+      navigationBar: CupertinoNavigationBar(
+        middle: Text("Drafts"),
+        backgroundColor: AppTheme.backgroundColor,
+      ),
+      child: widget.bodyContent,
     );
   }
 }

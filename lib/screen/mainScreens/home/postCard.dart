@@ -1,13 +1,17 @@
 import 'dart:io';
 import 'dart:math' as math;
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:dio/dio.dart';
-import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:shimmer/shimmer.dart';
+import 'package:video_player/video_player.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
@@ -15,31 +19,26 @@ import 'package:wowtalent/model/menuConstants.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
+import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/comments.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:wowtalent/widgets/cupertinosnackbar.dart';
+import 'package:wowtalent/widgets/customSliderThumb.dart';
+import 'package:wowtalent/widgets/customSliderTrackShape.dart';
 
 import '../../../model/theme.dart';
 
 class PostCard extends StatefulWidget {
-  final video;
-  final String title, uploadTime, thumbnail, profileImg, uploader, id, videoUrl;
-  final int commentCount, likeCount, viewCount;
-  final int rating;
+  final VideoInfo video;
+  final String profileImg, uploader;
+  final Function navigate;
+  bool playVideo = false;
 
-  PostCard({
-    this.video,
-    this.id,
-    this.videoUrl,
-    this.title,
-    this.commentCount,
-    this.likeCount,
-    this.uploadTime,
-    this.thumbnail,
-    this.profileImg,
-    this.uploader,
-    this.viewCount,
-    this.rating,
-  });
+  PostCard(
+      {this.video,
+      this.navigate,
+      this.profileImg,
+      this.uploader,
+      this.playVideo});
 
   @override
   _PostCardState createState() => _PostCardState();
@@ -59,127 +58,137 @@ class _PostCardState extends State<PostCard> {
   bool _isLiked;
   int likeCount;
   bool _processing = false;
+  VideoPlayerController _controller;
 
-  void _button(Offset offset) async {
+  void button(Offset offset) async {
     double left = offset.dx;
-    double top = offset.dy;
-    await showMenu(
-        context: context,
-        color: AppTheme.backgroundColor,
-        position: RelativeRect.fromLTRB(left, top, 0, 0),
-        items: [
-          PopupMenuItem(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                SizedBox(
-                  height: 10,
-                ),
-                InkWell(
-                  onTap: () => choiceAction(Menu.Share),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        Menu.Share,
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
-                      ),
-                      Icon(Icons.share, size: 18, color: Colors.blueAccent),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () => choiceAction(Menu.Download),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        Menu.Download,
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
-                      ),
-                      Icon(Icons.arrow_downward, size: 20, color: Colors.green),
-                    ],
-                  ),
-                ),
-                SizedBox(
-                  height: 20,
-                ),
-                InkWell(
-                  onTap: () => choiceAction(Menu.Forward),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                        Menu.Forward,
-                        style: TextStyle(color: AppTheme.pureWhiteColor),
-                      ),
-                      Transform(
-                        alignment: Alignment.center,
-                        transform: Matrix4.rotationY(math.pi),
-                        child: Icon(
-                          Icons.reply,
-                          size: 20,
-                          color: Colors.orangeAccent,
+    double top = offset.dy - 20;
+    showCupertinoModalPopup(
+            context: context,
+            builder: (context) {
+              return CupertinoActionSheet(
+                actions: [
+                  CupertinoActionSheetAction(
+                    onPressed: () {
+                      print(widget.video.videoId);
+                      choiceAction(Menu.Share);
+                    },
+                    child: Container(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.share,
+                          color: AppTheme.pureWhiteColor,
                         ),
-                      )
-                    ],
+                        SizedBox(width: _size.width * 0.03),
+                        Text(
+                          Menu.Share,
+                          style: TextStyle(color: AppTheme.pureWhiteColor),
+                        )
+                      ],
+                    )),
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-              ],
-            ),
-          )
-        ]);
+                  CupertinoActionSheetAction(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      downloadIOS();
+                    },
+                    child: Container(
+                        child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.download_rounded,
+                            color: AppTheme.pureWhiteColor),
+                        SizedBox(width: _size.width * 0.03),
+                        Text(Menu.Download,
+                            style: TextStyle(color: AppTheme.pureWhiteColor))
+                      ],
+                    )),
+                  ),
+                  //  CupertinoActionSheetAction(onPressed: (){
+                  //    choiceAction(Menu.Forward);
+                  //  }, child:
+                  //     Container(
+                  //     child: Row(
+                  //       mainAxisAlignment: MainAxisAlignment.center,
+                  //       children: [
+                  //         Icon(Icons.reply,color: AppTheme.pureWhiteColor),
+                  //         SizedBox(width:_size.width*0.03),
+                  //         Text(Menu.Forward,style: TextStyle(color: AppTheme.pureWhiteColor))
+                  //       ],
+                  //     )
+                  // ),
+                  //  ),
+                ],
+              );
+            });
+  }
+
+  void downloadIOS() async {
+    Dio dio = Dio();
+    String time = DateTime.now().toString();
+    final directoryIOS = await getApplicationDocumentsDirectory();
+    try {
+      cupertinoSnackbar(context, "Download Started");
+      await dio.download(widget.video.videoUrl,
+          '${directoryIOS.path}/${time.substring(0, time.lastIndexOf("."))}/video.mp4',
+          onReceiveProgress: (received, total) {
+        if (total == received) {
+          cupertinoSnackbar(context, "Download Complete");
+        }
+      });
+    } catch (e) {
+      print(e.toString());
+    }
   }
 
   void choiceAction(String choice) async {
     print('called');
     if (choice == Menu.Share) {
       Navigator.pop(context);
-      final DynamicLinkParameters parameters = DynamicLinkParameters(
-        uriPrefix: 'https://wowtalent.page.link',
-        link: Uri.parse('https://wowtalent.com/player?videoId=${widget.id}'),
-        androidParameters: AndroidParameters(
-          packageName: 'com.example.wowtalant',
-          minimumVersion: 125,
-        ),
-        iosParameters: IosParameters(
-          bundleId: 'com.example.wowtalant',
-          minimumVersion: '1.0.0',
-          appStoreId: '123456789',
-        ),
-      );
-      final Uri dynamicUrl = await parameters.buildUrl();
-      print(dynamicUrl);
+      await FlutterShare.share(
+          title: 'Watch WowTalent',
+          text:
+              "I'm loving this app, WowTalent, world's largest talent discovery platform. I found new talent :",
+          linkUrl: widget.video.shareUrl,
+          chooserTitle: 'Share');
     } else if (choice == Menu.Download) {
-      print('Download');
-      final directory = await getExternalStorageDirectories();
-      print(directory[0].path);
-      Scaffold.of(context).showSnackBar(SnackBar(
-        duration: Duration(milliseconds: 1000),
-        content: Text('Download Started'),
-      ));
-      Dio dio = Dio();
-      String time = DateTime.now().toString();
-      try {
-        Navigator.pop(context);
-        await dio.download(widget.videoUrl,
-            '${directory[0].path}/${time.substring(0, time.lastIndexOf("."))}/video.mp4',
-            onReceiveProgress: (received, total) {
-          if (total == received) {
-            Scaffold.of(context).showSnackBar(SnackBar(
-              duration: Duration(milliseconds: 1000),
-              content: Text('Download Completed'),
-            ));
-          }
+      var status = await Permission.storage.status;
+      if (!status.isGranted) {
+        await Permission.storage.request();
+      } else if (status.isGranted) {
+        print('Download');
+        String directory;
+        Directory('/storage/emulated/0/WowTalent').create()
+            // The created directory is returned as a Future.
+            .then((Directory directoryPath) {
+          print(directoryPath.path);
+          directory = directoryPath.path;
         });
-      } catch (e) {
-        print(e.toString());
+        Scaffold.of(context).showSnackBar(SnackBar(
+          duration: Duration(milliseconds: 1000),
+          content: Text('Download Started'),
+        ));
+        Dio dio = Dio();
+        String time = DateTime.now().toString();
+        try {
+          Navigator.pop(context);
+          await dio.download(widget.video.videoUrl,
+              '/storage/emulated/0/WowTalent/${time.substring(0, time.lastIndexOf("."))}/video.mp4',
+              onReceiveProgress: (received, total) {
+            if (total == received) {
+              Scaffold.of(context).showSnackBar(SnackBar(
+                duration: Duration(milliseconds: 1000),
+                content: Text('Download Completed'),
+              ));
+            }
+          });
+        } catch (e) {
+          print(e.toString());
+        }
+      } else {
+        Navigator.pop(context);
       }
     } else if (choice == Menu.Forward) {
       print('Forward');
@@ -188,12 +197,13 @@ class _PostCardState extends State<PostCard> {
   }
 
   void setup() async {
-    DocumentSnapshot user = await _userInfoStore.getUserInfo(
-        uid: widget.video.data()['uploaderUid']);
+    DocumentSnapshot user =
+        await _userInfoStore.getUserInfo(uid: widget.video.uploaderUid);
     _user = UserDataModel.fromDocument(user);
-    _sliderValue = await _userVideoStore.checkRated(videoID: widget.id);
-    _isLiked = await _userVideoStore.checkLiked(videoID: widget.id);
-    likeCount = widget.likeCount;
+    _sliderValue =
+        await _userVideoStore.checkRated(videoID: widget.video.videoId);
+    _isLiked = await _userVideoStore.checkLiked(videoID: widget.video.videoId);
+    likeCount = widget.video.likes;
     if (this.mounted) {
       setState(() {});
     }
@@ -202,6 +212,34 @@ class _PostCardState extends State<PostCard> {
   @override
   void initState() {
     super.initState();
+    setup();
+    _controller = VideoPlayerController.network(widget.video.videoUrl)
+      ..initialize().then((_) {
+        setState(() {});
+      });
+    if (widget.playVideo) {
+      _controller.play();
+      _controller.setLooping(true);
+    }
+  }
+
+  @override
+  void didUpdateWidget(PostCard oldWidget) {
+    if (oldWidget.playVideo != widget.playVideo) {
+      if (widget.playVideo) {
+        _controller.play();
+        _controller.setLooping(true);
+      } else {
+        _controller.pause();
+      }
+    }
+    super.didUpdateWidget(oldWidget);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
     setup();
   }
 
@@ -216,7 +254,7 @@ class _PostCardState extends State<PostCard> {
       height: _size.height * 0.4,
       width: _size.width * 0.9,
       decoration: BoxDecoration(
-        color: AppTheme.elevationColor,
+        color: AppTheme.pureWhiteColor,
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(25),
           bottomLeft: Radius.circular(25),
@@ -239,7 +277,33 @@ class _PostCardState extends State<PostCard> {
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Container(
+                      CachedNetworkImage(
+                        imageUrl: widget.profileImg,
+                        imageBuilder: (context, imageProvider) => Container(
+                          width: _fontOne * 40,
+                          height: _heightOne * 40,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            color: AppTheme.backgroundColor,
+                            image: DecorationImage(
+                                image: imageProvider, fit: BoxFit.cover),
+                          ),
+                        ),
+                        placeholder: (context, url) => Shimmer.fromColors(
+                          highlightColor: AppTheme.pureWhiteColor,
+                          baseColor: AppTheme.backgroundColor,
+                          child: Container(
+                            width: _fontOne * 40,
+                            height: _heightOne * 40,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(10),
+                              color: AppTheme.backgroundColor,
+                            ),
+                          ),
+                        ),
+                        errorWidget: (context, url, error) => Icon(Icons.error),
+                      ),
+                      /*Container(
                         width: _fontOne * 40,
                         height: _heightOne * 40,
                         decoration: BoxDecoration(
@@ -247,7 +311,7 @@ class _PostCardState extends State<PostCard> {
                                 fit: BoxFit.cover,
                                 image: NetworkImage(widget.profileImg)),
                             borderRadius: BorderRadius.circular(10)),
-                      ),
+                      ),*/
                       SizedBox(
                         width: _widthOne * 40,
                       ),
@@ -256,11 +320,11 @@ class _PostCardState extends State<PostCard> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              widget.title,
+                              widget.video.videoName,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 14,
-                                color: AppTheme.pureWhiteColor,
+                                color: AppTheme.pureBlackColor,
                               ),
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -272,7 +336,7 @@ class _PostCardState extends State<PostCard> {
                               style: TextStyle(
                                   fontWeight: FontWeight.w500,
                                   fontSize: _fontOne * 12,
-                                  color: Colors.grey),
+                                  color: AppTheme.pureBlackColor),
                             ),
                           ],
                         ),
@@ -287,11 +351,13 @@ class _PostCardState extends State<PostCard> {
                             child: Icon(Icons.more_horiz,
                                 color: Colors.grey, size: _iconOne * 30),
                             onTapDown: (TapDownDetails details) {
-                              _button(details.globalPosition);
+                              button(details.globalPosition);
                             },
                           ),
                           Text(
-                            widget.uploadTime,
+                            formatDateTime(
+                                millisecondsSinceEpoch:
+                                    widget.video.uploadedAt),
                             style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: _fontOne * 10,
@@ -306,49 +372,91 @@ class _PostCardState extends State<PostCard> {
                   ),
                   Expanded(
                     child: InkWell(
+                      // onTap: widget.navigate,
                       onTap: () async {
                         bool isWatched = await UserVideoStore()
-                            .checkWatched(videoID: widget.id);
+                            .checkWatched(videoID: widget.video.videoId);
                         if (!isWatched) {
-                          await UserVideoStore()
-                              .increaseVideoCount(videoID: widget.id);
+                          await UserVideoStore().increaseVideoCount(
+                              videoID: widget.video.videoId);
                         }
-                        Navigator.push(
-                          context,
-                          Platform.isIOS
-                              ? CupertinoPageRoute(
-                                  builder: (context) {
-                                    VideoInfo video =
-                                        VideoInfo.fromDocument(widget.video);
-                                    video.videoId = widget.id;
-                                    return Player(
-                                      video: video,
-                                    );
-                                  },
-                                )
-                              : MaterialPageRoute(
-                                  builder: (context) {
-                                    VideoInfo video =
-                                        VideoInfo.fromDocument(widget.video);
-                                    video.videoId = widget.id;
-                                    return Player(
-                                      video: video,
-                                    );
-                                  },
-                                ),
-                        );
+                        widget.navigate();
                       },
-                      child: Container(
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.only(
-                              topRight: Radius.circular(15),
-                              bottomLeft: Radius.circular(15),
+                      child: widget.playVideo
+                          ? Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.only(
+                                  topRight: Radius.circular(15),
+                                  bottomLeft: Radius.circular(15),
+                                ),
+                              ),
+                              child: _controller.value.initialized
+                                  ? AspectRatio(
+                                      aspectRatio:
+                                          _controller.value.aspectRatio,
+                                      child: VideoPlayer(_controller))
+                                  : CachedNetworkImage(
+                                      imageUrl: widget.video.thumbUrl,
+                                      imageBuilder: (context, imageProvider) =>
+                                          Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.only(
+                                            topRight: Radius.circular(15),
+                                            bottomLeft: Radius.circular(15),
+                                          ),
+                                          color: AppTheme.backgroundColor,
+                                          image: DecorationImage(
+                                              image: imageProvider,
+                                              fit: BoxFit.cover),
+                                        ),
+                                      ),
+                                      placeholder: (context, url) =>
+                                          Shimmer.fromColors(
+                                        highlightColor: AppTheme.pureWhiteColor,
+                                        baseColor: AppTheme.backgroundColor,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(15),
+                                              bottomLeft: Radius.circular(15),
+                                            ),
+                                            color: AppTheme.backgroundColor,
+                                          ),
+                                        ),
+                                      ),
+                                      errorWidget: (context, url, error) =>
+                                          Icon(Icons.error),
+                                    ))
+                          : CachedNetworkImage(
+                              imageUrl: widget.video.thumbUrl,
+                              imageBuilder: (context, imageProvider) =>
+                                  Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.only(
+                                    topRight: Radius.circular(15),
+                                    bottomLeft: Radius.circular(15),
+                                  ),
+                                  color: AppTheme.backgroundColor,
+                                  image: DecorationImage(
+                                      image: imageProvider, fit: BoxFit.cover),
+                                ),
+                              ),
+                              placeholder: (context, url) => Shimmer.fromColors(
+                                highlightColor: AppTheme.pureWhiteColor,
+                                baseColor: AppTheme.backgroundColor,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.only(
+                                      topRight: Radius.circular(15),
+                                      bottomLeft: Radius.circular(15),
+                                    ),
+                                    color: AppTheme.backgroundColor,
+                                  ),
+                                ),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  Icon(Icons.error),
                             ),
-                            color: AppTheme.backgroundColor,
-                            image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(widget.thumbnail))),
-                      ),
                     ),
                   ),
                   SizedBox(
@@ -369,38 +477,40 @@ class _PostCardState extends State<PostCard> {
                                   ? SvgPicture.asset(
                                       "assets/images/love_icon.svg",
                                       width: 20,
-                                      color: Colors.red,
+                                      color: AppTheme.secondaryColorDark,
                                     )
                                   : SvgPicture.asset(
                                       "assets/images/loved_icon.svg",
                                       width: 20,
-                                      color: Colors.red,
+                                      color: AppTheme.secondaryColor,
                                     ),
                               onTap: () async {
                                 if (!_processing) {
                                   _processing = true;
                                   if (!_isLiked) {
                                     _isLiked = await _userVideoStore.likeVideo(
-                                      videoID: widget.id,
+                                      videoID: widget.video.videoId,
                                     );
                                     if (_isLiked) {
                                       likeCount += 1;
                                     }
                                   } else {
-                                    await _userVideoStore
-                                        .dislikeVideo(
-                                      videoID: widget.id,
-                                    )
-                                        .then((value) {
-                                      if (value) {
-                                        _isLiked = false;
-                                      }
+                                    setState(() {
+                                      _isLiked = !_isLiked;
                                     });
+                                    _isLiked =
+                                        !await _userVideoStore.dislikeVideo(
+                                      videoID: widget.video.videoId,
+                                    );
                                     if (!_isLiked) {
                                       likeCount -= 1;
                                     }
                                   }
                                   _processing = false;
+                                } else {
+                                  setState(() {
+                                    _isLiked = !_isLiked;
+                                  });
                                 }
                                 setState(() {});
                               },
@@ -432,29 +542,48 @@ class _PostCardState extends State<PostCard> {
                                         ? CupertinoPageRoute(
                                             builder: (context) =>
                                                 CommentsScreen(
-                                                  videoId: widget.id,
+                                                  videoId: widget.video.videoId,
                                                 ))
                                         : MaterialPageRoute(
                                             builder: (context) =>
                                                 CommentsScreen(
-                                                  videoId: widget.id,
+                                                  videoId: widget.video.videoId,
                                                 )));
                               },
                               icon: Icon(
                                 Icons.comment,
-                                color: Colors.yellow[900],
+                                color: AppTheme.pureBlackColor,
                                 size: _iconOne * 23,
                               ),
                             ),
                             SizedBox(
                               width: _widthOne * 20,
                             ),
-                            Text(
-                              widget.commentCount.toString(),
-                              style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: _fontOne * 14,
-                                  color: Colors.grey),
+                            FutureBuilder(
+                              future: _userVideoStore.getComments(
+                                  id: widget.video.videoId),
+                              builder: (context, snap) {
+                                if (snap.data == null) {
+                                  return Text(
+                                    widget.video.comments.toString() == null
+                                        ? "0"
+                                        : widget.video.comments.toString(),
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: _fontOne * 14,
+                                        color: Colors.grey),
+                                  );
+                                }
+                                return Text(
+                                  snap.data.docs.length == null
+                                      ? "0"
+                                      : snap.data.docs.length.toString(),
+                                  style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: _fontOne * 14,
+                                      color: Colors.grey),
+                                );
+                              },
                             ),
                           ],
                         ),
@@ -464,66 +593,37 @@ class _PostCardState extends State<PostCard> {
                         Expanded(
                           child: SliderTheme(
                             data: SliderTheme.of(context).copyWith(
-                              trackShape: RectangularSliderTrackShape(),
-                              trackHeight: 4.0,
+                              trackShape: RoundSliderTrackShape(),
+                              trackHeight: 6.0,
                               thumbColor: Colors.orange[600],
-                              thumbShape: RoundSliderThumbShape(
-                                  enabledThumbRadius: 8.0),
-                              overlayColor: Colors.red.withAlpha(32),
+                              thumbShape: StarThumb(thumbRadius: 20),
+                              overlayColor: AppTheme.pureBlackColor,
                               overlayShape:
                                   RoundSliderOverlayShape(overlayRadius: 18.0),
                             ),
-                            child: Platform.isIOS
-                                ? CupertinoSlider(
-                                    onChangeEnd: (val) async {
-                                      _sliderValue = val;
-                                      bool success =
-                                          await _userVideoStore.rateVideo(
-                                              videoID: widget.id,
-                                              rating: _sliderValue);
-                                      if (success) {
-                                        print('done rating');
-                                      } else {
-                                        print('failure');
-                                      }
-                                    },
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _sliderValue = val;
-                                      });
-                                    },
-                                    value: _sliderValue,
-                                    max: 5,
-                                    min: 0,
-                                    divisions: 5,
-                                    activeColor: AppTheme.primaryColor,
-                                    thumbColor: Colors.orange[100],
-                                  )
-                                : Slider(
-                                    value: _sliderValue,
-                                    min: 0,
-                                    max: 5,
-                                    divisions: 5,
-                                    onChangeEnd: (val) async {
-                                      _sliderValue = val;
-                                      bool success =
-                                          await _userVideoStore.rateVideo(
-                                              videoID: widget.id,
-                                              rating: _sliderValue);
-                                      if (success) {
-                                        print('done rating');
-                                      } else {
-                                        print('failure');
-                                      }
-                                    },
-                                    onChanged: (val) {
-                                      setState(() {
-                                        _sliderValue = val;
-                                      });
-                                    },
-                                    inactiveColor: Colors.orange[100],
-                                    activeColor: AppTheme.primaryColor,
-                                  ),
+                            child: Slider(
+                              value: _sliderValue,
+                              min: 0,
+                              max: 5,
+                              onChangeEnd: (val) async {
+                                _sliderValue = val;
+                                bool success = await _userVideoStore.rateVideo(
+                                    videoID: widget.video.videoId,
+                                    newRating: _sliderValue);
+                                if (success) {
+                                  print('done rating');
+                                } else {
+                                  print('failure');
+                                }
+                              },
+                              onChanged: (val) {
+                                setState(() {
+                                  _sliderValue = val;
+                                });
+                              },
+                              inactiveColor: AppTheme.backgroundColor,
+                              activeColor: AppTheme.secondaryColor,
+                            ),
                           ),
                         ),
                       ],

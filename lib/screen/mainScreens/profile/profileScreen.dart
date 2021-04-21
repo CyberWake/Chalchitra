@@ -1,13 +1,14 @@
 import 'dart:io';
 
+import 'package:animations/animations.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
@@ -15,16 +16,20 @@ import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/followersScreen.dart';
 import 'package:wowtalent/screen/mainScreens/profile/followingsScreen.dart';
 import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:wowtalent/widgets/cupertinosnackbar.dart';
 
 import '../../../model/theme.dart';
+import 'package:wowtalent/widgets/bouncingButton.dart';
+import 'package:wowtalent/widgets/profileVideoGrid.dart';
 
 class ProfilePage extends StatefulWidget {
+  final bool isFromSearch;
   final String url =
       "https://images.pexels.com/photos/994605/pexels-photo-994605.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=200&w=1260";
 
   final String uid;
 
-  ProfilePage({@required this.uid});
+  ProfilePage({@required this.uid, this.isFromSearch = false});
 
   @override
   _ProfilePageState createState() => _ProfilePageState();
@@ -39,28 +44,31 @@ class _ProfilePageState extends State<ProfilePage> {
   // Attributes
 
   bool loading = false;
-  String profileUid;
-  String _username;
-  String currentUserID;
-  int totalFollowers = 0;
-  int totalFollowings = 0;
-  int totalPost = 0;
   bool following = false;
   bool isSecure = false;
   bool seeFollowers = false;
   bool seeFollowings = false;
+  bool refreshVideos = false;
+  bool processing = false;
+
+  //UserData
+  String currentUserID;
   String currentUserImgUrl;
-  String currentUserName;
+  String currentUserDisplayName;
+  String currentUserUsername;
+  String currentUserBio;
+  int totalFollowers = 0;
+  int totalFollowings = 0;
+  int totalPost = 0;
 
   //user video posts parameters
   final thumbWidth = 100;
   final thumbHeight = 150;
 
   List<VideoInfo> _videos = <VideoInfo>[];
-  List<VideoInfo> newVideos = <VideoInfo>[];
 
   void setup() async {
-    dynamic result = await UserVideoStore().getProfileVideos(uid: profileUid);
+    dynamic result = await UserVideoStore().getProfileVideos(uid: widget.uid);
     if (result != false) {
       setState(() {
         _videos = result;
@@ -85,10 +93,28 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
+  checkIfAlreadyFollowing() async {
+    bool result = await _userInfoStore.checkIfAlreadyFollowing(uid: widget.uid);
+    setState(() {
+      following = result;
+    });
+  }
+
+  getSearchUserData() async {
+    user = await _userInfoStore.getUserInformation(uid: widget.uid);
+    totalFollowings = user.following;
+    totalFollowers = user.followers;
+    totalPost = user.videoCount;
+    currentUserDisplayName = user.displayName;
+    currentUserUsername = user.username;
+    currentUserBio = user.bio;
+    currentUserImgUrl = user.photoUrl;
+    setState(() {});
+  }
+
   void mySuper() async {
-    await getCurrentUserID();
+    await getSearchUserData();
     await checkIfAlreadyFollowing();
-    profileUid = widget.uid;
     print("following " + following.toString());
     if (following || widget.uid == _userAuth.user.uid) {
       print("called a");
@@ -102,15 +128,32 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
-    mySuper();
+    if (widget.uid != _userAuth.user.uid) {
+      mySuper();
+    } else {
+      setup();
+      getPrivacy();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.uid == _userAuth.user.uid) {
+      user = Provider.of<CurrentUser>(context, listen: true).currentUserData;
+      print("inside provider in profile");
+      currentUserID = user.id;
+      totalFollowings = user.following;
+      totalFollowers = user.followers;
+      totalPost = user.videoCount;
+      currentUserDisplayName = user.displayName;
+      currentUserUsername = user.username;
+      currentUserBio = user.bio;
+      currentUserImgUrl = user.photoUrl;
+      print("totalFollowings: $totalFollowings");
+    }
     Size size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-        child: Container(
-      color: AppTheme.elevationColor,
+    return Container(
+      color: AppTheme.backgroundColor,
       child: Column(
         children: [
           Stack(
@@ -132,14 +175,20 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ],
                   ),
-                  height: size.height * 0.4423,
+                  height: widget.isFromSearch
+                      ? size.height * 0.5324
+                      : size.height * 0.4557247,
                   width: size.width,
                   margin: EdgeInsets.only(top: size.height * 0.35),
                   padding: EdgeInsets.only(
                       top: size.height * 0.1,
                       left: size.width * 0.05,
                       right: size.width * 0.05),
-                  child: buildPictureCard(),
+                  child: ProfileVideoGrid(
+                    uid: widget.uid,
+                    videos: _videos,
+                    function: _deleteButton,
+                  ),
                 ),
               ),
               Row(
@@ -151,7 +200,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     width: size.width * 0.9,
                     child: Card(
                       elevation: 20,
-                      color: Colors.yellow[100],
+                      color: AppTheme.secondaryColor,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.all(Radius.circular(10)),
                       ),
@@ -164,10 +213,12 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                             user != null
                                 ? Text(
-                                    user.bio,
+                                    currentUserBio == null
+                                        ? " Hello World!"
+                                        : currentUserBio,
                                     style: TextStyle(
                                       fontWeight: FontWeight.w500,
-                                      color: AppTheme.elevationColor,
+                                      color: AppTheme.pureBlackColor,
                                       fontSize: 14,
                                     ),
                                     textAlign: TextAlign.center,
@@ -183,8 +234,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
-                                buildStatColumn(_videos.length, "Posts"),
                                 getFollowers(),
+                                buildPostStat(),
                                 getFollowings()
                               ],
                             ),
@@ -202,119 +253,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         ],
       ),
-    ));
-  }
-
-  getFollowers() {
-    return StreamBuilder(
-        stream: _userInfoStore.getFollowers(uid: widget.uid),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return GestureDetector(
-            onTap: () {
-              if (seeFollowers) {
-                Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (BuildContext context) =>
-                            FollowersPage(uid: widget.uid)));
-              }
-            },
-            child: Column(
-              children: [
-                Text(
-                  !snapshot.hasData
-                      ? "0"
-                      : snapshot.data.documents.length.toString(),
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.elevationColor),
-                ),
-                Text(
-                  'Followers',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.elevationColor),
-                ),
-              ],
-            ),
-          );
-        });
-  }
-
-  getFollowings() {
-    return new StreamBuilder(
-        stream: _userInfoStore.getFollowing(uid: widget.uid),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          return GestureDetector(
-            onTap: () {
-              if (seeFollowings) {
-                Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                        builder: (BuildContext context) =>
-                            FollowingsPage(uid: widget.uid)));
-              }
-            },
-            child: Column(
-              children: [
-                Text(
-                  !snapshot.hasData
-                      ? "0"
-                      : snapshot.data.documents.length.toString(),
-                  style: TextStyle(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.elevationColor),
-                ),
-                Text(
-                  'Following',
-                  style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: AppTheme.elevationColor),
-                ),
-              ],
-            ),
-          );
-        });
-  }
-
-  checkIfAlreadyFollowing() async {
-    bool result = await _userInfoStore.checkIfAlreadyFollowing(uid: widget.uid);
-    setState(() {
-      following = result;
-    });
-  }
-
-  controlFollowUsers() async {
-    bool result = await _userInfoStore.followUser(uid: widget.uid);
-    mySuper();
-    setState(() {
-      following = result;
-    });
-  }
-
-  controlUnFollowUsers() async {
-    bool result = await _userInfoStore.unFollowUser(uid: widget.uid);
-    _videos = [];
-    getPrivacy();
-    setState(() {
-      following = result;
-    });
-  }
-
-  getCurrentUserID() {
-    final User firebaseUser = UserAuth().user;
-    String uid = firebaseUser.uid;
-    String url = firebaseUser.photoURL;
-    String displayName = firebaseUser.displayName;
-    setState(() {
-      currentUserID = uid;
-      currentUserImgUrl = url;
-      currentUserName = displayName;
-    });
+    );
   }
 
   String getChoppedUsername(String currentDisplayName) {
@@ -331,201 +270,211 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   getProfileTopView(BuildContext context) {
-    return new FutureBuilder<DocumentSnapshot>(
-        future: _userInfoStore.getUserInfoFuture(uid: widget.uid),
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) {
-            return Center(child: Text('Something went wrong'));
-          }
-          print(snapshot.data.exists);
-          user = UserDataModel.fromDocument(snapshot.data);
-
-          _username = user.username;
-
-          return Container(
-            decoration: BoxDecoration(
-              color: AppTheme.backgroundColor,
-              borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(20),
-                bottomLeft: Radius.circular(20),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.8),
-                  offset: Offset(0.0, 20.0), //(x,y)
-                  blurRadius: 10.0,
+    return Container(
+      decoration: BoxDecoration(
+        color: AppTheme.primaryColor,
+        borderRadius: BorderRadius.only(
+          bottomRight: Radius.circular(20),
+          bottomLeft: Radius.circular(20),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.8),
+            offset: Offset(0.0, 20.0), //(x,y)
+            blurRadius: 10.0,
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(20),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Hero(
+            tag: widget.url,
+            child: Row(
+              mainAxisSize: MainAxisSize.max,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.08,
                 ),
-              ],
-            ),
-            padding: EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Hero(
-                  tag: widget.url,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        child: CachedNetworkImage(
-                          imageUrl: snapshot.connectionState ==
-                                  ConnectionState.waiting
-                              ? "https://www.prairieskychamber.ca/wp-content/uploads/2016/10/person-placeholder-image-3.jpg"
-                              : user.photoUrl != null
-                                  ? user.photoUrl
-                                  : widget.url,
-                          imageBuilder: (context, imageProvider) => Container(
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(40),
-                              image: DecorationImage(
-                                image: imageProvider,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
+                CircleAvatar(
+                  child: CachedNetworkImage(
+                    imageUrl: currentUserImgUrl != null
+                        ? currentUserImgUrl
+                        : widget.url,
+                    imageBuilder: (context, imageProvider) => Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(40),
+                        image: DecorationImage(
+                          image: imageProvider,
+                          fit: BoxFit.cover,
                         ),
-                        radius: 40,
                       ),
-                      SizedBox(
-                        width:
-                            snapshot.connectionState == ConnectionState.waiting
-                                ? MediaQuery.of(context).size.width * 0.39
-                                : 20,
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          FittedBox(
-                            child: Text(
-                              snapshot.connectionState ==
-                                      ConnectionState.waiting
-                                  ? " "
-                                  : user.displayName != null
-                                      ? user.displayName.length > 19
-                                          ? getChoppedUsername(user.displayName)
-                                          : user.displayName
-                                      : "WowTalent",
-                              style: TextStyle(
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                color: AppTheme.pureWhiteColor,
-                              ),
-                            ),
-                          ),
-                          SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            children: [
-                              Text(
-                                snapshot.connectionState ==
-                                        ConnectionState.waiting
-                                    ? " "
-                                    : '$_username',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey[400],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ],
+                    ),
                   ),
+                  radius: 40,
                 ),
                 SizedBox(
-                  height: 50,
-                )
+                  width: 20,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    FittedBox(
+                      child: Text(
+                        currentUserDisplayName != null
+                            ? currentUserDisplayName.length > 19
+                                ? getChoppedUsername(currentUserDisplayName)
+                                : currentUserDisplayName
+                            : "WowTalent",
+                        style: TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.backgroundColor,
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 5,
+                    ),
+                    Row(
+                      children: [
+                        Text(
+                          currentUserUsername == null
+                              ? "Hello World!"
+                              : currentUserUsername,
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.grey[400],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.08,
+                ),
               ],
             ),
-          );
-        });
+          ),
+          SizedBox(
+            height: 50,
+          )
+        ],
+      ),
+    );
   }
 
   createButton() {
     bool userProfile = currentUserID == widget.uid;
+    print("$currentUserID : ${widget.uid}");
     if (userProfile) {
-      return createButtonTitleORFunction(
-          title: 'Edit Profile', function: gotoEditProfile);
+      return BouncingButton(
+        buttonText: "Edit Profile",
+        width: MediaQuery.of(context).size.width * 0.6,
+        buttonFunction: () {
+          // Navigator.push(
+          //     context,
+          //     CupertinoPageRoute(
+          //         builder: (_) => EditProfilePage(
+          //               uid: currentUserID,
+          //             )));
+          setState(() {});
+        },
+      );
     } else if (following) {
-      return createButtonTitleORFunction(
-          title: 'Unfollow', function: controlUnFollowUsers);
+      return BouncingButton(
+        buttonText: "Unfollow",
+        width: MediaQuery.of(context).size.width * 0.6,
+        buttonFunction: () {
+          controlUnFollowUsers();
+          setState(() {});
+        },
+      );
     } else if (!following) {
-      return createButtonTitleORFunction(
-          title: 'Follow', function: controlFollowUsers);
+      return BouncingButton(
+        buttonText: "Follow",
+        width: MediaQuery.of(context).size.width * 0.6,
+        buttonFunction: () {
+          controlFollowUsers();
+          setState(() {});
+        },
+      );
     }
   }
 
-  gotoEditProfile() {
-    Navigator.push(
-        context,
-        CupertinoPageRoute(
-            builder: (_) => EditProfilePage(
-                  uid: currentUserID,
-                )));
+  controlUnFollowUsers() async {
+    if (!processing) {
+      setState(() {
+        processing = true;
+      });
+      bool result = await _userInfoStore.unFollowUser(uid: widget.uid);
+      if (!result) {
+        user = await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(user);
+        totalFollowers -= 1;
+        setState(() {
+          processing = false;
+        });
+      }
+      _videos = [];
+      getPrivacy();
+      setState(() {
+        following = result;
+      });
+    }
   }
 
-  Container createButtonTitleORFunction({String title, Function function}) {
-    return Container(
-        padding: EdgeInsets.only(top: 5),
-        child: Platform.isIOS
-            ? CupertinoButton(
-                borderRadius: BorderRadius.circular(30),
-                color: AppTheme.primaryColor,
-                onPressed: () async {
-                  await function();
-                  await getFollowers();
-                  setState(() {});
-                },
-                child: Text(title,
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                        fontSize: 16)),
-              )
-            : RaisedButton(
-                color: AppTheme.primaryColor,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(15))),
-                onPressed: () async {
-                  await function();
-                  await getFollowers();
-                  setState(() {});
-                },
-                child: Container(
-                  width: 150,
-                  height: 30,
-                  child: Text(title,
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.elevationColor,
-                          fontSize: 16)),
-                  alignment: Alignment.center,
-                )));
+  controlFollowUsers() async {
+    if (!processing) {
+      setState(() {
+        processing = true;
+      });
+      bool result = await _userInfoStore.followUser(uid: widget.uid);
+      if (result) {
+        user = await _userInfoStore.getUserInformation(uid: _userAuth.user.uid);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(user);
+        totalFollowers += 1;
+        setState(() {
+          processing = false;
+        });
+      }
+      mySuper();
+      setState(() {
+        following = result;
+      });
+    }
   }
 
-  removeVideoFromUserAccount(int index) async {
+  removeVideoFromUserAccount(int index, context) async {
     print("deleting video ${_videos[index].videoId}");
     final videoInfo = VideoInfo(videoId: _videos[index].videoId);
-    await UserVideoStore.deleteUploadedVideo(videoInfo);
+    await UserVideoStore.deleteUploadedVideo(videoInfo, context);
   }
 
   void _deleteButton(int index) async {
-    await showMenu(
+    int result = await showMenu(
         context: context,
-        color: Colors.yellow[100],
+        color: AppTheme.secondaryColor,
         position: RelativeRect.fromLTRB(125, 530, 125, 0),
         items: [
           PopupMenuItem(
-            child: InkWell(
+            value: 0,
+            height: 50,
+            child: GestureDetector(
               onTap: () async {
-                await removeVideoFromUserAccount(index);
+                await removeVideoFromUserAccount(index, context);
                 Navigator.pop(context);
-                Scaffold.of(context).showSnackBar(SnackBar(
-                  content: Text('Video Deleted Successfully'),
-                ));
+                Platform.isIOS
+                    ? cupertinoSnackbar(context, "Video Deleted Successfully")
+                    : Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text('Video Deleted Successfully'),
+                      ));
                 setup();
                 setState(() {});
               },
@@ -534,101 +483,120 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   Text(
                     "Delete",
-                    style: TextStyle(color: AppTheme.backgroundColor),
+                    style: TextStyle(color: AppTheme.pureBlackColor),
                   ),
                   Icon(Icons.delete_rounded,
-                      size: 20, color: AppTheme.backgroundColor),
+                      size: 20, color: AppTheme.pureBlackColor),
                 ],
               ),
             ),
           )
         ]);
+    if (result == 0) {
+      await removeVideoFromUserAccount(index, context);
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text('Video Deleted Successfully'),
+      ));
+      setup();
+      setState(() {});
+    }
   }
 
-  SingleChildScrollView buildPictureCard() {
-    var size = MediaQuery.of(context).size;
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Wrap(
-            spacing: 1,
-            runSpacing: 1,
-            children: List.generate(_videos.length, (index) {
-              final video = _videos[index];
-              return GestureDetector(
-                onLongPress: () {
-                  if (widget.uid == _userAuth.user.uid) {
-                    _deleteButton(index);
-                  }
-                },
-                onTap: () async {
-                  bool isWatched = await UserVideoStore()
-                      .checkWatched(videoID: _videos[index].videoId);
-                  print(" isWatched: $isWatched");
-                  if (!isWatched) {
-                    bool result = await UserVideoStore()
-                        .increaseVideoCount(videoID: _videos[index].videoId);
-                    print(result);
-                  }
-                  Navigator.push(
-                    context,
-                    CupertinoPageRoute(
-                      builder: (context) {
-                        return Player(
-                          video: video,
-                        );
-                      },
-                    ),
-                  );
-                },
-                child: Container(
-                  width: size.width * 0.22,
-                  height: size.height * 0.22,
-                  margin: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: Colors.black,
-                    image: DecorationImage(
-                        image: NetworkImage(video.thumbUrl),
-                        fit: BoxFit.fitWidth),
-                    borderRadius: BorderRadius.circular(10.5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.2),
-                        offset: Offset(0.0, 10.0), //(x,y)
-                        blurRadius: 10.0,
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            }),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Column buildStatColumn(int value, String title) {
+  buildPostStat() {
     return Column(
       children: [
         Text(
-          value.toString(),
+          totalPost.toString(),
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,
-            color: AppTheme.elevationColor,
+            color: AppTheme.pureBlackColor,
           ),
         ),
         Text(
-          title,
+          "Posts",
           style: TextStyle(
             fontSize: 12,
             fontWeight: FontWeight.bold,
-            color: AppTheme.elevationColor,
+            color: AppTheme.pureBlackColor,
           ),
         ),
       ],
+    );
+  }
+
+  getFollowers() {
+    return OpenContainer(
+      closedColor: Colors.transparent,
+      closedElevation: 0.0,
+      tappable: seeFollowers,
+      closedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      transitionDuration: Duration(milliseconds: 200),
+      transitionType: ContainerTransitionType.fadeThrough,
+      openBuilder:
+          (BuildContext context, void Function({Object returnValue}) action) {
+        return FollowersPage(uid: widget.uid);
+      },
+      closedBuilder: (BuildContext context, void Function() action) {
+        return Column(
+          children: [
+            Text(
+              totalFollowers.toString(),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+            Text(
+              'Followers',
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  getFollowings() {
+    return OpenContainer(
+      closedColor: Colors.transparent,
+      closedElevation: 0.0,
+      tappable: seeFollowings,
+      closedShape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.zero,
+      ),
+      transitionDuration: Duration(milliseconds: 200),
+      transitionType: ContainerTransitionType.fadeThrough,
+      openBuilder:
+          (BuildContext context, void Function({Object returnValue}) action) {
+        return FollowingsPage(uid: widget.uid);
+      },
+      closedBuilder: (BuildContext context, void Function() action) {
+        print("called");
+        return Column(
+          children: [
+            Text(
+              totalFollowings.toString(),
+              style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+            Text(
+              'Following',
+              style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.pureBlackColor),
+            ),
+          ],
+        );
+      },
     );
   }
 }

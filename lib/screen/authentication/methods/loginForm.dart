@@ -59,15 +59,23 @@ class _LoginFormState extends State<LoginForm> {
             SizedBox(
               height: _heightOne * 83,
             ),
-            Platform.isIOS ?Material(child: _emailField(),) :_emailField(),
+            Platform.isIOS
+                ? Material(
+                    child: _emailField(),
+                  )
+                : _emailField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            Platform.isIOS? Material(child: _passwordFiled(),) :_passwordFiled(),
+            Platform.isIOS
+                ? Material(
+                    child: _passwordFiled(),
+                  )
+                : _passwordFiled(),
             SizedBox(
               height: _heightOne * 15,
             ),
-            _loginButton(),
+            _loginButton(context),
             SizedBox(
               height: _heightOne * 22,
             ),
@@ -202,17 +210,17 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 
-  Widget _loginButton() {
+  Widget _loginButton(BuildContext context) {
     return Platform.isIOS
         ? CupertinoButton(
-            color: Colors.orange,
+            color: AppTheme.primaryColor,
             onPressed: () async {
               if (_formKey.currentState.validate()) {
                 await _userAuth
                     .signInWithEmailAndPassword(
-                  email: _userDataModel.email,
-                  password: _userDataModel.password,
-                )
+                        email: _userDataModel.email,
+                        password: _userDataModel.password,
+                        context: context)
                     .then((result) {
                   if (result == null) {
                     showCupertinoModalPopup(
@@ -269,9 +277,9 @@ class _LoginFormState extends State<LoginForm> {
               if (_formKey.currentState.validate()) {
                 await _userAuth
                     .signInWithEmailAndPassword(
-                  email: _userDataModel.email,
-                  password: _userDataModel.password,
-                )
+                        email: _userDataModel.email,
+                        password: _userDataModel.password,
+                        context: context)
                     .then((result) {
                   if (result == null) {
                     Scaffold.of(context).showSnackBar(SnackBar(
@@ -279,7 +287,7 @@ class _LoginFormState extends State<LoginForm> {
                   } else if (result == "success") {
                     Navigator.pushReplacement(
                         context,
-                        MaterialPageRoute(
+                        CupertinoPageRoute(
                             builder: (_) => MainScreenWrapper(
                                   index: 0,
                                 )));
@@ -296,14 +304,15 @@ class _LoginFormState extends State<LoginForm> {
             },
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
-                side:
-                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+                side: BorderSide(
+                    color: AppTheme.primaryColor, width: _widthOne * 5)),
             splashColor: Colors.orange[100],
+            color: AppTheme.secondaryColor,
             padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
             child: Text(
               "Login",
               style: TextStyle(
-                color: Color(0xFFFFCF40),
+                color: AppTheme.primaryColor,
               ),
             ));
   }

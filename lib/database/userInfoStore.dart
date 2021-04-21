@@ -1,4 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 import '../auth/userAuth.dart';
@@ -12,13 +16,17 @@ class UserInfoStore {
   final _activity = FirebaseFirestore.instance.collection('activity feed');
   final _chatUIDs = FirebaseFirestore.instance.collection('chatUIDs');
   final _allChats = FirebaseFirestore.instance.collection('allChats');
-
+  final _notificationCenter =
+      FirebaseFirestore.instance.collection("notifications");
+  final FirebaseMessaging _fcm = FirebaseMessaging();
   static final UserAuth _userAuth = UserAuth();
 
-  Future<bool> createUserRecord({String username = ""}) async {
+  Future<bool> createUserRecord(
+      {String username = "", BuildContext context}) async {
     try {
+      String _fcmToken = await _fcm.getToken();
       DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
-      if (_userAuth.user != null) {
+      if (_userAuth.user != null && _fcmToken != null) {
         if (!userRecord.exists) {
           Map<String, dynamic> userData = {
             "id": _userAuth.user.uid,
@@ -29,17 +37,38 @@ class UserInfoStore {
             "bio": "Hello World!",
             "private": false,
             "searchKey": username.substring(0, 1).toUpperCase(),
+            "followers": 0,
+            "following": 0,
+            "videoCount": 0,
+            "fcmToken": _fcmToken
           };
           _users.doc(_userAuth.user.uid).set(userData);
           userRecord = await _users.doc(_userAuth.user.uid).get();
         }
         _currentUserModel = UserDataModel.fromDocument(userRecord);
+        Provider.of<CurrentUser>(context, listen: false)
+            .updateCurrentUser(_currentUserModel);
       }
 
       return true;
     } catch (e) {
       print(e.toString());
       return false;
+    }
+  }
+
+  Future updateToken({BuildContext context}) async {
+    try {
+      String _fcmToken = await _fcm.getToken();
+      print("run");
+      DocumentSnapshot userRecord = await _users.doc(_userAuth.user.uid).get();
+      _users.doc(_userAuth.user.uid).update({'fcmToken': _fcmToken});
+      userRecord = await _users.doc(_userAuth.user.uid).get();
+      _currentUserModel = UserDataModel.fromDocument(userRecord);
+      Provider.of<CurrentUser>(context, listen: false)
+          .updateCurrentUser(_currentUserModel);
+    } catch (e) {
+      print(e.toString());
     }
   }
 
@@ -125,6 +154,10 @@ class UserInfoStore {
     return _followings.doc(uid).collection('userFollowing').snapshots();
   }
 
+  Future getFollowingFuture({String uid}) {
+    return _followings.doc(uid).collection("userFollowing").get();
+  }
+
   Future<bool> checkIfAlreadyFollowing({String uid}) async {
     try {
       DocumentSnapshot documentSnapshot = await _followers
@@ -139,6 +172,16 @@ class UserInfoStore {
     }
   }
 
+  Future<UserDataModel> getUserInformation({String uid}) async {
+    try {
+      DocumentSnapshot ds = await _users.doc(uid).get();
+      return UserDataModel.fromDocument(ds);
+    } catch (e) {
+      print(e.toString());
+      return null;
+    }
+  }
+
   Future<bool> followUser({String uid}) async {
     try {
       await _followers
@@ -146,12 +189,16 @@ class UserInfoStore {
           .collection('userFollowers')
           .doc(_userAuth.user.uid)
           .set({});
+      await _users.doc(uid).update({"followers": FieldValue.increment(1)});
 
       await _followings
           .doc(_userAuth.user.uid)
           .collection('userFollowing')
           .doc(uid)
           .set({});
+      await _users
+          .doc(_userAuth.user.uid)
+          .update({"following": FieldValue.increment(1)});
 
       await _activity
           .doc(uid)
@@ -182,6 +229,7 @@ class UserInfoStore {
           .then((document) async => {
                 if (document.exists) {await document.reference.delete()}
               });
+      await _users.doc(uid).update({"followers": FieldValue.increment(-1)});
 
       await _followings
           .doc(_userAuth.user.uid)
@@ -191,6 +239,9 @@ class UserInfoStore {
           .then((document) async => {
                 if (document.exists) {await document.reference.delete()}
               });
+      await _users
+          .doc(_userAuth.user.uid)
+          .update({"following": FieldValue.increment(-1)});
 
       await _activity
           .doc(uid)
@@ -262,7 +313,11 @@ class UserInfoStore {
   }
 
   Stream getChats() {
-    return _chatUIDs.doc(_userAuth.user.uid).snapshots();
+    return _chatUIDs
+        .doc(_userAuth.user.uid)
+        .collection("chatUID")
+        .orderBy("timestamp", descending: true)
+        .snapshots();
   }
 
   Future checkChatExists({String targetUID}) async {
@@ -275,7 +330,12 @@ class UserInfoStore {
         chatID = targetUID + currentUID;
       }
       bool result;
-      await _chatUIDs.doc(currentUID).get().then((document) {
+      await _chatUIDs
+          .doc(currentUID)
+          .collection("chatUID")
+          .doc(chatID)
+          .get()
+          .then((document) {
         if (document.exists) {
           result = document.data().keys.contains(chatID);
         } else {
@@ -298,9 +358,9 @@ class UserInfoStore {
       } else {
         chatID = targetUID + currentUID;
       }
-      await _chatUIDs
-          .doc(currentUID)
-          .set({chatID: targetUID}, SetOptions(merge: true));
+      await _chatUIDs.doc(currentUID).collection("chatUID").doc(chatID).set(
+          {"uid": targetUID, "timestamp": DateTime.now()},
+          SetOptions(merge: true));
     } catch (e) {
       print("getChats : " + e.toString());
       return null;
@@ -316,9 +376,9 @@ class UserInfoStore {
       } else {
         chatID = targetUID + currentUID;
       }
-      await _chatUIDs
-          .doc(targetUID)
-          .set({chatID: currentUID}, SetOptions(merge: true));
+      await _chatUIDs.doc(targetUID).collection("chatUID").doc(chatID).set(
+          {"uid": currentUID, "timestamp": DateTime.now()},
+          SetOptions(merge: true));
     } catch (e) {
       print("getChats : " + e.toString());
       return null;
@@ -384,6 +444,64 @@ class UserInfoStore {
       );
     } catch (e) {
       return null;
+    }
+  }
+
+  Stream getActivityFeed({String uid}) {
+    try {
+      return _notificationCenter
+          .doc(uid)
+          .collection("notifs")
+          .orderBy("timestamp", descending: true)
+          .limit(25)
+          .snapshots();
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Stream notifCount({String uid}) {
+    try {
+      return _notificationCenter
+          .doc(uid)
+          .collection("notifs")
+          .where("read", isEqualTo: false)
+          .snapshots();
+    } catch (e) {}
+  }
+
+  Future updateNotif({String uid, DocumentSnapshot doc}) async {
+    try {
+      print("\t\t\t\t\t\t\tin Update");
+      if (doc.exists) {
+        print(doc.id);
+        await _notificationCenter
+            .doc(uid)
+            .collection("notifs")
+            .doc(doc.id)
+            .update({"read": true});
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future updateAllNotif({String uid}) async {
+    try {
+      WriteBatch batch = FirebaseFirestore.instance.batch();
+      _notificationCenter
+          .doc(uid)
+          .collection("notifs")
+          .where("read", isEqualTo: false)
+          .get()
+          .then((val) {
+        val.docs.forEach((element) {
+          batch.update(element.reference, {"read": true});
+        });
+        return batch.commit();
+      });
+    } catch (e) {
+      print(e.toString());
     }
   }
 }

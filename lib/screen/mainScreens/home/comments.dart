@@ -54,7 +54,9 @@ class _CommentsScreenState extends State<CommentsScreen> {
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
     return Platform.isIOS
-        ? CommentsIOS(commentsBody: commentsBody(),)
+        ? CommentsIOS(
+            commentsBody: commentsBody(),
+          )
         : Scaffold(
             body: commentsBody(),
           );
@@ -142,25 +144,31 @@ class _CommentsScreenState extends State<CommentsScreen> {
                     child: Platform.isIOS
                         ? CupertinoTextField(
                             decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
+                                borderRadius: BorderRadius.circular(20),
+                                border:
+                                    Border.all(color: AppTheme.pureWhiteColor)),
                             controller: controller,
                             onChanged: (val) {
                               _comment = val;
                             },
                             placeholder: "Post a comment...",
+                            placeholderStyle: TextStyle(
+                                color:
+                                    AppTheme.pureBlackColor.withOpacity(0.5)),
                             textCapitalization: TextCapitalization.sentences,
+                            style: TextStyle(color: AppTheme.pureBlackColor),
                           )
                         : TextField(
                             controller: controller,
-                            style: TextStyle(color: AppTheme.pureWhiteColor),
+                            style: TextStyle(color: AppTheme.pureBlackColor),
                             onChanged: (val) {
                               _comment = val;
                             },
                             decoration: InputDecoration.collapsed(
                               hintText: 'Post a comment..',
-                              hintStyle:
-                                  TextStyle(color: AppTheme.pureWhiteColor),
+                              hintStyle: TextStyle(
+                                  color:
+                                      AppTheme.pureBlackColor.withOpacity(0.5)),
                             ),
                             textCapitalization: TextCapitalization.sentences,
                           ),
@@ -239,66 +247,68 @@ class _CommentsScreenState extends State<CommentsScreen> {
         });
   }
 
-  Widget showComment({String userID, int timestamp, String comment}){
+  Widget showComment({String userID, int timestamp, String comment}) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: FutureBuilder(
-          future: _userInfoStore.getUserInfo(
-            uid: userID
-          ),
-        builder: (context, snapshot){
-            if(!snapshot.hasData){
-              return Container();
-            }else{
-              return Row(
-                children: [
-                  CircleAvatar(
-                    radius: _iconOne * 20,
-                    backgroundImage: NetworkImage(
-                        snapshot.data.data()["photoUrl"] == null ?
-                        "https://via.placeholder.com/150" :
-                        snapshot.data.data()["photoUrl"],
-                    ),
+        future: _userInfoStore.getUserInfo(uid: userID),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return Container();
+          } else {
+            return Row(
+              children: [
+                CircleAvatar(
+                  radius: _iconOne * 20,
+                  backgroundImage: NetworkImage(
+                    snapshot.data.data()["photoUrl"] == null
+                        ? "https://via.placeholder.com/150"
+                        : snapshot.data.data()["photoUrl"],
                   ),
-                  SizedBox(width: 10,),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            snapshot.data.data()["username"] + " \u2022 ",
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: _fontOne * 10,
-                              fontWeight: FontWeight.w500,
-                            ),
+                ),
+                SizedBox(
+                  width: 10,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text(
+                          snapshot.data.data()["username"] + " \u2022 ",
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: _fontOne * 10,
+                            fontWeight: FontWeight.w600,
                           ),
-                          Text(
-                            formatDateTime(timestamp),
-                            style: TextStyle(
-                              color: Colors.grey,
-                              fontSize: _fontOne * 10,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ],
-                      ),
-                      SizedBox(height: _heightOne * 5,),
-                      Text(
-                        comment,
-                        style: TextStyle(
-                          color: AppTheme.pureWhiteColor,
-                          fontSize: _fontOne * 13,
-                          fontWeight: FontWeight.w500,
                         ),
+                        Text(
+                          formatDateTime(timestamp),
+                          style: TextStyle(
+                            color: Colors.grey,
+                            fontSize: _fontOne * 10,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: _heightOne * 5,
+                    ),
+                    Text(
+                      comment,
+                      style: TextStyle(
+                        color: AppTheme.pureBlackColor,
+                        fontSize: _fontOne * 13,
+                        // fontWeight: FontWeight.w500,
                       ),
-                    ],
-                  )
-                ],
-              );
-            }
+                    ),
+                  ],
+                )
+              ],
+            );
+          }
         },
       ),
     );

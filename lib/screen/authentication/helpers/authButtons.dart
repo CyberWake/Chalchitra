@@ -17,7 +17,7 @@ class AuthButtons {
         Platform.isIOS
             ? CupertinoButton(
                 onPressed: () async {
-                  await _userAuth.signInWithFacebook().then((result) {
+                  await _userAuth.signInWithFacebook(context).then((result) {
                     if (result == false) {
                       showCupertinoModalPopup(
                           context: context,
@@ -53,7 +53,7 @@ class AuthButtons {
               )
             : InkWell(
                 onTap: () async {
-                  await _userAuth.signInWithFacebook().then((result) {
+                  await _userAuth.signInWithFacebook(context).then((result) {
                     if (result == false) {
                       Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text('Something went wrong try again')));
@@ -80,7 +80,7 @@ class AuthButtons {
         Platform.isIOS
             ? CupertinoButton(
                 onPressed: () async {
-                  await _userAuth.signInWithGoogle().then((result) {
+                  await _userAuth.signInWithGoogle(context).then((result) {
                     if (result == false) {
                       showCupertinoModalPopup(
                           context: context,
@@ -116,7 +116,7 @@ class AuthButtons {
               )
             : InkWell(
                 onTap: () async {
-                  await _userAuth.signInWithGoogle().then((result) {
+                  await _userAuth.signInWithGoogle(context).then((result) {
                     if (result == false) {
                       Scaffold.of(context).showSnackBar(SnackBar(
                           content: Text('Something went wrong try again')));

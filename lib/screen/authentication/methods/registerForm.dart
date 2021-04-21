@@ -56,23 +56,39 @@ class _RegisterFormState extends State<RegisterForm> {
             SizedBox(
               height: _heightOne * 10,
             ),
-            Platform.isIOS? Material(child: _userNameField(),):_userNameField(),
+            Platform.isIOS
+                ? Material(
+                    child: _userNameField(),
+                  )
+                : _userNameField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            Platform.isIOS?Material(child: _emailField(),):_emailField(),
+            Platform.isIOS
+                ? Material(
+                    child: _emailField(),
+                  )
+                : _emailField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            Platform.isIOS?Material(child: _passwordField(),):_passwordField(),
+            Platform.isIOS
+                ? Material(
+                    child: _passwordField(),
+                  )
+                : _passwordField(),
             SizedBox(
               height: _heightOne * 10,
             ),
-            Platform.isIOS?Material(child: _confirmPasswordField(),):_confirmPasswordField(),
+            Platform.isIOS
+                ? Material(
+                    child: _confirmPasswordField(),
+                  )
+                : _confirmPasswordField(),
             SizedBox(
               height: _heightOne * 15,
             ),
-            _registerButton(),
+            _registerButton(context),
             SizedBox(
               height: _heightOne * 30,
             ),
@@ -214,10 +230,10 @@ class _RegisterFormState extends State<RegisterForm> {
     );
   }
 
-  Widget _registerButton() {
+  Widget _registerButton(BuildContext context) {
     return Platform.isIOS
         ? CupertinoButton(
-            color: Colors.orange,
+            color: AppTheme.primaryColor,
             onPressed: () async {
               if (_formKey.currentState.validate()) {
                 bool validUsername = await _userInfoStore.isUsernameNew(
@@ -239,6 +255,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 } else {
                   await _userAuth
                       .registerUserWithEmail(
+                    context: context,
                     email: _userDataModel.email,
                     password: _userDataModel.password,
                     username: _userDataModel.username,
@@ -306,6 +323,7 @@ class _RegisterFormState extends State<RegisterForm> {
                 } else {
                   await _userAuth
                       .registerUserWithEmail(
+                    context: context,
                     email: _userDataModel.email,
                     password: _userDataModel.password,
                     username: _userDataModel.username,
@@ -335,14 +353,15 @@ class _RegisterFormState extends State<RegisterForm> {
             },
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
-                side:
-                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+                side: BorderSide(
+                    color: AppTheme.primaryColor, width: _widthOne * 5)),
             splashColor: Colors.orange[100],
+            color: AppTheme.secondaryColor,
             padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
             child: Text(
               "Register",
               style: TextStyle(
-                color: Color(0xFFFFCF40),
+                color: AppTheme.primaryColor,
               ),
             ));
   }

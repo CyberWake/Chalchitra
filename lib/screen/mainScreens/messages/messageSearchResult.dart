@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
 
@@ -41,7 +42,7 @@ class MessageSearchResult extends StatelessWidget {
                         ? eachUser.username
                         : eachUser.displayName,
                     style: TextStyle(
-                        color: Colors.black,
+                        color: AppTheme.pureBlackColor,
                         fontSize: 16,
                         fontWeight: FontWeight.bold)),
                 subtitle: Text(

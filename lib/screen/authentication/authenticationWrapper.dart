@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/screen/authentication/methods/forgotPasswordForm.dart';
 import 'package:wowtalent/screen/authentication/methods/loginForm.dart';
 import 'package:wowtalent/screen/authentication/methods/registerForm.dart';
@@ -30,7 +31,7 @@ class _AuthenticationState extends State<Authentication> {
     if (widget.index == AuthIndex.LOGIN) {
       return "LOGIN";
     } else if (widget.index == AuthIndex.REGISTER) {
-      return "REGISTER";
+      return "Join the Revolution ";
     } else if (widget.index == AuthIndex.FORGOT) {
       return "FORGOT PASSWORD";
     }
@@ -45,7 +46,7 @@ class _AuthenticationState extends State<Authentication> {
         return "We are always there to help";
         break;
       case AuthIndex.REGISTER:
-        return "We'll be glad if you join us.";
+        return "Rehearse. Record. Rise";
         break;
     }
   }
@@ -76,9 +77,7 @@ class _AuthenticationState extends State<Authentication> {
     _heightOne = (_size.height * 0.007) / 5;
     _fontOne = (_size.height * 0.015) / 11;
     return Platform.isIOS
-        ? CupertinoPageScaffold(
-            child: authPageBody()
-          )
+        ? CupertinoPageScaffold(child: authPageBody())
         : Scaffold(
             extendBodyBehindAppBar: true,
             backgroundColor: Colors.white,
@@ -86,7 +85,7 @@ class _AuthenticationState extends State<Authentication> {
           );
   }
 
-  Widget authPageBody(){
+  Widget authPageBody() {
     return Stack(
       children: [
         Container(
@@ -97,9 +96,9 @@ class _AuthenticationState extends State<Authentication> {
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
                 colors: [
-                  Color(0xFFFFCF40),
-                  Color(0xFFFFCF40).withOpacity(0.9),
-                  Color(0xFFFFCF40),
+                  AppTheme.primaryColor,
+                  AppTheme.primaryColor.withOpacity(0.9),
+                  AppTheme.primaryColor,
                 ],
               ),
               borderRadius: BorderRadius.only(
@@ -116,16 +115,16 @@ class _AuthenticationState extends State<Authentication> {
                 Text(
                   topText(),
                   style: TextStyle(
-                      color: Colors.white,
-                      fontSize: widget.index == AuthIndex.FORGOT
-                          ? _fontOne * 35
-                          : _fontOne * 50,
+                      color: AppTheme.backgroundColor,
+                      fontSize: widget.index == AuthIndex.LOGIN
+                          ? _fontOne * 50
+                          : _fontOne * 35,
                       fontWeight: FontWeight.normal),
                 ),
                 Text(
                   greetingText(),
                   style: TextStyle(
-                      color: Colors.white,
+                      color: AppTheme.backgroundColor,
                       fontSize: _fontOne * 20,
                       fontWeight: FontWeight.w300),
                 ),
@@ -144,7 +143,7 @@ class _AuthenticationState extends State<Authentication> {
                 color: Colors.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.purple[300].withOpacity(0.4),
+                    color: AppTheme.secondaryColorDark.withOpacity(0.4),
                     offset: Offset(0.0, -10.0), //(x,y)
                     blurRadius: 15.0,
                   ),

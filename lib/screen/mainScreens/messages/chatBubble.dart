@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/model/theme.dart';
 
-class ChatBubble extends StatelessWidget{
+class ChatBubble extends StatelessWidget {
   final bool isMe;
   final String profileImg;
   final String message;
@@ -11,17 +11,13 @@ class ChatBubble extends StatelessWidget{
     this.isMe,
     this.profileImg,
     this.message,
-  }) : assert(
-    isMe != null && profileImg != null && message != null
-  );
+  }) : assert(isMe != null && profileImg != null && message != null);
 
   @override
   Widget build(BuildContext context) {
     if (isMe) {
       return Padding(
-        padding: const EdgeInsets.only(
-            bottom: 5
-        ),
+        padding: const EdgeInsets.only(bottom: 5),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
@@ -33,14 +29,13 @@ class ChatBubble extends StatelessWidget{
                         topRight: Radius.circular(30),
                         bottomRight: Radius.circular(5),
                         topLeft: Radius.circular(30),
-                        bottomLeft: Radius.circular(30)
-                    )
-                ),
+                        bottomLeft: Radius.circular(30))),
                 child: Padding(
                   padding: const EdgeInsets.all(13.0),
                   child: Text(
                     message,
-                    style: TextStyle(color: AppTheme.backgroundColor, fontSize: 17),
+                    style: TextStyle(
+                        color: AppTheme.backgroundColor, fontSize: 17),
                   ),
                 ),
               ),
@@ -50,9 +45,7 @@ class ChatBubble extends StatelessWidget{
       );
     } else {
       return Padding(
-        padding: const EdgeInsets.only(
-            bottom: 5
-        ),
+        padding: const EdgeInsets.only(bottom: 5),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -75,9 +68,7 @@ class ChatBubble extends StatelessWidget{
                         topRight: Radius.circular(30),
                         bottomRight: Radius.circular(5),
                         topLeft: Radius.circular(30),
-                        bottomLeft: Radius.circular(30)
-                    )
-                ),
+                        bottomLeft: Radius.circular(30))),
                 child: Padding(
                   padding: const EdgeInsets.all(13.0),
                   child: Text(

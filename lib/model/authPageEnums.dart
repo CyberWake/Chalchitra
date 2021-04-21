@@ -1,5 +1,1 @@
-enum AuthIndex {
-  LOGIN,
-  REGISTER,
-  FORGOT
-}
+enum AuthIndex { LOGIN, REGISTER, FORGOT }

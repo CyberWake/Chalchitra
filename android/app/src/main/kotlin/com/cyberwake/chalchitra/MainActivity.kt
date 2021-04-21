@@ -1,4 +1,4 @@
-package com.example.wowtalent
+package com.cyberwake.chalchitra
 
 import io.flutter.embedding.android.FlutterActivity
 

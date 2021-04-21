@@ -11,7 +11,7 @@ class _SearchProfileIOSState extends State<SearchProfileIOS> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
-        child: widget.searchProfileBody,
+      child: widget.searchProfileBody,
     );
   }
 }

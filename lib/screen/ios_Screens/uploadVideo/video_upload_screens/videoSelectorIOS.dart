@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:wowtalent/model/theme.dart';
 
 class VideoSelectorIOS extends StatefulWidget {
   Widget selectorBody;
@@ -11,6 +12,7 @@ class _VideoSelectorIOSState extends State<VideoSelectorIOS> {
   @override
   Widget build(BuildContext context) {
     return CupertinoPageScaffold(
+      backgroundColor: AppTheme.primaryColor,
       child: widget.selectorBody,
     );
   }

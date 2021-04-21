@@ -1,8 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/provideUser.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 
 class UserAuth {
@@ -20,14 +24,33 @@ class UserAuth {
     return _auth.currentUser;
   }
 
-  Future signInWithEmailAndPassword({String email, String password}) async {
+  addPreference(String id) async {
+    SharedPreferences pref = await SharedPreferences.getInstance();
+    pref.setString('uid', id);
+  }
+
+  Future signInWithEmailAndPassword(
+      {String email, String password, BuildContext context}) async {
     try {
       userCredential = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
-      await _usersCollection.doc(userCredential.user.uid).get();
-      return "success";
+      if (userCredential.user.emailVerified) {
+        DocumentSnapshot userSnapshot =
+            await _usersCollection.doc(userCredential.user.uid).get();
+        if (userSnapshot.exists) {
+          UserDataModel user = UserDataModel.fromDocument(userSnapshot);
+          Provider.of<CurrentUser>(context, listen: false)
+              .updateCurrentUser(user);
+          addPreference(user.id);
+          return "success";
+        } else {
+          return "No user found for this email.";
+        }
+      } else {
+        return "User Not Verified";
+      }
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         return 'No user found for this email.';
@@ -41,14 +64,17 @@ class UserAuth {
   }
 
   Future registerUserWithEmail(
-      {String email, String password, String username}) async {
+      {String email,
+      String password,
+      String username,
+      BuildContext context}) async {
     try {
       userCredential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-
+      await userCredential.user.sendEmailVerification();
       DocumentSnapshot userRecord =
           await _usersCollection.doc(userCredential.user.uid).get();
       if (!userRecord.exists) {
@@ -56,13 +82,14 @@ class UserAuth {
             .createUserRecord(username: username)
             .then((value) async {
           if (value) {
-            userRecord =
-                await _usersCollection.doc(userCredential.user.uid).get();
-            currentUserModel = UserDataModel.fromDocument(userRecord);
+            addPreference(user.uid);
+            print("user created");
           }
         });
       }
-      return "success";
+      await _auth.signOut();
+      userCredential = null;
+      return "Check mailbox and verify your account to login";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         return 'The password provided is too weak.';
@@ -75,7 +102,7 @@ class UserAuth {
     }
   }
 
-  Future signInWithFacebook() async {
+  Future signInWithFacebook(BuildContext context) async {
     AccessToken userToken;
     try {
       final LoginResult result = await FacebookAuth.instance.login();
@@ -91,12 +118,15 @@ class UserAuth {
 
           userCredential =
               await _auth.signInWithCredential(facebookAuthCredential);
-          print("uid: ${userCredential.user.uid}");
           DocumentSnapshot userRecord =
               await _usersCollection.doc(userCredential.user.uid).get();
           if (!userRecord.exists) {
             return "newUser";
           }
+          UserDataModel user = UserDataModel.fromDocument(userRecord);
+          Provider.of<CurrentUser>(context, listen: false)
+              .updateCurrentUser(user);
+          addPreference(user.id);
           return true;
           break;
         case FacebookAuthLoginResponse.cancelled:
@@ -104,12 +134,13 @@ class UserAuth {
           return false;
       }
     } catch (e) {
+      await FacebookAuth.instance.logOut();
       print("facebook login error: " + e.toString());
       return false;
     }
   }
 
-  Future signInWithGoogle() async {
+  Future signInWithGoogle(BuildContext context) async {
     try {
       final GoogleSignInAccount googleUser = await GoogleSignIn().signIn();
       final GoogleSignInAuthentication googleAuth =
@@ -124,8 +155,12 @@ class UserAuth {
       if (!userRecord.exists) {
         return "newUser";
       }
+      UserDataModel user = UserDataModel.fromDocument(userRecord);
+      Provider.of<CurrentUser>(context, listen: false).updateCurrentUser(user);
+      addPreference(user.id);
       return true;
     } catch (e) {
+      await GoogleSignIn().signOut();
       print("google login error: " + e.toString());
       return false;
     }

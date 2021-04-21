@@ -2,75 +2,67 @@ name: wowtalent
 description: Talent Sharing Multiplatform App.
 publish_to: 'none'
 
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: ">=2.7.0 <3.0.0"
 
 # This section is for packages used in this project
 dependencies:
-
-  #Flutter
   flutter:
     sdk: flutter
-  flutter_localizations:
-    sdk: flutter
-  cupertino_icons: ^0.1.2
 
-  # Firebase
+  animated_background: ^1.0.5
+  animations: ^1.1.2
+  cached_network_image: null
+  characters: null
+  cloud_firestore: ^0.14.0+2
+  cupertino_icons: ^0.1.2
+  curved_navigation_bar: ^0.3.3
+  dio: ^3.0.10
+  file_picker: ^1.12.0
+  filesize: ^1.0.4
   firebase_auth: ^0.18.0+1
   firebase_core: ^0.5.0
-  cloud_firestore: ^0.14.0+2
-  firebase_storage: ^4.0.0
   firebase_dynamic_links: ^0.5.0+11
-  flutter_facebook_auth: ^0.2.3
-  google_sign_in: ^4.5.3
-
-  # Media
-  flutter_svg: ^0.18.0
-  cached_network_image:
-  video_player: ^0.10.8+1
-  image_picker: ^0.6.1+11
-  transparent_image: ^1.0.0
-  file_picker: ^1.12.0
-
-  # File System
-  filesize: ^1.0.4
-  path_provider: ^1.1.0
-  video_compress: ^2.0.0
-  shared_preferences: ^0.5.10
-  flutter_share: ^1.0.2+1
-  dio: ^3.0.10
-
-  # Utilities
-  provider: ^4.3.1
-  timeago: ^2.0.21
-
-  # Formatting
-  characters:
-  flutter_spinkit:
-  line_icons:
-  hexcolor:
-  curved_navigation_bar: ^0.3.3
-  flutter_staggered_grid_view: ^0.3.2
-  popup_menu: ^1.0.5
-  flutter_colored_progress_indicators: ^1.2.0
-  animated_background: ^1.0.5
-  flutter_slidable: ^0.5.7
-  # Misc
-  flutter_dotenv: ^2.0.3
+  firebase_messaging: ^7.0.3
+  firebase_storage: ^4.0.0
   flushbar: ^1.10.4
-
+  flutter_advanced_switch: ^0.0.8
+  flutter_dotenv: ^2.0.3
+  flutter_facebook_auth: ^0.2.3
+  flutter_share: ^1.0.2+1
+  flutter_spinkit: null
+  flutter_staggered_grid_view: ^0.3.2
+  flutter_svg: ^0.21.0+1
+  fluttertoast: ^7.1.1
+  google_sign_in: ^4.5.3
+  hexcolor: null
+  image_picker: ^0.6.1+11
+  inview_notifier_list: ^1.0.0
+  like_button: ^1.0.4
+  line_icons: null
+  mailer: ^3.0.4
+  path_provider: ^1.1.0
+  percent_indicator: ^2.1.8
+  permission_handler: ^5.0.1+1
+  popup_menu: ^1.0.5
+  provider: ^4.3.1
+  shared_preferences: ^0.5.10
+  shimmer: ^1.1.2
+  swipe_stack: ^1.0.0
+  timeago: ^2.0.21
+  transparent_image: ^1.0.0
+  video_compress: ^3.0.0
+  video_player: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
-
 # The following section is specific to Flutter.
 flutter:
   uses-material-design: true
-
 
   assets:
     - assets/images/

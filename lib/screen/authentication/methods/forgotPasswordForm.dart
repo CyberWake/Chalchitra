@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/authPageEnums.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/authentication/helpers/validation.dart';
@@ -44,7 +45,11 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
             SizedBox(
               height: _heightOne * 1,
             ),
-            Platform.isIOS ? Material(child: _emailField(),):_emailField(),
+            Platform.isIOS
+                ? Material(
+                    child: _emailField(),
+                  )
+                : _emailField(),
             SizedBox(
               height: _heightOne * 15,
             ),
@@ -73,23 +78,23 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
 
   Widget _emailField() {
     return FormFieldFormatting.formFieldContainer(
-            child: TextFormField(
-              keyboardType: TextInputType.emailAddress,
-              validator: FormValidation.validateEmail,
-              onChanged: (val) {
-                _userDataModel.email = val;
-                if (_submitted) {
-                  _formKey.currentState.validate();
-                }
-              },
-              decoration: FormFieldFormatting.formFieldFormatting(
-                  hintText: "Enter Email", fontSize: _fontOne * 15),
-              style: TextStyle(
-                fontSize: _fontOne * 15,
-              ),
-            ),
-            leftPadding: _widthOne * 20,
-          );
+      child: TextFormField(
+        keyboardType: TextInputType.emailAddress,
+        validator: FormValidation.validateEmail,
+        onChanged: (val) {
+          _userDataModel.email = val;
+          if (_submitted) {
+            _formKey.currentState.validate();
+          }
+        },
+        decoration: FormFieldFormatting.formFieldFormatting(
+            hintText: "Enter Email", fontSize: _fontOne * 15),
+        style: TextStyle(
+          fontSize: _fontOne * 15,
+        ),
+      ),
+      leftPadding: _widthOne * 20,
+    );
   }
 
   showAlertDialog(BuildContext context, String message) {
@@ -144,6 +149,7 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
   Widget _submitButton() {
     return Platform.isIOS
         ? CupertinoButton(
+            color: AppTheme.primaryColor,
             onPressed: () async {
               if (_formKey.currentState.validate()) {
                 bool validEmail = await _userInfoStore.emailExists(
@@ -195,14 +201,15 @@ class ForgotPasswordFormState extends State<ForgotPasswordForm> {
             },
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
-                side:
-                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+                side: BorderSide(
+                    color: AppTheme.primaryColor, width: _widthOne * 5)),
             splashColor: Colors.orange[100],
+            color: AppTheme.secondaryColor,
             padding: EdgeInsets.symmetric(horizontal: _size.width * 0.277),
             child: Text(
               "Submit",
               style: TextStyle(
-                color: Color(0xFFFFCF40),
+                color: AppTheme.primaryColor,
               ),
             ));
   }

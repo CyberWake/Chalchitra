@@ -61,13 +61,15 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
     _fontOne = (_size.height * 0.015) / 11;
     _iconOne = (_size.height * 0.066) / 50;
     return Platform.isIOS
-        ? MessageChatScreenIOS(msgChatScreenBody: msgChatScreenBody(),)
+        ? MessageChatScreenIOS(
+            msgChatScreenBody: msgChatScreenBody(),
+          )
         : Scaffold(
             body: msgChatScreenBody(),
           );
   }
 
-  Widget msgChatScreenBody(){
+  Widget msgChatScreenBody() {
     return Container(
         padding: EdgeInsets.only(top: _heightOne * 20),
         height: _size.height,
@@ -86,23 +88,25 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                   SizedBox(
                     width: _widthOne * 50,
                   ),
-                  Platform.isIOS ? CupertinoButton(
-                      child: Icon(
-                        Icons.arrow_back_ios,
-                        color: AppTheme.backgroundColor,
-                      ),
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        Navigator.pop(context);
-                      }):IconButton(
-                      icon: Icon(
-                        Icons.arrow_back_ios,
-                        color: AppTheme.backgroundColor,
-                      ),
-                      onPressed: () {
-                        FocusScope.of(context).unfocus();
-                        Navigator.pop(context);
-                      }),
+                  Platform.isIOS
+                      ? CupertinoButton(
+                          child: Icon(
+                            Icons.arrow_back_ios,
+                            color: AppTheme.backgroundColor,
+                          ),
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            Navigator.pop(context);
+                          })
+                      : IconButton(
+                          icon: Icon(
+                            Icons.arrow_back_ios,
+                            color: AppTheme.backgroundColor,
+                          ),
+                          onPressed: () {
+                            FocusScope.of(context).unfocus();
+                            Navigator.pop(context);
+                          }),
                   Expanded(child: Container()),
                   Text(
                     _loading ? " " : _userDataModel.username,
@@ -138,11 +142,11 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                         )),
                     child: _loading
                         ? Center(
-                      child: SpinKitCircle(
-                        color: AppTheme.primaryColor,
-                        size: _fontOne * 60,
-                      ),
-                    )
+                            child: SpinKitCircle(
+                              color: AppTheme.primaryColor,
+                              size: _fontOne * 60,
+                            ),
+                          )
                         : messages())),
             sendMessageField()
           ],
@@ -158,7 +162,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         if (!snapshot.hasData) {
           return Center(
             child: SpinKitCircle(
-              color: AppTheme.primaryColor,
+              color: AppTheme.backgroundColor,
               size: _fontOne * 60,
             ),
           );
@@ -190,13 +194,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         children: <Widget>[
           Platform.isIOS
               ? Container(
-                margin: EdgeInsets.only(bottom: 10),
-                child: CupertinoButton(
-                    child:
-                        Icon(Icons.photo, size: 25, color: AppTheme.primaryColor),
+                  margin: EdgeInsets.only(bottom: 10),
+                  child: CupertinoButton(
+                    child: Icon(Icons.photo,
+                        size: 25, color: AppTheme.primaryColor),
                     onPressed: () {},
                   ),
-              )
+                )
               : IconButton(
                   icon: Icon(Icons.photo),
                   iconSize: 25,
@@ -206,32 +210,37 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           Expanded(
             child: Platform.isIOS
                 ? Container(
-                  margin: EdgeInsets.only(bottom: 10),
-                  height: _heightOne*30,
-                  child: CupertinoTextField(
+                    margin: EdgeInsets.only(bottom: 10),
+                    height: _heightOne * 30,
+                    child: CupertinoTextField(
+                      style: TextStyle(
+                        color: AppTheme.pureBlackColor,
+                      ),
                       controller: controller,
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(50),
-                        border: Border.all(color: Colors.black),
+                        border: Border.all(color: AppTheme.pureBlackColor),
                       ),
                       placeholder: "Send a Message",
+                      placeholderStyle: TextStyle(
+                          color: AppTheme.pureBlackColor.withOpacity(0.5)),
                       onChanged: (val) {
                         text = val;
                       },
                     ),
-                )
+                  )
                 : TextField(
                     controller: controller,
                     onChanged: (val) {
                       text = val;
                     },
                     style: TextStyle(
-                      color: AppTheme.pureWhiteColor,
+                      color: AppTheme.pureBlackColor,
                     ),
                     decoration: InputDecoration.collapsed(
                       hintText: 'Send a message..',
                       hintStyle: TextStyle(
-                        color: AppTheme.pureWhiteColor,
+                        color: AppTheme.pureBlackColor.withOpacity(0.5),
                       ),
                     ),
                     textCapitalization: TextCapitalization.sentences,
@@ -239,15 +248,16 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           ),
           Platform.isIOS
               ? Container(
-                margin: EdgeInsets.only(bottom: 10),
-                child: CupertinoButton(
+                  margin: EdgeInsets.only(bottom: 10),
+                  child: CupertinoButton(
                     child: Icon(
                       Icons.send,
                       size: 25,
                       color: AppTheme.primaryColor,
                     ),
                     onPressed: () async {
-                      if (text.isEmpty || text.replaceAll(" ", "").length == 0) {
+                      if (text.isEmpty ||
+                          text.replaceAll(" ", "").length == 0) {
                         return;
                       }
 
@@ -274,7 +284,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
                       text = "";
                     },
                   ),
-              )
+                )
               : IconButton(
                   icon: Icon(Icons.send),
                   iconSize: 25,

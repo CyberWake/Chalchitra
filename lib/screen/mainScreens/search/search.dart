@@ -89,107 +89,112 @@ class _SearchUserState extends State<SearchUser> {
   @override
   Widget build(BuildContext context) {
     return Platform.isIOS
-        ? SearchIOS(searchBody: searchBody(),)
+        ? SearchIOS(
+            searchBody: searchBody(),
+          )
         : Scaffold(
-            backgroundColor: AppTheme.backgroundColor,
-            extendBody: true,
-            body:searchBody(),
+            backgroundColor: AppTheme.primaryColor,
+            extendBody: false,
+            body: searchBody(),
+          );
+  }
+
+  Widget searchField(){
+    return Container(
+      padding: EdgeInsets.zero,
+      margin: EdgeInsets.only(bottom: 20, left: 15, right: 15),
+      height: 70,
+      color: AppTheme.primaryColor,
+      child: Row(
+        children: <Widget>[
+          Flexible(
+            child: Material(
+              type: MaterialType.button,
+              clipBehavior: Clip.antiAlias,
+              elevation: 10,
+              color: Colors.transparent,
+              child: TextFormField(
+                controller: searchTextEditingController,
+                onChanged: (String usernameIndex) {
+                            if (usernameIndex.length == 0) {
+                              searchTextEditingController.clear();
+                              searchUserResult = [];
+                              search = "";
+                              setState(() {
+                                searchUserResult = [];
+                                search = "";
+                                isFound = false;
+                              });
+                            }
+                            print("Username Index: $usernameIndex");
+                            initiateSearch(usernameIndex);
+                          },
+                decoration: InputDecoration(
+                    hintText: "Search by Username",
+
+                    // contentPadding: EdgeInsets.all(10),
+                    focusColor: Colors.white,
+                    focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(35),
+                        borderSide: BorderSide(color: Colors.white)),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(35),
+                        borderSide: BorderSide(color: Colors.white)),
+                    fillColor: AppTheme.pureWhiteColor,
+                    filled: true,
+                    prefixIcon: IconButton(
+                      icon: Icon(
+                        Icons.arrow_back_ios,
+                        color: AppTheme.secondaryColor,
+                      ),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        Icons.clear,
+                        color: AppTheme.secondaryColor,
+                      ),
+                      onPressed: () {
+                                    searchTextEditingController.clear();
+                                    searchUserResult = [];
+                                    search = "";
+                                    setState(() {});
+                                  },
+                    )),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  Widget searchBody(){
+  Widget searchBody() {
     return SafeArea(
+      child: GestureDetector(
+        onHorizontalDragEnd: (DragEndDetails details) {
+          Offset offset = details.velocity.pixelsPerSecond;
+          print(offset);
+          if (offset.dx > 0) {
+            print(offset.dx);
+            Navigator.pop(context);
+          }
+        },
+        child: Container(
+          color: AppTheme.primaryColor,
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                decoration: BoxDecoration(
-                    color: AppTheme.backgroundColor,
-                    border: Border(
-                        bottom:
-                            BorderSide(color: Colors.orange.withOpacity(0.5))),
-                    boxShadow: [
-                      BoxShadow(
-                          offset: Offset(0, 2),
-                          color: AppTheme.pureWhiteColor.withOpacity(0.2),
-                          blurRadius: 8)
-                    ]),
-                child: Row(
-                  children: [
-                    Platform.isIOS ? CupertinoButton(
-                      child: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.orange.shade400,
-                        ),
-                        onPressed: () => Navigator.pop(context),
-                    )  :IconButton(
-                        icon: Icon(
-                          Icons.arrow_back_ios,
-                          color: Colors.orange.shade400,
-                        ),
-                        onPressed: () => Navigator.pop(context)),
-                    Expanded(
-                      child: Platform.isIOS ? CupertinoTextField(
-                        placeholder: "Search By Username",
-                        placeholderStyle: TextStyle(color: AppTheme.pureWhiteColor),
-                        suffix: CupertinoButton(
-                          child: Icon(Icons.clear,
-                                    color: Colors.orange.shade400),
-                                onPressed: () {
-                                  searchTextEditingController.clear();
-                                  searchUserResult = [];
-                                  search = "";
-                                  setState(() {});
-                                },
-                        ),
-                        controller: searchTextEditingController,
-                        style: TextStyle(
-                            fontSize: 18, color: AppTheme.pureWhiteColor),
-                            onChanged: (String usernameIndex) {
-                          if (usernameIndex.length == 0) {
-                            setState(() {
-                              isFound = false;
-                            });
-                          }
-                          print(usernameIndex);
-                          initiateSearch(usernameIndex);
-                        },
-                      ) : TextFormField(
-                        style: TextStyle(
-                            fontSize: 18, color: AppTheme.pureWhiteColor),
-                        controller: searchTextEditingController,
-                        decoration: InputDecoration(
-                            hintText: "Search By Username",
-                            hintStyle:
-                                TextStyle(color: AppTheme.pureWhiteColor),
-                            border: InputBorder.none,
-                            suffixIcon: IconButton(
-                                icon: Icon(Icons.clear,
-                                    color: Colors.orange.shade400),
-                                onPressed: () {
-                                  searchTextEditingController.clear();
-                                  searchUserResult = [];
-                                  search = "";
-                                  setState(() {});
-                                })),
-                        onChanged: (String usernameIndex) {
-                          if (usernameIndex.length == 0) {
-                            setState(() {
-                              isFound = false;
-                            });
-                          }
-                          print(usernameIndex);
-                          initiateSearch(usernameIndex);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              searchField(),
               Expanded(
                   child: isFound
                       ? ListView.builder(
                           itemCount: searchUserResult.length,
                           itemBuilder: (BuildContext context, int index) {
+                            // print(
+                            //     "${user.id}--------------------------------YYYYYYYY-------------------");
                             return SearchResult(searchUserResult[index]);
                           }
                           // tempSearchStore == null ? resultNotFound() : foundUsers(),
@@ -197,7 +202,9 @@ class _SearchUserState extends State<SearchUser> {
                       : resultNotFound()),
             ],
           ),
-        );
+        ),
+      ),
+    );
   }
 
   Widget resultNotFound() {
@@ -207,7 +214,7 @@ class _SearchUserState extends State<SearchUser> {
         children: [
           Icon(
             Icons.group,
-            color: Colors.orange.shade300,
+            color: AppTheme.primaryColor,
             size: 40,
           ),
           SizedBox(
@@ -217,7 +224,7 @@ class _SearchUserState extends State<SearchUser> {
             "Search User",
             textAlign: TextAlign.center,
             style: TextStyle(
-                color: Colors.orange.shade300,
+                color: AppTheme.primaryColor,
                 fontWeight: FontWeight.w500,
                 fontSize: 25),
           )

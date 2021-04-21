@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
+import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
 import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
@@ -56,7 +57,10 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
                         _formKey.currentState.validate();
                       }
                     },
-                    placeholderStyle: TextStyle(fontSize: _fontOne * 15),
+                    style: TextStyle(color: AppTheme.backgroundColor),
+                    placeholderStyle: TextStyle(
+                        color: AppTheme.backgroundColor,
+                        fontSize: _fontOne * 15),
                     placeholder: "Enter Username",
                     decoration: BoxDecoration(
                         border:
@@ -98,6 +102,7 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
   Widget _registerButton() {
     return Platform.isIOS
         ? CupertinoButton(
+            color: AppTheme.primaryColor,
             onPressed: () async {
               if (_formKey.currentState.validate()) {
                 bool validUsername = await _userInfoStore.isUsernameNew(
@@ -192,14 +197,15 @@ class _SocialRegisterUsernameState extends State<SocialRegisterUsername> {
             },
             shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(5.0),
-                side:
-                    BorderSide(color: Color(0xFFFFCF40), width: _widthOne * 5)),
+                side: BorderSide(
+                    color: AppTheme.primaryColor, width: _widthOne * 5)),
             splashColor: Colors.orange[100],
+            color: AppTheme.secondaryColor,
             padding: EdgeInsets.symmetric(horizontal: _size.width * 0.29),
             child: Text(
               "Register",
               style: TextStyle(
-                color: Color(0xFFFFCF40),
+                color: AppTheme.primaryColor,
               ),
             ),
           );

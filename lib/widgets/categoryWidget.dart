@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:wowtalent/model/theme.dart';
@@ -5,36 +6,38 @@ import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
 
 class CategoryStoryItem extends StatelessWidget {
   final String name;
+  final bool selected;
   const CategoryStoryItem({
     Key key,
     this.name,
+    this.selected
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: (){
-        Navigator.of(context).push(CupertinoPageRoute(builder: (context) => Category(categoryName: name,)));
-      },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 10),
-        child: Center(
-          child: Container(
-            padding: EdgeInsets.symmetric(horizontal: 25, vertical: 10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppTheme.backgroundColor,
-                border: Border.all(color: AppTheme.primaryColor)),
+    return Container(
+          margin: const EdgeInsets.only(right: 10),
+          height: MediaQuery.of(context).size.height * 0.05,
+          //width: MediaQuery.of(context).size.width * 0.2,
+          padding: EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: selected?AppTheme.pureWhiteColor :AppTheme.primaryColor,
+            border: Border.all(
+              color: AppTheme.pureWhiteColor,
+              width: 1,
+            ),
+          ),
+          child: Center(
             child: Text(
               name,
               style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 15),
+                color:selected? AppTheme.primaryColor : AppTheme.pureWhiteColor,
+                fontWeight: selected?FontWeight.w600:FontWeight.w300,
+                fontSize: 16,
+              ),
             ),
           ),
-        ),
-      ),
-    );
+        );
   }
 }

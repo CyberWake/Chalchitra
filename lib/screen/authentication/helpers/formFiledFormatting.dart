@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/model/theme.dart';
 
 class FormFieldFormatting {
   static formFieldFormatting(
@@ -13,7 +14,7 @@ class FormFieldFormatting {
       disabledBorder: InputBorder.none,
       hintText: hintText,
       errorMaxLines: 3,
-      hintStyle: TextStyle(color: Color(0xFFFFCF40), fontSize: fontSize),
+      hintStyle: TextStyle(color: AppTheme.primaryColor, fontSize: fontSize),
       errorStyle: TextStyle(fontSize: fontSize, color: Colors.deepOrangeAccent),
     );
   }
@@ -22,7 +23,7 @@ class FormFieldFormatting {
     return Container(
       padding: EdgeInsets.only(left: leftPadding),
       decoration: BoxDecoration(
-          border: Border.all(color: Color(0xFFFFCF40)),
+          border: Border.all(color: AppTheme.primaryColor),
           borderRadius: BorderRadius.circular(15.0)),
       child: child,
     );

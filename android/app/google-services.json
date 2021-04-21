@@ -1,82 +1,42 @@
 {
   "project_info": {
-    "project_number": "107639817018",
-    "firebase_url": "https://wowtalent-7361e.firebaseio.com",
-    "project_id": "wowtalent-7361e",
-    "storage_bucket": "wowtalent-7361e.appspot.com"
+    "project_number": "971601180995",
+    "project_id": "chalchitra-4429b",
+    "storage_bucket": "chalchitra-4429b.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:107639817018:android:d4c0028f8618891c544603",
+        "mobilesdk_app_id": "1:971601180995:android:012289ef908ad5d7c9d7f6",
         "android_client_info": {
-          "package_name": "com.example.wowtalent"
+          "package_name": "com.cyberwake.chalchitra"
         }
       },
       "oauth_client": [
         {
-          "client_id": "107639817018-vs3gkjtngpqsrla2gfhk0b4knuo4gris.apps.googleusercontent.com",
+          "client_id": "971601180995-ilad8dbknoq49bfk14t6lqd6agtamh42.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.wowtalent",
-            "certificate_hash": "ff0679d21805cd6fdb626d17fab4c6fe25d81283"
-          }
-        },
-        {
-          "client_id": "107639817018-f9f2efcgk33ba8gfk4nsj6f2k5t4ma4b.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.wowtalent",
+            "package_name": "com.cyberwake.chalchitra",
             "certificate_hash": "85cdf5ae5eff1677b49fdf4ef436c10a97f3e546"
           }
         },
         {
-          "client_id": "107639817018-rh8td4gsm5bbm9ch633nsugo2e2155gn.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.wowtalent",
-            "certificate_hash": "5eb4f62f1ac28cb96c0d85ff4dd5c663697c3312"
-          }
-        },
-        {
-          "client_id": "107639817018-rjq3k3eeb1l5fvobstee9c48rimdivrh.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.wowtalent",
-            "certificate_hash": "adc8c09dcfb58960eda7924affde6ddbd8aff6f6"
-          }
-        },
-        {
-          "client_id": "107639817018-f8g48vmcn61cqruosfd2th4nbakji6ad.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.wowtalent",
-            "certificate_hash": "ada42968a32e3f53c10f93abb5d5fd055ea6e2fd"
-          }
-        },
-        {
-          "client_id": "107639817018-fhc02kr191t8fvgietlej763322053nr.apps.googleusercontent.com",
+          "client_id": "971601180995-bkclod44tp2onbm68uaf28diq813rav2.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCqEwJHzfd9Af-OEu-vJF5bfN2cyc_CSiE"
+          "current_key": "AIzaSyCC58o6nqMghuGvwWl1BpfwtgPQCUGG7zM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "107639817018-fhc02kr191t8fvgietlej763322053nr.apps.googleusercontent.com",
+              "client_id": "971601180995-bkclod44tp2onbm68uaf28diq813rav2.apps.googleusercontent.com",
               "client_type": 3
-            },
-            {
-              "client_id": "107639817018-mle5l2h2bh7isrsi63l742jbof8p6fe6.apps.googleusercontent.com",
-              "client_type": 2,
-              "ios_info": {
-                "bundle_id": "com.example.wowtalent"
-              }
             }
           ]
         }

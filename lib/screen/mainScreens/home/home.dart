@@ -1,239 +1,194 @@
 import 'dart:io';
 
 import 'package:animated_background/animated_background.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:inview_notifier_list/inview_notifier_list.dart';
 import 'package:popup_menu/popup_menu.dart';
+import 'package:shimmer/shimmer.dart';
 import 'package:wowtalent/auth/userAuth.dart';
 import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/database/userVideoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
 import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
-
-import '../../../model/theme.dart';
+import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:wowtalent/widgets/dummyPostCard.dart';
+import 'package:wowtalent/widgets/noDataTile.dart';
 
 class Home extends StatefulWidget {
   @override
   _HomeState createState() => _HomeState();
 }
 
-class _HomeState extends State<Home> with TickerProviderStateMixin {
+class _HomeState extends State<Home> {
   List<VideoInfo> _videos = <VideoInfo>[];
   double _widthOne;
   double _heightOne;
+  double _fontOne;
+  double _iconOne;
+  Size _size;
   UserInfoStore _userInfoStore = UserInfoStore();
   List _usersDetails = [];
   PopupMenu menu;
   GlobalKey btnKey = GlobalKey();
   UserAuth _userAuth = UserAuth();
 
-  ParticleOptions particleOptions = ParticleOptions(
-    image: Image.asset('assets/images/star_stroke.png'),
-    baseColor: Colors.blue,
-    spawnOpacity: 0.0,
-    opacityChangeRate: 0.25,
-    minOpacity: 0.1,
-    maxOpacity: 0.4,
-    spawnMinSpeed: 30.0,
-    spawnMaxSpeed: 70.0,
-    spawnMinRadius: 7.0,
-    spawnMaxRadius: 15.0,
-    particleCount: 40,
-  );
+  List<DocumentSnapshot> followingFuture = [];
+  List<VideoInfo> videoList = [];
+  List userInfo = [];
+  setup() async {
+    try {
+      await _userInfoStore
+          .getFollowingFuture(uid: _userAuth.user.uid)
+          .then((value) {
+        value.docs.forEach((e) {
+          followingFuture.add(e);
+        });
+      });
+      if (followingFuture.length != 0) {
+        print("running");
+        await UserVideoStore()
+            .getFollowingVideos(followings: followingFuture)
+            .then((value) {
+          value.docs.forEach((e) async {
+            VideoInfo vid = VideoInfo.fromDocument(e);
+            videoList.add(vid);
+          });
+        });
+      }
+      return true;
+    } on Exception catch (e) {
+      print(e.toString());
+    }
+  }
 
-  var particlePaint = Paint()
-    ..style = PaintingStyle.stroke
-    ..strokeWidth = 1.0;
+  fetchUserList() async {
+    try {
+      await Future.forEach(videoList, (element) async {
+        await _userInfoStore.getUserInfo(uid: element.uploaderUid).then((val) {
+          userInfo.add(UserDataModel.fromDocument(val));
+        });
+      });
+      return true;
+    } catch (e) {}
+  }
 
+  bool loading = true;
   @override
   void initState() {
+    setup().then((v) {
+      if (v) {
+        fetchUserList().then((res) {
+          if (res) {
+            setState(() {
+              loading = false;
+            });
+          }
+        });
+      }
+    });
     super.initState();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    _widthOne = size.width * 0.0008;
-    _heightOne = (size.height * 0.007) / 5;
-    return StreamBuilder(
-        stream: _userInfoStore.getFollowing(uid: _userAuth.user.uid),
-        builder: (context, data) {
-          if (!data.hasData) {
-            return Center(
-              child: SpinKitCircle(
-                color: AppTheme.primaryColor,
-                size: 60,
-              ),
-            );
-          } else {
-            if (data.data.documents.length == 0) {
-              return Container(
-                color: Platform.isIOS ? AppTheme.backgroundColor :Colors.transparent,
-                child: AnimatedBackground(
-                  behaviour: RandomParticleBehaviour(
-                    options: particleOptions,
-                    paint: particlePaint,
-                  ),
-                  vsync: this,
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 35),
-                    child: Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text.rich(TextSpan(text: '', children: <InlineSpan>[
-                            TextSpan(
-                              text: 'Follow',
-                              style: TextStyle(
-                                  fontSize: 56,
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                            TextSpan(
-                              text: '  Creators to see content',
-                              style: TextStyle(
-                                  fontSize: 38,
-                                  color: AppTheme.pureWhiteColor,
-                                  fontWeight: FontWeight.bold),
-                            )
-                          ])),
-                          SizedBox(height: 20),
-                          Platform.isIOS
-                              ? CupertinoButton(
-                                  color: AppTheme.primaryColor,
-                                  child: Text(
-                                    'Explore Content',
-                                    style: TextStyle(fontSize: 18),
-                                  ),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (_) => MainScreenWrapper(
-                                                  index: 1,
-                                                )));
-                                  },
-                                )
-                              : FlatButton(
-                                  color: AppTheme.primaryColor,
-                                  shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(8)),
-                                  onPressed: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        CupertinoPageRoute(
-                                            builder: (_) => MainScreenWrapper(
-                                                  index: 1,
-                                                )));
-                                  },
-                                  child: Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10.0, horizontal: 2),
-                                    child: Text(
-                                      'Explore Content',
-                                      style: TextStyle(fontSize: 18),
-                                    ),
-                                  ),
-                                )
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            } else {
-              return RefreshIndicator(
-                backgroundColor: AppTheme.primaryColor,
-                color: AppTheme.backgroundColor,
+  Widget build(context) {
+    _size = MediaQuery.of(context).size;
+    _widthOne = _size.width * 0.0008;
+    _heightOne = (_size.height * 0.007) / 5;
+    _fontOne = (_size.height * 0.015) / 11;
+    _iconOne = (_size.height * 0.066) / 50;
+    return !loading
+        ? followingFuture.length == 0
+            ? Container(
+                color: Platform.isIOS
+                    ? AppTheme.backgroundColor
+                    : Colors.transparent,
+                child: NoDataTile(
+                  showButton: true,
+                  isActivity: false,
+                  titleText: "Follow",
+                  bodyText: "  Creators to see content",
+                  buttonText: "Explore Talent",
+                ))
+            : RefreshIndicator(
                 onRefresh: () async {
-                  UserVideoStore()
-                      .getFollowingVideos(followings: data.data.documents)
-                      .first;
+                  setState(() {
+                    loading = true;
+                    followingFuture = [];
+                    videoList = [];
+                    userInfo = [];
+                  });
+                  await setup().then((v) {
+                    if (v) {
+                      fetchUserList().then((res) {
+                        if (res) {
+                          setState(() {
+                            loading = false;
+                          });
+                        }
+                      });
+                    }
+                  });
                 },
-                child: FutureBuilder(
-                    future: UserVideoStore()
-                        .getFollowingVideos(followings: data.data.documents)
-                        .first,
-                    builder: (context, snapshot) {
-                      if (!snapshot.hasData) {
-                        return Center(
-                          child: SpinKitCircle(
-                            color: AppTheme.primaryColor,
-                            size: 60,
-                          ),
-                        );
-                      } else {
-                        if (snapshot.data.documents.length == 0) {
-                          return Center(
-                            child: Text(
-                              "No videos to show",
-                              style: TextStyle(
-                                color: AppTheme.primaryColor,
-                                fontSize: 16,
-                              ),
+                child: videoList.length == 0
+                    ? Container(
+                        color: AppTheme.backgroundColor,
+                        child: Center(
+                          child: Text(
+                            "No videos to show",
+                            style: TextStyle(
+                              color: AppTheme.primaryColor,
+                              fontSize: 16,
                             ),
-                          );
-                        } else {
-                          return Center(
-                              child: ListView.builder(
-                            itemCount: snapshot.data.documents.length,
-                            itemBuilder: (context, index) {
-                              return FutureBuilder(
-                                future: _userInfoStore.getUserInfo(
-                                    uid: snapshot.data.documents[index]
-                                        .data()['uploaderUid']),
-                                builder: (context, snap) {
-                                  if (snap.connectionState ==
-                                          ConnectionState.none ||
-                                      !snap.hasData) {
-                                    return Container();
-                                  }
-                                  return Padding(
-                                    padding: EdgeInsets.symmetric(
-                                        horizontal: _widthOne * 50,
-                                        vertical: _heightOne * 20),
-                                    child: PostCard(
-                                        video: snapshot.data.documents[index],
-                                        id: snapshot.data.documents[index].id,
-                                        thumbnail: snapshot.data.documents[index]
-                                            .data()['thumbUrl'],
-                                        videoUrl: snapshot.data.documents[index]
-                                            .data()['videoUrl'],
-                                        profileImg:
-                                            snap.data.data()['photoUrl'] == null
-                                                ? "https://via.placeholder.com/150"
-                                                : snap.data.data()['photoUrl'],
-                                        title: snapshot.data.documents[index]
-                                            .data()['videoName'],
-                                        uploader: snap.data.data()['username'],
-                                        likeCount: snapshot.data.documents[index]
-                                            .data()['likes'],
-                                        commentCount: snapshot.data.documents[index]
-                                            .data()['comments'],
-                                        uploadTime: formatDateTime(
-                                            millisecondsSinceEpoch: snapshot
-                                                .data.documents[index]
-                                                .data()['uploadedAt']),
-                                        viewCount: snapshot.data.documents[index].data()['views'],
-                                        rating: snapshot.data.documents[index].data()['rating']),
-                                  );
-                                },
+                          ),
+                        ),
+                      )
+                    : Center(
+                        child: InViewNotifierList(
+                        isInViewPortCondition:
+                            (double delTop, double delBottom, double viewPort) {
+                          return delTop < (0.5 * viewPort) &&
+                              delBottom > (0.5 * viewPort);
+                        },
+                        itemCount: videoList.length,
+                        builder: (context, index) {
+                          return InViewNotifierWidget(
+                            id: videoList[index].videoId,
+                            builder: (context, isInView, child) {
+                              return Padding(
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: _widthOne * 50,
+                                    vertical: _heightOne * 20),
+                                child: PostCard(
+                                  playVideo: isInView ? true : false,
+                                  video: videoList[index],
+                                  uploader: userInfo[index].username,
+                                  profileImg: userInfo[index].photoUrl == null
+                                      ? "https://via.placeholder.com/150"
+                                      : userInfo[index].photoUrl,
+                                  navigate: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) {
+                                          return Player(
+                                            videos: videoList,
+                                            index: index,
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
                               );
                             },
-                          ));
-                        }
-                      }
-                    }),
-              );
-            }
-          }
-        });
+                          );
+                        },
+                      )))
+        : DummyPostCard();
   }
 
   void getUsersDetails() async {

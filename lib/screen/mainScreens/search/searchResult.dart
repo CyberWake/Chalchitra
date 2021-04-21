@@ -3,62 +3,86 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:wowtalent/auth/userAuth.dart';
+import 'package:wowtalent/database/userInfoStore.dart';
 import 'package:wowtalent/model/theme.dart';
 import 'package:wowtalent/model/userDataModel.dart';
 import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
 
 class SearchResult extends StatelessWidget {
   final UserDataModel eachUser;
+  String uid;
   SearchResult(this.eachUser);
+
+  final UserInfoStore _userInfoStore = UserInfoStore();
+  final UserAuth _userAuth = UserAuth();
+
+  Future<bool> checkIfAlreadyFollowing() async {
+    bool result = await _userInfoStore.checkIfAlreadyFollowing(uid: uid);
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.all(10),
-      child: Container(
-          color: AppTheme.backgroundColor,
-          child: Column(
-            children: <Widget>[
-              GestureDetector(
-                  onTap: () => Navigator.push(
-                      context,
-                      Platform.isIOS
-                          ? CupertinoPageRoute(
-                              builder: (_) => SearchProfile(
-                                    uid: eachUser.id,
-                                  ))
-                          : MaterialPageRoute(
-                              builder: (_) => SearchProfile(
-                                    uid: eachUser.id,
-                                  ))),
-                  child: Platform.isIOS
-                      ? Material(color: AppTheme.backgroundColor,child:profileTile())
-                      : profileTile())
-            ],
-          )),
+    print(
+        'Widget called---------------------------------------------------------------------');
+    return Column(
+      children: <Widget>[
+        GestureDetector(
+          onTap: () {
+            FocusScope.of(context).requestFocus(FocusNode());
+            Navigator.push(
+                context,
+                Platform.isIOS
+                    ? CupertinoPageRoute(
+                        builder: (_) => SearchProfile(
+                              uid: eachUser.id,
+                            ))
+                    : MaterialPageRoute(
+                        builder: (_) => SearchProfile(
+                              uid: eachUser.id,
+                            )));
+          },
+          child: Platform.isIOS
+              ? Material(color: AppTheme.primaryColor, child: profileTile())
+              : profileTile(),
+        ),
+        Center(
+          child: Container(
+            height: 1.0,
+            color: Colors.white54,
+            width: MediaQuery.of(context).size.width - 20,
+          ),
+        ),
+      ],
     );
   }
 
-  Widget profileTile(){
+  Widget profileTile() {
     return ListTile(
       leading: CircleAvatar(
-          backgroundColor: Colors.grey,
-          backgroundImage: eachUser.photoUrl != null
-              ? CachedNetworkImageProvider(
-              eachUser.photoUrl)
-              : CachedNetworkImageProvider(
-              'https://via.placeholder.com/150')),
+        backgroundColor: AppTheme.primaryColor,
+        backgroundImage: eachUser.photoUrl != null
+            ? CachedNetworkImageProvider(eachUser.photoUrl)
+            : CachedNetworkImageProvider('https://via.placeholder.com/150'),
+      ),
       title: Text(
-          eachUser.displayName == null
-              ? eachUser.username
-              : eachUser.displayName,
-          style: TextStyle(
-              color: AppTheme.pureWhiteColor,
-              fontSize: 16,
-              fontWeight: FontWeight.bold)),
+        eachUser.displayName == null ? eachUser.username : eachUser.displayName,
+        style: TextStyle(
+          color: AppTheme.pureWhiteColor,
+          fontSize: 17,
+          letterSpacing: 0.7,
+          fontWeight: FontWeight.bold,
+        ),
+      ),
       subtitle: Text(
         eachUser.username == null ? '' : eachUser.username,
-        style: TextStyle(color: Colors.grey, fontSize: 13),
+        style: TextStyle(color: Colors.grey[600], fontSize: 13),
+      ),
+      trailing: RaisedButton(
+        color: AppTheme.pureWhiteColor,
+        onPressed: () => print('Following'),
+        child: eachUser.following > 0 ? Text('Following') : Text('Follow'),
       ),
     );
   }

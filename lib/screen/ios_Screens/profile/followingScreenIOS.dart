@@ -3,7 +3,7 @@ import 'package:wowtalent/model/theme.dart';
 
 class FollowingScreenIOS extends StatefulWidget {
   Widget followingBody;
-  FollowingScreenIOS({Key key,this.followingBody}):super(key: key);
+  FollowingScreenIOS({Key key, this.followingBody}) : super(key: key);
   @override
   _FollowingScreenIOSState createState() => _FollowingScreenIOSState();
 }
