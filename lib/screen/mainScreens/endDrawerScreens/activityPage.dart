@@ -55,7 +55,7 @@ class _ActivityPageState extends State<ActivityPage> {
           if (snap.connectionState == ConnectionState.waiting ||
               !snap.hasData) {
             return LoadingCards();
-          } else if (snap.data.documents.length == 0) {
+          } else if (snap.data.docs.length == 0) {
             return NoDataTile(
               showButton: true,
               isActivity: true,
@@ -66,22 +66,22 @@ class _ActivityPageState extends State<ActivityPage> {
               buttonText: "Explore Talent",
             );
           }
-          print(snap.data.documents[0]['read']);
+          print(snap.data.docs[0]['read']);
           return ListView.builder(
-            itemCount: snap.data.documents.length,
+            itemCount: snap.data.docs.length,
             itemBuilder: (context, index) {
               return NotificationCard(
                 onTap: () async {
                   print("called notification read");
                   await _userInfoStore.updateNotif(
-                      uid: widget.uid, doc: snap.data.documents[index]);
+                      uid: widget.uid, doc: snap.data.docs[index]);
                 },
-                read: snap.data.documents[index]["read"],
-                type: snap.data.documents[index]['type'],
-                from: snap.data.documents[index]["from"],
-                videoId: snap.data.documents[index]['type'] == "follow"
+                read: snap.data.docs[index]["read"],
+                type: snap.data.docs[index]['type'],
+                from: snap.data.docs[index]["from"],
+                videoId: snap.data.docs[index]['type'] == "follow"
                     ? ""
-                    : snap.data.documents[index]['videoID'],
+                    : snap.data.docs[index]['videoID'],
               );
             },
           );

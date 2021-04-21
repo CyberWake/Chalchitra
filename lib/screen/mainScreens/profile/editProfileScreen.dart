@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:file_picker/file_picker.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:path/path.dart' as path;
@@ -61,7 +61,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   String currentUserName;
   File file;
 
-  final ref = FirebaseFirestore.instance.collection('WowUsers');
+  final reference = FirebaseFirestore.instance.collection('WowUsers');
 
   void initState() {
     super.initState();
@@ -153,24 +153,25 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             InkWell(
               onTap: () async {
-                file = await FilePicker.getFile(type: FileType.image);
+                FilePickerResult result= await FilePicker.platform.pickFiles(type: FileType.image);
+                file = File(result.paths[0]);
                 fileName = path.basename(file.path);
                 setState(() {
                   fileName = path.basename(file.path);
                 });
-                StorageReference storageReference =
-                    FirebaseStorage.instance.ref().child("images/" + user.id);
-                StorageUploadTask uploadTask = storageReference.putFile(file);
+                firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
+                    .ref()
+                    .child("images/" + user.id);
+                firebase_storage.UploadTask uploadTask = ref.putFile(file);
 
-                final StorageTaskSnapshot downloadUrl =
-                    (await uploadTask.onComplete);
+                firebase_storage.TaskSnapshot downloadUrl = await uploadTask;
                 url = (await downloadUrl.ref.getDownloadURL());
                 _scaffoldGlobalKey.currentState.showSnackBar(
                     SnackBar(content: Text('Profile Picture Updated')));
                 setState(() {
                   print("setstate called");
                 });
-                await ref.doc(widget.uid).update({
+                await reference.doc(widget.uid).update({
                   "photoUrl": url,
                 });
               },
@@ -211,7 +212,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() {
       loading = true;
     });
-    DocumentSnapshot documentSnapshot = await ref.doc(widget.uid).get();
+    DocumentSnapshot documentSnapshot = await reference.doc(widget.uid).get();
     user = UserDataModel.fromDocument(documentSnapshot);
     url = user.photoUrl ?? "";
     currentUserName = user.username;
@@ -268,7 +269,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         loading = true;
       });
 
-      ref.doc(widget.uid).update({
+      reference.doc(widget.uid).update({
         "username": usernameController.text,
         "displayName": nameController.text,
         "bio": bioController.text,

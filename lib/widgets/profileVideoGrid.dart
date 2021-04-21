@@ -36,6 +36,7 @@ class _ProfileVideoGridState extends State<ProfileVideoGrid> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return SingleChildScrollView(
+      padding: EdgeInsets.symmetric(vertical: 20),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [

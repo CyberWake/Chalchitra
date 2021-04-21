@@ -103,16 +103,16 @@ class UserAuth {
 
       print("running facebook auth");
       switch (result.status) {
-        case FacebookAuthLoginResponse.ok:
+        case LoginStatus.success:
           print("checking auth status");
           final FacebookAuthCredential facebookAuthCredential =
-              FacebookAuthProvider.credential(userToken.token);
+          FacebookAuthProvider.credential(userToken.token);
 
           userCredential =
-              await _auth.signInWithCredential(facebookAuthCredential);
+          await _auth.signInWithCredential(facebookAuthCredential);
           print("uid: ${userCredential.user.uid}");
           DocumentSnapshot userRecord =
-              await _usersCollection.doc(userCredential.user.uid).get();
+          await _usersCollection.doc(userCredential.user.uid).get();
           if (!userRecord.exists) {
             return "newUser";
           }
@@ -121,9 +121,17 @@ class UserAuth {
               .updateCurrentUser(user);
           return true;
           break;
-        case FacebookAuthLoginResponse.cancelled:
+        case LoginStatus.cancelled:
           print("Cancelled by user");
           return false;
+          break;
+        case LoginStatus.failed:
+          print("Failed");
+          return false;
+          break;
+        case LoginStatus.operationInProgress:
+          // TODO: Handle this case.
+          break;
       }
     } catch (e) {
       await FacebookAuth.instance.logOut();

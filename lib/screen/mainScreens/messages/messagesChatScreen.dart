@@ -145,13 +145,13 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => ChatBubble(
-                isMe: snapshot.data.documents[index].data()["reciever"] ==
+                isMe: snapshot.data.docs[index].data()["reciever"] ==
                     widget.targetUID,
-                message: snapshot.data.documents[index].data()['message'],
+                message: snapshot.data.docs[index].data()['message'],
                 profileImg: _userDataModel.photoUrl == null
                     ? 'https://via.placeholder.com/150'
                     : _userDataModel.photoUrl),
-            itemCount: snapshot.data.documents.length,
+            itemCount: snapshot.data.docs.length,
             reverse: true,
           );
         }

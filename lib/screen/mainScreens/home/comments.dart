@@ -177,11 +177,11 @@ class _CommentsScreenState extends State<CommentsScreen> {
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
             itemBuilder: (context, index) => showComment(
-              userID: snapshot.data.documents[index].data()["userUID"],
-              timestamp: snapshot.data.documents[index].data()["timestamp"],
-              comment:  snapshot.data.documents[index].data()["comment"]
+              userID: snapshot.data.docs[index].data()["userUID"],
+              timestamp: snapshot.data.docs[index].data()["timestamp"],
+              comment:  snapshot.data.docs[index].data()["comment"]
             ),
-            itemCount: snapshot.data.documents.length,
+            itemCount: snapshot.data.docs.length,
           );
         }
       }

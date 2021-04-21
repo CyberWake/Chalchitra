@@ -73,7 +73,7 @@ class _SearchMessageState extends State<SearchMessage> {
             );
           }
           List uIDs= [];
-          dataSnapshot.data.documents.forEach((document) {
+          dataSnapshot.data.docs.forEach((document) {
             uIDs.add(document.id);
           });
           return FutureBuilder(

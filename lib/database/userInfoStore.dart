@@ -18,7 +18,7 @@ class UserInfoStore {
   final _allChats = FirebaseFirestore.instance.collection('allChats');
   final _notificationCenter =
       FirebaseFirestore.instance.collection("notifications");
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   static final UserAuth _userAuth = UserAuth();
 
   Future<bool> createUserRecord(

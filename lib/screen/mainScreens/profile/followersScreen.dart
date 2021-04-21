@@ -66,7 +66,7 @@ class _FollowersPageState extends State<FollowersPage>
             if (!snapshot.hasData ||
                 snapshot.connectionState == ConnectionState.waiting) {
               return LoadingCards();
-            } else if (snapshot.data.documents.length == 0) {
+            } else if (snapshot.data.docs.length == 0) {
               return NoDataTile(
                 showButton: false,
                 isActivity: false,
@@ -75,12 +75,12 @@ class _FollowersPageState extends State<FollowersPage>
               );
             }
             return ListView.builder(
-              itemCount: snapshot.data.documents.length,
+              itemCount: snapshot.data.docs.length,
               padding: EdgeInsets.symmetric(vertical: 10),
               itemBuilder: (BuildContext context, int index) {
                 return FutureBuilder(
                     future: _userInfoStore.getUserInfo(
-                        uid: snapshot.data.documents[index].id),
+                        uid: snapshot.data.docs[index].id),
                     builder: (context, snap) {
                       if (!snap.hasData ||
                           snap.connectionState == ConnectionState.waiting) {

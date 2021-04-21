@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:path/path.dart' as p;
@@ -49,7 +49,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
   bool _submitted = false;
 
   void _onUploadProgress(event) {
-    if (event.type == StorageTaskEventType.progress) {
+    if (event.type == firebase_storage.TaskState.running) {
       final double progress =
           event.snapshot.bytesTransferred / event.snapshot.totalByteCount;
       setState(() {
@@ -61,13 +61,21 @@ class _VideoDataInputState extends State<VideoDataInput> {
   Future<String> _uploadVideo(filePath, folderName, timestamp) async {
     final file = new File(filePath);
     final basename = p.basename(filePath);
-    final StorageReference ref = FirebaseStorage.instance
+    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
         .ref()
         .child(folderName)
         .child(timestamp + basename);
-    StorageUploadTask uploadTask = ref.putFile(file);
-    uploadTask.events.listen(_onUploadProgress);
-    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    firebase_storage.UploadTask uploadTask = ref.putFile(file);
+    uploadTask.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot){
+      if (uploadTask.snapshot.state == firebase_storage.TaskState.running) {
+        final double progress =
+            uploadTask.snapshot.bytesTransferred / uploadTask.snapshot.totalBytes;
+        setState(() {
+          _uploadProgress = progress;
+        });
+      }
+    });
+    firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
     String videoUrl = await taskSnapshot.ref.getDownloadURL();
     return videoUrl;
   }
@@ -76,13 +84,21 @@ class _VideoDataInputState extends State<VideoDataInput> {
     final file = new File(filePath);
     final basename = p.basename(filePath);
 
-    final StorageReference ref = FirebaseStorage.instance
+    firebase_storage.Reference ref = firebase_storage.FirebaseStorage.instance
         .ref()
         .child(folderName)
         .child(timestamp + basename);
-    StorageUploadTask uploadTask = ref.putFile(file);
-    uploadTask.events.listen(_onUploadProgress);
-    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+    firebase_storage.UploadTask uploadTask = ref.putFile(file);
+    uploadTask.snapshotEvents.listen((firebase_storage.TaskSnapshot snapshot){
+      if (uploadTask.snapshot.state == firebase_storage.TaskState.running) {
+        final double progress =
+            uploadTask.snapshot.bytesTransferred / uploadTask.snapshot.totalBytes;
+        setState(() {
+          _uploadProgress = progress;
+        });
+      }
+    });
+    firebase_storage.TaskSnapshot taskSnapshot = await uploadTask;
     String videoUrl = await taskSnapshot.ref.getDownloadURL();
     return videoUrl;
   }
@@ -194,7 +210,7 @@ class _VideoDataInputState extends State<VideoDataInput> {
           ),
           LinearPercentIndicator(
             alignment: MainAxisAlignment.center,
-            width: MediaQuery.of(context).size.width * 0.75,
+            width: MediaQuery.of(context).size.width * 0.8,
             animation: false,
             lineHeight: 20.0,
             animationDuration: 2500,

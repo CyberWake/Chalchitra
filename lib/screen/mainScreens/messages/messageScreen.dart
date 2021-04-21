@@ -265,164 +265,168 @@ class _MessageState extends State<Message> {
               ),
             );
           }
-          List keys = [];
-          snapshot.data.documents.forEach((doc) {
-            keys.add(doc.id);
-          });
-          List values = [];
-          snapshot.data.documents.forEach((doc) {
-            values.add(doc.data()["uid"]);
-          });
-          // List keys = snapshot.data.data().keys.toList();
-          // List values = snapshot.data.data().values.toList();
-          // print(keys);
-          getUsersDetails(values);
-          if (keys.isEmpty) {
-            return Center(
-              child: Text(
-                "No chats found",
-                style: TextStyle(
-                  color: AppTheme.primaryColor,
-                  fontSize: _fontOne * 16,
-                ),
-              ),
-            );
-          } else if (_usersDetails.length < keys.length) {
-            return LoadingCards();
-          } else {
-            return ListView.builder(
-              padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 20),
-              itemBuilder: (context, index) {
-                if (_usersDetails[index] == null) {
-                  return Container();
-                } else {
-                  return Container(
-                    margin: EdgeInsets.symmetric(vertical: 2),
-                    child: FittedBox(
-                      child: OpenContainer(
-                        closedElevation: 0.0,
-                        closedColor: Colors.transparent,
-                        closedShape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.zero,
-                        ),
-                        transitionDuration: Duration(milliseconds: 200),
-                        transitionType: ContainerTransitionType.fadeThrough,
-                        openBuilder: (BuildContext context,
-                            void Function({Object returnValue}) action) {
-                          return ChatDetailPage(
-                            targetUID: values[index],
-                          );
-                        },
-                        closedBuilder:
-                            (BuildContext context, void Function() action) {
-                          return Container(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 5, horizontal: 15),
-                            margin: EdgeInsets.symmetric(vertical: 2),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Row(children: <Widget>[
-                              Container(
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.all(3),
-                                  child: Container(
-                                      width: 50,
-                                      height: 50,
-                                      decoration: BoxDecoration(
-                                          shape: BoxShape.circle,
-                                          border: Border.all(
-                                              width: 1.5,
-                                              color: AppTheme.primaryColor),
-                                          image: DecorationImage(
-                                              image: NetworkImage(_usersDetails[
-                                                              index]
-                                                          .photoUrl ==
-                                                      null
-                                                  ? "https://via.placeholder.com/150"
-                                                  : _usersDetails[index]
-                                                      .photoUrl),
-                                              fit: BoxFit.cover))),
-                                ),
-                              ),
-                              SizedBox(
-                                width: 20,
-                              ),
-                              StreamBuilder(
-                                  stream: _userInfoStore.getLastMessage(
-                                    targetUID: values[index],
-                                  ),
-                                  builder: (context, snapshot) {
-                                    return Row(
-                                      children: [
-                                        Column(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Text(
-                                                _usersDetails[index].username,
-                                                style: TextStyle(
-                                                    fontSize: 17,
-                                                    color: AppTheme
-                                                        .primaryColorDark,
-                                                    fontWeight:
-                                                        FontWeight.w500),
-                                              ),
-                                              SizedBox(
-                                                height: 5,
-                                              ),
-                                              SizedBox(
-                                                width: _size.width * 0.45,
-                                                child: Text(
-                                                  snapshot.hasData
-                                                      ? snapshot
-                                                          .data.documents[0]
-                                                          .data()['message']
-                                                      : ".....",
-                                                  style: TextStyle(
-                                                    fontSize: _fontOne * 13,
-                                                    color: AppTheme
-                                                        .primaryColorDark,
-                                                  ),
-                                                  overflow:
-                                                      TextOverflow.ellipsis,
-                                                ),
-                                              )
-                                            ]),
-                                        SizedBox(
-                                          width: _widthOne * 40,
-                                        ),
-                                        Text(
-                                          snapshot.hasData
-                                              ? formatDateTime(
-                                                  millisecondsSinceEpoch:
-                                                      snapshot.data.documents[0]
-                                                          .data()['timestamp'])
-                                              : ".....",
-                                          style: TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: _fontOne * 12),
-                                        ),
-                                        SizedBox(
-                                          width: _widthOne * 20,
-                                        )
-                                      ],
-                                    );
-                                  })
-                            ]),
-                          );
-                        },
+          else{
+            List keys = [];
+            snapshot.data.docs.forEach((doc) {
+              keys.add(doc.id);
+            });
+            List values = [];
+            snapshot.data.docs.forEach((doc) {
+              values.add(doc.data()["uid"]);
+            });
+            return FutureBuilder(
+              future: getUsersDetails(values),
+              builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                if (_usersDetails.length < keys.length || !snapshot.hasData) {
+                  return LoadingCards();
+                }else if (keys.isEmpty) {
+                  return Center(
+                    child: Text(
+                      "No chats found",
+                      style: TextStyle(
+                        color: AppTheme.primaryColor,
+                        fontSize: _fontOne * 16,
                       ),
                     ),
                   );
                 }
+                else {
+                  return ListView.builder(
+                    padding: EdgeInsets.only(left: 15.0, right: 15, bottom: 20),
+                    itemBuilder: (context, index) {
+                      if (_usersDetails[index] == null) {
+                        return Container();
+                      } else {
+                        return Container(
+                          margin: EdgeInsets.symmetric(vertical: 2),
+                          child: FittedBox(
+                            child: OpenContainer(
+                              closedElevation: 0.0,
+                              closedColor: Colors.transparent,
+                              closedShape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.zero,
+                              ),
+                              transitionDuration: Duration(milliseconds: 200),
+                              transitionType: ContainerTransitionType.fadeThrough,
+                              openBuilder: (BuildContext context,
+                                  void Function({Object returnValue}) action) {
+                                return ChatDetailPage(
+                                  targetUID: values[index],
+                                );
+                              },
+                              closedBuilder:
+                                  (BuildContext context, void Function() action) {
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      vertical: 5, horizontal: 15),
+                                  margin: EdgeInsets.symmetric(vertical: 2),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                  ),
+                                  child: Row(children: <Widget>[
+                                    Container(
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(3),
+                                        child: Container(
+                                            width: 50,
+                                            height: 50,
+                                            decoration: BoxDecoration(
+                                                shape: BoxShape.circle,
+                                                border: Border.all(
+                                                    width: 1.5,
+                                                    color: AppTheme.primaryColor),
+                                                image: DecorationImage(
+                                                    image: NetworkImage(_usersDetails[
+                                                    index]
+                                                        .photoUrl ==
+                                                        null
+                                                        ? "https://via.placeholder.com/150"
+                                                        : _usersDetails[index]
+                                                        .photoUrl),
+                                                    fit: BoxFit.cover))),
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 20,
+                                    ),
+                                    StreamBuilder(
+                                        stream: _userInfoStore.getLastMessage(
+                                          targetUID: values[index],
+                                        ),
+                                        builder: (context, snapshot) {
+                                          return Row(
+                                            children: [
+                                              Column(
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                                  children: <Widget>[
+                                                    Text(
+                                                      _usersDetails[index].username,
+                                                      style: TextStyle(
+                                                          fontSize: 17,
+                                                          color: AppTheme
+                                                              .primaryColorDark,
+                                                          fontWeight:
+                                                          FontWeight.w500),
+                                                    ),
+                                                    SizedBox(
+                                                      height: 5,
+                                                    ),
+                                                    SizedBox(
+                                                      width: _size.width * 0.45,
+                                                      child: Text(
+                                                        snapshot.hasData
+                                                            ? snapshot
+                                                            .data.docs[0]
+                                                            .data()['message']
+                                                            : ".....",
+                                                        style: TextStyle(
+                                                          fontSize: _fontOne * 13,
+                                                          color: AppTheme
+                                                              .primaryColorDark,
+                                                        ),
+                                                        overflow:
+                                                        TextOverflow.ellipsis,
+                                                      ),
+                                                    )
+                                                  ]),
+                                              SizedBox(
+                                                width: _widthOne * 40,
+                                              ),
+                                              Text(
+                                                snapshot.hasData
+                                                    ? formatDateTime(
+                                                    millisecondsSinceEpoch:
+                                                    snapshot.data.docs[0]
+                                                        .data()['timestamp'])
+                                                    : ".....",
+                                                style: TextStyle(
+                                                    color: Colors.grey,
+                                                    fontSize: _fontOne * 12),
+                                              ),
+                                              SizedBox(
+                                                width: _widthOne * 20,
+                                              )
+                                            ],
+                                          );
+                                        })
+                                  ]),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    itemCount: keys.length,
+                    //controller: listScrollController,
+                  );
+                }
               },
-              itemCount: snapshot.data.documents.length,
-              //controller: listScrollController,
             );
           }
         }
@@ -430,7 +434,7 @@ class _MessageState extends State<Message> {
     );
   }
 
-  void getUsersDetails(List uIDs) async {
+  Future getUsersDetails(List uIDs) async {
     for (int i = 0; i < uIDs.length; i++) {
       dynamic result = await _userInfoStore.getUserInfo(uid: uIDs[i]);
       if (result != null) {
@@ -439,6 +443,6 @@ class _MessageState extends State<Message> {
         _usersDetails.add(null);
       }
     }
-    setState(() {});
+    return _usersDetails;
   }
 }

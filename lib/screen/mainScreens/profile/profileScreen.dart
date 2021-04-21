@@ -148,104 +148,107 @@ class _ProfilePageState extends State<ProfilePage> {
     Size size = MediaQuery.of(context).size;
     return Container(
       color: AppTheme.backgroundColor,
-      child: Column(
-        children: [
-          Stack(
-            children: [
-              getProfileTopView(context),
-              SingleChildScrollView(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: AppTheme.backgroundColor,
-                    borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(20),
-                      topLeft: Radius.circular(20),
-                    ),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withOpacity(0.5),
-                        offset: Offset(0.0, -10.0), //(x,y)
-                        blurRadius: 10.0,
+      child: SingleChildScrollView(
+        physics: NeverScrollableScrollPhysics(),
+        child: Column(
+          children: [
+            Stack(
+              children: [
+                getProfileTopView(context),
+                SingleChildScrollView(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppTheme.backgroundColor,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(20),
+                        topLeft: Radius.circular(20),
                       ),
-                    ],
-                  ),
-                  height: widget.isFromSearch
-                      ? size.height * 0.5324
-                      : size.height * 0.4557247,
-                  width: size.width,
-                  margin: EdgeInsets.only(top: size.height * 0.35),
-                  padding: EdgeInsets.only(
-                      top: size.height * 0.1,
-                      left: size.width * 0.05,
-                      right: size.width * 0.05),
-                  child: ProfileVideoGrid(
-                    uid: widget.uid,
-                    videos: _videos,
-                    function: _deleteButton,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          offset: Offset(0.0, -10.0), //(x,y)
+                          blurRadius: 10.0,
+                        ),
+                      ],
+                    ),
+                    height: widget.isFromSearch
+                        ? size.height * 0.5324
+                        : size.height * 0.4557247,
+                    width: size.width,
+                    margin: EdgeInsets.only(top: size.height * 0.35),
+                    padding: EdgeInsets.only(
+                        top: size.height * 0.1,
+                        left: size.width * 0.05,
+                        right: size.width * 0.05),
+                    child: ProfileVideoGrid(
+                      uid: widget.uid,
+                      videos: _videos,
+                      function: _deleteButton,
+                    ),
                   ),
                 ),
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    color: Colors.transparent,
-                    margin: EdgeInsets.only(top: size.height * 0.16),
-                    width: size.width * 0.9,
-                    child: Card(
-                      elevation: 20,
-                      color: AppTheme.secondaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: Column(
-                          children: [
-                            SizedBox(
-                              height: 15,
-                            ),
-                            user != null
-                                ? Text(
-                                    currentUserBio == null
-                                        ? " Hello World!"
-                                        : currentUserBio,
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      color: AppTheme.pureBlackColor,
-                                      fontSize: 14,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  )
-                                : Container(),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            createButton(),
-                            SizedBox(
-                              height: 15,
-                            ),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                getFollowers(),
-                                buildPostStat(),
-                                getFollowings()
-                              ],
-                            ),
-                            SizedBox(
-                              height: 15,
-                            ),
-                          ],
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      color: Colors.transparent,
+                      margin: EdgeInsets.only(top: size.height * 0.16),
+                      width: size.width * 0.9,
+                      child: Card(
+                        elevation: 20,
+                        color: AppTheme.secondaryColor,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(10)),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: Column(
+                            children: [
+                              SizedBox(
+                                height: 15,
+                              ),
+                              user != null
+                                  ? Text(
+                                      currentUserBio == null
+                                          ? " Hello World!"
+                                          : currentUserBio,
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        color: AppTheme.pureBlackColor,
+                                        fontSize: 14,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    )
+                                  : Container(),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              createButton(),
+                              SizedBox(
+                                height: 15,
+                              ),
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  getFollowers(),
+                                  buildPostStat(),
+                                  getFollowings()
+                                ],
+                              ),
+                              SizedBox(
+                                height: 15,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ],
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

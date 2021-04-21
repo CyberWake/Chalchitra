@@ -5,6 +5,7 @@ import 'dart:math';
 import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -53,7 +54,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
   final GlobalKey<ScaffoldState> _scaffoldGlobalKey =
       GlobalKey<ScaffoldState>();
 
-  final FirebaseMessaging _fcm = FirebaseMessaging();
+  final FirebaseMessaging _fcm = FirebaseMessaging.instance;
   TabController _tabController;
   List<Widget> _screens;
   int _currentIndex = 0;
@@ -148,100 +149,72 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
     _tabController = TabController(length: 5, vsync: this);
     _tabController.index = _currentIndex;
     getUser();
-    _fcm.configure(onMessage: (Map<String, dynamic> message) async {
+    FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       _scaffoldGlobalKey.currentState.showSnackBar(SnackBar(
           duration: Duration(seconds: 2),
           content: ListTile(
             contentPadding: EdgeInsets.symmetric(vertical: 0.0),
-            title: Text(message['notification']['title']),
-            subtitle: Text(message['notification']['body']),
+            title: Text(message.notification.title),
+            subtitle: Text(message.notification.body),
             onTap: () {
-              if (message['type'] == "like") {
+              if (message.data['type'] == "like") {
                 Navigator.push(
                     context,
                     CupertinoPageRoute(
                         builder: (_) => ActivityPage(uid: _userAuth.user.uid)));
-              } else if (message['type'] == "comment") {
+              } else if (message.data['type'] == "comment") {
                 Navigator.push(
                     context,
                     CupertinoPageRoute(
                         builder: (_) => CommentsScreen(
-                              videoId: message["videoID"],
-                            )));
-              } else if (message['type'] == "msg") {
+                          videoId: message.data["videoID"],
+                        )));
+              } else if (message.data['type'] == "msg") {
                 Navigator.push(
                     context,
                     CupertinoPageRoute(
                         builder: (_) => ChatDetailPage(
-                              targetUID: message["senderID"],
-                            )));
-              } else if (message['type'] == "follow") {
+                          targetUID: message.data["senderID"],
+                        )));
+              } else if (message.data['type'] == "follow") {
                 Navigator.push(
                     context,
                     CupertinoPageRoute(
                         builder: (_) => SearchProfile(
-                              uid: message['followerID'],
-                            )));
+                          uid: message.data['followerID'],
+                        )));
               }
             },
           )));
-    }, onLaunch: (Map<String, dynamic> message) async {
-      print("onLaunch work");
-      if (message['type'] == "like") {
+    });
+    FirebaseMessaging.onBackgroundMessage((RemoteMessage message) async{
+      await Firebase.initializeApp();
+      if (message.data['type'] == "like") {
         Navigator.push(
             context,
             CupertinoPageRoute(
                 builder: (_) => ActivityPage(uid: _userAuth.user.uid)));
-      } else if (message['type'] == "comment") {
+      } else if (message.data['type'] == "comment") {
         Navigator.push(
             context,
             CupertinoPageRoute(
                 builder: (_) => CommentsScreen(
-                      videoId: message["videoID"],
-                    )));
-      } else if (message['type'] == "msg") {
+                  videoId: message.data["videoID"],
+                )));
+      } else if (message.data['type'] == "msg") {
         Navigator.push(
             context,
             CupertinoPageRoute(
                 builder: (_) => ChatDetailPage(
-                      targetUID: message["senderID"],
-                    )));
-      } else if (message['type'] == "follow") {
+                  targetUID: message.data["senderID"],
+                )));
+      } else if (message.data['type'] == "follow") {
         Navigator.push(
             context,
             CupertinoPageRoute(
                 builder: (_) => SearchProfile(
-                      uid: message['followerID'],
-                    )));
-      }
-    }, onResume: (Map<String, dynamic> message) async {
-      print("onResume");
-      if (message['type'] == "like") {
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (_) => ActivityPage(uid: _userAuth.user.uid)));
-      } else if (message['type'] == "comment") {
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (_) => CommentsScreen(
-                      videoId: message["videoID"],
-                    )));
-      } else if (message['type'] == "msg") {
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (_) => ChatDetailPage(
-                      targetUID: message["senderID"],
-                    )));
-      } else if (message['type'] == "follow") {
-        Navigator.push(
-            context,
-            CupertinoPageRoute(
-                builder: (_) => SearchProfile(
-                      uid: message['followerID'],
-                    )));
+                  uid: message.data['followerID'],
+                )));
       }
     });
   }
@@ -461,7 +434,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                                   size: _iconOne * 25,
                                 );
                               }
-                              if (snap.data.documents.length > 0) {
+                              if (snap.data.docs.length > 0) {
                                 return Stack(
                                   children: [
                                     Icon(
@@ -559,7 +532,7 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                                 size: 30,
                               );
                             }
-                            if (snap.data.documents.length > 0) {
+                            if (snap.data.docs.length > 0) {
                               return Material(
                                 color: Colors.transparent,
                                 child: Stack(
@@ -584,8 +557,8 @@ class _MainScreenWrapperState extends State<MainScreenWrapper>
                                         height: 15.0,
                                         alignment: Alignment.center,
                                         child: Text(
-                                          snap.data.documents.length < 11
-                                              ? snap.data.documents.length
+                                          snap.data.docs.length < 11
+                                              ? snap.data.docs.length
                                                   .toString()
                                               : "10+",
                                           textAlign: TextAlign.center,
