@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
-import 'package:wowtalent/screen/mainScreens/explore/categoryWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
-import 'package:wowtalent/screen/mainScreens/explore/exploreWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/search/search.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ExplorePageWrapper extends StatefulWidget {
   @override

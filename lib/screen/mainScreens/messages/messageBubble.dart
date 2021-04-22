@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
-class ChatBubble extends StatelessWidget {
+class MessageBubble extends StatelessWidget {
   final bool isMe;
   final String profileImg;
   final String message;
-  const ChatBubble({
+  const MessageBubble({
     Key key,
     this.isMe,
     this.profileImg,

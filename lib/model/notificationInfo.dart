@@ -1,5 +1,4 @@
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
+import 'package:Chalchitra/imports.dart';
 
 class NotifInfo {
   UserDataModel user;

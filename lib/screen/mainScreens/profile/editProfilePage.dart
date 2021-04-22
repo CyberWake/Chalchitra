@@ -7,14 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/shared/formFormatting.dart';
-import 'package:wowtalent/staticData/countryList.dart';
-import 'package:wowtalent/widgets/bouncingButton.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
+import 'package:Chalchitra/imports.dart';
 import 'package:path/path.dart' as path;
 
 class EditProfilePage extends StatefulWidget {

@@ -3,11 +3,10 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
+import 'package:Chalchitra/screen/screenImports.dart';
+import 'package:Chalchitra/model/modelImports.dart';
+import 'package:Chalchitra/database/databaseImports.dart';
+import 'package:Chalchitra/imports.dart';
 
 class SearchResult extends StatelessWidget {
   final UserDataModel eachUser;

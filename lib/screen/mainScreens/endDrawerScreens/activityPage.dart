@@ -1,18 +1,7 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-
-import 'package:wowtalent/model/theme.dart';
-
-import 'package:wowtalent/screen/ios_Screens/endDrawer/activityIOS.dart';
-
-import 'package:wowtalent/widgets/loadingTiles.dart';
-import 'package:wowtalent/widgets/noDataTile.dart';
-import 'package:wowtalent/widgets/notificationCard.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ActivityPage extends StatefulWidget {
   final String uid;

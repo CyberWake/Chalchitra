@@ -5,9 +5,7 @@ import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/userDataModel.dart';
+import 'package:Chalchitra/imports.dart';
 
 class UserAuth {
   static final FirebaseAuth _auth = FirebaseAuth.instance;

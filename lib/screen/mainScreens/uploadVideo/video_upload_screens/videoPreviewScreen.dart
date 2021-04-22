@@ -1,22 +1,14 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:percent_indicator/percent_indicator.dart';
-// import 'package:video_compress/src/progress_callback.dart/subscription.dart';
 import 'package:video_compress/video_compress.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/ios_Screens/uploadVideo/video_upload_screens/videoPreviewIOS.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoUploadForm.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
-
-import '../../../../model/theme.dart';
-import 'videoDataInputScreen.dart';
+import 'package:Chalchitra/imports.dart';
 
 class VideoPreview extends StatefulWidget {
   final PickedFile videoFile;

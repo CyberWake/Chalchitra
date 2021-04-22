@@ -2,18 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
-
-import 'package:wowtalent/screen/ios_Screens/endDrawer/draftIOS.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
 
 class Drafts extends StatefulWidget {
   @override

@@ -2,16 +2,8 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-// import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/ios_Screens/explore/categoryIOS.dart';
-import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
-
-import 'package:wowtalent/widgets/categoryWidget.dart';
 
 class Category extends StatefulWidget {
   final String categoryName;

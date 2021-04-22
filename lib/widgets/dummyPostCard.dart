@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:wowtalent/model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 // ignore: must_be_immutable
 class DummyPostCard extends StatelessWidget {

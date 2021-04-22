@@ -1,11 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/ios_Screens/search/searchProfileIOS.dart';
-import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
-import 'package:wowtalent/screen/mainScreens/profile/profilePageWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
 
 class SearchProfile extends StatefulWidget {

@@ -4,14 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoDataInputScreen.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoUploadForm.dart';
-import 'package:wowtalent/widgets/videoCardPlaceHolder.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ProfileVideoGrid extends StatefulWidget {
   final String uid;

@@ -1,19 +1,10 @@
 import 'dart:io';
 
 import 'package:animated_background/animated_background.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/ios_Screens/profile/followingScreenIOS.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
-import 'package:wowtalent/widgets/loadingTiles.dart';
-import 'package:wowtalent/widgets/noDataTile.dart';
+import 'package:Chalchitra/imports.dart';
 
 class FollowingsPage extends StatefulWidget {
   final String uid;

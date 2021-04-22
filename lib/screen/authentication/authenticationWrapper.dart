@@ -1,10 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/authPageEnums.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/authentication/methods/forgotPasswordForm.dart';
-import 'package:wowtalent/screen/authentication/methods/loginForm.dart';
-import 'package:wowtalent/screen/authentication/methods/registerForm.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
 
 // ignore: must_be_immutable

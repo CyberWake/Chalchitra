@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/mainScreens/activitySection/activityScreen.dart';
-import 'package:wowtalent/screen/mainScreens/activitySection/messages/msgScreen.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ActivityWrapper extends StatefulWidget {
   String uid;
@@ -47,7 +45,7 @@ class _ActivityWrapperState extends State<ActivityWrapper> {
                 Expanded(
                     child: TabBarView(
                   children: [
-                    MessageScreen(),
+                    MessagesScreen(),
                     ActivityScreen(
                       uid: widget.uid,
                     )

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/userDataModel.dart';
+import 'package:Chalchitra/imports.dart';
 
 class CurrentUser with ChangeNotifier {
   UserDataModel currentUserData;

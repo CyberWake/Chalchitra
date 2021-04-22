@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
-import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchScreenWrapper.dart';
-import 'package:wowtalent/widgets/categoryWidget.dart';
-import 'package:wowtalent/widgets/customTabView.dart';
+import 'package:Chalchitra/imports.dart';
 
 class CategoryWrapper extends StatefulWidget {
   @override

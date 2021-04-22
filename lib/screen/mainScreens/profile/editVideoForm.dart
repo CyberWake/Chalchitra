@@ -4,10 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
+import 'package:Chalchitra/imports.dart';
 
 class EditVideoForm extends StatefulWidget {
   final VideoInfo video;

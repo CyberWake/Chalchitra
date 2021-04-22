@@ -1,9 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/mainScreens/messages/messageSearchResult.dart';
+import 'package:Chalchitra/imports.dart';
 
 class SearchMessage extends StatefulWidget {
   final String userName;

@@ -1,16 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
-
-import 'package:wowtalent/screen/ios_Screens/endDrawer/privacyIOS.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
 
 class PrivacyPage extends StatefulWidget {
   @override

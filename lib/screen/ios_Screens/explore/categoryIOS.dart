@@ -1,8 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-
-import '../../mainScreens/search/search.dart';
+import 'package:Chalchitra/imports.dart';
 
 class CategoryIOS extends StatefulWidget {
   String categoryName;

@@ -1,16 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/UserInfoStore.dart';
-import 'package:wowtalent/model/authPageEnums.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/authentication/helpers/authButtons.dart';
-import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
-import 'package:wowtalent/screen/authentication/helpers/validation.dart';
-import 'package:wowtalent/screen/authentication/methods/socialRegisterUsername.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
 
 class RegisterForm extends StatefulWidget {

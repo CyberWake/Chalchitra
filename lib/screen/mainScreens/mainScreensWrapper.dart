@@ -1,50 +1,13 @@
 import 'dart:async';
 import 'dart:io' show Platform;
-import 'dart:math';
-
-import 'package:animations/animations.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/dynamicLinkService.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/authPageEnums.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/activitySection/activityWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/endDrawerScreens/activityPage.dart';
-import 'package:wowtalent/screen/mainScreens/endDrawerScreens/drafts.dart';
-import 'package:wowtalent/screen/mainScreens/endDrawerScreens/helpAndFeedbackPage.dart';
-import 'package:wowtalent/screen/mainScreens/endDrawerScreens/privacyPage.dart';
-import 'package:wowtalent/screen/mainScreens/explore/explore.dart';
-import 'package:wowtalent/screen/mainScreens/explore/mainWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/home/comments.dart';
-import 'package:wowtalent/screen/mainScreens/home/home.dart';
-import 'package:wowtalent/screen/mainScreens/homeScreen/homePageWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/messages/messageScreen.dart';
-import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
-import 'package:wowtalent/screen/mainScreens/profile/profilePageWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/profile/profileScreen.dart';
-import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
-import 'package:wowtalent/screen/mainScreens/settings/settingsScreen.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoSelectorScreen.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoUploadForm.dart';
-import 'package:wowtalent/widgets/bottomNavigationBar.dart';
-import 'package:wowtalent/widgets/bouncingButton.dart';
-
-import '../../model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 // ignore: must_be_immutable
 class MainScreenWrapper extends StatefulWidget {

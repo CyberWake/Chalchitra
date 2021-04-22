@@ -5,8 +5,8 @@ import 'dart:core';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/database/dynamicLinkService.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:Chalchitra/imports.dart';
+
 
 class SplashScreen extends StatefulWidget {
   final dynamic navigateAfterSeconds;

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 class StarThumb extends SliderComponentShape {
   final double thumbRadius;

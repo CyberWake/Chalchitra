@@ -2,8 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/userDataModel.dart';
+import 'package:Chalchitra/imports.dart';
 
 import '../auth/userAuth.dart';
 

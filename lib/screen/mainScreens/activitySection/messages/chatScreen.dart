@@ -3,10 +3,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/mainScreens/activitySection/messages/chatBubble.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ChatScreen extends StatefulWidget {
   String targetUID;

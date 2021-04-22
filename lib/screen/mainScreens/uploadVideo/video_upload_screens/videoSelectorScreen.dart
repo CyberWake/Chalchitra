@@ -1,16 +1,11 @@
 import 'dart:io';
 
-import 'package:animated_background/animated_background.dart';
-import 'package:animated_background/particles.dart';
 import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/ios_Screens/uploadVideo/video_upload_screens/videoSelectorIOS.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoPreviewScreen.dart';
-import 'package:wowtalent/widgets/noDataTile.dart';
+import 'package:Chalchitra/imports.dart';
 
 class VideoUploader extends StatefulWidget {
   VideoUploader({Key key, this.title}) : super(key: key);

@@ -8,15 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/introScreen.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
-import 'package:wowtalent/splashScreen.dart';
-
-import 'model/theme.dart';
-
+import 'package:Chalchitra/imports.dart';
 //adding this code here
 
 SharedPreferences prefs;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 class BouncingButton extends StatefulWidget {
   final bool isLikeButton;

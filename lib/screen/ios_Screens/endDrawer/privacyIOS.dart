@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:Chalchitra/imports.dart';
 import 'package:flutter/material.dart';
-
-import '../../../model/theme.dart';
 
 class PrivacyIOS extends StatefulWidget {
   Widget privacyBody;

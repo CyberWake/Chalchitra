@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/UserAuth.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
 
 class AuthButtons {

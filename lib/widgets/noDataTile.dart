@@ -3,8 +3,7 @@ import 'dart:io';
 import 'package:animated_background/animated_background.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'package:Chalchitra/imports.dart';
 
 class NoDataTile extends StatefulWidget {
   final String titleText;

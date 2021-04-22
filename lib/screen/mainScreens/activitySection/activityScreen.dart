@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/widgets/loadingTiles.dart';
-import 'package:wowtalent/widgets/notificationCard.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ActivityScreen extends StatefulWidget {
   String uid;

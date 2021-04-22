@@ -12,20 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/menuConstants.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
-import 'package:wowtalent/screen/mainScreens/home/comments.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
-import 'package:wowtalent/widgets/customSliderThumb.dart';
-import 'package:wowtalent/widgets/customSliderTrackShape.dart';
-
-import '../../../model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 class PostCard extends StatefulWidget {
   final VideoInfo video;

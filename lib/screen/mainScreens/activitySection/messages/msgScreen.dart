@@ -1,19 +1,14 @@
 import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/mainScreens/activitySection/messages/chatScreen.dart';
-import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
-import 'package:wowtalent/widgets/loadingTiles.dart';
+import 'package:Chalchitra/imports.dart';
 
-class MessageScreen extends StatefulWidget {
+class MessagesScreen extends StatefulWidget {
   @override
-  _MessageScreenState createState() => _MessageScreenState();
+  _MessagesScreenState createState() => _MessagesScreenState();
 }
 
-class _MessageScreenState extends State<MessageScreen> {
+class _MessagesScreenState extends State<MessagesScreen> {
   double _heightOne;
   double _widthOne;
   double _fontOne;

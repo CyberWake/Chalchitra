@@ -3,30 +3,15 @@ import 'dart:io';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flushbar/flushbar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:like_button/like_button.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:swipe_stack/swipe_stack.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/authPageEnums.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
-import 'package:wowtalent/screen/ios_Screens/uploadVideo/video_player/playerIOS.dart';
-import 'package:wowtalent/screen/mainScreens/home/comments.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchProfile.dart';
-import 'package:wowtalent/widgets/customSliderThumb.dart';
-import 'package:wowtalent/widgets/customSliderTrackShape.dart';
+import 'package:Chalchitra/imports.dart';
 
 class Player extends StatefulWidget {
   final UserDataModel user;

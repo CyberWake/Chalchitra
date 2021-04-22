@@ -7,16 +7,7 @@ import 'package:path/path.dart' as p;
 import 'package:percent_indicator/percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
-import 'package:wowtalent/screen/ios_Screens/uploadVideo/video_upload_screens/videoDataInputIOS.dart';
-import 'package:wowtalent/widgets/bouncingButton.dart';
+import 'package:Chalchitra/imports.dart';
 
 class VideoDataInput extends StatefulWidget {
   final String thumbnailPath;

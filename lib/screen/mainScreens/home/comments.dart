@@ -1,15 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/ios_Screens/home/commentsIOS.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
-
-import '../../../model/theme.dart';
 
 class CommentsScreen extends StatefulWidget {
   final String videoId;

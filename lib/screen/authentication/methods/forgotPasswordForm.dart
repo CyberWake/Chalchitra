@@ -1,12 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/authPageEnums.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/authentication/helpers/formFiledFormatting.dart';
-import 'package:wowtalent/screen/authentication/helpers/validation.dart';
+import 'package:Chalchitra/imports.dart';
 import 'dart:io';
 
 class ForgotPasswordForm extends StatefulWidget {

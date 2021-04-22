@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
-
-import '../../../model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 class DraftIOS extends StatefulWidget {
   Widget bodyContent;

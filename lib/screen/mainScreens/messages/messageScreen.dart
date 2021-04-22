@@ -4,27 +4,16 @@ import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/ios_Screens/messages/msgScreenIOS.dart';
-import 'package:wowtalent/screen/mainScreens/common/formatTimeStamp.dart';
-import 'package:wowtalent/screen/mainScreens/messages/messageSearch.dart';
-import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
-import 'package:wowtalent/shared/formFormatting.dart';
-import 'package:wowtalent/widgets/loadingTiles.dart';
-import '../../../model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
-import '../../../model/theme.dart';
-
-class Message extends StatefulWidget {
-  Message({Key key}) : super(key: key);
+class MessageScreen extends StatefulWidget {
+  MessageScreen({Key key}) : super(key: key);
 
   @override
-  _MessageState createState() => _MessageState();
+  _MessageScreenState createState() => _MessageScreenState();
 }
 
-class _MessageState extends State<Message> {
+class _MessageScreenState extends State<MessageScreen> {
   double _heightOne;
   double _widthOne;
   double _fontOne;

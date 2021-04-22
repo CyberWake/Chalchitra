@@ -1,6 +1,5 @@
 import 'package:firebase_dynamic_links/firebase_dynamic_links.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
+import 'package:Chalchitra/imports.dart';
 
 class DynamicLinkService {
   UserVideoStore getVideoInfo = UserVideoStore();

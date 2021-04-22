@@ -1,13 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchResult.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
+import 'package:Chalchitra/screen/screenImports.dart';
+import 'package:Chalchitra/model/modelImports.dart';
+import 'package:Chalchitra/database/databaseImports.dart';
 
 class SearchScreenWrapper extends StatefulWidget {
   @override

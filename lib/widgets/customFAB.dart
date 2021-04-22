@@ -4,9 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:video_compress/video_compress.dart';
-import 'package:wowtalent/main.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoPreviewScreen.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
 
 class CustomFAB extends StatefulWidget {
   @override

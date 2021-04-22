@@ -1,8 +1,6 @@
-import 'package:animations/animations.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
+import 'package:Chalchitra/imports.dart';
 
 class CategoryStoryItem extends StatelessWidget {
   final String name;

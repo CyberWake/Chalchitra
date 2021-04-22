@@ -1,16 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:popup_menu/popup_menu.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
-import 'package:wowtalent/screen/mainScreens/homeScreen/videoCard.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
-import 'package:wowtalent/widgets/dummyPostCard.dart';
+import 'package:Chalchitra/imports.dart';
 
 //TODO Change loading card in refresh screen
 

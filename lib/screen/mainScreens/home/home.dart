@@ -1,23 +1,11 @@
 import 'dart:io';
 
-import 'package:animated_background/animated_background.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:inview_notifier_list/inview_notifier_list.dart';
 import 'package:popup_menu/popup_menu.dart';
-import 'package:shimmer/shimmer.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/home/postCard.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
-import 'package:wowtalent/widgets/dummyPostCard.dart';
-import 'package:wowtalent/widgets/noDataTile.dart';
+import 'package:Chalchitra/imports.dart';
 
 class Home extends StatefulWidget {
   @override

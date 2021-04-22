@@ -5,25 +5,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/activitySection/messages/chatScreen.dart';
-import 'package:wowtalent/screen/mainScreens/profile/editProfilePage.dart';
-import 'package:wowtalent/screen/mainScreens/profile/editVideoForm.dart';
-// import 'package:wowtalent/screen/mainScreens/profile/editProfileScreen.dart';
-import 'package:wowtalent/screen/mainScreens/profile/followersScreen.dart';
-import 'package:wowtalent/screen/mainScreens/profile/followingsScreen.dart';
-import 'package:wowtalent/screen/mainScreens/settings/settingsScreen.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/video_upload_screens/videoUploadForm.dart';
-import 'package:wowtalent/widgets/bouncingButton.dart';
-import 'package:wowtalent/widgets/cupertinosnackbar.dart';
-import 'package:wowtalent/widgets/profileMessageGrid.dart';
-import 'package:wowtalent/widgets/profileVideoGrid.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ProfilePageWrapper extends StatefulWidget {
   final bool isFromSearch;

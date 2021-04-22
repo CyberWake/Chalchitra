@@ -4,8 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/screen/mainScreens/mainScreensWrapper.dart';
+import 'package:Chalchitra/imports.dart';
 
 class OnBoardScreen1 extends StatefulWidget {
   @override

@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:wowtalent/model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ActivityPageIOS extends StatefulWidget {
   Widget bodyContent;

@@ -4,14 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/ios_Screens/messages/msgChatScreenIOS.dart';
-import 'package:wowtalent/screen/mainScreens/messages/chatBubble.dart';
-
-import '../../../model/theme.dart';
-import '../../../model/theme.dart';
+import 'package:Chalchitra/imports.dart';
 
 double _heightOne;
 double _widthOne;
@@ -169,7 +162,7 @@ class _ChatDetailPageState extends State<ChatDetailPage> {
         } else {
           return ListView.builder(
             padding: EdgeInsets.all(10.0),
-            itemBuilder: (context, index) => ChatBubble(
+            itemBuilder: (context, index) => MessageBubble(
                 isMe: snapshot.data.documents[index].data()["reciever"] ==
                     widget.targetUID,
                 message: snapshot.data.documents[index].data()['message'],

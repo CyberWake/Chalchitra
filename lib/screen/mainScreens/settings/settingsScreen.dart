@@ -3,17 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share/flutter_share.dart';
 import 'package:provider/provider.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/authPageEnums.dart';
-import 'package:wowtalent/model/provideUser.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/authentication/authenticationWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/endDrawerScreens/drafts.dart';
-import 'package:wowtalent/screen/mainScreens/endDrawerScreens/helpAndFeedbackPage.dart';
-import 'package:wowtalent/screen/mainScreens/endDrawerScreens/privacyPage.dart';
-import 'package:wowtalent/widgets/bouncingButton.dart';
+import 'package:Chalchitra/imports.dart';
 
 class SettingScreen extends StatefulWidget {
   @override

@@ -3,11 +3,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/ios_Screens/search/searchIOS.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchResult.dart';
+import 'package:Chalchitra/imports.dart';
 
 class SearchUser extends StatefulWidget {
   @override

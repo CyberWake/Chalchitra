@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/widgets/customFAB.dart';
-import 'package:wowtalent/widgets/post.dart';
+import 'package:Chalchitra/imports.dart';
 
 class BottomNav extends StatefulWidget {
   int currentIndex;

@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server/gmail.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/widgets/bouncingButton.dart';
+import 'package:Chalchitra/imports.dart';
 
 class FeedBack extends StatefulWidget {
   final UserDataModel user;
@@ -36,7 +34,7 @@ class _FeedBackState extends State<FeedBack> {
     final smtpServer = gmail(username, password);
     final message = Message()
       ..from = Address(username, mail)
-      ..recipients.add('teamwowtalent@gmail.com')
+      ..recipients.add('teamChalchitra@gmail.com')
       ..subject = 'User Feedback!'
       ..text = body
       ..html = "<h1>Customer FeedBack</h1>\n" +

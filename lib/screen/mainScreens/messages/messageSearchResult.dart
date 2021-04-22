@@ -3,9 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/screen/mainScreens/messages/messagesChatScreen.dart';
+import 'package:Chalchitra/imports.dart';
 
 class MessageSearchResult extends StatelessWidget {
   final UserDataModel eachUser;

@@ -8,19 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:shimmer/shimmer.dart';
-import 'package:wowtalent/auth/userAuth.dart';
-import 'package:wowtalent/database/userInfoStore.dart';
-import 'package:wowtalent/database/userVideoStore.dart';
-// import 'package:wowtalent/model/metaInfo.dart';
-import 'package:wowtalent/model/theme.dart';
-import 'package:wowtalent/model/userDataModel.dart';
-import 'package:wowtalent/model/videoInfoModel.dart';
-import 'package:wowtalent/screen/mainScreens/explore/categories.dart';
-import 'package:wowtalent/screen/mainScreens/search/search.dart';
-import 'package:wowtalent/screen/mainScreens/search/searchScreenWrapper.dart';
-import 'package:wowtalent/screen/mainScreens/uploadVideo/videoPlayer/player.dart';
-import 'package:wowtalent/widgets/categoryWidget.dart';
-import 'package:wowtalent/widgets/videoCardPlaceHolder.dart';
+import 'package:Chalchitra/imports.dart';
 
 class ExploreWrapperr extends StatefulWidget {
   @override
@@ -342,7 +330,7 @@ class _ExploreWrapperrState extends State<ExploreWrapperr> {
 
   Widget _metaInfo(VideoInfo video) {
     String url = video.uploaderPic ?? "https://via.placeholder.com/150";
-    String name = video.uploaderName ?? 'wowtalents';
+    String name = video.uploaderName ?? 'Chalchitras';
     String views = video.views == 0 ? '0' : video.views.toString();
     if (views == null) views = '0';
     print('Video Views : ${video.views}');
